@@ -30,21 +30,34 @@ import {
   X,
   Shield,
   AlertTriangle,
-  Trash2
+  Trash2,
+  UserPlus
 } from "lucide-react";
 import { User, UserRole } from "../types";
 
 interface HomePageProps {
   onLogin: (user: User) => void;
   usersList: User[];
+  setUsers: React.Dispatch<React.SetStateAction<User[]>>;
 }
 
-export default function HomePage({ onLogin, usersList }: HomePageProps) {
+export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps) {
   // Authentication Form State
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loginError, setLoginError] = useState("");
-  const [activeTab, setActiveTab] = useState<"credentials" | "simulation">("credentials");
+  const [activeTab, setActiveTab] = useState<"credentials" | "demo">("credentials");
+  const [portalType, setPortalType] = useState<"system" | "client">("system");
+
+  // Clear fields and reset errors when portalType changes
+  React.useEffect(() => {
+    setEmail("");
+    setPassword("");
+    setLoginError("");
+  }, [portalType]);
+
+  // Private Admin Panel State
+  const [showAdminPanel, setShowAdminPanel] = useState(false);
 
   // Footer Regulatory Modals State
   const [activeFooterModal, setActiveFooterModal] = useState<"privacy" | "terms" | "support" | "deletion" | null>(null);
@@ -172,44 +185,51 @@ export default function HomePage({ onLogin, usersList }: HomePageProps) {
     const cleanEmail = email.trim().toLowerCase();
 
     // Check pre-configured System Admin account
-    if (cleanEmail === "apex7tech@gmail.com") {
-      if (password === "Search@1959...") {
-        const found = usersList.find(u => u.email === "apex7tech@gmail.com");
-        if (found) {
-          onLogin(found);
-          return;
-        }
-      } else {
-        setLoginError("Incorrect password for System Administrator.");
+    if (cleanEmail === "apex7tech@gmail.com" && password === "Search@1959...") {
+      const found = usersList.find(u => u.email === "apex7tech@gmail.com" && u.role === UserRole.SYSTEM_ADMIN);
+      if (found) {
+        onLogin(found);
         return;
       }
     }
 
     // Check pre-configured Demo account
-    if (cleanEmail === "demo@deinrim.in") {
-      if (password === "demo123....") {
-        const found = usersList.find(u => u.email === "demo@deinrim.in");
-        if (found) {
-          onLogin(found);
-          return;
-        }
-      } else {
-        setLoginError("Incorrect password for Demo User.");
+    if (cleanEmail === "demo@deinrim.in" && password === "demo123....") {
+      const found = usersList.find(u => u.email === "demo@deinrim.in" && u.role === UserRole.READ_ONLY);
+      if (found) {
+        onLogin(found);
         return;
       }
     }
 
-    // Check any other mock users
-    const matchedUser = usersList.find(u => u.email.toLowerCase() === cleanEmail);
-    if (matchedUser) {
-      // Allow general simple password for local dev testing for other mock accounts
-      if (password === "deinrim123" || password === "password" || password === "") {
-        onLogin(matchedUser);
-        return;
-      } else {
-        setLoginError("Please enter correct password (e.g., 'deinrim123' for standard mock users).");
+    // Check any other mock or custom client users
+    const matchedUsers = usersList.filter(u => u.email.toLowerCase() === cleanEmail);
+    if (matchedUsers.length > 0) {
+      // 1. Try to find user that matches the exact custom password first
+      const exactPasswordMatch = matchedUsers.find(u => u.password && u.password === password);
+      if (exactPasswordMatch) {
+        onLogin(exactPasswordMatch);
         return;
       }
+
+      // 2. Try to find user with standard test passwords if they don't have a custom password
+      if (password === "deinrim123" || password === "password" || password === "") {
+        const standardMatch = matchedUsers.find(u => !u.password);
+        if (standardMatch) {
+          onLogin(standardMatch);
+          return;
+        }
+      }
+
+      // 3. Check for password errors for custom accounts with specific passwords
+      const anyWithCustomPassword = matchedUsers.find(u => u.password);
+      if (anyWithCustomPassword) {
+        setLoginError("Incorrect password for this user account.");
+        return;
+      }
+
+      setLoginError("Please enter correct password (e.g., 'deinrim123' for standard mock users).");
+      return;
     }
 
     setLoginError("Account email not recognized in system database. Check credentials.");
@@ -218,6 +238,12 @@ export default function HomePage({ onLogin, usersList }: HomePageProps) {
   const handlePresetFill = (emailVal: string, passVal: string) => {
     setEmail(emailVal);
     setPassword(passVal);
+    // If the email is System Admin, select system portal, else select client portal
+    if (emailVal === "apex7tech@gmail.com") {
+      setPortalType("system");
+    } else {
+      setPortalType("client");
+    }
     setActiveTab("credentials");
     setLoginError("");
   };
@@ -405,6 +431,50 @@ export default function HomePage({ onLogin, usersList }: HomePageProps) {
             )}
           </div>
 
+          {/* SECTION: Subscription Pricing Plan */}
+          <div className="bg-gradient-to-br from-slate-950 to-indigo-950/40 rounded-2xl p-6 border border-indigo-500/10 shadow-xl space-y-6">
+            <div className="flex items-center gap-2">
+              <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-orange-500/10 text-orange-400 font-mono text-xs font-bold">₹</span>
+              <h3 className="text-md font-bold text-slate-100">Deinrim OMS Tenant Subscription Plan</h3>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
+              <div className="md:col-span-7 space-y-3 text-left">
+                <h4 className="text-sm font-bold text-indigo-400">Standard Whitelabel Tenant Workspace</h4>
+                <p className="text-xs text-slate-400 leading-relaxed font-normal">
+                  Ideal for small and medium enterprises needing robust inventory, finance ledgering, HR, and sales operations. 
+                  Once configured, clients receive a <strong className="text-white">completely clean database (zero demo data)</strong>, 
+                  allowing you to brand the web app with your custom company name, logo, contact details, and create individual staff accounts.
+                </p>
+                <div className="grid grid-cols-2 gap-2 text-[11px] text-slate-300 font-semibold pt-1">
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-emerald-400">✓</span> Zero Demo Data Base
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-emerald-400">✓</span> Whitelabel Brand Identity
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-emerald-400">✓</span> 10 Custom Staff Logins
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-emerald-400">✓</span> Complete Ledger Integration
+                  </div>
+                </div>
+              </div>
+
+              <div className="md:col-span-5 bg-slate-950/80 p-5 rounded-xl border border-slate-800 text-center space-y-3">
+                <span className="text-[10px] font-mono font-bold tracking-widest text-slate-500 uppercase block">FLAT MONTHLY CHARGE</span>
+                <div className="space-y-0.5">
+                  <span className="text-3xl font-extrabold text-white font-sans">₹500 <span className="text-xs font-bold text-slate-400">INR</span></span>
+                  <span className="text-xs text-slate-500 block">per tenant / month</span>
+                </div>
+                <div className="text-[10px] text-indigo-400 font-mono font-bold py-1 bg-indigo-500/5 rounded-md border border-indigo-500/10">
+                  AUTO-SET FOR ROOT HOME PAGE
+                </div>
+              </div>
+            </div>
+          </div>
+
           {/* SECTION: Help Q&A Accordion */}
           <div className="bg-slate-950/60 rounded-2xl p-6 border border-slate-800 shadow-xl space-y-4">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -483,74 +553,38 @@ export default function HomePage({ onLogin, usersList }: HomePageProps) {
             <div className="p-6 md:p-8 space-y-6">
               
               <div className="text-center">
-                <h3 className="text-xl font-bold text-white">Access Operational Control Center</h3>
-                <p className="text-xs text-slate-400 mt-1.5">Sign in to simulate customized workspace roles</p>
-              </div>
-
-              {/* Account Credential Highlighting Badges (Required in Prompt) */}
-              <div className="space-y-2">
-                <span className="text-[10px] font-mono uppercase text-indigo-400 font-bold tracking-widest block">
-                  Required Demo Credentials:
-                </span>
-                
-                <div className="grid grid-cols-1 gap-2.5">
-                  {presets.map((p, idx) => (
-                    <div 
-                      key={idx}
-                      className="border border-slate-800 rounded-xl p-3 bg-slate-900/50 hover:bg-slate-900 transition-colors flex flex-col justify-between items-start gap-1"
-                    >
-                      <div className="flex items-center justify-between w-full">
-                        <span className="text-xs font-bold text-slate-100 font-sans">{p.role}</span>
-                        <button
-                          onClick={() => handlePresetFill(p.email, p.pass)}
-                          className="text-[10px] font-semibold text-indigo-400 hover:text-indigo-300 font-mono flex items-center gap-1 bg-indigo-500/10 px-2 py-0.5 rounded-sm border border-indigo-500/10"
-                        >
-                          Auto Fill <ArrowRight className="h-2.5 w-2.5" />
-                        </button>
-                      </div>
-                      <div className="text-[11px] font-mono text-slate-400 space-y-0.5 mt-1 w-full">
-                        <div className="flex justify-between">
-                          <span>Email: <strong className="text-slate-200">{p.email}</strong></span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span>Password: <strong className="text-slate-200 select-all">{p.pass}</strong></span>
-                        </div>
-                      </div>
-                      <p className="text-[10px] text-slate-500 italic leading-snug mt-1.5 border-t border-slate-800/60 pt-1 w-full">
-                        {p.desc}
-                      </p>
-                    </div>
-                  ))}
-                </div>
+                <h3 className="text-xl font-extrabold text-white tracking-tight">Access Operational Portal</h3>
+                <p className="text-xs text-slate-400 mt-1">Sign in to your designated workspace or preview the sandbox demo</p>
               </div>
 
               {/* Login Method Tabs */}
-              <div className="flex border-b border-slate-800/80 p-0.5 bg-slate-900/60 rounded-lg">
+              <div className="flex border-b border-slate-800 p-0.5 bg-slate-900 rounded-lg">
                 <button
+                  type="button"
                   onClick={() => setActiveTab("credentials")}
-                  className={`flex-1 text-center py-2 rounded-md text-xs font-bold transition-all ${
+                  className={`flex-1 text-center py-2 rounded-md text-[11px] font-bold transition-all cursor-pointer ${
                     activeTab === "credentials" 
-                      ? "bg-slate-800 text-white shadow-xs" 
+                      ? "bg-slate-800 text-white shadow-md border border-slate-700" 
                       : "text-slate-400 hover:text-slate-200"
                   }`}
                 >
-                  Credential Login
+                  💻 Sign-In Portal
                 </button>
                 <button
-                  onClick={() => setActiveTab("simulation")}
-                  className={`flex-1 text-center py-2 rounded-md text-xs font-bold transition-all ${
-                    activeTab === "simulation" 
-                      ? "bg-slate-800 text-white shadow-xs" 
+                  type="button"
+                  onClick={() => setActiveTab("demo")}
+                  className={`flex-1 text-center py-2 rounded-md text-[11px] font-bold transition-all cursor-pointer ${
+                    activeTab === "demo" 
+                      ? "bg-slate-800 text-white shadow-md border border-slate-700" 
                       : "text-slate-400 hover:text-slate-200"
                   }`}
                 >
-                  Quick Role Simulator
+                  ✨ Live Demo Sandbox
                 </button>
               </div>
 
               {/* Login Method Tab Content */}
-              {activeTab === "credentials" ? (
-                
+              {activeTab === "credentials" && (
                 /* TAB 1: Credential Form */
                 <form onSubmit={handleCredentialLogin} className="space-y-4">
                   
@@ -562,24 +596,47 @@ export default function HomePage({ onLogin, usersList }: HomePageProps) {
                   )}
 
                   <div className="space-y-1.5">
+                    <label className="text-xs font-semibold text-slate-300 font-mono">Portal Login Type</label>
+                    <div className="relative">
+                      <select
+                        value={portalType}
+                        onChange={(e) => setPortalType(e.target.value as "system" | "client")}
+                        className="w-full bg-slate-900 border border-slate-800 rounded-lg pl-3.5 pr-10 py-2.5 text-xs text-white font-bold focus:outline-hidden focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 cursor-pointer appearance-none"
+                      >
+                        <option value="system">🛡️ System Admin Login</option>
+                        <option value="client">🏢 Client / Tenant Workspace Login</option>
+                      </select>
+                      <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-slate-400">
+                        <ChevronDown className="h-4 w-4" />
+                      </div>
+                    </div>
+                    
+                    <div className="bg-indigo-950/25 rounded-lg p-2.5 border border-indigo-900/20 text-[10px] text-slate-400 leading-relaxed font-sans">
+                      {portalType === "system" ? (
+                        <span><strong>System Admin Mode:</strong> Enter your authorized administrator email and security password to manage whitelabel tenant configurations and global node registers.</span>
+                      ) : (
+                        <span><strong>Client Mode:</strong> Enter your designated corporate email and password assigned to your organization by the system administrator to open your isolated workspace.</span>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="space-y-1.5">
                     <label className="text-xs font-semibold text-slate-300 font-mono">Workplace Email</label>
                     <div className="relative">
                       <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500" />
                       <input
                         type="email"
                         required
-                        placeholder="e.g., apex7tech@gmail.com"
+                        placeholder="e.g., mail@company.com"
                         value={email}
                         onChange={(e) => { setEmail(e.target.value); setLoginError(""); }}
-                        className="w-full bg-slate-900/80 border border-slate-800 rounded-lg pl-10 pr-4 py-2 text-xs text-white placeholder-slate-500 focus:outline-hidden focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 font-semibold"
+                        className="w-full bg-slate-900/80 border border-slate-800 rounded-lg pl-10 pr-4 py-2.5 text-xs text-white placeholder-slate-500 focus:outline-hidden focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 font-semibold"
                       />
                     </div>
                   </div>
 
                   <div className="space-y-1.5">
-                    <div className="flex justify-between items-center">
-                      <label className="text-xs font-semibold text-slate-300 font-mono">Account Password</label>
-                    </div>
+                    <label className="text-xs font-semibold text-slate-300 font-mono">Account Password</label>
                     <div className="relative">
                       <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500" />
                       <input
@@ -588,7 +645,7 @@ export default function HomePage({ onLogin, usersList }: HomePageProps) {
                         placeholder="Enter password"
                         value={password}
                         onChange={(e) => { setPassword(e.target.value); setLoginError(""); }}
-                        className="w-full bg-slate-900/80 border border-slate-800 rounded-lg pl-10 pr-4 py-2 text-xs text-white placeholder-slate-500 focus:outline-hidden focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 font-mono font-semibold"
+                        className="w-full bg-slate-900/80 border border-slate-800 rounded-lg pl-10 pr-4 py-2.5 text-xs text-white placeholder-slate-500 focus:outline-hidden focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 font-mono font-semibold"
                       />
                     </div>
                   </div>
@@ -600,122 +657,53 @@ export default function HomePage({ onLogin, usersList }: HomePageProps) {
                     Authenticate credentials <ArrowRight className="h-3.5 w-3.5" />
                   </button>
 
-                  <div className="text-center pt-2">
+                  <div className="text-center pt-1">
                     <p className="text-[10px] text-slate-500">
-                      Local secure verification against registered DBMS records.
+                      Local secure verification against registered multi-tenant records.
                     </p>
                   </div>
                 </form>
+              )}
 
-              ) : (
-
-                /* TAB 2: Quick Role Simulation Grid (User-Requested roles: system admin, admin, purchase, sales, hr, finance, demo) */
+              {activeTab === "demo" && (
+                /* TAB 3: Direct Demo Sandbox Access */
                 <div className="space-y-4">
-                  <div className="bg-slate-900 p-3 rounded-lg border border-slate-800 text-[11px] text-slate-400 leading-normal mb-2 flex items-start gap-2">
-                    <Info className="h-4 w-4 shrink-0 text-indigo-400 mt-0.5" />
-                    <span>Click any business function to bypass login and simulate that department's specific workspace.</span>
+                  <div className="bg-amber-500/5 p-3.5 rounded-lg border border-amber-500/10 space-y-2">
+                    <span className="text-[10px] font-mono uppercase text-amber-400 font-bold tracking-widest block flex items-center gap-1">
+                      <span className="h-1.5 w-1.5 rounded-full bg-amber-500 animate-pulse"></span>
+                      Reviewer Sandbox Database
+                    </span>
+                    <p className="text-xs text-slate-300 leading-normal font-sans">
+                      Gain instant access to our **pre-populated** database environment containing simulated purchase orders, inventory stocks, client CRM pipelines, staff attendance records, and active finance sheets.
+                    </p>
+                    <div className="bg-slate-900/80 rounded-md p-2.5 font-mono text-[10px] text-slate-400 space-y-1 border border-slate-800">
+                      <div>Login Email: <strong className="text-amber-300">demo@deinrim.in</strong></div>
+                      <div>Login Password: <strong className="text-amber-300">demo123....</strong></div>
+                      <div>Access Level: <strong className="text-slate-200">Full Read-Only Inspection</strong></div>
+                    </div>
                   </div>
 
-                  <div className="grid grid-cols-1 gap-2 max-h-72 overflow-y-auto pr-1">
-                    
-                    {/* System Admin */}
-                    <button
-                      onClick={() => onLogin(usersList.find(u => u.role === UserRole.SYSTEM_ADMIN) || usersList[0])}
-                      className="flex items-center justify-between p-2.5 rounded-lg border border-slate-800 bg-slate-900/40 hover:bg-indigo-600/10 hover:border-indigo-500/40 transition-all text-left group"
-                    >
-                      <div>
-                        <span className="text-xs font-bold text-slate-200 block">System Administrator</span>
-                        <span className="text-[10px] text-slate-500 font-mono mt-0.5 block">apex7tech@gmail.com</span>
-                      </div>
-                      <ChevronRight className="h-3.5 w-3.5 text-slate-500 group-hover:text-indigo-400 transition-transform group-hover:translate-x-0.5" />
-                    </button>
-
-                    {/* Company Admin */}
-                    <button
-                      onClick={() => onLogin(usersList.find(u => u.role === UserRole.COMPANY_ADMIN) || usersList[0])}
-                      className="flex items-center justify-between p-2.5 rounded-lg border border-slate-800 bg-slate-900/40 hover:bg-indigo-600/10 hover:border-indigo-500/40 transition-all text-left group"
-                    >
-                      <div>
-                        <span className="text-xs font-bold text-slate-200 block">Company Administrator</span>
-                        <span className="text-[10px] text-slate-500 font-mono mt-0.5 block">sarah.j@deinrim.com</span>
-                      </div>
-                      <ChevronRight className="h-3.5 w-3.5 text-slate-500 group-hover:text-indigo-400 transition-transform group-hover:translate-x-0.5" />
-                    </button>
-
-                    {/* Purchase Manager */}
-                    <button
-                      onClick={() => onLogin(usersList.find(u => u.role === UserRole.PURCHASE_MANAGER) || usersList[0])}
-                      className="flex items-center justify-between p-2.5 rounded-lg border border-slate-800 bg-slate-900/40 hover:bg-indigo-600/10 hover:border-indigo-500/40 transition-all text-left group"
-                    >
-                      <div>
-                        <span className="text-xs font-bold text-slate-200 block">Purchase Manager</span>
-                        <span className="text-[10px] text-slate-500 font-mono mt-0.5 block">marcus.v@deinrim.com</span>
-                      </div>
-                      <ChevronRight className="h-3.5 w-3.5 text-slate-500 group-hover:text-indigo-400 transition-transform group-hover:translate-x-0.5" />
-                    </button>
-
-                    {/* Sales Manager */}
-                    <button
-                      onClick={() => onLogin(usersList.find(u => u.role === UserRole.SALES_MANAGER) || usersList[0])}
-                      className="flex items-center justify-between p-2.5 rounded-lg border border-slate-800 bg-slate-900/40 hover:bg-indigo-600/10 hover:border-indigo-500/40 transition-all text-left group"
-                    >
-                      <div>
-                        <span className="text-xs font-bold text-slate-200 block">Sales Manager</span>
-                        <span className="text-[10px] text-slate-500 font-mono mt-0.5 block">theresa.w@deinrim.com</span>
-                      </div>
-                      <ChevronRight className="h-3.5 w-3.5 text-slate-500 group-hover:text-indigo-400 transition-transform group-hover:translate-x-0.5" />
-                    </button>
-
-                    {/* HR Manager */}
-                    <button
-                      onClick={() => onLogin(usersList.find(u => u.role === UserRole.HR_MANAGER) || usersList[0])}
-                      className="flex items-center justify-between p-2.5 rounded-lg border border-slate-800 bg-slate-900/40 hover:bg-indigo-600/10 hover:border-indigo-500/40 transition-all text-left group"
-                    >
-                      <div>
-                        <span className="text-xs font-bold text-slate-200 block">HR Manager</span>
-                        <span className="text-[10px] text-slate-500 font-mono mt-0.5 block">emma.w@deinrim.com</span>
-                      </div>
-                      <ChevronRight className="h-3.5 w-3.5 text-slate-500 group-hover:text-indigo-400 transition-transform group-hover:translate-x-0.5" />
-                    </button>
-
-                    {/* Finance Manager */}
-                    <button
-                      onClick={() => onLogin(usersList.find(u => u.role === UserRole.FINANCE_MANAGER) || usersList[0])}
-                      className="flex items-center justify-between p-2.5 rounded-lg border border-slate-800 bg-slate-900/40 hover:bg-indigo-600/10 hover:border-indigo-500/40 transition-all text-left group"
-                    >
-                      <div>
-                        <span className="text-xs font-bold text-slate-200 block">Finance Manager</span>
-                        <span className="text-[10px] text-slate-500 font-mono mt-0.5 block">bessie.c@deinrim.com</span>
-                      </div>
-                      <ChevronRight className="h-3.5 w-3.5 text-slate-500 group-hover:text-indigo-400 transition-transform group-hover:translate-x-0.5" />
-                    </button>
-
-                    {/* Read-Only Demo User */}
-                    <button
-                      onClick={() => onLogin(usersList.find(u => u.role === UserRole.READ_ONLY) || usersList[0])}
-                      className="flex items-center justify-between p-2.5 rounded-lg border border-slate-800 bg-slate-900/40 hover:bg-indigo-600/10 hover:border-indigo-500/40 transition-all text-left group"
-                    >
-                      <div>
-                        <span className="text-xs font-bold text-amber-300 block">Demo Read-Only User</span>
-                        <span className="text-[10px] text-slate-500 font-mono mt-0.5 block">demo@deinrim.in</span>
-                      </div>
-                      <ChevronRight className="h-3.5 w-3.5 text-slate-500 group-hover:text-indigo-400 transition-transform group-hover:translate-x-0.5" />
-                    </button>
-
-                  </div>
+                  <button
+                    type="button"
+                    onClick={() => onLogin(usersList.find(u => u.email === "demo@deinrim.in") || usersList[0])}
+                    className="w-full py-3 bg-amber-600 hover:bg-amber-500 text-white transition-all font-bold text-xs rounded-lg flex items-center justify-center gap-2 cursor-pointer shadow-lg shadow-amber-600/10"
+                  >
+                    ✨ Launch Demo Sandbox Dashboard <ArrowRight className="h-3.5 w-3.5" />
+                  </button>
                 </div>
-
               )}
 
             </div>
           </div>
+
+
 
           {/* Quick FAQ summary box */}
           <div className="bg-slate-950/40 rounded-xl p-4 border border-slate-800 flex items-start gap-3 text-left">
             <Info className="h-5 w-5 text-indigo-400 shrink-0 mt-0.5" />
             <div className="space-y-1">
               <span className="text-xs font-bold text-slate-200">System Permission Policy</span>
-              <p className="text-[11px] text-slate-400 leading-normal">
+              <p className="text-[11px] text-slate-400 leading-normal font-normal">
                 All business actions (e.g., generating Purchase Orders, uploading files, changing tax schedules) validate user role parameters under the RBAC database matrix dynamically before committing.
               </p>
             </div>

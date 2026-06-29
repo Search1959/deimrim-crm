@@ -64,6 +64,8 @@ export interface User {
   departmentId?: string;
   avatarUrl?: string;
   status: "active" | "inactive";
+  password?: string;
+  companyName?: string;
 }
 
 export interface AuditLog {

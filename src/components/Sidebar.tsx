@@ -20,7 +20,7 @@ import {
   ShieldCheck,
   Building
 } from "lucide-react";
-import { UserRole } from "../types";
+import { Company, UserRole } from "../types";
 
 interface SidebarProps {
   activeView: string;
@@ -28,6 +28,7 @@ interface SidebarProps {
   collapsed: boolean;
   setCollapsed: (collapsed: boolean) => void;
   userRole: UserRole;
+  company: Company;
 }
 
 export default function Sidebar({
@@ -36,6 +37,7 @@ export default function Sidebar({
   collapsed,
   setCollapsed,
   userRole,
+  company,
 }: SidebarProps) {
   
   // Define sidebar navigation items
@@ -111,9 +113,9 @@ export default function Sidebar({
             <Building className="h-5 w-5" />
           </div>
           {!collapsed && (
-            <div className="flex flex-col text-left">
-              <span className="font-sans text-sm font-bold tracking-wider text-white uppercase">DEINRIM</span>
-              <span className="text-[10px] font-semibold text-indigo-400 uppercase tracking-widest font-mono">OMS v1.2</span>
+            <div className="flex flex-col text-left max-w-[150px] overflow-hidden">
+              <span className="font-sans text-xs font-extrabold tracking-wide text-white uppercase truncate" title={company.name}>{company.name}</span>
+              <span className="text-[10px] font-semibold text-indigo-400 uppercase tracking-widest font-mono truncate">{company.code || "OMS"} v1.2</span>
             </div>
           )}
         </div>

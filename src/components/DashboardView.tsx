@@ -28,7 +28,10 @@ import {
   Transaction, 
   Employee, 
   Lead,
-  formatINR
+  formatINR,
+  User,
+  Company,
+  UserRole
 } from "../types";
 
 interface DashboardViewProps {
@@ -40,6 +43,8 @@ interface DashboardViewProps {
   employees: Employee[];
   leads: Lead[];
   onNavigate: (view: string) => void;
+  currentUser: User;
+  company: Company;
 }
 
 export default function DashboardView({
@@ -51,6 +56,8 @@ export default function DashboardView({
   employees,
   leads,
   onNavigate,
+  currentUser,
+  company,
 }: DashboardViewProps) {
   const [showConfig, setShowConfig] = useState(false);
   
@@ -115,10 +122,28 @@ export default function DashboardView({
   return (
     <div className="flex-1 space-y-6 overflow-y-auto p-6 text-left">
       {/* Welcome Bar with customization toggle */}
-      <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between border-b border-gray-100 pb-4">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between border-b border-gray-100 pb-4">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Executive Dashboard</h1>
-          <p className="text-sm text-gray-500 mt-1">Real-time dynamic business intelligence and operational summary metrics.</p>
+          <div className="flex items-center gap-2">
+            {currentUser?.role === UserRole.SYSTEM_ADMIN ? (
+              <span className="px-2 py-0.5 rounded bg-rose-100 text-rose-800 text-[10px] font-mono font-bold uppercase tracking-wider">
+                Root System Admin Access
+              </span>
+            ) : (
+              <span className="px-2 py-0.5 rounded bg-indigo-100 text-indigo-800 text-[10px] font-mono font-bold uppercase tracking-wider">
+                Client Tenant Access
+              </span>
+            )}
+            <span className="text-[10px] text-gray-400 font-mono font-semibold">User: {currentUser?.name} ({currentUser?.role})</span>
+          </div>
+          <h1 className="text-2xl font-bold text-slate-900 tracking-tight mt-1">
+            {currentUser?.role === UserRole.SYSTEM_ADMIN ? "System Administrator Control Center" : "Executive Enterprise Dashboard"}
+          </h1>
+          <p className="text-sm text-gray-500 mt-0.5">
+            {currentUser?.role === UserRole.SYSTEM_ADMIN 
+              ? "Global operational overview of enterprise databases, registered tenant nodes, and administrative activity streams." 
+              : "Real-time dynamic business intelligence, custom inventory counts, CRM pipelines, and financial ledgers."}
+          </p>
         </div>
         <button
           onClick={() => setShowConfig(!showConfig)}
@@ -128,6 +153,73 @@ export default function DashboardView({
           <span>Customize Widgets</span>
         </button>
       </div>
+
+      {/* Dynamic Dashboard Hero Card tailored for System Admin vs Client */}
+      {currentUser?.role === UserRole.SYSTEM_ADMIN ? (
+        <div className="bg-gradient-to-r from-slate-950 via-slate-900 to-indigo-950 text-white rounded-xl p-5 border border-indigo-500/10 shadow-lg relative overflow-hidden">
+          <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-4 text-left">
+            <div className="space-y-1">
+              <h2 className="text-base font-bold text-slate-100 flex items-center gap-2">
+                <span>🛡️ Global Operations Node Operational</span>
+              </h2>
+              <p className="text-xs text-slate-300 max-w-2xl font-normal leading-relaxed">
+                Logged in as root system administrator. You have unrestricted access to oversee global business nodes, provision and review clean tenant client workspaces, inspect double-entry journals, and audit operations history.
+              </p>
+            </div>
+            <div className="flex gap-2.5 shrink-0">
+              <button
+                type="button"
+                onClick={() => onNavigate("admin")}
+                className="bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold px-3.5 py-2 rounded-lg transition-all cursor-pointer shadow-sm shadow-indigo-600/20"
+              >
+                Provision Client Tenant
+              </button>
+              <button
+                type="button"
+                onClick={() => onNavigate("admin")}
+                className="bg-slate-800 hover:bg-slate-750 text-slate-200 text-xs font-bold px-3.5 py-2 rounded-lg border border-slate-700 transition-all cursor-pointer"
+              >
+                RBAC Permissions
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : (
+        <div className="bg-gradient-to-r from-indigo-950 via-slate-900 to-slate-950 text-white rounded-xl p-5 border border-indigo-500/10 shadow-lg relative overflow-hidden">
+          <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-4 text-left">
+            <div className="space-y-1">
+              <div className="flex items-center gap-2">
+                <span className="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 text-[9px] font-mono font-extrabold uppercase tracking-widest border border-emerald-500/30">
+                  🏢 Whitelabel Active Workspace
+                </span>
+                <span className="text-[10px] text-slate-400 font-mono font-semibold">Tenant Code: {company?.code || "OMS"}</span>
+              </div>
+              <h2 className="text-base font-bold text-slate-100 mt-1">
+                Welcome to {company?.name || "Client Workspace"}
+              </h2>
+              <p className="text-xs text-slate-300 max-w-2xl font-normal leading-relaxed">
+                Your whitelabel business suite is active. Double-entry accounts, supplier registries, custom employee files, and batch locations are isolated inside your clean workspace container. Standard monthly charge flat ₹500/month.
+              </p>
+            </div>
+            <div className="flex gap-2.5 shrink-0">
+              <button
+                type="button"
+                onClick={() => onNavigate("sales-crm")}
+                className="bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold px-3.5 py-2 rounded-lg transition-all cursor-pointer shadow-sm shadow-indigo-600/20"
+              >
+                + Issue Invoice
+              </button>
+              <button
+                type="button"
+                onClick={() => onNavigate("inventory")}
+                className="bg-slate-800 hover:bg-slate-750 text-slate-200 text-xs font-bold px-3.5 py-2 rounded-lg border border-slate-700 transition-all cursor-pointer"
+              >
+                Check Inventory Stocks
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Widget Customization Panel */}
       {showConfig && (

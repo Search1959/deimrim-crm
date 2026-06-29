@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { X, Shield, FileText, HelpCircle, AlertTriangle, CheckCircle2, Trash2 } from "lucide-react";
 import Sidebar from "./components/Sidebar";
 import Header from "./components/Header";
@@ -101,6 +101,266 @@ export default function App() {
 
   // Chronological stock movements list log
   const [stockMovements, setStockMovements] = useState<StockMovement[]>([]);
+
+  // -------------------------------------------------------------
+  // MULTI-TENANT LOCAL PERSISTENCE SYSTEM (DURABLE & BLANK WORKSPACES)
+  // -------------------------------------------------------------
+
+  // A. Boot list of global operator accounts from localStorage
+  useEffect(() => {
+    const storedUsers = localStorage.getItem("deinrim_users");
+    if (storedUsers) {
+      try {
+        setUsers(JSON.parse(storedUsers));
+      } catch (e) {
+        console.error("Failed to parse stored users directory", e);
+      }
+    } else {
+      localStorage.setItem("deinrim_users", JSON.stringify(defaultUsers));
+    }
+  }, []);
+
+  // Save users whenever directory changes (e.g. System Admin registers new clients)
+  useEffect(() => {
+    localStorage.setItem("deinrim_users", JSON.stringify(users));
+  }, [users]);
+
+  // B. Switch and boot specific Tenant State when user logs in / changes company
+  useEffect(() => {
+    if (!isLoggedIn) return;
+
+    const companyId = currentUser.companyId;
+
+    // Local Helper to query localStorage keys with tenant partition
+    const getTenantStored = (key: string) => {
+      const val = localStorage.getItem(`deinrim_${key}_${companyId}`);
+      if (val) {
+        try { return JSON.parse(val); } catch (e) { return null; }
+      }
+      return null;
+    };
+
+    // 1. Company Setup
+    let tenantCompany = getTenantStored("company");
+    if (!tenantCompany) {
+      if (companyId === "comp-1") {
+        tenantCompany = defaultCompany;
+      } else {
+        const cleanCode = companyId.replace("comp-", "").toUpperCase();
+        tenantCompany = {
+          id: companyId,
+          name: currentUser.companyName || `${cleanCode} Industries`,
+          code: cleanCode,
+          taxId: "GST-UNSET-0000",
+          email: currentUser.email,
+          phone: "+91 98361-30393",
+          address: "Custom Whitelabel Office Address",
+          logoUrl: "https://images.unsplash.com/photo-1560179707-f14e90ef3623?w=128&auto=format&fit=crop&q=60",
+          settings: {
+            taxScheme: "GST-18",
+            requireAuditLog: true,
+            alertMinStock: true,
+            allowNegativeStock: false,
+          }
+        };
+      }
+      localStorage.setItem(`deinrim_company_${companyId}`, JSON.stringify(tenantCompany));
+    }
+    setCompany(tenantCompany);
+
+    // 2. Branches Setup
+    let tenantBranches = getTenantStored("branches");
+    if (!tenantBranches) {
+      if (companyId === "comp-1") {
+        tenantBranches = defaultBranches;
+      } else {
+        const cleanCode = companyId.replace("comp-", "").toUpperCase();
+        tenantBranches = [
+          {
+            id: `br-${cleanCode.toLowerCase()}-hq`,
+            companyId: companyId,
+            name: "Headquarters (Main)",
+            code: `${cleanCode}-HQ`,
+            location: "Corporate HQ, Operational Block",
+          }
+        ];
+      }
+      localStorage.setItem(`deinrim_branches_${companyId}`, JSON.stringify(tenantBranches));
+    }
+    setBranches(tenantBranches);
+    setCurrentBranch(tenantBranches[0]);
+
+    // 3. Products Ledger
+    let tenantProducts = getTenantStored("products");
+    if (tenantProducts === null) {
+      tenantProducts = companyId === "comp-1" ? defaultProducts : [];
+    }
+    setProducts(tenantProducts);
+
+    // 4. Batch Stocks Ledger
+    let tenantBatchStocks = getTenantStored("batchStocks");
+    if (tenantBatchStocks === null) {
+      tenantBatchStocks = companyId === "comp-1" ? defaultBatchStocks : [];
+    }
+    setBatchStocks(tenantBatchStocks);
+
+    // 5. Suppliers Directory
+    let tenantSuppliers = getTenantStored("suppliers");
+    if (tenantSuppliers === null) {
+      tenantSuppliers = companyId === "comp-1" ? defaultSuppliers : [];
+    }
+    setSuppliers(tenantSuppliers);
+
+    // 6. Purchase Orders Directory
+    let tenantPO = getTenantStored("purchaseOrders");
+    if (tenantPO === null) {
+      tenantPO = companyId === "comp-1" ? defaultPurchaseOrders : [];
+    }
+    setPurchaseOrders(tenantPO);
+
+    // 7. CRM Sales Leads
+    let tenantLeads = getTenantStored("leads");
+    if (tenantLeads === null) {
+      tenantLeads = companyId === "comp-1" ? defaultLeads : [];
+    }
+    setLeads(tenantLeads);
+
+    // 8. CRM Customer Ledger
+    let tenantCustomers = getTenantStored("customers");
+    if (tenantCustomers === null) {
+      tenantCustomers = companyId === "comp-1" ? defaultCustomers : [];
+    }
+    setCustomers(tenantCustomers);
+
+    // 9. Accounts Invoices
+    let tenantInvoices = getTenantStored("invoices");
+    if (tenantInvoices === null) {
+      tenantInvoices = companyId === "comp-1" ? defaultInvoices : [];
+    }
+    setInvoices(tenantInvoices);
+
+    // 10. HR Employee Registry
+    let tenantEmployees = getTenantStored("employees");
+    if (tenantEmployees === null) {
+      tenantEmployees = companyId === "comp-1" ? defaultEmployees : [];
+    }
+    setEmployees(tenantEmployees);
+
+    // 11. HR Leaves Requests
+    let tenantLeaves = getTenantStored("leaveRequests");
+    if (tenantLeaves === null) {
+      tenantLeaves = companyId === "comp-1" ? defaultLeaveRequests : [];
+    }
+    setLeaveRequests(tenantLeaves);
+
+    // 12. Finance Double-entry Transactions
+    let tenantTransactions = getTenantStored("transactions");
+    if (tenantTransactions === null) {
+      tenantTransactions = companyId === "comp-1" ? defaultTransactions : [];
+    }
+    setTransactions(tenantTransactions);
+
+    // 13. Shared Documents
+    let tenantDocs = getTenantStored("documents");
+    if (tenantDocs === null) {
+      tenantDocs = companyId === "comp-1" ? defaultDocuments : [];
+    }
+    setDocuments(tenantDocs);
+
+    // 14. Real-time Notifications
+    let tenantNotifications = getTenantStored("notifications");
+    if (tenantNotifications === null) {
+      tenantNotifications = companyId === "comp-1" ? defaultNotifications : [
+        {
+          id: `n-${Date.now()}`,
+          title: "Tenant Space Activated",
+          message: `Welcome to your customized whitelabel enterprise suite: "${tenantCompany.name}". Your flat subscription of ₹500/month is active. Start adding your own suppliers, products, and clients on a 100% clean slate!`,
+          type: "success",
+          read: false,
+          createdAt: new Date().toISOString()
+        }
+      ];
+    }
+    setNotifications(tenantNotifications);
+
+    // 15. Operational Audit Trail Logs
+    let tenantAudit = getTenantStored("auditLogs");
+    if (tenantAudit === null) {
+      tenantAudit = companyId === "comp-1" ? defaultAuditLogs : [
+        {
+          id: `audit-${Date.now()}`,
+          userId: currentUser.id,
+          userName: currentUser.name,
+          userRole: currentUser.role,
+          action: "BOOT",
+          module: "SYSTEM",
+          details: `Tenant workspace launched for corporate node: ${tenantCompany.name}.`,
+          timestamp: new Date().toISOString(),
+          ipAddress: "127.0.0.1"
+        }
+      ];
+    }
+    setAuditLogs(tenantAudit);
+
+    // 16. Fixed Business Assets
+    let tenantAssets = getTenantStored("assets");
+    if (tenantAssets === null) {
+      tenantAssets = [];
+    }
+    setAssets(tenantAssets);
+
+    // 17. Batch Stock Movements Ledger
+    let tenantMovements = getTenantStored("stockMovements");
+    if (tenantMovements === null) {
+      tenantMovements = [];
+    }
+    setStockMovements(tenantMovements);
+
+  }, [isLoggedIn, currentUser.companyId]);
+
+  // C. Auto-save Tenant State back to partitioned LocalStorage on any local mutations
+  useEffect(() => {
+    if (!isLoggedIn) return;
+    const companyId = currentUser.companyId;
+
+    localStorage.setItem(`deinrim_company_${companyId}`, JSON.stringify(company));
+    localStorage.setItem(`deinrim_branches_${companyId}`, JSON.stringify(branches));
+    localStorage.setItem(`deinrim_products_${companyId}`, JSON.stringify(products));
+    localStorage.setItem(`deinrim_batchStocks_${companyId}`, JSON.stringify(batchStocks));
+    localStorage.setItem(`deinrim_suppliers_${companyId}`, JSON.stringify(suppliers));
+    localStorage.setItem(`deinrim_purchaseOrders_${companyId}`, JSON.stringify(purchaseOrders));
+    localStorage.setItem(`deinrim_leads_${companyId}`, JSON.stringify(leads));
+    localStorage.setItem(`deinrim_customers_${companyId}`, JSON.stringify(customers));
+    localStorage.setItem(`deinrim_invoices_${companyId}`, JSON.stringify(invoices));
+    localStorage.setItem(`deinrim_employees_${companyId}`, JSON.stringify(employees));
+    localStorage.setItem(`deinrim_leaveRequests_${companyId}`, JSON.stringify(leaveRequests));
+    localStorage.setItem(`deinrim_transactions_${companyId}`, JSON.stringify(transactions));
+    localStorage.setItem(`deinrim_documents_${companyId}`, JSON.stringify(documents));
+    localStorage.setItem(`deinrim_notifications_${companyId}`, JSON.stringify(notifications));
+    localStorage.setItem(`deinrim_auditLogs_${companyId}`, JSON.stringify(auditLogs));
+    localStorage.setItem(`deinrim_assets_${companyId}`, JSON.stringify(assets));
+    localStorage.setItem(`deinrim_stockMovements_${companyId}`, JSON.stringify(stockMovements));
+  }, [
+    isLoggedIn,
+    currentUser.companyId,
+    company,
+    branches,
+    products,
+    batchStocks,
+    suppliers,
+    purchaseOrders,
+    leads,
+    customers,
+    invoices,
+    employees,
+    leaveRequests,
+    transactions,
+    documents,
+    notifications,
+    auditLogs,
+    assets,
+    stockMovements
+  ]);
 
   // ==========================================
   // STATE WORKFLOWS: THE "ENTER ONCE" ENGINE
@@ -421,6 +681,8 @@ export default function App() {
             employees={employees}
             leads={leads}
             onNavigate={setActiveView}
+            currentUser={currentUser}
+            company={company}
           />
         );
       case "inventory":
@@ -522,7 +784,7 @@ export default function App() {
   };
 
   if (!isLoggedIn) {
-    return <HomePage onLogin={(user) => { setCurrentUser(user); setIsLoggedIn(true); }} usersList={users} />;
+    return <HomePage onLogin={(user) => { setCurrentUser(user); setIsLoggedIn(true); }} usersList={users} setUsers={setUsers} />;
   }
 
   return (
@@ -537,6 +799,7 @@ export default function App() {
         collapsed={collapsed}
         setCollapsed={setCollapsed}
         userRole={currentUser.role}
+        company={company}
       />
 
       {/* Main Panel Workspace */}
