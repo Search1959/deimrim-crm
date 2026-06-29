@@ -37,10 +37,10 @@ export const defaultCompany: Company = {
   id: "comp-1",
   name: "DEINRIM India Private Limited",
   code: "DEIN",
-  taxId: "27AAECD9988A1Z5", // Maharashtra GSTIN
+  taxId: "19AAECD9988A1Z5", // West Bengal GSTIN
   email: "hq@deinrim.in",
-  phone: "+91 22 5555 1234",
-  address: "742 Evergreen Galleria, Powai, Mumbai, Maharashtra - 400076",
+  phone: "+91 33 5555 1234",
+  address: "742 Salt Lake Sector V, Electronics Complex, Kolkata, West Bengal - 700091",
   settings: {
     whatsappEnabled: true,
     emailNotifications: true,
@@ -53,10 +53,10 @@ export const defaultBranches: Branch[] = [
   {
     id: "br-hq",
     companyId: "comp-1",
-    name: "Mumbai Headquarters (HQ)",
-    code: "DEIN-MUM",
-    address: "742 Evergreen Galleria, Powai, Mumbai, Maharashtra - 400076",
-    phone: "+91 22 5555 1234",
+    name: "Kolkata Headquarters (HQ)",
+    code: "DEIN-KOL",
+    address: "742 Salt Lake Sector V, Electronics Complex, Kolkata, West Bengal - 700091",
+    phone: "+91 33 5555 1234",
   },
   {
     id: "br-se",

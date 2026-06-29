@@ -252,6 +252,7 @@ export interface Customer {
   phone: string;
   address: string;
   outstandingBalance: number;
+  gstin?: string;
 }
 
 export interface Invoice {
@@ -399,3 +400,180 @@ export function formatINRSort(amount: number): string {
   }
   return "₹" + val.toLocaleString('en-IN', { maximumFractionDigits: 0 });
 }
+
+// New CRM & Sales Sub-module Entities
+export interface Deal {
+  id: string;
+  title: string;
+  leadId?: string;
+  leadTitle?: string;
+  value: number;
+  stage: "Proposal" | "Negotiation" | "Contract Sent" | "Won" | "Lost";
+  probability: number;
+  expectedCloseDate: string;
+  notes?: string;
+  createdAt: string;
+}
+
+export interface Quotation {
+  id: string;
+  quotationNumber: string;
+  companyName: string;
+  contactPerson?: string;
+  gstNo?: string;
+  billingAddress?: string;
+  dealId?: string;
+  dealTitle?: string;
+  validUntil: string;
+  notes?: string;
+  items: Array<{
+    productName: string;
+    unit: string;
+    quantity: number;
+    unitPrice: number;
+    amount: number;
+  }>;
+  totalAmount: number;
+  createdAt: string;
+  status: "Pending" | "Accepted" | "Expired" | "Rejected";
+}
+
+export interface Payment {
+  id: string;
+  invoiceId: string;
+  invoiceNumber: string;
+  companyName: string;
+  amount: number;
+  paymentDate: string;
+  paymentMethod: string;
+  referenceNo?: string;
+  notes?: string;
+  createdAt: string;
+}
+
+export interface SalesTarget {
+  id: string;
+  period: string; // e.g. "June 2026"
+  targetAmount: number;
+  achievedAmount: number;
+  assignedTo: string;
+}
+
+export interface Contact {
+  id: string;
+  name: string;
+  companyName: string;
+  email: string;
+  phone: string;
+  designation?: string;
+  createdAt: string;
+}
+
+export interface ServiceTicket {
+  id: string;
+  ticketNumber: string;
+  subject: string;
+  companyName: string;
+  contactName?: string;
+  priority: "Low" | "Medium" | "High" | "Urgent";
+  status: "Open" | "In Progress" | "Resolved" | "Closed";
+  assignedTo?: string;
+  description?: string;
+  createdAt: string;
+}
+
+// ==========================================
+// PROCUREMENT SUITE (PO SUITE) MODULES
+// ==========================================
+
+export interface PurchaseRequisition {
+  id: string;
+  prNumber: string;
+  department: string;
+  category: string;
+  priority: "Low" | "Medium" | "High" | "Urgent";
+  requiredByDate: string;
+  description: string;
+  itemTitle: string;
+  quantity: number;
+  uom: string;
+  estimatedUnitCost: number;
+  budgetCode?: string;
+  attachmentName?: string;
+  status: "Draft" | "Pending Approval" | "Approved" | "Rejected";
+  createdAt: string;
+}
+
+export interface RequestForQuotation {
+  id: string;
+  rfqNumber: string;
+  title: string;
+  linkedPrId?: string;
+  linkedPrNumber?: string;
+  description: string;
+  itemName: string;
+  responseDeadline: string;
+  quantity: number;
+  uom: string;
+  deliveryLocation: string;
+  currency: string;
+  invitedVendors: string[];
+  attachmentName?: string;
+  status: "Draft" | "Published" | "Closed";
+  createdAt: string;
+}
+
+export interface EAuction {
+  id: string;
+  auctionNumber: string;
+  title: string;
+  description: string;
+  auctionType: string;
+  linkedRfqId?: string;
+  linkedRfqNumber?: string;
+  startingPrice: number;
+  reservePrice: number;
+  quantity: number;
+  minBidStep: number;
+  endDate: string;
+  currency: string;
+  invitedVendors: string[];
+  status: "Upcoming" | "Live" | "Completed" | "Cancelled";
+  lowestBid?: number;
+  lowestBidder?: string;
+  createdAt: string;
+}
+
+export interface VendorInvoice {
+  id: string;
+  billNumber: string;
+  poId?: string;
+  poNumber?: string;
+  supplierId: string;
+  supplierName: string;
+  amountBeforeGst: number;
+  gstType: string;
+  gstRate: number;
+  totalAmount: number;
+  dueDate: string;
+  status: "Draft" | "Pending Payment" | "Partially Paid" | "Paid";
+  createdAt: string;
+}
+
+export interface VendorPayment {
+  id: string;
+  invoiceId: string;
+  invoiceNumber: string;
+  supplierName: string;
+  amount: number;
+  paymentDate: string;
+  paymentMethod: string;
+  payingFrom: string;
+  referenceNo: string;
+  remarks?: string;
+  isPartial: boolean;
+  tdsDeducted: number;
+  attachmentName?: string;
+  createdAt: string;
+}
+

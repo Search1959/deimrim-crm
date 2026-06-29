@@ -72,6 +72,65 @@ export default function App() {
   // Login Session state
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
+  // Dynamic SEO Title and Meta Description updater
+  useEffect(() => {
+    if (!isLoggedIn) {
+      document.title = "DEINRIM OMS - Whitelabel Tenant Workspace & Office Management System";
+      const metaDescription = document.querySelector('meta[name="description"]');
+      if (metaDescription) {
+        metaDescription.setAttribute("content", "DEINRIM Office Management System (OMS) is a premium whitelabel ERP & CRM workspace offering integrated inventory control, financial ledgers, HR operations, and secure tenant sub-accounts.");
+      }
+      return;
+    }
+
+    let pageTitle = "DEINRIM OMS";
+    let pageDesc = "Manage your office operations with DEINRIM Office Management System.";
+
+    switch (activeView) {
+      case "dashboard":
+        pageTitle = "Enterprise Control Dashboard | DEINRIM OMS";
+        pageDesc = "Real-time key metrics, branch inventories, revenue flow, pending approvals, and centralized command dashboard.";
+        break;
+      case "inventory":
+        pageTitle = "Inventory Control & Ledger | DEINRIM OMS";
+        pageDesc = "Track product stocks, brands, categories, low-stock warnings, and real-time ledger accounting of inventory physical items.";
+        break;
+      case "purchase":
+        pageTitle = "Purchase Orders & Vendor Tracker | DEINRIM OMS";
+        pageDesc = "Manage raw material procuring pipeline, supplier directories, purchase approvals, and receive stock workflows.";
+        break;
+      case "sales-crm":
+        pageTitle = "Sales Pipeline, Leads & Invoices | DEINRIM OMS";
+        pageDesc = "Oversee CRM client sales loops, active leads tracking, invoice generations, and customer accounts statuses.";
+        break;
+      case "hr":
+        pageTitle = "HR Directory, Payroll & Leaves | DEINRIM OMS";
+        pageDesc = "Manage staff registrations, attendance directories, payroll sheets, and leave request workflows.";
+        break;
+      case "finance":
+        pageTitle = "Financial Ledger & Account Books | DEINRIM OMS";
+        pageDesc = "Double-entry accounting, custom charts of accounts, transaction ledgers, and cash flow sheets.";
+        break;
+      case "documents":
+        pageTitle = "Secure Vault Document Manager | DEINRIM OMS";
+        pageDesc = "Upload, categorize, search, and securely manage corporate contracts, templates, and spreadsheets.";
+        break;
+      case "admin":
+        pageTitle = "System Whitelabel Configurations | DEINRIM OMS";
+        pageDesc = "System administrator white-label tenant registrations, branding settings, security audits, and system nodes.";
+        break;
+      default:
+        pageTitle = "Workspace Platform | DEINRIM OMS";
+        pageDesc = "Secure collaborative work office management system tools.";
+    }
+
+    document.title = pageTitle;
+    const metaDescription = document.querySelector('meta[name="description"]');
+    if (metaDescription) {
+      metaDescription.setAttribute("content", pageDesc);
+    }
+  }, [isLoggedIn, activeView]);
+
   // Helper to determine the landing view for a role upon login
   const getDefaultViewForRole = (role: UserRole): string => {
     switch (role) {
@@ -241,6 +300,25 @@ export default function App() {
         ];
       }
       localStorage.setItem(`deinrim_branches_${companyId}`, JSON.stringify(tenantBranches));
+    } else {
+      // Force migration/replacement of Mumbai to Kolkata in loaded branches
+      let migrated = false;
+      const updatedBranches = tenantBranches.map((br: any) => {
+        if (br.name && br.name.includes("Mumbai")) {
+          migrated = true;
+          return {
+            ...br,
+            name: br.name.replace("Mumbai", "Kolkata"),
+            address: br.address ? br.address.replace("Mumbai", "Kolkata") : br.address,
+            code: br.code === "DEIN-BOM" ? "DEIN-KOL" : br.code
+          };
+        }
+        return br;
+      });
+      if (migrated) {
+        tenantBranches = updatedBranches;
+        localStorage.setItem(`deinrim_branches_${companyId}`, JSON.stringify(tenantBranches));
+      }
     }
     setBranches(tenantBranches);
     setCurrentBranch(tenantBranches[0]);
