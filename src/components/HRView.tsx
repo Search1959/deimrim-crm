@@ -56,12 +56,12 @@ export default function HRView({
   };
 
   return (
-    <div className="flex h-full w-full overflow-hidden bg-slate-900 text-slate-100">
+    <div className="flex flex-1 h-full overflow-hidden text-left bg-slate-950/20 text-slate-100">
       {/* 1. CUSTOM HR SUITE SUB-SIDEBAR (Matches Image 1 layout exactly) */}
-      <aside className="w-64 border-r border-slate-800/80 bg-[#162235]/95 flex flex-col justify-between shrink-0">
+      <aside className="w-64 border-r border-slate-900 bg-slate-950/60 flex flex-col justify-between shrink-0 font-sans">
         <div className="flex flex-col">
           {/* Logo header matching 'HR Suite' branding in Image 1 */}
-          <div className="flex items-center gap-3 p-5 border-b border-slate-800/60">
+          <div className="flex items-center gap-3 p-5 border-b border-slate-900">
             <div className="h-9 w-9 bg-[#f47521] rounded-xl flex items-center justify-center font-black text-white text-sm shadow-md shadow-orange-500/10">
               HR
             </div>
@@ -79,97 +79,121 @@ export default function HRView({
             <div>
               <button
                 onClick={() => setActiveSubTab("dashboard")}
-                className={`w-full flex items-center gap-3 rounded-lg px-3 py-2.5 text-left text-xs font-bold uppercase tracking-wider transition-all duration-150 ${
+                className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg text-[11px] font-bold tracking-tight transition-all cursor-pointer ${
                   activeSubTab === "dashboard"
-                    ? "bg-indigo-600 text-white font-black"
-                    : "hover:bg-slate-800/60 text-slate-400 hover:text-slate-200"
+                    ? "bg-indigo-600/10 border border-indigo-500/30 text-indigo-300"
+                    : "border border-transparent text-slate-400 hover:text-slate-200 hover:bg-slate-900/40"
                 }`}
               >
-                <LayoutDashboard className="h-4.5 w-4.5" />
-                <span>Dashboard</span>
+                <div className="flex items-center gap-2">
+                  <LayoutDashboard className={`h-3.5 w-3.5 ${activeSubTab === "dashboard" ? "text-indigo-400" : "text-slate-500"}`} />
+                  <span>Dashboard</span>
+                </div>
+                {activeSubTab === "dashboard" && <ChevronRight className="h-3 w-3 text-indigo-500/80" />}
               </button>
             </div>
 
             {/* Group: WORKFORCE */}
             <div className="space-y-1">
-              <span className="block px-3 text-[10px] font-bold text-slate-500 uppercase tracking-widest font-mono">
+              <span className="block text-[8px] font-bold text-slate-600 tracking-widest font-mono uppercase px-2">
                 WORKFORCE
               </span>
-              <button
-                onClick={() => setActiveSubTab("employees")}
-                className={`w-full flex items-center gap-3 rounded-lg px-3 py-2.5 text-left text-xs font-bold uppercase tracking-wider transition-all duration-150 ${
-                  activeSubTab === "employees"
-                    ? "bg-[#3e2723] text-orange-400 border border-[#f47521]/20 font-black"
-                    : "hover:bg-slate-800/60 text-slate-400 hover:text-slate-200"
-                }`}
-              >
-                <Users2 className="h-4.5 w-4.5" />
-                <span>Employees</span>
-              </button>
-              <button
-                onClick={() => setActiveSubTab("departments")}
-                className={`w-full flex items-center gap-3 rounded-lg px-3 py-2.5 text-left text-xs font-bold uppercase tracking-wider transition-all duration-150 ${
-                  activeSubTab === "departments"
-                    ? "bg-slate-800 text-white font-black"
-                    : "hover:bg-slate-800/60 text-slate-400 hover:text-slate-200"
-                }`}
-              >
-                <Building2 className="h-4.5 w-4.5" />
-                <span>Departments</span>
-              </button>
+              <div className="space-y-0.5">
+                <button
+                  onClick={() => setActiveSubTab("employees")}
+                  className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg text-[11px] font-bold tracking-tight transition-all cursor-pointer ${
+                    activeSubTab === "employees"
+                      ? "bg-[#f47521]/10 border border-[#f47521]/30 text-orange-400"
+                      : "border border-transparent text-slate-400 hover:text-slate-200 hover:bg-slate-900/40"
+                  }`}
+                >
+                  <div className="flex items-center gap-2">
+                    <Users2 className={`h-3.5 w-3.5 ${activeSubTab === "employees" ? "text-[#f47521]" : "text-slate-500"}`} />
+                    <span>Employees</span>
+                  </div>
+                  {activeSubTab === "employees" && <ChevronRight className="h-3 w-3 text-[#f47521]/80" />}
+                </button>
+                <button
+                  onClick={() => setActiveSubTab("departments")}
+                  className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg text-[11px] font-bold tracking-tight transition-all cursor-pointer ${
+                    activeSubTab === "departments"
+                      ? "bg-indigo-600/10 border border-indigo-500/30 text-indigo-300"
+                      : "border border-transparent text-slate-400 hover:text-slate-200 hover:bg-slate-900/40"
+                  }`}
+                >
+                  <div className="flex items-center gap-2">
+                    <Building2 className={`h-3.5 w-3.5 ${activeSubTab === "departments" ? "text-indigo-400" : "text-slate-500"}`} />
+                    <span>Departments</span>
+                  </div>
+                  {activeSubTab === "departments" && <ChevronRight className="h-3 w-3 text-indigo-500/80" />}
+                </button>
+              </div>
             </div>
 
             {/* Group: TIME & LEAVE */}
             <div className="space-y-1">
-              <span className="block px-3 text-[10px] font-bold text-slate-500 uppercase tracking-widest font-mono">
+              <span className="block text-[8px] font-bold text-slate-600 tracking-widest font-mono uppercase px-2">
                 TIME & LEAVE
               </span>
-              <button
-                onClick={() => setActiveSubTab("attendance")}
-                className={`w-full flex items-center gap-3 rounded-lg px-3 py-2.5 text-left text-xs font-bold uppercase tracking-wider transition-all duration-150 ${
-                  activeSubTab === "attendance"
-                    ? "bg-slate-800 text-white font-black"
-                    : "hover:bg-slate-800/60 text-slate-400 hover:text-slate-200"
-                }`}
-              >
-                <Clock className="h-4.5 w-4.5" />
-                <span>Attendance</span>
-              </button>
-              <button
-                onClick={() => setActiveSubTab("leaves")}
-                className={`w-full flex items-center gap-3 rounded-lg px-3 py-2.5 text-left text-xs font-bold uppercase tracking-wider transition-all duration-150 ${
-                  activeSubTab === "leaves"
-                    ? "bg-slate-800 text-white font-black"
-                    : "hover:bg-slate-800/60 text-slate-400 hover:text-slate-200"
-                }`}
-              >
-                <Calendar className="h-4.5 w-4.5" />
-                <span>Leave Management</span>
-              </button>
+              <div className="space-y-0.5">
+                <button
+                  onClick={() => setActiveSubTab("attendance")}
+                  className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg text-[11px] font-bold tracking-tight transition-all cursor-pointer ${
+                    activeSubTab === "attendance"
+                      ? "bg-indigo-600/10 border border-indigo-500/30 text-indigo-300"
+                      : "border border-transparent text-slate-400 hover:text-slate-200 hover:bg-slate-900/40"
+                  }`}
+                >
+                  <div className="flex items-center gap-2">
+                    <Clock className={`h-3.5 w-3.5 ${activeSubTab === "attendance" ? "text-indigo-400" : "text-slate-500"}`} />
+                    <span>Attendance</span>
+                  </div>
+                  {activeSubTab === "attendance" && <ChevronRight className="h-3 w-3 text-indigo-500/80" />}
+                </button>
+                <button
+                  onClick={() => setActiveSubTab("leaves")}
+                  className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg text-[11px] font-bold tracking-tight transition-all cursor-pointer ${
+                    activeSubTab === "leaves"
+                      ? "bg-indigo-600/10 border border-indigo-500/30 text-indigo-300"
+                      : "border border-transparent text-slate-400 hover:text-slate-200 hover:bg-slate-900/40"
+                  }`}
+                >
+                  <div className="flex items-center gap-2">
+                    <Calendar className={`h-3.5 w-3.5 ${activeSubTab === "leaves" ? "text-indigo-400" : "text-slate-500"}`} />
+                    <span>Leave Management</span>
+                  </div>
+                  {activeSubTab === "leaves" && <ChevronRight className="h-3 w-3 text-indigo-500/80" />}
+                </button>
+              </div>
             </div>
 
             {/* Group: FINANCE */}
             <div className="space-y-1">
-              <span className="block px-3 text-[10px] font-bold text-slate-500 uppercase tracking-widest font-mono">
+              <span className="block text-[8px] font-bold text-slate-600 tracking-widest font-mono uppercase px-2">
                 FINANCE
               </span>
-              <button
-                onClick={() => setActiveSubTab("payroll")}
-                className={`w-full flex items-center gap-3 rounded-lg px-3 py-2.5 text-left text-xs font-bold uppercase tracking-wider transition-all duration-150 ${
-                  activeSubTab === "payroll"
-                    ? "bg-slate-800 text-white font-black"
-                    : "hover:bg-slate-800/60 text-slate-400 hover:text-slate-200"
-                }`}
-              >
-                <Wallet className="h-4.5 w-4.5" />
-                <span>Payroll</span>
-              </button>
+              <div className="space-y-0.5">
+                <button
+                  onClick={() => setActiveSubTab("payroll")}
+                  className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg text-[11px] font-bold tracking-tight transition-all cursor-pointer ${
+                    activeSubTab === "payroll"
+                      ? "bg-indigo-600/10 border border-indigo-500/30 text-indigo-300"
+                      : "border border-transparent text-slate-400 hover:text-slate-200 hover:bg-slate-900/40"
+                  }`}
+                >
+                  <div className="flex items-center gap-2">
+                    <Wallet className={`h-3.5 w-3.5 ${activeSubTab === "payroll" ? "text-indigo-400" : "text-slate-500"}`} />
+                    <span>Payroll</span>
+                  </div>
+                  {activeSubTab === "payroll" && <ChevronRight className="h-3 w-3 text-indigo-500/80" />}
+                </button>
+              </div>
             </div>
           </nav>
         </div>
 
         {/* Custom sidebar footer */}
-        <div className="p-4 border-t border-slate-800/60 text-center text-slate-500 text-[10px] font-mono leading-relaxed bg-slate-950/20">
+        <div className="p-4 border-t border-slate-900 text-center text-slate-500 text-[10px] font-mono leading-relaxed bg-slate-950/20">
           <div>HR SUITE SYSTEM</div>
           <div className="text-indigo-400/80 font-bold uppercase tracking-wider mt-0.5">Double-Entry Linked</div>
         </div>

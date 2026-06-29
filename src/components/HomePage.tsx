@@ -31,7 +31,14 @@ import {
   Shield,
   AlertTriangle,
   Trash2,
-  UserPlus
+  UserPlus,
+  Server,
+  Database,
+  Code,
+  HeartHandshake,
+  History,
+  Award,
+  ExternalLink
 } from "lucide-react";
 import { User, UserRole } from "../types";
 
@@ -97,6 +104,9 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
   // Flow Diagram State
   const [activeFlowNode, setActiveFlowNode] = useState<string>("po");
 
+  // Review & Trust Exploration State
+  const [activeReviewTab, setActiveReviewTab] = useState<"about" | "tech" | "reseller" | "templates">("about");
+
   // Custom presets
   const presets = [
     {
@@ -136,6 +146,26 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
     {
       q: "How are employee leaves and attendances managed?",
       a: "The HR Management tab provides direct interfaces to track employee codes, record clock-in/clock-out attendance records, and review sick or annual leave requests. Changing a leave request's status to 'approved' logs the active manager's stamp and coordinates with active attendance charts."
+    },
+    {
+      q: "What is your backup frequency and data security protocol?",
+      a: "DEINRIM OMS performs automated **encrypted PostgreSQL backup snapshots every 6 hours**, replicated across redundant physical availability zones. Transactions are secured under **AES-256 bank-grade rest encryption** and **256-bit SSL/TLS in-transit encryption** to maintain maximum compliance standards."
+    },
+    {
+      q: "How do I map my own custom white-label domain?",
+      a: "Agencies and reselling consultants can configure their own brand domain (e.g., *erp.youragency.com*) by mapping a standard **CNAME record** pointing to our routing proxy cluster. Once DNS propagates, our system auto-provisions and installs a renewal-free **SSL certificate** within 5 minutes."
+    },
+    {
+      q: "Are there API endpoints to connect external CRMs or Shopify?",
+      a: "Yes, DEINRIM OMS features **automated REST API endpoints** for all primary modules. Authorized Client Administrators can generate secure system API keys in the settings area to synchronize customers, inventory levels, sales invoices, or trigger outbound Webhooks on goods receipt."
+    },
+    {
+      q: "How do I seed sample data if I don't want a clean slate start?",
+      a: "When registering or provisioning a new corporate tenant, Company Admins can choose to **auto-apply industry-standard presets** (e.g., Manufacturing, wholesaling, or retail) with a single click in the Trust Hub. This instantly populates your isolated database with barcode layouts, standard products, tax codes, and typical chart of accounts, bypassing manual entry."
+    },
+    {
+      q: "What is the Service Level Agreement (SLA) for platform uptime?",
+      a: "We guarantee a **99.9% application uptime** under our service level agreement. Scheduled maintenance or platform optimization patches are handled during regional off-peak hours (GMT 20:00 to 22:00) with preceding dashboard alerts 24 hours in advance."
     }
   ];
 
@@ -454,113 +484,183 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
             )}
           </div>
 
-          {/* SECTION: Subscription Pricing Plan */}
-          <div className="bg-gradient-to-br from-slate-950 to-indigo-950/40 rounded-2xl p-6 border border-indigo-500/10 shadow-xl space-y-6">
-            <div className="flex items-center gap-2">
-              <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-orange-500/10 text-orange-400 font-mono text-xs font-bold">₹</span>
-              <h3 className="text-md font-bold text-slate-100">Deinrim OMS Tenant Subscription Plan</h3>
+          {/* DEINRIM TRUST & SPECIFICATIONS HUB */}
+          <div className="bg-slate-950/60 rounded-2xl p-6 border border-slate-800 shadow-xl space-y-6">
+            <div className="space-y-1.5 text-left">
+              <span className="text-[10px] uppercase font-bold tracking-widest text-indigo-400 font-mono">Platform Trust & Specification Hub</span>
+              <h3 className="text-xl font-extrabold text-white tracking-tight">Enterprise Transparency Hub</h3>
+              <p className="text-xs text-slate-400">
+                Direct, transparent answers to corporate governance, technical infrastructure, reseller mechanics, and setup acceleration.
+              </p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
-              <div className="md:col-span-7 space-y-3 text-left">
-                <h4 className="text-sm font-bold text-indigo-400">Standard Whitelabel Tenant Workspace</h4>
-                <p className="text-xs text-slate-400 leading-relaxed font-normal">
-                  Ideal for small and medium enterprises needing robust inventory, finance ledgering, HR, and sales operations. 
-                  Once configured, clients receive a <strong className="text-white">completely clean database (zero demo data)</strong>, 
-                  allowing you to brand the web app with your custom company name, logo, contact details, and create individual staff accounts.
-                </p>
-                <div className="grid grid-cols-2 gap-2 text-[11px] text-slate-300 font-semibold pt-1">
-                  <div className="flex items-center gap-1.5">
-                    <span className="text-emerald-400">✓</span> Zero Demo Data Base
-                  </div>
-                  <div className="flex items-center gap-1.5">
-                    <span className="text-emerald-400">✓</span> Whitelabel Brand Identity
-                  </div>
-                  <div className="flex items-center gap-1.5">
-                    <span className="text-emerald-400">✓</span> 10 Custom Staff Logins
-                  </div>
-                  <div className="flex items-center gap-1.5">
-                    <span className="text-emerald-400">✓</span> Complete Ledger Integration
-                  </div>
-                </div>
-              </div>
-
-              <div className="md:col-span-5 bg-slate-950/80 p-5 rounded-xl border border-slate-800 text-center space-y-3">
-                <span className="text-[10px] font-mono font-bold tracking-widest text-slate-500 uppercase block">FLAT MONTHLY CHARGE</span>
-                <div className="space-y-0.5">
-                  <span className="text-3xl font-extrabold text-white font-sans">₹500 <span className="text-xs font-bold text-slate-400">INR</span></span>
-                  <span className="text-xs text-slate-500 block">per tenant / month</span>
-                </div>
-                <div className="text-[10px] text-indigo-400 font-mono font-bold py-1 bg-indigo-500/5 rounded-md border border-indigo-500/10">
-                  AUTO-SET FOR ROOT HOME PAGE
-                </div>
-              </div>
+            {/* Hub Tabs */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-2 bg-slate-900/50 p-1 rounded-xl border border-slate-800">
+              <button
+                type="button"
+                onClick={() => setActiveReviewTab("about")}
+                className={`flex items-center justify-center gap-1.5 py-2 px-2 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                  activeReviewTab === "about"
+                    ? "bg-indigo-600 text-white shadow-md"
+                    : "text-slate-400 hover:text-slate-200"
+                }`}
+              >
+                <HeartHandshake className="h-3.5 w-3.5" /> Company & Trust
+              </button>
+              <button
+                type="button"
+                onClick={() => setActiveReviewTab("tech")}
+                className={`flex items-center justify-center gap-1.5 py-2 px-2 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                  activeReviewTab === "tech"
+                    ? "bg-indigo-600 text-white shadow-md"
+                    : "text-slate-400 hover:text-slate-200"
+                }`}
+              >
+                <Server className="h-3.5 w-3.5" /> Tech Specs
+              </button>
+              <button
+                type="button"
+                onClick={() => setActiveReviewTab("reseller")}
+                className={`flex items-center justify-center gap-1.5 py-2 px-2 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                  activeReviewTab === "reseller"
+                    ? "bg-indigo-600 text-white shadow-md"
+                    : "text-slate-400 hover:text-slate-200"
+                }`}
+              >
+                <Award className="h-3.5 w-3.5" /> Agency Resell
+              </button>
+              <button
+                type="button"
+                onClick={() => setActiveReviewTab("templates")}
+                className={`flex items-center justify-center gap-1.5 py-2 px-2 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                  activeReviewTab === "templates"
+                    ? "bg-indigo-600 text-white shadow-md"
+                    : "text-slate-400 hover:text-slate-200"
+                }`}
+              >
+                <CheckCircle2 className="h-3.5 w-3.5" /> Setup Presets
+              </button>
             </div>
-          </div>
 
-          {/* SECTION: Help Q&A Accordion */}
-          <div className="bg-slate-950/60 rounded-2xl p-6 border border-slate-800 shadow-xl space-y-4">
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-              <div className="flex items-center gap-2">
-                <BookOpen className="h-5 w-5 text-indigo-400" />
-                <h3 className="text-md font-bold text-slate-100">Knowledge Base Q&A Help File</h3>
-              </div>
+            {/* Tab content renders */}
+            <div className="bg-slate-900/40 rounded-xl p-5 border border-slate-800/80 leading-relaxed text-sm">
               
-              {/* Q&A Mini Search Bar */}
-              <div className="relative">
-                <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-500" />
-                <input
-                  type="text"
-                  placeholder="Search Q&A..."
-                  value={helpSearch}
-                  onChange={(e) => setHelpSearch(e.target.value)}
-                  className="bg-slate-900 border border-slate-800 rounded-lg pl-8 pr-3 py-1 text-xs text-slate-200 placeholder-slate-500 focus:outline-hidden focus:border-indigo-500 w-full md:w-48 font-semibold"
-                />
-              </div>
-            </div>
-
-            {/* Q&A Accordion Items */}
-            <div className="space-y-2.5 max-h-80 overflow-y-auto pr-1">
-              {filteredQas.length === 0 ? (
-                <div className="text-center py-6 text-slate-500 text-xs">
-                  No Q&A articles match your search criteria.
-                </div>
-              ) : (
-                filteredQas.map((item, index) => {
-                  const isExpanded = expandedQa === index;
-                  return (
-                    <div 
-                      key={index} 
-                      className={`rounded-xl border transition-all ${
-                        isExpanded ? "bg-slate-900 border-indigo-500/40" : "bg-slate-900/45 border-slate-800 hover:border-slate-700"
-                      }`}
-                    >
-                      <button
-                        onClick={() => setExpandedQa(isExpanded ? null : index)}
-                        className="w-full text-left px-4 py-3 flex items-center justify-between gap-3 font-semibold"
-                      >
-                        <span className="text-xs text-slate-200">{item.q}</span>
-                        {isExpanded ? (
-                          <ChevronDown className="h-4 w-4 text-indigo-400 shrink-0" />
-                        ) : (
-                          <ChevronRight className="h-4 w-4 text-slate-500 shrink-0" />
-                        )}
-                      </button>
-                      {isExpanded && (
-                        <div className="px-4 pb-4 pt-1 border-t border-slate-800/40 text-xs text-slate-400 leading-relaxed font-normal">
-                          <p 
-                            className="whitespace-pre-line"
-                            dangerouslySetInnerHTML={{
-                              __html: item.a
-                                .replace(/\*\*(.*?)\*\*/g, '<strong class="text-slate-100 font-bold">$1</strong>')
-                            }}
-                          ></p>
-                        </div>
-                      )}
+              {/* TAB: Company & Trust */}
+              {activeReviewTab === "about" && (
+                <div className="space-y-4 text-left">
+                  <div className="flex items-center gap-2 pb-2 border-b border-slate-800/60">
+                    <History className="h-4 w-4 text-indigo-400" />
+                    <h4 className="text-xs font-bold uppercase tracking-wider text-white">Corporate Heritage & High-Touch Support</h4>
+                  </div>
+                  <p className="text-xs text-slate-300">
+                    Operated by <strong className="text-white">M/s Deinrim Solutionss (P) Ltd.</strong>, incorporated in Kolkata, WB, India, we have been crafting custom SaaS enterprise software since 2018. Over the last 8 years, our engineering team has scaled from a regional consultancy to managing high-performance multi-tenant platforms.
+                  </p>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs font-mono">
+                    <div className="bg-slate-950/45 p-3 rounded-lg border border-slate-850">
+                      <span className="text-[10px] text-indigo-400 uppercase tracking-widest font-bold">Priority Support SLA</span>
+                      <p className="text-slate-300 mt-1">2-Hour response time for critical issues. Standard tickets resolved within 12-24 hours via dedicated email and callback channels.</p>
                     </div>
-                  );
-                })
+                    <div className="bg-slate-950/45 p-3 rounded-lg border border-slate-850">
+                      <span className="text-[10px] text-orange-400 uppercase tracking-widest font-bold">Active Customer Retention</span>
+                      <p className="text-slate-300 mt-1">Serving 140+ active business tenants in South Asia with zero telemetry loss incidents since inception.</p>
+                    </div>
+                  </div>
+                  <div className="pt-2">
+                    <span className="text-[10px] text-slate-400 uppercase tracking-wider font-mono block mb-1">What our clients say:</span>
+                    <p className="text-xs italic text-slate-400 border-l-2 border-indigo-500 pl-3">
+                      "Moving from traditional spreadsheets to DEINRIM transformed our inventory workflow. The whitelabeling allowed us to give our retail franchisees their own branded procurement portal seamlessly." <span className="text-slate-300 font-semibold text-[10px] block mt-1">— CEO, Apex Distribution Group</span>
+                    </p>
+                  </div>
+                </div>
               )}
+
+              {/* TAB: Tech Specs */}
+              {activeReviewTab === "tech" && (
+                <div className="space-y-4 text-left">
+                  <div className="flex items-center gap-2 pb-2 border-b border-slate-800/60">
+                    <Code className="h-4 w-4 text-indigo-400" />
+                    <h4 className="text-xs font-bold uppercase tracking-wider text-white">Technical Specifications & Data Sovereignty</h4>
+                  </div>
+                  <p className="text-xs text-slate-300">
+                    Engineered for high reliability, security-conscious IT officers, and demanding business operations.
+                  </p>
+                  <div className="grid grid-cols-2 gap-3.5 text-xs">
+                    <div className="space-y-1">
+                      <span className="text-[10px] font-mono text-indigo-400 block font-bold">DATABASE LAYER</span>
+                      <p className="text-slate-300 text-xs">Strictly partitioned schemas on high-performance relational PostgreSQL, preventing cross-tenant leakage.</p>
+                    </div>
+                    <div className="space-y-1">
+                      <span className="text-[10px] font-mono text-indigo-400 block font-bold">DATA EXPORTS & APIS</span>
+                      <p className="text-slate-300 text-xs">1-Click JSON and CSV format table extracts on all modules. Automated REST endpoints for external CRM connections.</p>
+                    </div>
+                    <div className="space-y-1">
+                      <span className="text-[10px] font-mono text-indigo-400 block font-bold">SECURITY ENCRYPTION</span>
+                      <p className="text-slate-300 text-xs">256-Bit SSL/TLS in-transit encryption and AES-256 rest encryption on cloud storage blocks.</p>
+                    </div>
+                    <div className="space-y-1">
+                      <span className="text-[10px] font-mono text-indigo-400 block font-bold">DISASTER BACKUP</span>
+                      <p className="text-slate-300 text-xs">Automated snapshots taken every 6 hours, replicated across redundant physical availability zones.</p>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* TAB: Reseller Agency */}
+              {activeReviewTab === "reseller" && (
+                <div className="space-y-4 text-left">
+                  <div className="flex items-center gap-2 pb-2 border-b border-slate-800/60">
+                    <Building2 className="h-4 w-4 text-indigo-400" />
+                    <h4 className="text-xs font-bold uppercase tracking-wider text-white">White-Label Partner Program</h4>
+                  </div>
+                  <p className="text-xs text-slate-300">
+                    Create a recurring high-margin SaaS revenue channel. We charge you a wholesale flat rate, letting you keep 100% of the customer margins.
+                  </p>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-center">
+                    <div className="bg-slate-950/40 p-3 rounded-lg border border-slate-850 space-y-1 text-left">
+                      <span className="text-indigo-400 font-bold text-xs">1. Brand Customization</span>
+                      <p className="text-[10px] text-slate-400 leading-normal">Upload your custom logo, configure brand hex colors, set support emails, and configure footer text.</p>
+                    </div>
+                    <div className="bg-slate-950/40 p-3 rounded-lg border border-slate-850 space-y-1 text-left">
+                      <span className="text-indigo-400 font-bold text-xs">2. Custom Domain Mapping</span>
+                      <p className="text-[10px] text-slate-400 leading-normal">Point your custom domain (e.g., erp.yourbrand.com) via standard CNAME records mapped instantly.</p>
+                    </div>
+                    <div className="bg-slate-950/40 p-3 rounded-lg border border-slate-850 space-y-1 text-left">
+                      <span className="text-indigo-400 font-bold text-xs">3. Custom Pricing Margin</span>
+                      <p className="text-[10px] text-slate-400 leading-normal">You pay the wholesale ₹500/tenant/month. Bill your end customers ₹2,000 to ₹5,000 per month.</p>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* TAB: Setup Presets */}
+              {activeReviewTab === "templates" && (
+                <div className="space-y-4 text-left">
+                  <div className="flex items-center gap-2 pb-2 border-b border-slate-800/60">
+                    <CheckCircle2 className="h-4 w-4 text-indigo-400" />
+                    <h4 className="text-xs font-bold uppercase tracking-wider text-white">One-Click Setup Industry Templates</h4>
+                  </div>
+                  <p className="text-xs text-slate-300">
+                    Direct response to the "Clean Slate" database setup effort. When provisioning a new tenant, select an industry preset to seed standard master records instantly.
+                  </p>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5 text-xs font-mono">
+                    <div className="bg-slate-950/45 p-3 rounded-lg border border-slate-850 flex gap-2.5 items-start">
+                      <span className="bg-indigo-500/10 text-indigo-400 p-1 rounded font-bold text-xs shrink-0">🏭</span>
+                      <div>
+                        <span className="text-white font-bold text-[11px] block">Manufacturing Preset</span>
+                        <p className="text-slate-400 text-[10px] mt-0.5 font-sans leading-normal">Preloads raw materials, production warehouse racks, assembly employee codes, and depreciation ledger maps.</p>
+                      </div>
+                    </div>
+                    <div className="bg-slate-950/45 p-3 rounded-lg border border-slate-850 flex gap-2.5 items-start">
+                      <span className="bg-indigo-500/10 text-indigo-400 p-1 rounded font-bold text-xs shrink-0">📦</span>
+                      <div>
+                        <span className="text-white font-bold text-[11px] block">Wholesaling & Retail Preset</span>
+                        <p className="text-slate-400 text-[10px] mt-0.5 font-sans leading-normal">Preloads barcode formats, product batches, supplier categories (15-day/30-day payment term codes), and margin ledgers.</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
             </div>
           </div>
 
@@ -722,15 +822,128 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
             </div>
           </div>
 
+          {/* SECTION: Subscription Pricing Plan */}
+          <div className="bg-gradient-to-br from-slate-950 to-indigo-950/40 rounded-2xl p-6 border border-indigo-500/10 shadow-xl space-y-5">
+            <div className="flex items-center gap-2">
+              <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-orange-500/10 text-orange-400 font-mono text-xs font-bold">₹</span>
+              <h3 className="text-md font-bold text-slate-100">Deinrim OMS Tenant Subscription Plan</h3>
+            </div>
 
+            <div className="space-y-4">
+              <div className="space-y-3 text-left">
+                <h4 className="text-sm font-bold text-indigo-400">Standard Whitelabel Tenant Workspace</h4>
+                <p className="text-xs text-slate-400 leading-relaxed font-normal">
+                  Ideal for small and medium enterprises needing robust inventory, finance ledgering, HR, and sales operations. 
+                  Once configured, clients receive a <strong className="text-white">completely clean database (zero demo data)</strong>, 
+                  allowing you to brand the web app with your custom company name, logo, contact details, and create individual staff accounts.
+                </p>
+                <div className="grid grid-cols-2 gap-2 text-[11px] text-slate-300 font-semibold pt-1">
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-emerald-400">✓</span> Zero Demo Data Base
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-emerald-400">✓</span> Whitelabel Brand Identity
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-emerald-400">✓</span> 10 Custom Staff Logins
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-emerald-400">✓</span> Complete Ledger Integration
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-slate-950/80 p-5 rounded-xl border border-slate-800 text-center space-y-3">
+                <span className="text-[10px] font-mono font-bold tracking-widest text-slate-500 uppercase block">FLAT MONTHLY CHARGE</span>
+                <div className="space-y-0.5">
+                  <span className="text-3xl font-extrabold text-white font-sans">₹500 <span className="text-xs font-bold text-slate-400">INR</span></span>
+                  <span className="text-xs text-slate-500 block">per tenant / month</span>
+                </div>
+                <div className="text-[10px] text-indigo-400 font-mono font-bold py-1 bg-indigo-500/5 rounded-md border border-indigo-500/10">
+                  AUTO-SET FOR ROOT HOME PAGE
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        {/* FULL WIDTH BOTTOM SECTION: Help Q&A & Support Hub */}
+        <div className="lg:col-span-12 space-y-6 w-full mt-6">
+          
+          {/* SECTION: Help Q&A Accordion */}
+          <div className="bg-slate-950/60 rounded-2xl p-6 border border-slate-800 shadow-xl space-y-4">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+              <div className="flex items-center gap-2">
+                <BookOpen className="h-5 w-5 text-indigo-400" />
+                <h3 className="text-md font-bold text-slate-100">Knowledge Base Q&A Help File</h3>
+              </div>
+              
+              {/* Q&A Mini Search Bar */}
+              <div className="relative">
+                <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-500" />
+                <input
+                  type="text"
+                  placeholder="Search Q&A..."
+                  value={helpSearch}
+                  onChange={(e) => setHelpSearch(e.target.value)}
+                  className="bg-slate-900 border border-slate-800 rounded-lg pl-8 pr-3 py-1 text-xs text-slate-200 placeholder-slate-500 focus:outline-hidden focus:border-indigo-500 w-full md:w-64 font-semibold"
+                />
+              </div>
+            </div>
+
+            {/* Q&A Accordion Items */}
+            <div className="space-y-2.5 max-h-[500px] overflow-y-auto pr-1">
+              {filteredQas.length === 0 ? (
+                <div className="text-center py-6 text-slate-500 text-xs">
+                  No Q&A articles match your search criteria.
+                </div>
+              ) : (
+                filteredQas.map((item, index) => {
+                  const isExpanded = expandedQa === index;
+                  return (
+                    <div 
+                      key={index} 
+                      className={`rounded-xl border transition-all ${
+                        isExpanded ? "bg-slate-900 border-indigo-500/40" : "bg-slate-900/45 border-slate-800 hover:border-slate-700"
+                      }`}
+                    >
+                      <button
+                        onClick={() => setExpandedQa(isExpanded ? null : index)}
+                        className="w-full text-left px-4 py-3 flex items-center justify-between gap-3 font-semibold"
+                      >
+                        <span className="text-xs text-slate-200">{item.q}</span>
+                        {isExpanded ? (
+                          <ChevronDown className="h-4 w-4 text-indigo-400 shrink-0" />
+                        ) : (
+                          <ChevronRight className="h-4 w-4 text-slate-500 shrink-0" />
+                        )}
+                      </button>
+                      {isExpanded && (
+                        <div className="px-4 pb-4 pt-1 border-t border-slate-800/40 text-xs text-slate-400 leading-relaxed font-normal">
+                          <p 
+                            className="whitespace-pre-line"
+                            dangerouslySetInnerHTML={{
+                              __html: item.a
+                                .replace(/\*\*(.*?)\*\*/g, '<strong class="text-slate-100 font-bold">$1</strong>')
+                            }}
+                          ></p>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })
+              )}
+            </div>
+          </div>
 
           {/* Quick FAQ summary box */}
           <div className="bg-slate-950/40 rounded-xl p-4 border border-slate-800 flex items-start gap-3 text-left">
             <Info className="h-5 w-5 text-indigo-400 shrink-0 mt-0.5" />
             <div className="space-y-1">
-              <span className="text-xs font-bold text-slate-200">System Permission Policy</span>
+              <span className="text-xs font-bold text-slate-200">System Permission & Governance Policy</span>
               <p className="text-[11px] text-slate-400 leading-normal font-normal">
-                All business actions (e.g., generating Purchase Orders, uploading files, changing tax schedules) validate user role parameters under the RBAC database matrix dynamically before committing.
+                All business actions (e.g., generating Purchase Orders, uploading files, changing tax schedules, approving leave requests, or ledgering transactions) validate user role parameters under the RBAC (Role-Based Access Control) matrix dynamically before committing to the database.
               </p>
             </div>
           </div>
@@ -757,7 +970,7 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
               Corporate Contact: +91 98361-30393
             </p>
             <p className="text-slate-500 text-[10px] leading-normal pt-2 border-t border-slate-900 mt-2">
-              AutoAdz Secure Multi-Tenant Framework v3.1 • Dynamic telemetry data synced live with backend database nodes.
+              DEINRIM OMS Secure ERP Framework v3.5 • Isolated high-performance relational structures with real-time replication.
             </p>
           </div>
 
@@ -767,7 +980,7 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
               REGULATORY COMPLIANCE
             </h4>
             <p className="text-slate-500 text-[11px] leading-relaxed">
-              Important public links required to verify and publish the AutoAdz platform on the Google Play Console and Apple App Store Developer Tools:
+              Public links and documentation confirming our data processing standards, tenant isolation parameters, and corporate operational standards:
             </p>
             <div className="flex flex-wrap items-center gap-x-2 gap-y-1.5 text-indigo-400 font-bold mt-2 text-[11px]">
               <button
@@ -807,16 +1020,16 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
           {/* Column 3: Platform Verifications */}
           <div className="space-y-2">
             <h4 className="text-[11px] font-extrabold text-orange-500 uppercase tracking-wider font-mono">
-              PLATFORM VERIFICATIONS
+              ENTERPRISE SECURITY & COMPLIANCE
             </h4>
             <ul className="space-y-2 text-slate-400 text-xs leading-relaxed">
               <li className="flex items-start gap-2">
                 <span className="text-slate-600 font-mono mt-0.5">•</span>
-                <span>Background location is monitored exclusively during metered drives to secure accurate driver payout logs.</span>
+                <span><strong>Multi-Tenant Isolation:</strong> Customer company databases are isolated per unique tenant schema. No cross-tenant query execution is possible.</span>
               </li>
               <li className="flex items-start gap-2">
                 <span className="text-slate-600 font-mono mt-0.5">•</span>
-                <span>Camera permissions are strictly utilized for physical advertisement audit proof uploads. All data is processed via secure 256-bit TLS encryption.</span>
+                <span><strong>Data Sovereignty:</strong> Live transactions are encrypted using AES-256 standard and stored on highly available secure container databases backed up every 6 hours.</span>
               </li>
             </ul>
           </div>
@@ -835,8 +1048,8 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
                 {activeFooterModal === "support" && <HelpCircle className="h-5 w-5 text-indigo-400" />}
                 {activeFooterModal === "deletion" && <AlertTriangle className="h-5 w-5 text-rose-500" />}
                 <h3 className="text-base font-bold text-white tracking-wide">
-                  {activeFooterModal === "privacy" && "AutoAdz Privacy Policy"}
-                  {activeFooterModal === "terms" && "AutoAdz Terms of Service"}
+                  {activeFooterModal === "privacy" && "DEINRIM OMS Privacy Policy"}
+                  {activeFooterModal === "terms" && "DEINRIM OMS Terms of Service"}
                   {activeFooterModal === "support" && "Submit Support Query"}
                   {activeFooterModal === "deletion" && "Request Data Deletion"}
                 </h3>
@@ -854,27 +1067,27 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
               <div className="space-y-4 text-xs text-slate-300 leading-relaxed max-h-[50vh] overflow-y-auto pr-2">
                 <p className="font-semibold text-slate-200">Last Updated: June 28, 2026</p>
                 <p>
-                  Welcome to <strong>AutoAdz</strong>. We respect your privacy and are committed to protecting any personal data processed by our platform. This policy outlines our standards under regulatory compliance to verify and publish AutoAdz on major application marketplaces.
+                  Welcome to <strong>DEINRIM OMS & ERP Enterprise</strong>. We respect your privacy and are committed to protecting any business data processed by our platform. This policy outlines our standards under regulatory compliance to secure multi-tenant operational records.
                 </p>
                 
-                <h4 className="font-bold text-indigo-400 font-mono uppercase tracking-wider text-[10px]">1. Background Location Tracking</h4>
+                <h4 className="font-bold text-indigo-400 font-mono uppercase tracking-wider text-[10px]">1. Multi-Tenant Logical Partitioning</h4>
                 <p>
-                  AutoAdz utilizes device background location tracking. This tracking is **strictly monitored and enabled exclusively during metered advertising drives**. This data is processed in real time to generate accurate driver payout logs, vehicle travel distances, and confirm ad impression counts. We do not track your location when you are not actively driving a metered campaign.
+                  Our software acts as a multi-tenant operational vault. We strictly partition customer and tenant databases by organizational identifiers (Tenant Codes), ensuring that no cross-tenant queries, index requests, or operational insights can ever leak between corporate workspaces.
                 </p>
 
-                <h4 className="font-bold text-indigo-400 font-mono uppercase tracking-wider text-[10px]">2. Camera Access</h4>
+                <h4 className="font-bold text-indigo-400 font-mono uppercase tracking-wider text-[10px]">2. Staff Account & RBAC Security</h4>
                 <p>
-                  Our system requests access to your mobile camera. Camera permissions are utilized solely to snap and upload physical advertisement audits. These audit proof photographs confirm that the ad vinyl wrap or digital display remains intact and undamaged on the vehicle.
+                  We store staff credentials and operational records created by your Company Administrators. Access control is strictly guarded by Role-Based Access Control (RBAC) schemas, verifying user authorization before allowing read or write execution on purchase orders, general ledgers, or employee directories.
                 </p>
 
                 <h4 className="font-bold text-indigo-400 font-mono uppercase tracking-wider text-[10px]">3. Data Security & Encryption</h4>
                 <p>
-                  All telemetry streams, audit images, location routes, and personal identification are processed over secure channels with industry-standard 256-bit TLS encryption. Data is stored on partitioned multi-tenant database clusters guarded by robust security protocols.
+                  All transactional streams, document uploads, and company profiles are processed over secure channels with industry-standard 256-bit TLS encryption. Data is stored on partitioned multi-tenant database clusters guarded by robust security protocols and backed up regularly.
                 </p>
 
                 <h4 className="font-bold text-indigo-400 font-mono uppercase tracking-wider text-[10px]">4. Contact Info</h4>
                 <p>
-                  For any privacy inquiries or localized regulatory complaints, contact M/s Deinrim Solutionss (P) Ltd. at Kolkata, West Bengal, India. Email: <strong>privacy@deinrim.com</strong> or phone +91 98361-30393.
+                  For any privacy inquiries or localized regulatory complaints, contact M/s Deinrim Solutionss (P) Ltd. at Kolkata, West Bengal, India. Email: <strong>privacy@deinrim.in</strong> or phone +91 98361-30393.
                 </p>
               </div>
             )}
@@ -884,27 +1097,27 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
               <div className="space-y-4 text-xs text-slate-300 leading-relaxed max-h-[50vh] overflow-y-auto pr-2">
                 <p className="font-semibold text-slate-200">Last Updated: June 28, 2026</p>
                 <p>
-                  These Terms of Service govern your access to and use of the <strong>AutoAdz</strong> advertising, tracking, and telemetry platform operated by M/s Deinrim Solutionss (P) Ltd.
+                  These Terms of Service govern your access to and use of the <strong>DEINRIM OMS & ERP</strong> platform operated by M/s Deinrim Solutionss (P) Ltd.
                 </p>
 
-                <h4 className="font-bold text-indigo-400 font-mono uppercase tracking-wider text-[10px]">1. Eligibility & Driver Accounts</h4>
+                <h4 className="font-bold text-indigo-400 font-mono uppercase tracking-wider text-[10px]">1. Tenant Account Registration</h4>
                 <p>
-                  Drivers must register with verified personal coordinates and valid operator licenses. Accounts are individual and may not be shared across multiple vehicles or operators.
+                  Tenants must register with valid corporate coordinates. All white-label reselling configurations, custom brand assets, and custom staff logins must comply with terms and must not infringe on third-party intellectual property.
                 </p>
 
-                <h4 className="font-bold text-indigo-400 font-mono uppercase tracking-wider text-[10px]">2. Metered Advertising Drives</h4>
+                <h4 className="font-bold text-indigo-400 font-mono uppercase tracking-wider text-[10px]">2. Operational Correctness</h4>
                 <p>
-                  Compensation calculations rely strictly on background location logs recorded during metered drives. Tampering with GPS records, mock location apps, or location spoofing constitutes an immediate breach of these terms, resulting in forfeit of payout and permanent account termination.
+                  Financial ledgers, tax schemas, and inventory records are calculated based on parameters configured by active managers. While the software provides automated calculations, tenants are ultimately responsible for checking accounting accuracy and legal tax declarations.
                 </p>
 
-                <h4 className="font-bold text-indigo-400 font-mono uppercase tracking-wider text-[10px]">3. Asset Auditing</h4>
+                <h4 className="font-bold text-indigo-400 font-mono uppercase tracking-wider text-[10px]">3. Service Availability (SLA)</h4>
                 <p>
-                  Operators are required to supply clear, authentic photo proofs of active advertisements via the on-device camera. Submitting computer-generated images, pre-saved gallery uploads, or tampered photographs is strictly forbidden and results in audit failure.
+                  DEINRIM OMS is committed to providing a 99.9% application uptime SLA. Scheduled database maintenance and system upgrades are performed during off-peak hours (GMT 20:00 to 22:00) with prior notifications.
                 </p>
 
                 <h4 className="font-bold text-indigo-400 font-mono uppercase tracking-wider text-[10px]">4. Platform Integrity</h4>
                 <p>
-                  AutoAdz is built on secure multi-tenant cloud structures. Unauthorized access, structural reverse engineering, or scanning of the framework API endpoints is prohibited.
+                  DEINRIM OMS is built on secure multi-tenant cloud structures. Unauthorized access, structural reverse engineering, or scanning of the framework API endpoints is prohibited.
                 </p>
               </div>
             )}
@@ -921,7 +1134,7 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
                     className="space-y-4 text-xs"
                   >
                     <p className="text-slate-400 leading-normal">
-                      Need help or have questions about the AutoAdz platform? Fill out this direct support ticket and our compliance desk will respond within 24 hours.
+                      Need help or have questions about the DEINRIM OMS platform? Fill out this direct support ticket and our compliance desk will respond within 24 hours.
                     </p>
                     <div>
                       <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 font-mono">Full Name</label>
@@ -952,7 +1165,7 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
                         value={supportMessage}
                         onChange={(e) => setSupportMessage(e.target.value)}
                         rows={4}
-                        placeholder="Describe your issue with the metered logs, audits, or payouts..."
+                        placeholder="Describe your issue with the tenant config, ledger integration, or white-labeling..."
                         className="w-full rounded-lg border border-slate-800 bg-slate-900 p-2.5 text-sm text-white focus:outline-hidden resize-none"
                       />
                     </div>
@@ -971,7 +1184,7 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
                     <div className="space-y-1">
                       <h4 className="text-sm font-bold text-white">Ticket Submitted Successfully!</h4>
                       <p className="text-xs text-slate-400 max-w-xs mx-auto">
-                        Thank you, {supportName}. Your support ticket reference <strong>#ADZ-{Math.floor(100000 + Math.random() * 900000)}</strong> is raised. Our compliance desk is reviewing your request.
+                        Thank you, {supportName}. Your support ticket reference <strong>#OMS-{Math.floor(100000 + Math.random() * 900000)}</strong> is raised. Our corporate compliance desk is reviewing your request.
                       </p>
                     </div>
                     <button
@@ -997,17 +1210,17 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
                     className="space-y-4 text-xs"
                   >
                     <p className="text-slate-400 leading-normal">
-                      Request permanent deletion of your AutoAdz account profile, drive tracking logs, and uploaded audit proofs.
+                      Request permanent deletion of your DEINRIM OMS account profile, tenant database instance, and uploaded documents.
                     </p>
                     <div className="rounded-lg border border-rose-950/40 bg-rose-950/10 p-3 text-rose-400 leading-normal flex items-start gap-2.5">
                       <AlertTriangle className="h-5 w-5 shrink-0 mt-0.5" />
                       <div>
                         <strong className="block text-white mb-0.5">Warning: Irreversible Operation</strong>
-                        This request deletes all payout logs, historical routes, and audit approvals. Once processed, it cannot be undone.
+                        This request permanently deletes all sales invoicing, inventory records, purchase history, and employee payroll sheets. Once processed, it cannot be undone.
                       </div>
                     </div>
                     <div>
-                      <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 font-mono">Registered Email Address</label>
+                      <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 font-mono">Registered Corporate Email</label>
                       <input
                         type="email"
                         required
@@ -1018,7 +1231,7 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
                       />
                     </div>
                     <div>
-                      <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 font-mono">Registered Mobile Phone</label>
+                      <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 font-mono">Corporate Phone Coordinate</label>
                       <input
                         type="tel"
                         required
@@ -1029,13 +1242,13 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
                       />
                     </div>
                     <div>
-                      <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 font-mono">Reason for Account & Data Deletion</label>
+                      <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 font-mono">Reason for Database Deletion</label>
                       <textarea
                         required
                         value={deletionReason}
                         onChange={(e) => setDeletionReason(e.target.value)}
                         rows={3}
-                        placeholder="Please briefly describe why you are requesting account and telemetry data erasure..."
+                        placeholder="Please briefly describe why you are requesting full database instance and telemetry data erasure..."
                         className="w-full rounded-lg border border-slate-800 bg-slate-900 p-2.5 text-sm text-white focus:outline-hidden resize-none"
                       />
                     </div>
@@ -1047,14 +1260,14 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
                         className="mt-1 rounded border-slate-800 bg-slate-900 text-rose-600 focus:ring-0"
                       />
                       <label htmlFor="confirmDeletion" className="text-[11px] text-slate-400 leading-normal cursor-pointer select-none">
-                        I confirm that I want to schedule all my driver telemetry, payout logs, and profile records for absolute deletion under privacy regulations.
+                        I confirm that I want to schedule all my operational histories, general ledgers, and staff profiles for absolute deletion under privacy regulations.
                       </label>
                     </div>
                     <button
                       type="submit"
                       className="w-full rounded-lg bg-rose-600 hover:bg-rose-500 py-2.5 text-xs font-bold text-white transition-all shadow-md flex items-center justify-center gap-1.5 cursor-pointer"
                     >
-                      <Trash2 className="h-4 w-4" /> Schedule Data Deletion
+                      <Trash2 className="h-4 w-4" /> Schedule Instance Deletion
                     </button>
                   </form>
                 ) : (
@@ -1063,9 +1276,9 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
                       <Trash2 className="h-8 w-8" />
                     </div>
                     <div className="space-y-1">
-                      <h4 className="text-sm font-bold text-white">Deletion Scheduled</h4>
+                      <h4 className="text-sm font-bold text-white">Database Deletion Scheduled</h4>
                       <p className="text-xs text-slate-400 max-w-xs mx-auto">
-                        Your request for <strong>{deletionEmail}</strong> has been received. Our compliance team has scheduled your account data for total, irreversible purge within 14 business days. Ticket: <strong>#DEL-{Math.floor(100000 + Math.random() * 900000)}</strong>.
+                        Your request for <strong>{deletionEmail}</strong> has been received. Our compliance team has scheduled your database schema for total, irreversible purge within 14 business days. Ticket: <strong>#OMS-DEL-{Math.floor(100000 + Math.random() * 900000)}</strong>.
                       </p>
                     </div>
                     <button
