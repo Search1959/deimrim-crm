@@ -61,7 +61,8 @@ import {
   AppNotification, 
   AuditLog,
   StockMovement,
-  formatINR
+  formatINR,
+  UserRole
 } from "./types";
 
 export default function App() {
@@ -70,6 +71,60 @@ export default function App() {
   
   // Login Session state
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  // Helper to determine the landing view for a role upon login
+  const getDefaultViewForRole = (role: UserRole): string => {
+    switch (role) {
+      case UserRole.SYSTEM_ADMIN:
+      case UserRole.COMPANY_ADMIN:
+      case UserRole.READ_ONLY:
+        return "dashboard";
+      case UserRole.INVENTORY_MANAGER:
+        return "inventory";
+      case UserRole.PURCHASE_MANAGER:
+        return "purchase";
+      case UserRole.SALES_MANAGER:
+      case UserRole.CRM_EXECUTIVE:
+        return "sales-crm";
+      case UserRole.HR_MANAGER:
+        return "hr";
+      case UserRole.FINANCE_MANAGER:
+        return "finance";
+      case UserRole.EMPLOYEE:
+        return "dashboard";
+      default:
+        return "dashboard";
+    }
+  };
+
+  // Helper to check if a specific view is allowed for the user's role
+  const isViewAllowed = (role: UserRole, view: string): boolean => {
+    if (role === UserRole.SYSTEM_ADMIN || role === UserRole.COMPANY_ADMIN) {
+      return true;
+    }
+    if (role === UserRole.READ_ONLY) {
+      return view !== "admin";
+    }
+
+    if (view === "dashboard" && role === UserRole.EMPLOYEE) {
+      return true;
+    }
+
+    switch (view) {
+      case "inventory":
+        return role === UserRole.INVENTORY_MANAGER;
+      case "purchase":
+        return role === UserRole.PURCHASE_MANAGER;
+      case "sales-crm":
+        return role === UserRole.SALES_MANAGER || role === UserRole.CRM_EXECUTIVE;
+      case "hr":
+        return role === UserRole.HR_MANAGER;
+      case "finance":
+        return role === UserRole.FINANCE_MANAGER;
+      default:
+        return false;
+    }
+  };
 
   // Core Mutable States
   const [currentUser, setCurrentUser] = useState<User>(defaultUsers[0]); // Initialized to default but guarded by isLoggedIn
@@ -572,6 +627,23 @@ export default function App() {
   // ==========================================
 
   const renderView = () => {
+    // Role privilege check
+    if (!isViewAllowed(currentUser.role, activeView)) {
+      return (
+        <div className="flex-1 flex flex-col items-center justify-center text-slate-400 p-6 bg-slate-900">
+          <div className="bg-slate-950/80 border border-slate-800/80 rounded-2xl p-8 max-w-md text-center space-y-4 shadow-xl">
+            <div className="mx-auto w-12 h-12 rounded-full bg-red-950/20 border border-red-500/30 flex items-center justify-center text-red-400 text-lg">
+              ⚠️
+            </div>
+            <h2 className="text-base font-bold text-white uppercase tracking-wider font-mono">Access Restricted</h2>
+            <p className="text-xs leading-relaxed text-slate-400">
+              Your staff user account (<strong className="text-indigo-400">{currentUser.role}</strong>) is restricted to your assigned role-based dashboard only.
+            </p>
+          </div>
+        </div>
+      );
+    }
+
     // If global search query exists, show search outcomes overview
     if (globalSearchQuery.trim() !== "") {
       const query = globalSearchQuery.toLowerCase();
@@ -784,7 +856,18 @@ export default function App() {
   };
 
   if (!isLoggedIn) {
-    return <HomePage onLogin={(user) => { setCurrentUser(user); setIsLoggedIn(true); }} usersList={users} setUsers={setUsers} />;
+    return (
+      <HomePage 
+        onLogin={(user) => { 
+          setCurrentUser(user); 
+          setIsLoggedIn(true); 
+          const landingView = getDefaultViewForRole(user.role);
+          setActiveView(landingView);
+        }} 
+        usersList={users} 
+        setUsers={setUsers} 
+      />
+    );
   }
 
   return (

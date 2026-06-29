@@ -100,6 +100,36 @@ export default function Sidebar({
     },
   ];
 
+  // Filter menu items based on role permission
+  const allowedMenuItems = menuItems.filter((item) => {
+    // System Admin, Company Admin, and Read Only can access everything except admin is restricted for Read Only
+    if (userRole === UserRole.SYSTEM_ADMIN || userRole === UserRole.COMPANY_ADMIN) {
+      return true;
+    }
+    if (userRole === UserRole.READ_ONLY) {
+      return item.id !== "admin";
+    }
+
+    // Role-specific view filters for staff & managers
+    switch (userRole) {
+      case UserRole.INVENTORY_MANAGER:
+        return item.id === "inventory";
+      case UserRole.PURCHASE_MANAGER:
+        return item.id === "purchase";
+      case UserRole.SALES_MANAGER:
+      case UserRole.CRM_EXECUTIVE:
+        return item.id === "sales-crm";
+      case UserRole.HR_MANAGER:
+        return item.id === "hr";
+      case UserRole.FINANCE_MANAGER:
+        return item.id === "finance";
+      case UserRole.EMPLOYEE:
+        return item.id === "dashboard";
+      default:
+        return false;
+    }
+  });
+
   return (
     <aside
       className={`relative flex flex-col border-r border-slate-800 bg-slate-900 text-slate-300 transition-all duration-300 ${
@@ -143,7 +173,7 @@ export default function Sidebar({
 
       {/* Navigation List */}
       <nav className="flex-1 space-y-1.5 px-3 py-4 overflow-y-auto">
-        {menuItems.map((item) => {
+        {allowedMenuItems.map((item) => {
           const Icon = item.icon;
           const isActive = activeView === item.id;
           return (

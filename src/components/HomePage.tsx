@@ -47,7 +47,11 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
   const [password, setPassword] = useState("");
   const [loginError, setLoginError] = useState("");
   const [activeTab, setActiveTab] = useState<"credentials" | "demo">("credentials");
-  const [portalType, setPortalType] = useState<"system" | "client">("system");
+  const [portalType, setPortalType] = useState<"system" | "client" | "employee">("system");
+
+  // Active Registry Search/Filter States
+  const [directorySearch, setDirectorySearch] = useState("");
+  const [directoryFilter, setDirectoryFilter] = useState<"all" | "system" | "client" | "staff">("all");
 
   // Clear fields and reset errors when portalType changes
   React.useEffect(() => {
@@ -113,10 +117,6 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
 
   // Q&A Help File dataset
   const qas = [
-    {
-      q: "What are the credentials for the pre-configured System Administrator account?",
-      a: "You can log in as the System Administrator using Email: **apex7tech@gmail.com** and Password: **Search@1959**. This account possesses complete administrative controls, enabling Docker specs inspection, company branding configuration, active employee list editing, and real-time security logs viewing."
-    },
     {
       q: "How do I access the Read-Only Demo account?",
       a: "Use Email: **demo@deinrim.in** and Password: **demo123....**. This account utilizes the **Read Only User** role, allowing you to access, view, and inspect every single module area in the sidebar (Inventory, Sales, Purchase, HR, Finance, Documents) without restriction, but preventing you from saving new forms, deleting assets, or modifying system configurations."
@@ -253,6 +253,29 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
       item.q.toLowerCase().includes(helpSearch.toLowerCase()) || 
       item.a.toLowerCase().includes(helpSearch.toLowerCase())
   );
+
+  // Filter users inside global directory
+  const filteredDirectoryUsers = usersList.filter(user => {
+    const matchesSearch = 
+      user.name.toLowerCase().includes(directorySearch.toLowerCase()) ||
+      user.email.toLowerCase().includes(directorySearch.toLowerCase()) ||
+      user.role.toLowerCase().includes(directorySearch.toLowerCase()) ||
+      (user.companyName && user.companyName.toLowerCase().includes(directorySearch.toLowerCase()));
+
+    if (directoryFilter === "system") {
+      return matchesSearch && user.role === UserRole.SYSTEM_ADMIN;
+    }
+    if (directoryFilter === "client") {
+      return matchesSearch && user.role === UserRole.COMPANY_ADMIN;
+    }
+    if (directoryFilter === "staff") {
+      return matchesSearch && 
+        user.role !== UserRole.SYSTEM_ADMIN && 
+        user.role !== UserRole.COMPANY_ADMIN && 
+        user.role !== UserRole.READ_ONLY;
+    }
+    return matchesSearch;
+  });
 
   const CurrentFlowIcon = flowNodeDetails[activeFlowNode]?.icon || Workflow;
 
@@ -600,11 +623,12 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
                     <div className="relative">
                       <select
                         value={portalType}
-                        onChange={(e) => setPortalType(e.target.value as "system" | "client")}
+                        onChange={(e) => setPortalType(e.target.value as "system" | "client" | "employee")}
                         className="w-full bg-slate-900 border border-slate-800 rounded-lg pl-3.5 pr-10 py-2.5 text-xs text-white font-bold focus:outline-hidden focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 cursor-pointer appearance-none"
                       >
                         <option value="system">🛡️ System Admin Login</option>
                         <option value="client">🏢 Client / Tenant Workspace Login</option>
+                        <option value="employee">👥 Staff & Employee Workspace Login</option>
                       </select>
                       <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-slate-400">
                         <ChevronDown className="h-4 w-4" />
@@ -614,8 +638,10 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
                     <div className="bg-indigo-950/25 rounded-lg p-2.5 border border-indigo-900/20 text-[10px] text-slate-400 leading-relaxed font-sans">
                       {portalType === "system" ? (
                         <span><strong>System Admin Mode:</strong> Enter your authorized administrator email and security password to manage whitelabel tenant configurations and global node registers.</span>
-                      ) : (
+                      ) : portalType === "client" ? (
                         <span><strong>Client Mode:</strong> Enter your designated corporate email and password assigned to your organization by the system administrator to open your isolated workspace.</span>
+                      ) : (
+                        <span><strong>Staff Mode:</strong> Enter your registered company email and employee password created by your Company Administrator to access your active team dashboard.</span>
                       )}
                     </div>
                   </div>

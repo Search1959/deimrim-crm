@@ -135,55 +135,59 @@ export default function Header({
           )}
         </div>
 
-        {/* Dynamic User Switcher (Interactive Sandbox Feature) */}
-        <div className="relative">
-          <button
-            onClick={() => {
-              setShowRoleMenu(!showRoleMenu);
-              setShowBranchMenu(false);
-              setShowNotificationTray(false);
-            }}
-            className="flex items-center gap-2 rounded-lg bg-indigo-600/20 px-3 py-1.5 text-sm font-semibold text-indigo-400 hover:bg-indigo-600/30 border border-indigo-500/20 transition-colors focus:outline-hidden"
-          >
-            <Sparkles className="h-4 w-4 animate-pulse" />
-            <span className="hidden md:inline">Simulate Role</span>
-            <span className="text-xs bg-indigo-950 px-1.5 py-0.5 rounded-sm font-semibold text-indigo-400 border border-indigo-900/60">{currentUser.role.split(" ")[0]}</span>
-          </button>
+        {/* Dynamic User Switcher (Interactive Sandbox Feature for Admins/Demo only) */}
+        {(currentUser.role === UserRole.SYSTEM_ADMIN || 
+          currentUser.role === UserRole.COMPANY_ADMIN || 
+          currentUser.role === UserRole.READ_ONLY) && (
+          <div className="relative">
+            <button
+              onClick={() => {
+                setShowRoleMenu(!showRoleMenu);
+                setShowBranchMenu(false);
+                setShowNotificationTray(false);
+              }}
+              className="flex items-center gap-2 rounded-lg bg-indigo-600/20 px-3 py-1.5 text-sm font-semibold text-indigo-400 hover:bg-indigo-600/30 border border-indigo-500/20 transition-colors focus:outline-hidden animate-fadeIn"
+            >
+              <Sparkles className="h-4 w-4 animate-pulse" />
+              <span className="hidden md:inline">Simulate Role</span>
+              <span className="text-xs bg-indigo-950 px-1.5 py-0.5 rounded-sm font-semibold text-indigo-400 border border-indigo-900/60">{currentUser.role.split(" ")[0]}</span>
+            </button>
 
-          {showRoleMenu && (
-            <div className="absolute right-0 mt-2 w-64 origin-top-right rounded-xl border border-slate-800 bg-slate-950 p-1 shadow-2xl focus:outline-hidden max-h-96 overflow-y-auto">
-              <div className="px-3 py-2 text-xs font-semibold text-slate-500 uppercase tracking-wider font-mono">
-                Simulate System Roles
+            {showRoleMenu && (
+              <div className="absolute right-0 mt-2 w-64 origin-top-right rounded-xl border border-slate-800 bg-slate-950 p-1 shadow-2xl focus:outline-hidden max-h-96 overflow-y-auto z-50">
+                <div className="px-3 py-2 text-xs font-semibold text-slate-500 uppercase tracking-wider font-mono">
+                  Simulate System Roles
+                </div>
+                {usersList.map((u) => (
+                  <button
+                    key={u.id}
+                    onClick={() => {
+                      setCurrentUser(u);
+                      setShowRoleMenu(false);
+                    }}
+                    className={`flex w-full items-start gap-2.5 rounded-lg px-3 py-2 text-left text-sm transition-colors ${
+                      u.id === currentUser.id
+                        ? "bg-indigo-950/40 text-indigo-400 border border-indigo-900/40"
+                        : "text-slate-300 hover:bg-slate-900"
+                    }`}
+                  >
+                    <img
+                      src={u.avatarUrl || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&h=100&fit=crop&crop=face"}
+                      alt={u.name}
+                      className="h-8 w-8 rounded-full border border-slate-800 shrink-0"
+                    />
+                    <div className="flex flex-col overflow-hidden">
+                      <span className="font-bold text-xs leading-none mb-1 text-slate-200">{u.name}</span>
+                      <span className="text-[10px] text-slate-400 font-medium leading-none mb-1">{u.role}</span>
+                      <span className="text-[9px] text-slate-500 font-mono leading-none truncate">{u.email}</span>
+                    </div>
+                    {u.id === currentUser.id && <Check className="h-4 w-4 ml-auto self-center shrink-0" />}
+                  </button>
+                ))}
               </div>
-              {usersList.map((u) => (
-                <button
-                  key={u.id}
-                  onClick={() => {
-                    setCurrentUser(u);
-                    setShowRoleMenu(false);
-                  }}
-                  className={`flex w-full items-start gap-2.5 rounded-lg px-3 py-2 text-left text-sm transition-colors ${
-                    u.id === currentUser.id
-                      ? "bg-indigo-950/40 text-indigo-400 border border-indigo-900/40"
-                      : "text-slate-300 hover:bg-slate-900"
-                  }`}
-                >
-                  <img
-                    src={u.avatarUrl || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&h=100&fit=crop&crop=face"}
-                    alt={u.name}
-                    className="h-8 w-8 rounded-full border border-slate-800 shrink-0"
-                  />
-                  <div className="flex flex-col overflow-hidden">
-                    <span className="font-bold text-xs leading-none mb-1 text-slate-200">{u.name}</span>
-                    <span className="text-[10px] text-slate-400 font-medium leading-none mb-1">{u.role}</span>
-                    <span className="text-[9px] text-slate-500 font-mono leading-none truncate">{u.email}</span>
-                  </div>
-                  {u.id === currentUser.id && <Check className="h-4 w-4 ml-auto self-center shrink-0" />}
-                </button>
-              ))}
-            </div>
-          )}
-        </div>
+            )}
+          </div>
+        )}
 
         {/* Notification Tray */}
         <div className="relative">
