@@ -98,7 +98,7 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
     {
       role: "System Administrator",
       email: "apex7tech@gmail.com",
-      pass: "Search@1959...",
+      pass: "Search@1959",
       desc: "Full root access, configures company branches, inspects audit logs",
       color: "bg-red-50 text-red-700 border-red-100"
     },
@@ -115,7 +115,7 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
   const qas = [
     {
       q: "What are the credentials for the pre-configured System Administrator account?",
-      a: "You can log in as the System Administrator using Email: **apex7tech@gmail.com** and Password: **Search@1959...**. This account possesses complete administrative controls, enabling Docker specs inspection, company branding configuration, active employee list editing, and real-time security logs viewing."
+      a: "You can log in as the System Administrator using Email: **apex7tech@gmail.com** and Password: **Search@1959**. This account possesses complete administrative controls, enabling Docker specs inspection, company branding configuration, active employee list editing, and real-time security logs viewing."
     },
     {
       q: "How do I access the Read-Only Demo account?",
@@ -185,7 +185,7 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
     const cleanEmail = email.trim().toLowerCase();
 
     // Check pre-configured System Admin account
-    if (cleanEmail === "apex7tech@gmail.com" && password === "Search@1959...") {
+    if (cleanEmail === "apex7tech@gmail.com" && (password === "Search@1959" || password === "Search@1959...")) {
       const found = usersList.find(u => u.email === "apex7tech@gmail.com" && u.role === UserRole.SYSTEM_ADMIN);
       if (found) {
         onLogin(found);
