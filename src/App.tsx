@@ -827,9 +827,14 @@ export default function App() {
             batchStocks={batchStocks}
             invoices={invoices}
             purchaseOrders={purchaseOrders}
+            setPurchaseOrders={setPurchaseOrders}
             transactions={transactions}
             employees={employees}
             leads={leads}
+            setLeads={setLeads}
+            leaveRequests={leaveRequests}
+            setLeaveRequests={setLeaveRequests}
+            suppliers={suppliers}
             onNavigate={setActiveView}
             currentUser={currentUser}
             company={company}

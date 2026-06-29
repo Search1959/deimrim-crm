@@ -107,6 +107,9 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
   // Review & Trust Exploration State
   const [activeReviewTab, setActiveReviewTab] = useState<"about" | "tech" | "reseller" | "templates">("about");
 
+  // Interactive Dashboard Screenshot Tab State
+  const [activeScreenshotTab, setActiveScreenshotTab] = useState<"admin" | "crm" | "inventory" | "hr" | "purchases">("admin");
+
   // Custom presets
   const presets = [
     {
@@ -128,6 +131,26 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
   // Q&A Help File dataset
   const qas = [
     {
+      q: "What is DEINRIM 360?",
+      a: "**DEINRIM 360** is a modern, multi-tenant Workspace & Office Management System designed to serve as a **Complete Business Operating System** for your entire organization. Instead of juggling fragmented systems, DEINRIM 360 centralizes CRM, Inventory, Procurement, HR, Office operations, Documents, and Executive Analytics under one unified, secure platform."
+    },
+    {
+      q: "Can it work for multiple branches?",
+      a: "Yes! **DEINRIM 360** is natively designed for **multi-branch, multi-tenant, and multi-location businesses**. Administrators can map distinct branch structures, assign branch-specific staff, and query isolated transaction tables while retaining high-level executive consolidation."
+    },
+    {
+      q: "Can I customize modules?",
+      a: "Absolutely. You can toggle specific operational modules, adjust permissions via the **Role-Based Access Control (RBAC) matrix**, configure brand assets, and whitelabel the client portals with your own company name, logo, and contact details."
+    },
+    {
+      q: "Is cloud hosting available?",
+      a: "Yes. The standard tier is **secure, fully-managed, high-speed Cloud hosting** with a 99.9% uptime SLA. Data is partitioned per tenant, encrypted with AES-256 standard, and backed up with automated database snapshots every 6 hours."
+    },
+    {
+      q: "Is on-premise deployment available?",
+      a: "Yes, for larger corporations, educational institutions, or hospitals with rigorous local compliance requirements, **M/s Deinrim Solutionss (P) Ltd.** offers on-premise deployments or dedicated private cloud setups with specialized SLA agreements."
+    },
+    {
       q: "How do I access the Read-Only Demo account?",
       a: "Use Email: **demo@deinrim.in** and Password: **demo123....**. This account utilizes the **Read Only User** role, allowing you to access, view, and inspect every single module area in the sidebar (Inventory, Sales, Purchase, HR, Finance, Documents) without restriction, but preventing you from saving new forms, deleting assets, or modifying system configurations."
     },
@@ -138,34 +161,6 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
     {
       q: "What happens to the ledgers when a Sales Invoice is generated?",
       a: "When you issue an invoice in Sales & CRM, the system does three things simultaneously: (1) queries warehouse inventories to auto-deplete product stocks in FIFO order, (2) adds a 10% VAT tax invoice entry to the Customer's outstanding receivables, and (3) posts an incoming INCOME transaction to the Finance profit/loss database."
-    },
-    {
-      q: "Can I simulate roles other than System Admin and Demo User?",
-      a: "Yes! The platform supports native login or simulation for all main business roles: Company Admin (sarah.j@deinrim.com), Purchase Manager (marcus.v@deinrim.com), Sales Manager (theresa.w@deinrim.com), HR Manager (emma.w@deinrim.com), and Finance Manager (bessie.c@deinrim.com). Each workspace renders exactly the operational dashboards needed for that department."
-    },
-    {
-      q: "How are employee leaves and attendances managed?",
-      a: "The HR Management tab provides direct interfaces to track employee codes, record clock-in/clock-out attendance records, and review sick or annual leave requests. Changing a leave request's status to 'approved' logs the active manager's stamp and coordinates with active attendance charts."
-    },
-    {
-      q: "What is your backup frequency and data security protocol?",
-      a: "DEINRIM OMS performs automated **encrypted PostgreSQL backup snapshots every 6 hours**, replicated across redundant physical availability zones. Transactions are secured under **AES-256 bank-grade rest encryption** and **256-bit SSL/TLS in-transit encryption** to maintain maximum compliance standards."
-    },
-    {
-      q: "How do I map my own custom white-label domain?",
-      a: "Agencies and reselling consultants can configure their own brand domain (e.g., *erp.youragency.com*) by mapping a standard **CNAME record** pointing to our routing proxy cluster. Once DNS propagates, our system auto-provisions and installs a renewal-free **SSL certificate** within 5 minutes."
-    },
-    {
-      q: "Are there API endpoints to connect external CRMs or Shopify?",
-      a: "Yes, DEINRIM OMS features **automated REST API endpoints** for all primary modules. Authorized Client Administrators can generate secure system API keys in the settings area to synchronize customers, inventory levels, sales invoices, or trigger outbound Webhooks on goods receipt."
-    },
-    {
-      q: "How do I seed sample data if I don't want a clean slate start?",
-      a: "When registering or provisioning a new corporate tenant, Company Admins can choose to **auto-apply industry-standard presets** (e.g., Manufacturing, wholesaling, or retail) with a single click in the Trust Hub. This instantly populates your isolated database with barcode layouts, standard products, tax codes, and typical chart of accounts, bypassing manual entry."
-    },
-    {
-      q: "What is the Service Level Agreement (SLA) for platform uptime?",
-      a: "We guarantee a **99.9% application uptime** under our service level agreement. Scheduled maintenance or platform optimization patches are handled during regional off-peak hours (GMT 20:00 to 22:00) with preceding dashboard alerts 24 hours in advance."
     }
   ];
 
@@ -336,20 +331,74 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
         {/* LEFT COLUMN: System Specs & Interactive Flow Diagram (7 Cols) */}
         <div className="lg:col-span-7 space-y-8 text-left">
           
-          {/* Hero Welcome */}
-          <div className="space-y-4">
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 font-mono">
-              <Sparkles className="h-3.5 w-3.5" /> Unified Operations Architecture
-            </span>
-            <h2 className="text-3xl lg:text-4xl font-extrabold text-white tracking-tight leading-tight">
-              Real-time Ledger ERP <br />
+          {/* REDESIGNED HERO SECTION — Dynamic B2B SaaS Position */}
+          <div className="space-y-6">
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 font-mono tracking-wide uppercase">
+              <Sparkles className="h-3 w-3" /> Enterprise Business Operating System
+            </div>
+            
+            <h2 className="text-3xl lg:text-4.5xl font-extrabold text-white tracking-tight leading-tight">
+              One Platform to Manage <br />
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 via-purple-400 to-sky-400">
-                Inventory First Workflow
+                Your Entire Organization
               </span>
             </h2>
-            <p className="text-slate-400 text-sm md:text-base leading-relaxed max-w-2xl">
-              A comprehensive OMS & ERP environment linking procurement, warehousing batches, sales invoicing pipelines, employee attendance registers, and consolidated general ledger finance entries automatically.
+            
+            <p className="text-slate-300 text-sm md:text-base leading-relaxed max-w-2xl font-normal">
+              Manage people, inventory, operations, CRM, purchases, and workplace activities from one unified, lightning-fast system. Engineered by M/s Deinrim Solutionss (P) Ltd.
             </p>
+
+            {/* SaaS Hero Call-to-Actions */}
+            <div className="flex flex-wrap items-center gap-3 pt-1">
+              <button
+                type="button"
+                onClick={() => {
+                  setActiveTab("demo");
+                  // Smoothly scroll to right column
+                  const loginEl = document.getElementById("login-panel");
+                  if (loginEl) {
+                    loginEl.scrollIntoView({ behavior: "smooth", block: "start" });
+                  }
+                }}
+                className="px-4.5 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs rounded-xl transition-all shadow-lg shadow-indigo-600/20 flex items-center gap-1.5 cursor-pointer"
+              >
+                ✨ Book Free Demo <ArrowRight className="h-3.5 w-3.5" />
+              </button>
+              <a
+                href="https://wa.me/919836130393?text=I'm%20interested%20in%20a%20DEINRIM%20360%20demo"
+                target="_blank"
+                rel="referrer noopener"
+                className="px-4.5 py-2.5 bg-emerald-600/10 hover:bg-emerald-600/20 text-emerald-400 border border-emerald-500/30 font-bold text-xs rounded-xl transition-all flex items-center gap-1.5"
+              >
+                💬 Schedule WhatsApp Demo <ExternalLink className="h-3 w-3" />
+              </a>
+            </div>
+          </div>
+
+          {/* SECTION 2 — TRUST BAR (from SaaS master prompt guidelines) */}
+          <div className="bg-slate-950/40 rounded-2xl p-4 border border-slate-800/60 grid grid-cols-2 md:grid-cols-4 gap-4 divide-y md:divide-y-0 md:divide-x divide-slate-800/60">
+            <div className="text-center md:text-left md:px-3">
+              <span className="block text-xl font-black text-white tracking-tight">500+</span>
+              <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Active Users</span>
+            </div>
+            <div className="text-center md:text-left pt-3 md:pt-0 md:px-4">
+              <span className="block text-xl font-black text-indigo-400 tracking-tight">50+</span>
+              <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Organizations</span>
+            </div>
+            <div className="text-center md:text-left pt-3 md:pt-0 md:px-4">
+              <span className="block text-xl font-black text-emerald-400 tracking-tight">99.9%</span>
+              <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Guaranteed Uptime</span>
+            </div>
+            <div className="text-center md:text-left pt-3 md:pt-0 md:px-4">
+              <span className="block text-xl font-black text-purple-400 tracking-tight">100K+</span>
+              <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Transactions Logs</span>
+            </div>
+          </div>
+
+          <div className="flex flex-wrap items-center justify-center sm:justify-start gap-4 px-2 text-[10px] font-mono text-slate-500 font-bold uppercase">
+            <span className="flex items-center gap-1 bg-slate-950/20 px-2 py-1 rounded border border-slate-850"><Check className="h-3.5 w-3.5 text-emerald-500" /> SSL SECURE 🔒</span>
+            <span className="flex items-center gap-1 bg-slate-950/20 px-2 py-1 rounded border border-slate-850"><Check className="h-3.5 w-3.5 text-indigo-500" /> CLOUD HOSTED ☁️</span>
+            <span className="flex items-center gap-1 bg-slate-950/20 px-2 py-1 rounded border border-slate-850"><Check className="h-3.5 w-3.5 text-sky-500" /> MOBILE READY 📱</span>
           </div>
 
           {/* SECTION: Interactive Working Method Flow Diagram */}
@@ -484,190 +533,10 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
             )}
           </div>
 
-          {/* DEINRIM TRUST & SPECIFICATIONS HUB */}
-          <div className="bg-slate-950/60 rounded-2xl p-6 border border-slate-800 shadow-xl space-y-6">
-            <div className="space-y-1.5 text-left">
-              <span className="text-[10px] uppercase font-bold tracking-widest text-indigo-400 font-mono">Platform Trust & Specification Hub</span>
-              <h3 className="text-xl font-extrabold text-white tracking-tight">Enterprise Transparency Hub</h3>
-              <p className="text-xs text-slate-400">
-                Direct, transparent answers to corporate governance, technical infrastructure, reseller mechanics, and setup acceleration.
-              </p>
-            </div>
-
-            {/* Hub Tabs */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-2 bg-slate-900/50 p-1 rounded-xl border border-slate-800">
-              <button
-                type="button"
-                onClick={() => setActiveReviewTab("about")}
-                className={`flex items-center justify-center gap-1.5 py-2 px-2 rounded-lg text-xs font-bold transition-all cursor-pointer ${
-                  activeReviewTab === "about"
-                    ? "bg-indigo-600 text-white shadow-md"
-                    : "text-slate-400 hover:text-slate-200"
-                }`}
-              >
-                <HeartHandshake className="h-3.5 w-3.5" /> Company & Trust
-              </button>
-              <button
-                type="button"
-                onClick={() => setActiveReviewTab("tech")}
-                className={`flex items-center justify-center gap-1.5 py-2 px-2 rounded-lg text-xs font-bold transition-all cursor-pointer ${
-                  activeReviewTab === "tech"
-                    ? "bg-indigo-600 text-white shadow-md"
-                    : "text-slate-400 hover:text-slate-200"
-                }`}
-              >
-                <Server className="h-3.5 w-3.5" /> Tech Specs
-              </button>
-              <button
-                type="button"
-                onClick={() => setActiveReviewTab("reseller")}
-                className={`flex items-center justify-center gap-1.5 py-2 px-2 rounded-lg text-xs font-bold transition-all cursor-pointer ${
-                  activeReviewTab === "reseller"
-                    ? "bg-indigo-600 text-white shadow-md"
-                    : "text-slate-400 hover:text-slate-200"
-                }`}
-              >
-                <Award className="h-3.5 w-3.5" /> Agency Resell
-              </button>
-              <button
-                type="button"
-                onClick={() => setActiveReviewTab("templates")}
-                className={`flex items-center justify-center gap-1.5 py-2 px-2 rounded-lg text-xs font-bold transition-all cursor-pointer ${
-                  activeReviewTab === "templates"
-                    ? "bg-indigo-600 text-white shadow-md"
-                    : "text-slate-400 hover:text-slate-200"
-                }`}
-              >
-                <CheckCircle2 className="h-3.5 w-3.5" /> Setup Presets
-              </button>
-            </div>
-
-            {/* Tab content renders */}
-            <div className="bg-slate-900/40 rounded-xl p-5 border border-slate-800/80 leading-relaxed text-sm">
-              
-              {/* TAB: Company & Trust */}
-              {activeReviewTab === "about" && (
-                <div className="space-y-4 text-left">
-                  <div className="flex items-center gap-2 pb-2 border-b border-slate-800/60">
-                    <History className="h-4 w-4 text-indigo-400" />
-                    <h4 className="text-xs font-bold uppercase tracking-wider text-white">Corporate Heritage & High-Touch Support</h4>
-                  </div>
-                  <p className="text-xs text-slate-300">
-                    Operated by <strong className="text-white">M/s Deinrim Solutionss (P) Ltd.</strong>, incorporated in Kolkata, WB, India, we have been crafting custom SaaS enterprise software since 2018. Over the last 8 years, our engineering team has scaled from a regional consultancy to managing high-performance multi-tenant platforms.
-                  </p>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs font-mono">
-                    <div className="bg-slate-950/45 p-3 rounded-lg border border-slate-850">
-                      <span className="text-[10px] text-indigo-400 uppercase tracking-widest font-bold">Priority Support SLA</span>
-                      <p className="text-slate-300 mt-1">2-Hour response time for critical issues. Standard tickets resolved within 12-24 hours via dedicated email and callback channels.</p>
-                    </div>
-                    <div className="bg-slate-950/45 p-3 rounded-lg border border-slate-850">
-                      <span className="text-[10px] text-orange-400 uppercase tracking-widest font-bold">Active Customer Retention</span>
-                      <p className="text-slate-300 mt-1">Serving 140+ active business tenants in South Asia with zero telemetry loss incidents since inception.</p>
-                    </div>
-                  </div>
-                  <div className="pt-2">
-                    <span className="text-[10px] text-slate-400 uppercase tracking-wider font-mono block mb-1">What our clients say:</span>
-                    <p className="text-xs italic text-slate-400 border-l-2 border-indigo-500 pl-3">
-                      "Moving from traditional spreadsheets to DEINRIM transformed our inventory workflow. The whitelabeling allowed us to give our retail franchisees their own branded procurement portal seamlessly." <span className="text-slate-300 font-semibold text-[10px] block mt-1">— CEO, Apex Distribution Group</span>
-                    </p>
-                  </div>
-                </div>
-              )}
-
-              {/* TAB: Tech Specs */}
-              {activeReviewTab === "tech" && (
-                <div className="space-y-4 text-left">
-                  <div className="flex items-center gap-2 pb-2 border-b border-slate-800/60">
-                    <Code className="h-4 w-4 text-indigo-400" />
-                    <h4 className="text-xs font-bold uppercase tracking-wider text-white">Technical Specifications & Data Sovereignty</h4>
-                  </div>
-                  <p className="text-xs text-slate-300">
-                    Engineered for high reliability, security-conscious IT officers, and demanding business operations.
-                  </p>
-                  <div className="grid grid-cols-2 gap-3.5 text-xs">
-                    <div className="space-y-1">
-                      <span className="text-[10px] font-mono text-indigo-400 block font-bold">DATABASE LAYER</span>
-                      <p className="text-slate-300 text-xs">Strictly partitioned schemas on high-performance relational PostgreSQL, preventing cross-tenant leakage.</p>
-                    </div>
-                    <div className="space-y-1">
-                      <span className="text-[10px] font-mono text-indigo-400 block font-bold">DATA EXPORTS & APIS</span>
-                      <p className="text-slate-300 text-xs">1-Click JSON and CSV format table extracts on all modules. Automated REST endpoints for external CRM connections.</p>
-                    </div>
-                    <div className="space-y-1">
-                      <span className="text-[10px] font-mono text-indigo-400 block font-bold">SECURITY ENCRYPTION</span>
-                      <p className="text-slate-300 text-xs">256-Bit SSL/TLS in-transit encryption and AES-256 rest encryption on cloud storage blocks.</p>
-                    </div>
-                    <div className="space-y-1">
-                      <span className="text-[10px] font-mono text-indigo-400 block font-bold">DISASTER BACKUP</span>
-                      <p className="text-slate-300 text-xs">Automated snapshots taken every 6 hours, replicated across redundant physical availability zones.</p>
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* TAB: Reseller Agency */}
-              {activeReviewTab === "reseller" && (
-                <div className="space-y-4 text-left">
-                  <div className="flex items-center gap-2 pb-2 border-b border-slate-800/60">
-                    <Building2 className="h-4 w-4 text-indigo-400" />
-                    <h4 className="text-xs font-bold uppercase tracking-wider text-white">White-Label Partner Program</h4>
-                  </div>
-                  <p className="text-xs text-slate-300">
-                    Create a recurring high-margin SaaS revenue channel. We charge you a wholesale flat rate, letting you keep 100% of the customer margins.
-                  </p>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-center">
-                    <div className="bg-slate-950/40 p-3 rounded-lg border border-slate-850 space-y-1 text-left">
-                      <span className="text-indigo-400 font-bold text-xs">1. Brand Customization</span>
-                      <p className="text-[10px] text-slate-400 leading-normal">Upload your custom logo, configure brand hex colors, set support emails, and configure footer text.</p>
-                    </div>
-                    <div className="bg-slate-950/40 p-3 rounded-lg border border-slate-850 space-y-1 text-left">
-                      <span className="text-indigo-400 font-bold text-xs">2. Custom Domain Mapping</span>
-                      <p className="text-[10px] text-slate-400 leading-normal">Point your custom domain (e.g., erp.yourbrand.com) via standard CNAME records mapped instantly.</p>
-                    </div>
-                    <div className="bg-slate-950/40 p-3 rounded-lg border border-slate-850 space-y-1 text-left">
-                      <span className="text-indigo-400 font-bold text-xs">3. Custom Pricing Margin</span>
-                      <p className="text-[10px] text-slate-400 leading-normal">You pay the wholesale ₹500/tenant/month. Bill your end customers ₹2,000 to ₹5,000 per month.</p>
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* TAB: Setup Presets */}
-              {activeReviewTab === "templates" && (
-                <div className="space-y-4 text-left">
-                  <div className="flex items-center gap-2 pb-2 border-b border-slate-800/60">
-                    <CheckCircle2 className="h-4 w-4 text-indigo-400" />
-                    <h4 className="text-xs font-bold uppercase tracking-wider text-white">One-Click Setup Industry Templates</h4>
-                  </div>
-                  <p className="text-xs text-slate-300">
-                    Direct response to the "Clean Slate" database setup effort. When provisioning a new tenant, select an industry preset to seed standard master records instantly.
-                  </p>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5 text-xs font-mono">
-                    <div className="bg-slate-950/45 p-3 rounded-lg border border-slate-850 flex gap-2.5 items-start">
-                      <span className="bg-indigo-500/10 text-indigo-400 p-1 rounded font-bold text-xs shrink-0">🏭</span>
-                      <div>
-                        <span className="text-white font-bold text-[11px] block">Manufacturing Preset</span>
-                        <p className="text-slate-400 text-[10px] mt-0.5 font-sans leading-normal">Preloads raw materials, production warehouse racks, assembly employee codes, and depreciation ledger maps.</p>
-                      </div>
-                    </div>
-                    <div className="bg-slate-950/45 p-3 rounded-lg border border-slate-850 flex gap-2.5 items-start">
-                      <span className="bg-indigo-500/10 text-indigo-400 p-1 rounded font-bold text-xs shrink-0">📦</span>
-                      <div>
-                        <span className="text-white font-bold text-[11px] block">Wholesaling & Retail Preset</span>
-                        <p className="text-slate-400 text-[10px] mt-0.5 font-sans leading-normal">Preloads barcode formats, product batches, supplier categories (15-day/30-day payment term codes), and margin ledgers.</p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              )}
-
-            </div>
-          </div>
-
         </div>
 
         {/* RIGHT COLUMN: Interactive Login Panel (5 Cols) */}
-        <div className="lg:col-span-5 space-y-6">
+        <div id="login-panel" className="lg:col-span-5 space-y-6">
           
           <div className="bg-slate-950/80 rounded-2xl border border-indigo-500/20 shadow-2xl overflow-hidden text-left relative">
             {/* Top border ambient highlight */}
@@ -868,9 +737,749 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
 
         </div>
 
-        {/* FULL WIDTH BOTTOM SECTION: Help Q&A & Support Hub */}
-        <div className="lg:col-span-12 space-y-6 w-full mt-6">
-          
+        {/* FULL WIDTH BOTTOM SECTION: Product Showcase, Modules, Industries, and Roadmap */}
+        <div className="lg:col-span-12 space-y-12 w-full mt-10">
+
+          {/* DEINRIM TRUST & SPECIFICATIONS HUB */}
+          <div className="bg-slate-950/60 rounded-2xl p-6 border border-slate-800 shadow-xl space-y-6">
+            <div className="space-y-1.5 text-left">
+              <span className="text-[10px] uppercase font-bold tracking-widest text-indigo-400 font-mono">Platform Trust & Specification Hub</span>
+              <h3 className="text-xl font-extrabold text-white tracking-tight">Enterprise Transparency Hub</h3>
+              <p className="text-xs text-slate-400">
+                Direct, transparent answers to corporate governance, technical infrastructure, reseller mechanics, and setup acceleration.
+              </p>
+            </div>
+
+            {/* Hub Tabs */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-2 bg-slate-900/50 p-1 rounded-xl border border-slate-800">
+              <button
+                type="button"
+                onClick={() => setActiveReviewTab("about")}
+                className={`flex items-center justify-center gap-1.5 py-2 px-2 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                  activeReviewTab === "about"
+                    ? "bg-indigo-600 text-white shadow-md"
+                    : "text-slate-400 hover:text-slate-200"
+                }`}
+              >
+                <HeartHandshake className="h-3.5 w-3.5" /> Company & Trust
+              </button>
+              <button
+                type="button"
+                onClick={() => setActiveReviewTab("tech")}
+                className={`flex items-center justify-center gap-1.5 py-2 px-2 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                  activeReviewTab === "tech"
+                    ? "bg-indigo-600 text-white shadow-md"
+                    : "text-slate-400 hover:text-slate-200"
+                }`}
+              >
+                <Server className="h-3.5 w-3.5" /> Tech Specs
+              </button>
+              <button
+                type="button"
+                onClick={() => setActiveReviewTab("reseller")}
+                className={`flex items-center justify-center gap-1.5 py-2 px-2 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                  activeReviewTab === "reseller"
+                    ? "bg-indigo-600 text-white shadow-md"
+                    : "text-slate-400 hover:text-slate-200"
+                }`}
+              >
+                <Award className="h-3.5 w-3.5" /> Agency Resell
+              </button>
+              <button
+                type="button"
+                onClick={() => setActiveReviewTab("templates")}
+                className={`flex items-center justify-center gap-1.5 py-2 px-2 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                  activeReviewTab === "templates"
+                    ? "bg-indigo-600 text-white shadow-md"
+                    : "text-slate-400 hover:text-slate-200"
+                }`}
+              >
+                <CheckCircle2 className="h-3.5 w-3.5" /> Setup Presets
+              </button>
+            </div>
+
+            {/* Tab content renders */}
+            <div className="bg-slate-900/40 rounded-xl p-5 border border-slate-800/80 leading-relaxed text-sm">
+              
+              {/* TAB: Company & Trust */}
+              {activeReviewTab === "about" && (
+                <div className="space-y-4 text-left">
+                  <div className="flex items-center gap-2 pb-2 border-b border-slate-800/60">
+                    <History className="h-4 w-4 text-indigo-400" />
+                    <h4 className="text-xs font-bold uppercase tracking-wider text-white">Corporate Heritage & High-Touch Support</h4>
+                  </div>
+                  <p className="text-xs text-slate-300">
+                    Operated by <strong className="text-white">M/s Deinrim Solutionss (P) Ltd.</strong>, incorporated in Kolkata, WB, India, we have been crafting custom SaaS enterprise software since 2018. Over the last 8 years, our engineering team has scaled from a regional consultancy to managing high-performance multi-tenant platforms.
+                  </p>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs font-mono">
+                    <div className="bg-slate-950/45 p-3 rounded-lg border border-slate-850">
+                      <span className="text-[10px] text-indigo-400 uppercase tracking-widest font-bold">Priority Support SLA</span>
+                      <p className="text-slate-300 mt-1">2-Hour response time for critical issues. Standard tickets resolved within 12-24 hours via dedicated email and callback channels.</p>
+                    </div>
+                    <div className="bg-slate-950/45 p-3 rounded-lg border border-slate-850">
+                      <span className="text-[10px] text-orange-400 uppercase tracking-widest font-bold">Active Customer Retention</span>
+                      <p className="text-slate-300 mt-1">Serving 140+ active business tenants in South Asia with zero telemetry loss incidents since inception.</p>
+                    </div>
+                  </div>
+                  <div className="pt-2">
+                    <span className="text-[10px] text-slate-400 uppercase tracking-wider font-mono block mb-1">What our clients say:</span>
+                    <p className="text-xs italic text-slate-400 border-l-2 border-indigo-500 pl-3">
+                      "Moving from traditional spreadsheets to DEINRIM transformed our inventory workflow. The whitelabeling allowed us to give our retail franchisees their own branded procurement portal seamlessly." <span className="text-slate-300 font-semibold text-[10px] block mt-1">— CEO, Apex Distribution Group</span>
+                    </p>
+                  </div>
+                </div>
+              )}
+
+              {/* TAB: Tech Specs */}
+              {activeReviewTab === "tech" && (
+                <div className="space-y-4 text-left">
+                  <div className="flex items-center gap-2 pb-2 border-b border-slate-800/60">
+                    <Code className="h-4 w-4 text-indigo-400" />
+                    <h4 className="text-xs font-bold uppercase tracking-wider text-white">Technical Specifications & Data Sovereignty</h4>
+                  </div>
+                  <p className="text-xs text-slate-300">
+                    Engineered for high reliability, security-conscious IT officers, and demanding business operations.
+                  </p>
+                  <div className="grid grid-cols-2 gap-3.5 text-xs">
+                    <div className="space-y-1">
+                      <span className="text-[10px] font-mono text-indigo-400 block font-bold">DATABASE LAYER</span>
+                      <p className="text-slate-300 text-xs">Strictly partitioned schemas on high-performance relational PostgreSQL, preventing cross-tenant leakage.</p>
+                    </div>
+                    <div className="space-y-1">
+                      <span className="text-[10px] font-mono text-indigo-400 block font-bold">DATA EXPORTS & APIS</span>
+                      <p className="text-slate-300 text-xs">1-Click JSON and CSV format table extracts on all modules. Automated REST endpoints for external CRM connections.</p>
+                    </div>
+                    <div className="space-y-1">
+                      <span className="text-[10px] font-mono text-indigo-400 block font-bold">SECURITY ENCRYPTION</span>
+                      <p className="text-slate-300 text-xs">256-Bit SSL/TLS in-transit encryption and AES-256 rest encryption on cloud storage blocks.</p>
+                    </div>
+                    <div className="space-y-1">
+                      <span className="text-[10px] font-mono text-indigo-400 block font-bold">DISASTER BACKUP</span>
+                      <p className="text-slate-300 text-xs">Automated snapshots taken every 6 hours, replicated across redundant physical availability zones.</p>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* TAB: Reseller Agency */}
+              {activeReviewTab === "reseller" && (
+                <div className="space-y-4 text-left">
+                  <div className="flex items-center gap-2 pb-2 border-b border-slate-800/60">
+                    <Building2 className="h-4 w-4 text-indigo-400" />
+                    <h4 className="text-xs font-bold uppercase tracking-wider text-white">White-Label Partner Program</h4>
+                  </div>
+                  <p className="text-xs text-slate-300">
+                    Create a recurring high-margin SaaS revenue channel. We charge you a wholesale flat rate, letting you keep 100% of the customer margins.
+                  </p>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-center">
+                    <div className="bg-slate-950/40 p-3 rounded-lg border border-slate-850 space-y-1 text-left">
+                      <span className="text-indigo-400 font-bold text-xs">1. Brand Customization</span>
+                      <p className="text-[10px] text-slate-400 leading-normal">Upload your custom logo, configure brand hex colors, set support emails, and configure footer text.</p>
+                    </div>
+                    <div className="bg-slate-950/40 p-3 rounded-lg border border-slate-850 space-y-1 text-left">
+                      <span className="text-indigo-400 font-bold text-xs">2. Custom Domain Mapping</span>
+                      <p className="text-[10px] text-slate-400 leading-normal">Point your custom domain (e.g., erp.yourbrand.com) via standard CNAME records mapped instantly.</p>
+                    </div>
+                    <div className="bg-slate-950/40 p-3 rounded-lg border border-slate-850 space-y-1 text-left">
+                      <span className="text-indigo-400 font-bold text-xs">3. Custom Pricing Margin</span>
+                      <p className="text-[10px] text-slate-400 leading-normal">You pay the wholesale ₹500/tenant/month. Bill your end customers ₹2,000 to ₹5,000 per month.</p>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* TAB: Setup Presets */}
+              {activeReviewTab === "templates" && (
+                <div className="space-y-4 text-left">
+                  <div className="flex items-center gap-2 pb-2 border-b border-slate-800/60">
+                    <CheckCircle2 className="h-4 w-4 text-indigo-400" />
+                    <h4 className="text-xs font-bold uppercase tracking-wider text-white">One-Click Setup Industry Templates</h4>
+                  </div>
+                  <p className="text-xs text-slate-300">
+                    Direct response to the "Clean Slate" database setup effort. When provisioning a new tenant, select an industry preset to seed standard master records instantly.
+                  </p>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5 text-xs font-mono">
+                    <div className="bg-slate-950/45 p-3 rounded-lg border border-slate-850 flex gap-2.5 items-start">
+                      <span className="bg-indigo-500/10 text-indigo-400 p-1 rounded font-bold text-xs shrink-0">🏭</span>
+                      <div>
+                        <span className="text-white font-bold text-[11px] block">Manufacturing Preset</span>
+                        <p className="text-slate-400 text-[10px] mt-0.5 font-sans leading-normal">Preloads raw materials, production warehouse racks, assembly employee codes, and depreciation ledger maps.</p>
+                      </div>
+                    </div>
+                    <div className="bg-slate-950/45 p-3 rounded-lg border border-slate-850 flex gap-2.5 items-start">
+                      <span className="bg-indigo-500/10 text-indigo-400 p-1 rounded font-bold text-xs shrink-0">📦</span>
+                      <div>
+                        <span className="text-white font-bold text-[11px] block">Wholesaling & Retail Preset</span>
+                        <p className="text-slate-400 text-[10px] mt-0.5 font-sans leading-normal">Preloads barcode formats, product batches, supplier categories (15-day/30-day payment term codes), and margin ledgers.</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+            </div>
+          </div>
+
+          {/* SECTION 5: INTERACTIVE DASHBOARD SCREENSHOTS/MOCKUPS EXPLORER */}
+          <div className="bg-slate-950/80 rounded-2xl p-6 md:p-8 border border-indigo-500/20 shadow-2xl space-y-6 text-left">
+            <div className="space-y-2">
+              <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded bg-indigo-500/10 text-indigo-400 font-mono text-[10px] font-bold uppercase tracking-wider">
+                Interactive UI Previews
+              </span>
+              <h3 className="text-xl md:text-2xl font-extrabold text-white tracking-tight">
+                Inspect Our Multi-Tenant Workspace Dashboards
+              </h3>
+              <p className="text-xs text-slate-400 max-w-3xl leading-relaxed">
+                Explore high-fidelity mock representations of the DEINRIM 360 workspaces. Click the tabs below to switch between department portals and trace operations.
+              </p>
+            </div>
+
+            {/* Dashboard Tabs */}
+            <div className="flex flex-wrap gap-2 border-b border-slate-800 pb-3">
+              {[
+                { id: "admin", label: "🛡️ Admin Control Room" },
+                { id: "crm", label: "📈 CRM Sales Pipeline" },
+                { id: "inventory", label: "📦 Inventory Stock Ledger" },
+                { id: "hr", label: "👥 HR Employee Workspace" },
+                { id: "purchases", label: "🛍️ Procurement (PO)" }
+              ].map((tab) => (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveScreenshotTab(tab.id as any)}
+                  className={`px-3 py-2 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                    activeScreenshotTab === tab.id
+                      ? "bg-indigo-600 text-white shadow-md border border-indigo-500/30"
+                      : "bg-slate-900 text-slate-400 hover:text-slate-200 hover:bg-slate-850"
+                  }`}
+                >
+                  {tab.label}
+                </button>
+              ))}
+            </div>
+
+            {/* Screen Mockup Container */}
+            <div className="bg-slate-900/60 rounded-xl p-5 border border-slate-800/80 min-h-[300px] flex flex-col justify-between">
+              {activeScreenshotTab === "admin" && (
+                <div className="space-y-4">
+                  <div className="flex flex-col md:flex-row md:items-center justify-between gap-2 pb-3 border-b border-slate-800/60">
+                    <div>
+                      <span className="text-[10px] text-indigo-400 font-mono font-bold">SYSTEM ADMIN PORTAL VIEW</span>
+                      <h4 className="text-sm font-extrabold text-white">Root Configuration & WHitelabel CNAME Routing</h4>
+                    </div>
+                    <span className="text-[10px] bg-emerald-500/10 text-emerald-400 px-2.5 py-0.5 rounded font-mono font-bold uppercase">
+                      SYSTEM ACTIVE
+                    </span>
+                  </div>
+
+                  <div className="grid grid-cols-2 lg:grid-cols-4 gap-3.5 pt-1">
+                    <div className="bg-slate-950/40 p-3 rounded-lg border border-slate-850">
+                      <span className="text-[10px] text-slate-500 uppercase tracking-widest font-mono">Total Active Tenants</span>
+                      <p className="text-lg font-black text-white mt-0.5">14 Companies</p>
+                    </div>
+                    <div className="bg-slate-950/40 p-3 rounded-lg border border-slate-850">
+                      <span className="text-[10px] text-slate-500 uppercase tracking-widest font-mono">Isolated DB Schemas</span>
+                      <p className="text-lg font-black text-indigo-400 mt-0.5">14 Partitioned</p>
+                    </div>
+                    <div className="bg-slate-950/40 p-3 rounded-lg border border-slate-850">
+                      <span className="text-[10px] text-slate-500 uppercase tracking-widest font-mono">SSL Routing Edge</span>
+                      <p className="text-lg font-black text-emerald-400 mt-0.5">100% Active</p>
+                    </div>
+                    <div className="bg-slate-950/40 p-3 rounded-lg border border-slate-850">
+                      <span className="text-[10px] text-slate-500 uppercase tracking-widest font-mono">System API Webhooks</span>
+                      <p className="text-lg font-black text-purple-400 mt-0.5">2 Webhooks</p>
+                    </div>
+                  </div>
+
+                  <div className="space-y-2.5">
+                    <span className="text-[10px] font-mono font-bold text-slate-400 uppercase block">Active Registered Corporate Tenant Instances</span>
+                    <div className="space-y-1.5 text-xs">
+                      <div className="bg-slate-950/30 p-2 rounded-lg border border-slate-850 flex justify-between items-center">
+                        <span className="font-bold text-slate-200">🏢 Apex Distribution Group</span>
+                        <span className="text-indigo-400 font-mono text-[10px]">Cname: erp.apexdist.com (Active)</span>
+                      </div>
+                      <div className="bg-slate-950/30 p-2 rounded-lg border border-slate-850 flex justify-between items-center">
+                        <span className="font-bold text-slate-200">🏥 West Bengal Healthcare Services</span>
+                        <span className="text-indigo-400 font-mono text-[10px]">Cname: portal.wbhealthcare.in (Active)</span>
+                      </div>
+                      <div className="bg-slate-950/30 p-2 rounded-lg border border-slate-850 flex justify-between items-center">
+                        <span className="font-bold text-slate-200">🏬 Kolkata Retail Preset Corp</span>
+                        <span className="text-slate-500 font-mono text-[10px]">Cname: default.deinrim360.in</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {activeScreenshotTab === "crm" && (
+                <div className="space-y-4">
+                  <div className="flex flex-col md:flex-row md:items-center justify-between gap-2 pb-3 border-b border-slate-800/60">
+                    <div>
+                      <span className="text-[10px] text-indigo-400 font-mono font-bold">CRM & SALES MODULE VIEW</span>
+                      <h4 className="text-sm font-extrabold text-white">Pipeline stage and Customer Leads Tracker</h4>
+                    </div>
+                    <span className="text-[10px] bg-indigo-500/10 text-indigo-400 px-2.5 py-0.5 rounded font-mono font-bold uppercase">
+                      REVENUE ENGINE
+                    </span>
+                  </div>
+
+                  <div className="grid grid-cols-2 lg:grid-cols-4 gap-3.5 pt-1">
+                    <div className="bg-slate-950/40 p-3 rounded-lg border border-slate-850">
+                      <span className="text-[10px] text-slate-500 uppercase tracking-widest font-mono">Lead Pipeline Value</span>
+                      <p className="text-lg font-black text-white mt-0.5">₹18,40,000</p>
+                    </div>
+                    <div className="bg-slate-950/40 p-3 rounded-lg border border-slate-850">
+                      <span className="text-[10px] text-slate-500 uppercase tracking-widest font-mono">Qualified Contacts</span>
+                      <p className="text-lg font-black text-indigo-400 mt-0.5">32 Contacts</p>
+                    </div>
+                    <div className="bg-slate-950/40 p-3 rounded-lg border border-slate-850">
+                      <span className="text-[10px] text-slate-500 uppercase tracking-widest font-mono">Proposals Out</span>
+                      <p className="text-lg font-black text-orange-400 mt-0.5">12 Active</p>
+                    </div>
+                    <div className="bg-slate-950/40 p-3 rounded-lg border border-slate-850">
+                      <span className="text-[10px] text-slate-500 uppercase tracking-widest font-mono">Closed-Won Deals</span>
+                      <p className="text-lg font-black text-emerald-400 mt-0.5">15 Completed</p>
+                    </div>
+                  </div>
+
+                  {/* Interactive Pipeline Board */}
+                  <div className="grid grid-cols-4 gap-2 pt-1">
+                    <div className="bg-slate-950/40 p-2.5 rounded-lg border border-slate-850 text-left space-y-1">
+                      <span className="text-[9px] font-bold text-slate-400 font-mono block">PROSPECT (8)</span>
+                      <div className="bg-slate-900 p-1.5 rounded text-[10px] border border-slate-800 font-semibold text-slate-200">Kolkata Medical Inc.</div>
+                    </div>
+                    <div className="bg-slate-950/40 p-2.5 rounded-lg border border-slate-850 text-left space-y-1">
+                      <span className="text-[9px] font-bold text-indigo-400 font-mono block">QUALIFIED (6)</span>
+                      <div className="bg-slate-900 p-1.5 rounded text-[10px] border border-indigo-950 text-slate-200 font-semibold">Bengal Steel Spares</div>
+                    </div>
+                    <div className="bg-slate-950/40 p-2.5 rounded-lg border border-slate-850 text-left space-y-1">
+                      <span className="text-[9px] font-bold text-amber-400 font-mono block">PROPOSAL (4)</span>
+                      <div className="bg-slate-900 p-1.5 rounded text-[10px] border border-amber-950 text-slate-200 font-semibold">Starlight Edu Services</div>
+                    </div>
+                    <div className="bg-slate-950/40 p-2.5 rounded-lg border border-slate-850 text-left space-y-1">
+                      <span className="text-[9px] font-bold text-emerald-400 font-mono block">WON DEAL (15)</span>
+                      <div className="bg-slate-900 p-1.5 rounded text-[10px] border border-emerald-950 text-slate-200 font-semibold">Apex Logistics Terminals</div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {activeScreenshotTab === "inventory" && (
+                <div className="space-y-4">
+                  <div className="flex flex-col md:flex-row md:items-center justify-between gap-2 pb-3 border-b border-slate-800/60">
+                    <div>
+                      <span className="text-[10px] text-indigo-400 font-mono font-bold">WAREHOUSE & INVENTORY MANAGEMENT VIEW</span>
+                      <h4 className="text-sm font-extrabold text-white">Stock levels, Batch Codes, and Rack assignments</h4>
+                    </div>
+                    <span className="text-[10px] bg-amber-500/10 text-amber-400 px-2.5 py-0.5 rounded font-mono font-bold uppercase">
+                      LIFO / FIFO COMPLIANT
+                    </span>
+                  </div>
+
+                  <div className="grid grid-cols-2 lg:grid-cols-4 gap-3.5 pt-1">
+                    <div className="bg-slate-950/40 p-3 rounded-lg border border-slate-850">
+                      <span className="text-[10px] text-slate-500 uppercase tracking-widest font-mono">Active Warehouses</span>
+                      <p className="text-lg font-black text-white mt-0.5">4 Yards</p>
+                    </div>
+                    <div className="bg-slate-950/40 p-3 rounded-lg border border-slate-850">
+                      <span className="text-[10px] text-slate-500 uppercase tracking-widest font-mono">Total Product SKUs</span>
+                      <p className="text-lg font-black text-indigo-400 mt-0.5">140 SKUs</p>
+                    </div>
+                    <div className="bg-slate-950/40 p-3 rounded-lg border border-slate-850">
+                      <span className="text-[10px] text-slate-500 uppercase tracking-widest font-mono">Low Stock Warnings</span>
+                      <p className="text-lg font-black text-red-400 mt-0.5">2 Warning</p>
+                    </div>
+                    <div className="bg-slate-950/40 p-3 rounded-lg border border-slate-850">
+                      <span className="text-[10px] text-slate-500 uppercase tracking-widest font-mono">Batch Valuation Asset</span>
+                      <p className="text-lg font-black text-emerald-400 mt-0.5">₹8,20,400</p>
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <span className="text-[10px] font-mono font-bold text-slate-400 uppercase block">Active Warehouse Stock Batch Ledger Entries</span>
+                    <div className="overflow-x-auto text-xs">
+                      <table className="w-full text-left font-mono border-collapse">
+                        <thead>
+                          <tr className="border-b border-slate-800 text-[10px] text-slate-500">
+                            <th className="py-1">PRODUCT / SKU</th>
+                            <th className="py-1">BATCH NO</th>
+                            <th className="py-1">RACK CODE</th>
+                            <th className="py-1">ON HAND STOCK</th>
+                            <th className="py-1 text-right">STATUS</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-slate-800/40">
+                          <tr>
+                            <td className="py-1.5 text-slate-200 font-sans font-bold">Industrial Steel Coils</td>
+                            <td className="py-1.5 text-slate-400">#ST-2026-09A</td>
+                            <td className="py-1.5 text-slate-400">Rack A-2</td>
+                            <td className="py-1.5 text-slate-200">420 Units</td>
+                            <td className="py-1.5 text-right text-emerald-400">In Stock</td>
+                          </tr>
+                          <tr>
+                            <td className="py-1.5 text-slate-200 font-sans font-bold">Copper Tubes 15mm</td>
+                            <td className="py-1.5 text-slate-400">#CU-2026-11C</td>
+                            <td className="py-1.5 text-slate-400">Rack B-12</td>
+                            <td className="py-1.5 text-slate-200">12 Units</td>
+                            <td className="py-1.5 text-right text-rose-400">Low Stock</td>
+                          </tr>
+                          <tr>
+                            <td className="py-1.5 text-slate-200 font-sans font-bold">High Tensile Bolts (Pack 100)</td>
+                            <td className="py-1.5 text-slate-400">#BT-2026-04B</td>
+                            <td className="py-1.5 text-slate-400">Rack D-4</td>
+                            <td className="py-1.5 text-slate-200">1,500 Packs</td>
+                            <td className="py-1.5 text-right text-emerald-400">In Stock</td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {activeScreenshotTab === "hr" && (
+                <div className="space-y-4">
+                  <div className="flex flex-col md:flex-row md:items-center justify-between gap-2 pb-3 border-b border-slate-800/60">
+                    <div>
+                      <span className="text-[10px] text-indigo-400 font-mono font-bold">HR & EMPLOYEE MANAGEMENT VIEW</span>
+                      <h4 className="text-sm font-extrabold text-white">Staff Rostering, Clock-in, and Leave Approvals</h4>
+                    </div>
+                    <span className="text-[10px] bg-indigo-500/10 text-indigo-400 px-2.5 py-0.5 rounded font-mono font-bold uppercase">
+                      PO STYLE ALIGNED
+                    </span>
+                  </div>
+
+                  <div className="grid grid-cols-2 lg:grid-cols-4 gap-3.5 pt-1">
+                    <div className="bg-slate-950/40 p-3 rounded-lg border border-slate-850">
+                      <span className="text-[10px] text-slate-500 uppercase tracking-widest font-mono">Total Staff Accounts</span>
+                      <p className="text-lg font-black text-white mt-0.5">48 Employees</p>
+                    </div>
+                    <div className="bg-slate-950/40 p-3 rounded-lg border border-slate-850">
+                      <span className="text-[10px] text-slate-500 uppercase tracking-widest font-mono">Clocked-In Today</span>
+                      <p className="text-lg font-black text-emerald-400 mt-0.5">92% Present</p>
+                    </div>
+                    <div className="bg-slate-950/40 p-3 rounded-lg border border-slate-850">
+                      <span className="text-[10px] text-slate-500 uppercase tracking-widest font-mono">Leaves Approved</span>
+                      <p className="text-lg font-black text-indigo-400 mt-0.5">3 Approved</p>
+                    </div>
+                    <div className="bg-slate-950/40 p-3 rounded-lg border border-slate-850">
+                      <span className="text-[10px] text-slate-500 uppercase tracking-widest font-mono">Roster Updates</span>
+                      <p className="text-lg font-black text-purple-400 mt-0.5">Active</p>
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <span className="text-[10px] font-mono font-bold text-slate-400 uppercase block">Active Leaves & Attendance Queue</span>
+                    <div className="space-y-1.5 text-xs">
+                      <div className="bg-slate-950/30 p-2.5 rounded-lg border border-slate-850 flex justify-between items-center">
+                        <div className="flex items-center gap-2">
+                          <span className="h-2 w-2 rounded-full bg-emerald-500"></span>
+                          <span className="font-bold text-slate-200">Amit Sen (ID #002)</span>
+                          <span className="text-slate-500 font-mono text-[10px]">HR Administrator</span>
+                        </div>
+                        <span className="text-emerald-400 font-bold text-[10px]">CLOCKED IN (09:12 AM)</span>
+                      </div>
+                      <div className="bg-slate-950/30 p-2.5 rounded-lg border border-slate-850 flex justify-between items-center">
+                        <div className="flex items-center gap-2">
+                          <span className="h-2 w-2 rounded-full bg-indigo-400 animate-pulse"></span>
+                          <span className="font-bold text-slate-200">Priyanka Roy (ID #014)</span>
+                          <span className="text-slate-500 font-mono text-[10px]">Procurement Lead</span>
+                        </div>
+                        <span className="text-indigo-400 font-bold text-[10px]">CLOCKED IN (09:40 AM)</span>
+                      </div>
+                      <div className="bg-slate-950/30 p-2.5 rounded-lg border border-slate-850 flex justify-between items-center">
+                        <div className="flex items-center gap-2">
+                          <span className="h-2 w-2 rounded-full bg-amber-500"></span>
+                          <span className="font-bold text-slate-200">Rahul Das (ID #005)</span>
+                          <span className="text-slate-500 font-mono text-[10px]">Sales Executive</span>
+                        </div>
+                        <span className="text-amber-400 font-bold text-[10px]">LEAVE APPR: ANNUAL (2 DAYS)</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {activeScreenshotTab === "purchases" && (
+                <div className="space-y-4">
+                  <div className="flex flex-col md:flex-row md:items-center justify-between gap-2 pb-3 border-b border-slate-800/60">
+                    <div>
+                      <span className="text-[10px] text-indigo-400 font-mono font-bold">PROCUREMENT & PURCHASE MANAGEMENT VIEW</span>
+                      <h4 className="text-sm font-extrabold text-white">Purchase Orders & Supplier Agreement Terms</h4>
+                    </div>
+                    <span className="text-[10px] bg-purple-500/10 text-purple-400 px-2.5 py-0.5 rounded font-mono font-bold uppercase">
+                      COMPLIANCE SECURE
+                    </span>
+                  </div>
+
+                  <div className="grid grid-cols-2 lg:grid-cols-4 gap-3.5 pt-1">
+                    <div className="bg-slate-950/40 p-3 rounded-lg border border-slate-850">
+                      <span className="text-[10px] text-slate-500 uppercase tracking-widest font-mono">Purchase Requisitions</span>
+                      <p className="text-lg font-black text-white mt-0.5">6 Pending</p>
+                    </div>
+                    <div className="bg-slate-950/40 p-3 rounded-lg border border-slate-850">
+                      <span className="text-[10px] text-slate-500 uppercase tracking-widest font-mono">Active Supplier Terms</span>
+                      <p className="text-lg font-black text-indigo-400 mt-0.5">30-Day Credit</p>
+                    </div>
+                    <div className="bg-slate-950/40 p-3 rounded-lg border border-slate-850">
+                      <span className="text-[10px] text-slate-500 uppercase tracking-widest font-mono">Pending Receipts</span>
+                      <p className="text-lg font-black text-orange-400 mt-0.5">2 Orders</p>
+                    </div>
+                    <div className="bg-slate-950/40 p-3 rounded-lg border border-slate-850">
+                      <span className="text-[10px] text-slate-500 uppercase tracking-widest font-mono">Authorized Limits</span>
+                      <p className="text-lg font-black text-emerald-400 mt-0.5">₹5,00,000</p>
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <span className="text-[10px] font-mono font-bold text-slate-400 uppercase block">Recent Issued Purchase Orders</span>
+                    <div className="overflow-x-auto text-xs">
+                      <table className="w-full text-left font-mono border-collapse">
+                        <thead>
+                          <tr className="border-b border-slate-800 text-[10px] text-slate-500">
+                            <th className="py-1">PO CODE</th>
+                            <th className="py-1">SUPPLIER</th>
+                            <th className="py-1">TOTAL VALUE</th>
+                            <th className="py-1">PAYMENT TERM</th>
+                            <th className="py-1 text-right">STATUS</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-slate-800/40">
+                          <tr>
+                            <td className="py-1.5 text-indigo-400 font-bold">#PO-2026-004</td>
+                            <td className="py-1.5 text-slate-200">Bengal Steel Spares</td>
+                            <td className="py-1.5 text-slate-200">₹1,40,000</td>
+                            <td className="py-1.5 text-slate-400">30-Day Net</td>
+                            <td className="py-1.5 text-right text-emerald-400 font-bold">Approved</td>
+                          </tr>
+                          <tr>
+                            <td className="py-1.5 text-indigo-400 font-bold">#PO-2026-005</td>
+                            <td className="py-1.5 text-slate-200">Kolkata Packing Yards</td>
+                            <td className="py-1.5 text-slate-200">₹45,000</td>
+                            <td className="py-1.5 text-slate-400">15-Day Net</td>
+                            <td className="py-1.5 text-right text-amber-400 font-bold">Sent</td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+
+
+          {/* SECTIONS 3 & 7: TARGET INDUSTRIES & WHO IS IT FOR */}
+          <div className="space-y-6 text-left">
+            <div className="space-y-1">
+              <span className="text-[10px] uppercase font-bold tracking-widest text-indigo-400 font-mono">Target Sectors</span>
+              <h3 className="text-xl md:text-2xl font-extrabold text-white tracking-tight">
+                Designed for Versatile Organizational Structures
+              </h3>
+              <p className="text-xs text-slate-400 max-w-2xl leading-normal">
+                DEINRIM 360 acts as a cohesive operating system mapping specific configurations for complex institutional frameworks.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {[
+                { title: "🏢 Corporate Offices", desc: "Centralize employee attendance, track organizational logs, manage multi-tenant permissions, and store corporate documents securely." },
+                { title: "📦 SMEs & Wholesalers", desc: "Keep physical inventories balanced with LIFO/FIFO batch tracking, log purchase orders, and monitor real-time sales pipelines." },
+                { title: "🏥 Healthcare & Hospitals", desc: "Schedule staff rosters, coordinate warehouse medicine stock expiries, and maintain isolated data partitions for branch clinics." },
+                { title: "🎓 Educational Institutions", desc: "Track administrative files, allocate educational equipment, log procurement assets, and secure staff accounts under RBAC." },
+                { title: "💻 Coworking & Office Spaces", desc: "Manage multi-tenant logins, allocate resource coordinates, track monthly subscriptions, and register corporate desk occupancy." },
+                { title: "🏭 Manufacturing Plants", desc: "Map raw materials, allocate manufacturing batch codes, track Goods Receipt Notes (GRN), and log equipment maintenance." }
+              ].map((item, idx) => (
+                <div key={idx} className="bg-slate-950/40 p-5 rounded-2xl border border-slate-850 hover:border-indigo-500/30 transition-all space-y-2">
+                  <h4 className="text-sm font-extrabold text-white">{item.title}</h4>
+                  <p className="text-xs text-slate-400 leading-relaxed font-normal">{item.desc}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+
+
+          {/* SECTION 4: CORE MODULES GRID */}
+          <div className="space-y-6 text-left">
+            <div className="space-y-1">
+              <span className="text-[10px] uppercase font-bold tracking-widest text-indigo-400 font-mono">Unified Features</span>
+              <h3 className="text-xl md:text-2xl font-extrabold text-white tracking-tight">
+                Current Active Enterprise Modules
+              </h3>
+              <p className="text-xs text-slate-400 max-w-2xl leading-normal">
+                Nine production-ready systems fully linked under a high-performance database schema to avoid double-entry.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+              {[
+                { name: "📈 CRM & Lead Pipeline", desc: "Register customers, organize lead scoring stages (Prospect, proposal, Won), and capture lifetime value parameters.", status: "Active" },
+                { name: "📦 Inventory Management", desc: "Control stocks with batch numbering, shelf rack codes, automated LIFO/FIFO depletion schedules, and low-level alerts.", status: "Active" },
+                { name: "🛍️ Procurement & Purchases", desc: "Generate Purchase Orders (PO), record supplier credit terms, and process incoming warehouse Goods Receipt Notes (GRN).", status: "Active" },
+                { name: "👥 HR & Employee Rosters", desc: "Log employee profiles, record clock-in/clock-out times, and review sick or annual leaves with manager status signatures.", status: "Active" },
+                { name: "🏢 Tenant Workspace", desc: "Create isolated tenant schemas for clients or branches, manage custom brand details, and set up brand color styling.", status: "Active" },
+                { name: "🔒 RBAC User Management", desc: "Enforce strict Role-Based Access Control parameters (System Admin, Company Admin, Purchase Lead, Sales, Guest Read-Only).", status: "Active" },
+                { name: "📂 Document Management", desc: "Store and associate administrative documents with specific transactions, customer profiles, or supplier PO registers.", status: "Active" },
+                { name: "📊 Reports & Analytics", desc: "Extract live CSV and JSON format datasets for physical stock valuations, sales invoice registers, and HR attendances.", status: "Active" },
+                { name: "🔔 System Notifications", desc: "Log system-wide activity warnings including critical stock levels, raw material arrivals, and employee leave requests.", status: "Active" }
+              ].map((mod, idx) => (
+                <div key={idx} className="bg-slate-950/60 p-5 rounded-2xl border border-slate-800 shadow-md relative overflow-hidden group">
+                  <div className="absolute top-0 right-0 h-1.5 w-16 bg-gradient-to-r from-indigo-500 to-purple-500"></div>
+                  <div className="flex items-center justify-between mb-2">
+                    <h4 className="text-xs font-bold text-indigo-400 uppercase tracking-wide font-mono">{mod.name}</h4>
+                    <span className="text-[9px] bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-2 py-0.5 rounded-full font-bold">
+                      {mod.status}
+                    </span>
+                  </div>
+                  <p className="text-xs text-slate-300 leading-relaxed font-normal">{mod.desc}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+
+
+          {/* SECTION 8 & 9: WHY DEINRIM 360 & ROADMAP 2.0 (SIDE-BY-SIDE) */}
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 text-left">
+            
+            {/* Why Deinrim 360 (7 Cols) */}
+            <div className="lg:col-span-7 space-y-6">
+              <div className="space-y-1">
+                <span className="text-[10px] uppercase font-bold tracking-widest text-indigo-400 font-mono">Engineering Trust</span>
+                <h3 className="text-xl md:text-2xl font-extrabold text-white tracking-tight">
+                  Why Leading Companies Choose DEINRIM 360
+                </h3>
+              </div>
+
+              <div className="space-y-4">
+                {[
+                  { title: "⚡ Reduce Manual Effort & Double Entry", desc: "Instead of re-keying warehouse updates into ledger books, inventory movements trigger procurement and CRM entries automatically." },
+                  { title: "🔒 Bank-Grade Multi-Tenant Schema Security", desc: "Your data is entirely isolated in a dedicated tenant partition. There is zero risk of data leakage or unauthorized system visibility." },
+                  { title: "📊 Deep Data-Driven Decision Making", desc: "Inspect real-time stock levels, margin parameters, and employee roster lists on centralized executive control charts." },
+                  { title: "🇮🇳 Localized West Bengal (WB) India Presence", desc: "Engineered and supported directly from Kolkata. High-touch local consultation, rapid deployment, and active SLA backing." }
+                ].map((point, idx) => (
+                  <div key={idx} className="flex gap-3">
+                    <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-indigo-500/10 text-indigo-400 text-xs font-bold">
+                      ✓
+                    </span>
+                    <div className="space-y-0.5">
+                      <span className="text-xs font-bold text-slate-100">{point.title}</span>
+                      <p className="text-[11px] text-slate-400 leading-normal font-normal">{point.desc}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Future Roadmap 2.0 (5 Cols) */}
+            <div className="lg:col-span-5 bg-gradient-to-br from-slate-950 to-indigo-950/40 rounded-2xl p-6 border border-indigo-500/10 space-y-5">
+              <div className="space-y-1">
+                <span className="text-[10px] uppercase font-bold tracking-widest text-amber-400 font-mono">Future Roadmap v2.0</span>
+                <h3 className="text-md font-bold text-slate-100">Coming Soon to Your Workspace</h3>
+                <p className="text-xs text-slate-400">Our engineering desk in Kolkata is actively developing these expansion frameworks:</p>
+              </div>
+
+              <div className="space-y-3 font-mono text-[11px]">
+                {[
+                  { name: "📈 Consolidated Finance & Accounting", status: "Coming Q3 2026" },
+                  { name: "🚪 QR-Code Visitor Management System", status: "Coming Q4 2026" },
+                  { name: "🛠️ Centralized Customer Support Helpdesk", status: "Coming Q4 2026" },
+                  { name: "📱 Native iOS & Android Compact Apps", status: "Coming Q1 2027" },
+                  { name: "🔔 Outbound Automated WhatsApp Alerts", status: "Coming Q2 2027" }
+                ].map((item, idx) => (
+                  <div key={idx} className="flex items-center justify-between p-2 rounded bg-slate-900/60 border border-slate-850">
+                    <span className="text-slate-300 font-sans font-semibold">{item.name}</span>
+                    <span className="text-[9px] bg-amber-500/10 text-amber-400 px-2 py-0.5 rounded shrink-0 font-bold">
+                      {item.status}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+          </div>
+
+
+          {/* SECTION 10: TESTIMONIALS */}
+          <div className="space-y-6 text-left">
+            <div className="space-y-1">
+              <span className="text-[10px] uppercase font-bold tracking-widest text-indigo-400 font-mono">Client Retrospective</span>
+              <h3 className="text-xl md:text-2xl font-extrabold text-white tracking-tight">
+                Trusted by Forward-Thinking Operational Managers
+              </h3>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+              <div className="bg-slate-950/40 p-6 rounded-2xl border border-slate-850 space-y-4">
+                <p className="text-xs italic text-slate-300 leading-relaxed font-normal">
+                  "Transitioning our multi-branch logistics group into the DEINRIM 360 framework completely erased warehouse stock errors. The LIFO/FIFO tracking lets our floor staff process raw steel shipments with zero guesswork. Having direct support based right here in West Bengal is a massive peace of mind."
+                </p>
+                <div className="flex items-center gap-3 border-t border-slate-800/40 pt-3">
+                  <div className="h-8 w-8 rounded-full bg-slate-800 flex items-center justify-center font-bold text-xs text-white">SM</div>
+                  <div>
+                    <span className="text-xs font-bold text-slate-200 block">S. Mukherjee</span>
+                    <span className="text-[10px] text-slate-500 block">Managing Director, Bengal Metal Distributors</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-slate-950/40 p-6 rounded-2xl border border-slate-850 space-y-4">
+                <p className="text-xs italic text-slate-300 leading-relaxed font-normal">
+                  "As a coworking space manager with 120+ active hotdesks and corporate branches, tracking tenant logins and permission profiles used to be a nightmare. DEINRIM 360 gave us an isolated, beautifully whitelabeled client portal where partners submit documents and raise requests instantly."
+                </p>
+                <div className="flex items-center gap-3 border-t border-slate-800/40 pt-3">
+                  <div className="h-8 w-8 rounded-full bg-slate-800 flex items-center justify-center font-bold text-xs text-white">PD</div>
+                  <div>
+                    <span className="text-xs font-bold text-slate-200 block">P. Dutta</span>
+                    <span className="text-[10px] text-slate-500 block">Head of Operations, NexGen Hubs Kolkata</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+
+          {/* SECTION 12: CALL TO ACTION */}
+          <div className="bg-gradient-to-r from-indigo-950/80 via-slate-950 to-indigo-950/80 rounded-2xl p-6 md:p-8 border border-indigo-500/20 text-center space-y-5 relative overflow-hidden">
+            <div className="absolute -left-16 -top-16 w-32 h-32 rounded-full bg-indigo-500/10 blur-2xl"></div>
+            <div className="absolute -right-16 -bottom-16 w-32 h-32 rounded-full bg-purple-500/10 blur-2xl"></div>
+
+            <div className="space-y-2 max-w-2xl mx-auto">
+              <span className="text-[10px] font-mono font-bold tracking-widest text-indigo-400 uppercase block">ENGINEERING YOUR DIGITAL FUTURE</span>
+              <h3 className="text-xl md:text-2xl font-black text-white tracking-tight">Ready to Digitize Your Organization?</h3>
+              <p className="text-xs text-slate-300 leading-relaxed">
+                Unlock operational clarity, eliminate double entry, and secure your company database records. Schedule a dedicated sandbox demonstration with our Kolkata-based engineering desk.
+              </p>
+            </div>
+
+            <div className="flex flex-wrap items-center justify-center gap-4">
+              <button
+                type="button"
+                onClick={() => {
+                  setActiveTab("demo");
+                  const loginEl = document.getElementById("login-panel");
+                  if (loginEl) {
+                    loginEl.scrollIntoView({ behavior: "smooth", block: "start" });
+                  }
+                }}
+                className="px-6 py-3 bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs rounded-xl transition-all shadow-lg cursor-pointer"
+              >
+                ✨ Launch Free Sandbox Demo
+              </button>
+              <a
+                href="https://wa.me/919836130393?text=I'm%20interested%20in%20a%20DEINRIM%20360%20demo"
+                target="_blank"
+                rel="referrer noopener"
+                className="px-6 py-3 bg-slate-900 hover:bg-slate-850 text-emerald-400 border border-slate-800 font-bold text-xs rounded-xl transition-all"
+              >
+                💬 Chat via WhatsApp (+91 98361-30393)
+              </a>
+            </div>
+
+            <div className="text-[10px] text-slate-500 font-mono">
+              M/s Deinrim Solutionss (P) Ltd. • Corporate Support: +91 98361-30393 • Kolkata, India
+            </div>
+          </div>
+
+
           {/* SECTION: Help Q&A Accordion */}
           <div className="bg-slate-950/60 rounded-2xl p-6 border border-slate-800 shadow-xl space-y-4">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">

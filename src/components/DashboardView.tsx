@@ -18,7 +18,12 @@ import {
   EyeOff, 
   SlidersHorizontal,
   ArrowUpRight,
-  ArrowDownRight
+  ArrowDownRight,
+  Plus,
+  MessageSquare,
+  Sparkles,
+  Clock,
+  X
 } from "lucide-react";
 import { 
   Product, 
@@ -31,7 +36,9 @@ import {
   formatINR,
   User,
   Company,
-  UserRole
+  UserRole,
+  LeaveRequest,
+  Supplier
 } from "../types";
 
 interface DashboardViewProps {
@@ -39,9 +46,14 @@ interface DashboardViewProps {
   batchStocks: BatchStock[];
   invoices: Invoice[];
   purchaseOrders: PurchaseOrder[];
+  setPurchaseOrders: React.Dispatch<React.SetStateAction<PurchaseOrder[]>>;
   transactions: Transaction[];
   employees: Employee[];
   leads: Lead[];
+  setLeads: React.Dispatch<React.SetStateAction<Lead[]>>;
+  leaveRequests: LeaveRequest[];
+  setLeaveRequests: React.Dispatch<React.SetStateAction<LeaveRequest[]>>;
+  suppliers: Supplier[];
   onNavigate: (view: string) => void;
   currentUser: User;
   company: Company;
@@ -52,14 +64,153 @@ export default function DashboardView({
   batchStocks,
   invoices,
   purchaseOrders,
+  setPurchaseOrders,
   transactions,
   employees,
   leads,
+  setLeads,
+  leaveRequests,
+  setLeaveRequests,
+  suppliers,
   onNavigate,
   currentUser,
   company,
 }: DashboardViewProps) {
   const [showConfig, setShowConfig] = useState(false);
+  
+  // Quick Action menu and modal state
+  const [quickMenuOpen, setQuickMenuOpen] = useState(false);
+  const [activeQuickActionModal, setActiveQuickActionModal] = useState<"lead" | "po" | "leave" | null>(null);
+
+  // 1. Add Lead form states
+  const [leadTitle, setLeadTitle] = useState("");
+  const [leadCompany, setLeadCompany] = useState("");
+  const [leadSource, setLeadSource] = useState("Website");
+  const [leadStatus, setLeadStatus] = useState<Lead["status"]>("New");
+  const [leadValue, setLeadValue] = useState("");
+  const [leadNotes, setLeadNotes] = useState("");
+
+  // 2. Create PO form states
+  const [poSupplierId, setPoSupplierId] = useState("");
+  const [poAmount, setPoAmount] = useState("");
+  const [poDeliveryDate, setPoDeliveryDate] = useState("");
+  const [poRemarks, setPoRemarks] = useState("");
+
+  // 3. Request Leave form states
+  const [leaveEmployeeId, setLeaveEmployeeId] = useState("");
+  const [leaveType, setLeaveType] = useState<LeaveRequest["leaveType"]>("annual");
+  const [leaveStartDate, setLeaveStartDate] = useState("");
+  const [leaveEndDate, setLeaveEndDate] = useState("");
+  const [leaveReason, setLeaveReason] = useState("");
+
+  const handleQuickAddLead = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!leadTitle.trim()) {
+      alert("Please specify a Lead Title!");
+      return;
+    }
+
+    const newLead: Lead = {
+      id: `lead-${Date.now()}`,
+      companyId: company?.id || "comp-1",
+      name: leadTitle,
+      companyName: leadCompany,
+      email: `${leadTitle.toLowerCase().replace(/\s+/g, "") || "contact"}@example.com`,
+      phone: "+91 98300 00000",
+      status: leadStatus,
+      source: leadSource,
+      assignedTo: "Kolkata Sales Node",
+      notes: leadNotes ? `${leadNotes} | Est. Value: ₹${leadValue}` : `Est. Value: ₹${leadValue}`,
+      lastContacted: new Date().toISOString().split("T")[0]
+    };
+
+    setLeads(prev => [newLead, ...prev]);
+    setActiveQuickActionModal(null);
+    setLeadTitle("");
+    setLeadCompany("");
+    setLeadSource("Website");
+    setLeadStatus("New");
+    setLeadValue("");
+    setLeadNotes("");
+    alert(`Lead "${leadTitle}" has been added successfully!`);
+  };
+
+  const handleQuickCreatePO = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!poSupplierId) {
+      alert("Please select a Vendor/Supplier!");
+      return;
+    }
+    if (!poAmount || Number(poAmount) <= 0) {
+      alert("Please enter a valid PO Amount!");
+      return;
+    }
+
+    const newPO: PurchaseOrder = {
+      id: `po-${Date.now()}`,
+      poNumber: `PO-2026-000${purchaseOrders.length + 1}`,
+      supplierId: poSupplierId,
+      branchId: "br-hq",
+      items: [
+        { productId: products[0]?.id || "prod-1", quantity: 1, unitPrice: Number(poAmount), receivedQuantity: 0 }
+      ],
+      totalAmount: Number(poAmount),
+      status: "draft",
+      paymentStatus: "unpaid",
+      deliveryDate: poDeliveryDate || undefined,
+      remarks: poRemarks || "Quick action created PO",
+      createdAt: new Date().toISOString()
+    };
+
+    // Save in LocalStorage as well to sync since OrdersPanel loads independently
+    const companyId = currentUser.companyId || "comp-1";
+    try {
+      const stored = localStorage.getItem(`deinrim_purchaseOrders_${companyId}`);
+      const list = stored ? JSON.parse(stored) : [];
+      localStorage.setItem(`deinrim_purchaseOrders_${companyId}`, JSON.stringify([newPO, ...list]));
+    } catch (err) {
+      console.error(err);
+    }
+
+    setPurchaseOrders(prev => [newPO, ...prev]);
+    setActiveQuickActionModal(null);
+    setPoSupplierId("");
+    setPoAmount("");
+    setPoDeliveryDate("");
+    setPoRemarks("");
+    alert(`Purchase Order ${newPO.poNumber} has been created as draft successfully!`);
+  };
+
+  const handleQuickRequestLeave = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!leaveEmployeeId) {
+      alert("Please select an Employee!");
+      return;
+    }
+    if (!leaveStartDate || !leaveEndDate) {
+      alert("Please specify Start and End dates!");
+      return;
+    }
+
+    const newLeave: LeaveRequest = {
+      id: `leave-${Date.now()}`,
+      employeeId: leaveEmployeeId,
+      leaveType: leaveType,
+      startDate: leaveStartDate,
+      endDate: leaveEndDate,
+      reason: leaveReason,
+      status: "pending"
+    };
+
+    setLeaveRequests(prev => [newLeave, ...prev]);
+    setActiveQuickActionModal(null);
+    setLeaveEmployeeId("");
+    setLeaveType("annual");
+    setLeaveStartDate("");
+    setLeaveEndDate("");
+    setLeaveReason("");
+    alert("Leave request has been submitted successfully!");
+  };
   
   // Widget customization states
   const [enabledWidgets, setEnabledWidgets] = useState<Record<string, boolean>>({
@@ -585,6 +736,403 @@ export default function DashboardView({
           </div>
         </div>
       </div>
+
+      {/* ========================================== */}
+      {/* QUICK ACTIONS FLOATING MENU (BOTTOM RIGHT) */}
+      {/* ========================================== */}
+      <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-3" id="quick-action-floating-container">
+        {/* Expanded Quick Action Popover */}
+        {quickMenuOpen && (
+          <div className="flex flex-col gap-2 bg-slate-900/95 backdrop-blur-md border border-slate-800 rounded-2xl p-3 shadow-xl w-56 animate-in slide-in-from-bottom-2 duration-200">
+            <div className="border-b border-slate-800 pb-2 px-1 mb-1">
+              <span className="text-[10px] font-bold text-indigo-400 uppercase tracking-widest font-mono block">Quick Actions</span>
+            </div>
+            
+            <button
+              onClick={() => {
+                setActiveQuickActionModal("lead");
+                setQuickMenuOpen(false);
+              }}
+              className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold text-slate-200 hover:bg-slate-800 transition-colors cursor-pointer text-left"
+            >
+              <div className="h-7 w-7 rounded-lg bg-indigo-500/10 flex items-center justify-center text-indigo-400">
+                <MessageSquare className="h-4 w-4 shrink-0" />
+              </div>
+              <div className="flex flex-col">
+                <span className="font-bold text-slate-100 leading-tight">Add Lead</span>
+                <span className="text-[9px] text-slate-400 leading-none mt-0.5">Register sales enquiry</span>
+              </div>
+            </button>
+
+            <button
+              onClick={() => {
+                setActiveQuickActionModal("po");
+                setQuickMenuOpen(false);
+              }}
+              className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold text-slate-200 hover:bg-slate-800 transition-colors cursor-pointer text-left"
+            >
+              <div className="h-7 w-7 rounded-lg bg-amber-500/10 flex items-center justify-center text-amber-400">
+                <ShoppingBag className="h-4 w-4 shrink-0" />
+              </div>
+              <div className="flex flex-col">
+                <span className="font-bold text-slate-100 leading-tight">Create PO</span>
+                <span className="text-[9px] text-slate-400 leading-none mt-0.5">Issue procurement order</span>
+              </div>
+            </button>
+
+            <button
+              onClick={() => {
+                setActiveQuickActionModal("leave");
+                setQuickMenuOpen(false);
+              }}
+              className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold text-slate-200 hover:bg-slate-800 transition-colors cursor-pointer text-left"
+            >
+              <div className="h-7 w-7 rounded-lg bg-rose-500/10 flex items-center justify-center text-rose-400">
+                <Clock className="h-4 w-4 shrink-0" />
+              </div>
+              <div className="flex flex-col">
+                <span className="font-bold text-slate-100 leading-tight">Request Leave</span>
+                <span className="text-[9px] text-slate-400 leading-none mt-0.5">Apply for employee timeoff</span>
+              </div>
+            </button>
+          </div>
+        )}
+
+        {/* Main Floating Trigger Button */}
+        <button
+          onClick={() => setQuickMenuOpen(!quickMenuOpen)}
+          className={`h-14 w-14 rounded-full flex items-center justify-center shadow-lg transition-transform hover:scale-105 active:scale-95 cursor-pointer border ${
+            quickMenuOpen 
+              ? "bg-slate-800 border-slate-700 text-slate-300" 
+              : "bg-indigo-600 border-indigo-500 text-white shadow-indigo-600/20 hover:shadow-indigo-600/40"
+          }`}
+          title="Quick Actions Menu"
+        >
+          {quickMenuOpen ? (
+            <X className="h-6 w-6" />
+          ) : (
+            <Plus className="h-6 w-6" />
+          )}
+        </button>
+      </div>
+
+      {/* ========================================== */}
+      {/* QUICK ACTION MODALS                        */}
+      {/* ========================================== */}
+
+      {/* 1. Add Lead Modal */}
+      {activeQuickActionModal === "lead" && (
+        <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-xs flex items-center justify-center z-50 p-4 animate-in fade-in duration-200">
+          <div className="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-md overflow-hidden shadow-2xl animate-in zoom-in-95 duration-200 text-left">
+            <div className="flex items-center justify-between border-b border-slate-800 px-6 py-4 bg-slate-950/40">
+              <div className="flex items-center gap-2">
+                <MessageSquare className="h-4 w-4 text-indigo-400" />
+                <h3 className="text-sm font-bold text-white uppercase tracking-wider font-mono">Quick Add Lead</h3>
+              </div>
+              <button 
+                onClick={() => setActiveQuickActionModal(null)}
+                className="text-slate-400 hover:text-white transition-colors cursor-pointer"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+
+            <form onSubmit={handleQuickAddLead} className="p-6 space-y-4">
+              <div>
+                <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider font-mono mb-1.5">Lead Title / Contact Name *</label>
+                <input
+                  type="text"
+                  required
+                  placeholder="John Doe, Cloud Architect"
+                  value={leadTitle}
+                  onChange={(e) => setLeadTitle(e.target.value)}
+                  className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3.5 py-2 text-xs text-white placeholder-slate-500 focus:outline-hidden focus:border-indigo-500 font-semibold"
+                />
+              </div>
+
+              <div>
+                <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider font-mono mb-1.5">Company Name</label>
+                <input
+                  type="text"
+                  placeholder="Acme Tech Solutions"
+                  value={leadCompany}
+                  onChange={(e) => setLeadCompany(e.target.value)}
+                  className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3.5 py-2 text-xs text-white placeholder-slate-500 focus:outline-hidden focus:border-indigo-500 font-semibold"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider font-mono mb-1.5">Lead Source</label>
+                  <select
+                    value={leadSource}
+                    onChange={(e) => setLeadSource(e.target.value)}
+                    className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3.5 py-2 text-xs text-white focus:outline-hidden focus:border-indigo-500 font-semibold"
+                  >
+                    <option value="Website">Website</option>
+                    <option value="Referral">Referral</option>
+                    <option value="LinkedIn">LinkedIn</option>
+                    <option value="Cold Call">Cold Call</option>
+                    <option value="Campaign">Campaign</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider font-mono mb-1.5">Status</label>
+                  <select
+                    value={leadStatus}
+                    onChange={(e) => setLeadStatus(e.target.value as any)}
+                    className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3.5 py-2 text-xs text-white focus:outline-hidden focus:border-indigo-500 font-semibold"
+                  >
+                    <option value="New">New</option>
+                    <option value="Contacted">Contacted</option>
+                    <option value="Qualified">Qualified</option>
+                    <option value="Proposal">Proposal</option>
+                    <option value="Negotiation">Negotiation</option>
+                  </select>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider font-mono mb-1.5">Estimated Pipeline Value (₹)</label>
+                <input
+                  type="number"
+                  placeholder="e.g. 150000"
+                  value={leadValue}
+                  onChange={(e) => setLeadValue(e.target.value)}
+                  className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3.5 py-2 text-xs text-white placeholder-slate-500 focus:outline-hidden focus:border-indigo-500 font-semibold"
+                />
+              </div>
+
+              <div>
+                <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider font-mono mb-1.5">Detailed Notes</label>
+                <textarea
+                  placeholder="Additional context or requirements..."
+                  value={leadNotes}
+                  onChange={(e) => setLeadNotes(e.target.value)}
+                  rows={3}
+                  className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3.5 py-2 text-xs text-white placeholder-slate-500 focus:outline-hidden focus:border-indigo-500 font-semibold resize-none"
+                />
+              </div>
+
+              <div className="flex items-center justify-end gap-3 pt-3 border-t border-slate-800">
+                <button
+                  type="button"
+                  onClick={() => setActiveQuickActionModal(null)}
+                  className="px-4 py-2 rounded-lg text-xs font-bold text-slate-400 hover:text-white transition-colors cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="flex items-center gap-1.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg px-4 py-2 text-xs font-bold transition-all cursor-pointer"
+                >
+                  <Sparkles className="h-3.5 w-3.5" />
+                  <span>Save Lead</span>
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* 2. Create Purchase Order Modal */}
+      {activeQuickActionModal === "po" && (
+        <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-xs flex items-center justify-center z-50 p-4 animate-in fade-in duration-200">
+          <div className="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-md overflow-hidden shadow-2xl animate-in zoom-in-95 duration-200 text-left">
+            <div className="flex items-center justify-between border-b border-slate-800 px-6 py-4 bg-slate-950/40">
+              <div className="flex items-center gap-2">
+                <ShoppingBag className="h-4 w-4 text-amber-400" />
+                <h3 className="text-sm font-bold text-white uppercase tracking-wider font-mono">Quick Create PO</h3>
+              </div>
+              <button 
+                onClick={() => setActiveQuickActionModal(null)}
+                className="text-slate-400 hover:text-white transition-colors cursor-pointer"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+
+            <form onSubmit={handleQuickCreatePO} className="p-6 space-y-4">
+              <div>
+                <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider font-mono mb-1.5">Approved Vendor / Supplier *</label>
+                <select
+                  required
+                  value={poSupplierId}
+                  onChange={(e) => setPoSupplierId(e.target.value)}
+                  className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3.5 py-2 text-xs text-white focus:outline-hidden focus:border-indigo-500 font-semibold"
+                >
+                  <option value="">-- Select Vendor --</option>
+                  {suppliers.map(sup => (
+                    <option key={sup.id} value={sup.id}>
+                      {sup.name} ({sup.code})
+                    </option>
+                  ))}
+                  {suppliers.length === 0 && (
+                    <option value="sup-1">Mock Vendor Ltd (sup-1)</option>
+                  )}
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider font-mono mb-1.5">Total Amount / Value (₹) *</label>
+                <input
+                  type="number"
+                  required
+                  placeholder="e.g. 75000"
+                  value={poAmount}
+                  onChange={(e) => setPoAmount(e.target.value)}
+                  className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3.5 py-2 text-xs text-white placeholder-slate-500 focus:outline-hidden focus:border-indigo-500 font-semibold"
+                />
+              </div>
+
+              <div>
+                <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider font-mono mb-1.5">Expected Delivery Date</label>
+                <input
+                  type="date"
+                  value={poDeliveryDate}
+                  onChange={(e) => setPoDeliveryDate(e.target.value)}
+                  className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3.5 py-2 text-xs text-white focus:outline-hidden focus:border-indigo-500 font-semibold"
+                />
+              </div>
+
+              <div>
+                <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider font-mono mb-1.5">Remarks & Terms</label>
+                <textarea
+                  placeholder="Regular deployment inventory. Net 30 payment terms."
+                  value={poRemarks}
+                  onChange={(e) => setPoRemarks(e.target.value)}
+                  rows={3}
+                  className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3.5 py-2 text-xs text-white placeholder-slate-500 focus:outline-hidden focus:border-indigo-500 font-semibold resize-none"
+                />
+              </div>
+
+              <div className="flex items-center justify-end gap-3 pt-3 border-t border-slate-800">
+                <button
+                  type="button"
+                  onClick={() => setActiveQuickActionModal(null)}
+                  className="px-4 py-2 rounded-lg text-xs font-bold text-slate-400 hover:text-white transition-colors cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="flex items-center gap-1.5 bg-amber-600 hover:bg-amber-500 text-white rounded-lg px-4 py-2 text-xs font-bold transition-all cursor-pointer"
+                >
+                  <Sparkles className="h-3.5 w-3.5" />
+                  <span>Issue draft PO</span>
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* 3. Request Leave Modal */}
+      {activeQuickActionModal === "leave" && (
+        <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-xs flex items-center justify-center z-50 p-4 animate-in fade-in duration-200">
+          <div className="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-md overflow-hidden shadow-2xl animate-in zoom-in-95 duration-200 text-left">
+            <div className="flex items-center justify-between border-b border-slate-800 px-6 py-4 bg-slate-950/40">
+              <div className="flex items-center gap-2">
+                <Clock className="h-4 w-4 text-rose-400" />
+                <h3 className="text-sm font-bold text-white uppercase tracking-wider font-mono">Request Leave</h3>
+              </div>
+              <button 
+                onClick={() => setActiveQuickActionModal(null)}
+                className="text-slate-400 hover:text-white transition-colors cursor-pointer"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+
+            <form onSubmit={handleQuickRequestLeave} className="p-6 space-y-4">
+              <div>
+                <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider font-mono mb-1.5">Employee Name *</label>
+                <select
+                  required
+                  value={leaveEmployeeId}
+                  onChange={(e) => setLeaveEmployeeId(e.target.value)}
+                  className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3.5 py-2 text-xs text-white focus:outline-hidden focus:border-indigo-500 font-semibold"
+                >
+                  <option value="">-- Select Employee --</option>
+                  {employees.map(emp => (
+                    <option key={emp.id} value={emp.id}>
+                      {emp.name} ({emp.employeeCode})
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider font-mono mb-1.5">Leave Category</label>
+                <select
+                  value={leaveType}
+                  onChange={(e) => setLeaveType(e.target.value as any)}
+                  className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3.5 py-2 text-xs text-white focus:outline-hidden focus:border-indigo-500 font-semibold"
+                >
+                  <option value="annual">Annual Leave</option>
+                  <option value="sick">Sick Leave</option>
+                  <option value="casual">Casual Leave</option>
+                  <option value="maternity">Maternity Leave</option>
+                  <option value="unpaid">Loss of Pay / Unpaid</option>
+                </select>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider font-mono mb-1.5">Start Date *</label>
+                  <input
+                    type="date"
+                    required
+                    value={leaveStartDate}
+                    onChange={(e) => setLeaveStartDate(e.target.value)}
+                    className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3.5 py-2 text-xs text-white focus:outline-hidden focus:border-indigo-500 font-semibold"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider font-mono mb-1.5">End Date *</label>
+                  <input
+                    type="date"
+                    required
+                    value={leaveEndDate}
+                    onChange={(e) => setLeaveEndDate(e.target.value)}
+                    className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3.5 py-2 text-xs text-white focus:outline-hidden focus:border-indigo-500 font-semibold"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider font-mono mb-1.5">Reason / Description</label>
+                <textarea
+                  placeholder="State reason for leave request..."
+                  value={leaveReason}
+                  onChange={(e) => setLeaveReason(e.target.value)}
+                  rows={3}
+                  className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3.5 py-2 text-xs text-white placeholder-slate-500 focus:outline-hidden focus:border-indigo-500 font-semibold resize-none"
+                />
+              </div>
+
+              <div className="flex items-center justify-end gap-3 pt-3 border-t border-slate-800">
+                <button
+                  type="button"
+                  onClick={() => setActiveQuickActionModal(null)}
+                  className="px-4 py-2 rounded-lg text-xs font-bold text-slate-400 hover:text-white transition-colors cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="flex items-center gap-1.5 bg-rose-600 hover:bg-rose-500 text-white rounded-lg px-4 py-2 text-xs font-bold transition-all cursor-pointer"
+                >
+                  <Sparkles className="h-3.5 w-3.5" />
+                  <span>Submit Leave Request</span>
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
