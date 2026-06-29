@@ -1,0 +1,6 @@
+{
+  "name": "DEINRIM OMS",
+  "description": "DEINRIM Office Management System (OMS) - A highly integrated, inventory-first Enterprise Resource Planning (ERP) & CRM platform.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

@@ -1,0 +1,177 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+}
+
+/* ==========================================================================
+   GLOBAL SLATE DARK THEME UNIFICATION
+   ========================================================================== */
+
+body {
+  background-color: #0f172a !important; /* bg-slate-900 */
+  color: #e2e8f0 !important; /* text-slate-200 */
+  font-family: "Inter", ui-sans-serif, system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Scrollbars styling for a premium dark feel */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #090d16;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #1e293b;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #334155;
+}
+
+/* Font and Heading accents */
+h1, h2, h3, h4, h5, h6 {
+  font-family: "Space Grotesk", sans-serif;
+  letter-spacing: -0.025em;
+}
+
+/* Cards & Panel Overrides */
+.bg-white, [class*="bg-white"] {
+  background-color: #090d16 !important; /* Premium Slate-950 backdrop */
+  border-color: #1e293b !important; /* Slate-800 borders */
+}
+
+.bg-gray-50, .bg-gray-50\/50, [class*="bg-gray-50"] {
+  background-color: #0f172a !important; /* bg-slate-900 */
+}
+
+.bg-gray-100, .bg-gray-100\/50, [class*="bg-gray-100"] {
+  background-color: #1e293b !important; /* bg-slate-800 */
+}
+
+/* Borders Overrides */
+.border-gray-50, .border-gray-100, .border-gray-150, .border-gray-200, .border-gray-300 {
+  border-color: #1e293b !important; /* Slate-800 */
+}
+
+/* Dividers */
+.divide-gray-50, .divide-gray-100, .divide-gray-150, .divide-gray-200, [class*="divide-gray"] {
+  border-color: #1e293b !important;
+  --tw-divide-y-reverse: 0;
+  border-top-width: calc(1px * (1 - var(--tw-divide-y-reverse)));
+  border-bottom-width: calc(1px * var(--tw-divide-y-reverse));
+}
+
+.divide-slate-100, .divide-slate-200 {
+  border-color: #1e293b !important;
+}
+
+/* Text Color Unifications */
+.text-slate-900, .text-slate-950, .text-gray-900, .text-gray-950, .text-slate-800, .text-gray-800 {
+  color: #f8fafc !important; /* White/Slate-50 */
+}
+
+.text-gray-700, .text-gray-600, .text-slate-600 {
+  color: #cbd5e1 !important; /* Slate-300 */
+}
+
+.text-gray-500, .text-gray-400, .text-slate-500 {
+  color: #94a3b8 !important; /* Slate-400 */
+}
+
+/* Form inputs & interactive widgets (inputs, select dropdowns, textareas) */
+input, select, textarea {
+  background-color: #0f172a !important; /* bg-slate-900 */
+  border-color: #1e293b !important; /* border-slate-800 */
+  color: #f8fafc !important; /* text-slate-50 */
+  font-family: "Inter", sans-serif;
+}
+
+input::placeholder, textarea::placeholder {
+  color: #475569 !important; /* Slate-600 */
+}
+
+option {
+  background-color: #090d16 !important;
+  color: #f8fafc !important;
+}
+
+/* Interactive elements & hover overrides */
+.hover\:bg-gray-50\/40:hover, .hover\:bg-gray-50:hover, .hover\:bg-gray-100:hover, .hover\:bg-slate-50:hover {
+  background-color: #1e293b !important; /* bg-slate-800 */
+  color: #ffffff !important;
+}
+
+tr.hover\:bg-gray-50\/40:hover, tr:hover {
+  background-color: rgba(30, 41, 59, 0.4) !important; /* subtle hover state */
+}
+
+/* Badges and tags adjustments to remain vibrant in dark canvas */
+.bg-indigo-50 {
+  background-color: rgba(99, 102, 241, 0.15) !important;
+  color: #818cf8 !important;
+}
+
+.bg-emerald-50, .bg-emerald-50\/30 {
+  background-color: rgba(16, 185, 129, 0.15) !important;
+  color: #34d399 !important;
+}
+
+.bg-amber-50, .bg-amber-50\/30 {
+  background-color: rgba(245, 158, 11, 0.15) !important;
+  color: #fbbf24 !important;
+}
+
+.bg-rose-50, .bg-red-50, .bg-red-50\/30 {
+  background-color: rgba(239, 68, 68, 0.15) !important;
+  color: #f87171 !important;
+}
+
+.bg-orange-50 {
+  background-color: rgba(249, 115, 22, 0.15) !important;
+  color: #fb923c !important;
+}
+
+.bg-purple-50 {
+  background-color: rgba(168, 85, 247, 0.15) !important;
+  color: #c084fc !important;
+}
+
+.bg-blue-50 {
+  background-color: rgba(59, 130, 246, 0.15) !important;
+  color: #60a5fa !important;
+}
+
+.bg-teal-50 {
+  background-color: rgba(20, 184, 166, 0.15) !important;
+  color: #2dd4bf !important;
+}
+
+/* Buttons using gray styling */
+.border-gray-200.bg-white {
+  background-color: #0f172a !important; /* Slate-900 */
+  border-color: #1e293b !important;
+  color: #cbd5e1 !important;
+}
+
+.border-gray-200.bg-white:hover {
+  background-color: #1e293b !important; /* Slate-800 */
+  color: #ffffff !important;
+}
+
+/* Modals, custom overlays and lists */
+.shadow-xs, .shadow-sm, .shadow-md, .shadow-lg, .shadow-xl, .shadow-2xl {
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5), 0 4px 6px -2px rgba(0, 0, 0, 0.3) !important;
+}
+
+/* Code & Terminal components styling */
+code, pre, .font-mono {
+  font-family: "JetBrains Mono", monospace !important;
+}
