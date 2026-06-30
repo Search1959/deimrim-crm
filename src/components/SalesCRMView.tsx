@@ -1,9 +1,9 @@
 import React, { useState } from "react";
-import { 
-  MessageSquare, ShieldAlert, FileText, CreditCard, Award, 
-  Building2, Users, AlertCircle, Calendar, Sparkles, LayoutGrid, ClipboardCheck, Truck 
+import {
+  MessageSquare, ShieldAlert, FileText, CreditCard, Award,
+  Building2, Users, AlertCircle, ClipboardCheck, Truck, Wrench, Sparkles
 } from "lucide-react";
-import { Lead, Customer, Invoice, Product, BatchStock, UserRole } from "../types";
+import { Lead, Customer, Invoice, Product, BatchStock, UserRole, ServiceCatalogItem } from "../types";
 
 // Import modular CRM components
 import LeadsPanel from "./crm/LeadsPanel";
@@ -16,6 +16,7 @@ import TargetsPanel from "./crm/TargetsPanel";
 import CompaniesPanel from "./crm/CompaniesPanel";
 import ContactsPanel from "./crm/ContactsPanel";
 import TicketsPanel from "./crm/TicketsPanel";
+import ServiceCatalogPanel from "./crm/ServiceCatalogPanel";
 
 interface SalesCRMViewProps {
   leads: Lead[];
@@ -26,13 +27,15 @@ interface SalesCRMViewProps {
   setInvoices: React.Dispatch<React.SetStateAction<Invoice[]>>;
   products: Product[];
   batchStocks: BatchStock[];
+  serviceCatalog: ServiceCatalogItem[];
+  setServiceCatalog: React.Dispatch<React.SetStateAction<ServiceCatalogItem[]>>;
   userRole: UserRole;
-  onGenerateInvoice: (invoiceId: string, customerId: string, items: Array<{ productId: string; qty: number }>, customTotalAmount?: number) => void;
+  onGenerateInvoice: (invoiceId: string, customerId: string, items: Array<{ productId: string; qty: number; itemType?: "product" | "service" }>, customTotalAmount?: number) => void;
   onPaymentRecorded?: (invoiceId: string, amount: number, method: string, invoiceNumber: string, customerName: string) => void;
   companyId: string;
 }
 
-type ActiveCRMTab = "leads" | "deals" | "quotations" | "invoices" | "do" | "payments" | "targets" | "companies" | "contacts" | "tickets";
+type ActiveCRMTab = "leads" | "deals" | "quotations" | "invoices" | "do" | "payments" | "targets" | "companies" | "contacts" | "tickets" | "services";
 
 export default function SalesCRMView({
   leads,
@@ -43,6 +46,8 @@ export default function SalesCRMView({
   setInvoices,
   products,
   batchStocks,
+  serviceCatalog,
+  setServiceCatalog,
   userRole,
   onGenerateInvoice,
   onPaymentRecorded,
@@ -67,6 +72,10 @@ export default function SalesCRMView({
     { id: "tickets", label: "Service Tickets", icon: AlertCircle },
   ] as const;
 
+  const toolsItems = [
+    { id: "services", label: "Service Catalog", icon: Wrench },
+  ] as const;
+
   const renderActivePanel = () => {
     switch (activeTab) {
       case "leads":
@@ -83,6 +92,7 @@ export default function SalesCRMView({
             customers={customers}
             products={products}
             batchStocks={batchStocks}
+            serviceCatalog={serviceCatalog}
             onGenerateInvoice={onGenerateInvoice}
             companyId={companyId}
           />
@@ -99,13 +109,15 @@ export default function SalesCRMView({
         return <ContactsPanel customers={customers} companyId={companyId} />;
       case "tickets":
         return <TicketsPanel customers={customers} companyId={companyId} />;
+      case "services":
+        return <ServiceCatalogPanel serviceCatalog={serviceCatalog} setServiceCatalog={setServiceCatalog} />;
       default:
         return <LeadsPanel leads={leads} setLeads={setLeads} customers={customers} />;
     }
   };
 
   const getTabHeaderTitle = () => {
-    const allItems = [...salesPipelineItems, ...customersItems];
+    const allItems = [...salesPipelineItems, ...customersItems, ...toolsItems];
     return allItems.find(item => item.id === activeTab)?.label || "Sales & CRM Node";
   };
 
@@ -150,6 +162,30 @@ export default function SalesCRMView({
                   className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-bold transition-all text-left cursor-pointer ${
                     isActive 
                       ? "bg-indigo-600/10 border border-indigo-500/30 text-indigo-300" 
+                      : "border border-transparent text-slate-400 hover:bg-slate-900/40 hover:text-slate-200"
+                  }`}
+                >
+                  <Icon className="h-4 w-4 shrink-0" />
+                  <span>{item.label}</span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        <div>
+          <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest block font-mono">Tools</span>
+          <div className="space-y-1 mt-2">
+            {toolsItems.map(item => {
+              const Icon = item.icon;
+              const isActive = activeTab === item.id;
+              return (
+                <button
+                  key={item.id}
+                  onClick={() => setActiveTab(item.id as ActiveCRMTab)}
+                  className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-bold transition-all text-left cursor-pointer ${
+                    isActive
+                      ? "bg-violet-600/10 border border-violet-500/30 text-violet-300"
                       : "border border-transparent text-slate-400 hover:bg-slate-900/40 hover:text-slate-200"
                   }`}
                 >

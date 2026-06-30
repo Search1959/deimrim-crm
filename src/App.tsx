@@ -64,6 +64,7 @@ import {
   AppNotification, 
   AuditLog,
   StockMovement,
+  ServiceCatalogItem,
   formatINR,
   UserRole
 } from "./types";
@@ -199,6 +200,13 @@ export default function App() {
   const [batchStocks, setBatchStocks] = useState<BatchStock[]>(defaultBatchStocks);
   const [suppliers, setSuppliers] = useState<Supplier[]>(defaultSuppliers);
   const [purchaseOrders, setPurchaseOrders] = useState<PurchaseOrder[]>(defaultPurchaseOrders);
+  const [serviceCatalog, setServiceCatalog] = useState<ServiceCatalogItem[]>([
+    { id: "svc-1", name: "Consulting / Advisory", sacCode: "998311", unit: "Hour", defaultRate: 2500, description: "Professional consulting and advisory services" },
+    { id: "svc-2", name: "Annual Maintenance Contract (AMC)", sacCode: "998719", unit: "Year", defaultRate: 15000, description: "Comprehensive annual maintenance and support" },
+    { id: "svc-3", name: "Installation & Commissioning", sacCode: "995461", unit: "Job", defaultRate: 8000, description: "On-site installation and commissioning" },
+    { id: "svc-4", name: "Training & Capacity Building", sacCode: "999293", unit: "Day", defaultRate: 5000, description: "Staff training and skill development" },
+    { id: "svc-5", name: "Software / SaaS Subscription", sacCode: "998314", unit: "Month", defaultRate: 3000, description: "Software license or SaaS subscription fee" },
+  ]);
   const [leads, setLeads] = useState<Lead[]>(defaultLeads);
   const [customers, setCustomers] = useState<Customer[]>(defaultCustomers);
   const [invoices, setInvoices] = useState<Invoice[]>(defaultInvoices);
@@ -735,18 +743,17 @@ export default function App() {
 
   // 2. Sales Billing Invoices triggers Stock Depletion & Ledgers updates
   const handleGenerateInvoice = (
-    invoiceId: string, 
-    customerId: string, 
-    items: Array<{ productId: string; qty: number }>,
+    invoiceId: string,
+    customerId: string,
+    items: Array<{ productId: string; qty: number; itemType?: "product" | "service" }>,
     customTotalAmount?: number
   ) => {
-    // A. Deplete available batch stock quantities
+    // A. Deplete stock ONLY for product lines (services have no stock)
+    const productItems = items.filter(i => i.itemType !== "service" && i.productId);
     setBatchStocks(prev => {
       const copy = [...prev];
-      items.forEach(item => {
-        // Find any batches that contain this product and possess on-hand quantities
+      productItems.forEach(item => {
         let remainingToDeplete = item.qty;
-        
         for (let i = 0; i < copy.length; i++) {
           if (copy[i].productId === item.productId && copy[i].quantity > 0) {
             if (copy[i].quantity >= remainingToDeplete) {
@@ -763,14 +770,14 @@ export default function App() {
       return copy;
     });
 
-    // B. Write chronological movements log
+    // B. Write stock movement log for product lines only
     const invoiceNum = `INV-2026-000${invoices.length + 1}`;
-    items.forEach(item => {
+    productItems.forEach(item => {
       const prod = products.find(p => p.id === item.productId);
       const moveLog: StockMovement = {
         id: `move-${Date.now()}-${Math.random().toString(36).substr(2, 4)}`,
         productId: item.productId,
-        warehouseId: "wh-main", // Default Headquarters central godown
+        warehouseId: "wh-main",
         type: "OUT",
         source: "SALES",
         referenceId: invoiceNum,
@@ -778,7 +785,7 @@ export default function App() {
         unitPrice: prod?.sellingPrice || 0,
         userId: currentUser.id,
         timestamp: new Date().toISOString(),
-        remarks: `Auto-depleted from sales billing Invoice - ${invoiceNum}`,
+        remarks: `Auto-depleted from sales invoice - ${invoiceNum}`,
       };
       setStockMovements(prev => [moveLog, ...prev]);
     });
@@ -787,29 +794,31 @@ export default function App() {
     const billingTotalCost = customTotalAmount !== undefined ? customTotalAmount : items.reduce((sum, item) => {
       const rate = products.find(p => p.id === item.productId)?.sellingPrice || 0;
       return sum + (item.qty * rate);
-    }, 0) * 1.18; // adding 18% GST tax (Indian standard)
+    }, 0) * 1.18;
 
     setCustomers(prev => prev.map(c => {
       if (c.id === customerId) {
-        return {
-          ...c,
-          outstandingBalance: c.outstandingBalance + billingTotalCost,
-        };
+        return { ...c, outstandingBalance: c.outstandingBalance + billingTotalCost };
       }
       return c;
     }));
 
-    // D. Post revenue transaction details into finance
+    // D. Post revenue to Finance — category reflects whether it's services, products, or mixed
+    const hasServices = items.some(i => i.itemType === "service");
+    const hasProducts = items.some(i => i.itemType !== "service" && i.productId);
+    const financeCategory = hasServices && hasProducts ? "Mixed Sales (Products + Services)"
+      : hasServices ? "Service Revenue" : "Product Sales";
+
     const targetCustName = customers.find(c => c.id === customerId)?.name || "Client Account";
     const financeLog: Transaction = {
       id: `tx-${Date.now()}`,
       type: "INCOME",
-      category: "Product Sales",
+      category: financeCategory,
       amount: billingTotalCost,
       date: new Date().toISOString().split("T")[0],
       referenceId: invoiceNum,
       paymentMethod: "BANK",
-      description: `Billed Revenue receivable from ${targetCustName} for invoice ${invoiceNum}`,
+      description: `Revenue receivable from ${targetCustName} for ${invoiceNum}`,
       branchId: currentBranch.id,
     };
     setTransactions(prev => [financeLog, ...prev]);
@@ -1020,6 +1029,8 @@ export default function App() {
             setInvoices={setInvoices}
             products={products}
             batchStocks={batchStocks}
+            serviceCatalog={serviceCatalog}
+            setServiceCatalog={setServiceCatalog}
             userRole={currentUser.role}
             onGenerateInvoice={handleGenerateInvoice}
             onPaymentRecorded={handlePaymentRecorded}

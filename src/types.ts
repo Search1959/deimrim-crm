@@ -255,12 +255,22 @@ export interface Customer {
   gstin?: string;
 }
 
+export interface ServiceCatalogItem {
+  id: string;
+  name: string;
+  sacCode: string;
+  unit: string;
+  defaultRate: number;
+  description?: string;
+}
+
 export interface Invoice {
   id: string;
   invoiceNumber: string;
   customerId: string;
   branchId: string;
   items: Array<{
+    itemType?: "product" | "service";
     productId: string;
     description?: string;
     hsn?: string;
