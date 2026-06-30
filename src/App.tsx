@@ -4,6 +4,7 @@
  */
 
 import React, { useState, useEffect, useRef, useCallback } from "react";
+import { toast } from "./utils/toast";
 import { loadAllEntities, saveEntity, loadUsers, saveUsers } from "./api";
 import { X, Shield, FileText, HelpCircle, AlertTriangle, CheckCircle2, Trash2, Plus, MessageSquare, Clipboard, Calendar, Zap } from "lucide-react";
 import Sidebar from "./components/Sidebar";
@@ -544,6 +545,50 @@ export default function App() {
     setAuditLogs(prev => [audit, ...prev]);
   };
 
+  // One-click PO → Inventory (no separate GRN step required)
+  const handleMarkPOReceived = (poId: string) => {
+    const po = purchaseOrders.find(p => p.id === poId);
+    if (!po) return;
+    const warehouseId = "wh-main";
+    const grnItems = po.items.map(item => ({
+      productId: item.productId,
+      qty: item.quantity,
+      batchNumber: `B${new Date().getFullYear()}-${Math.random().toString(36).substring(2, 6).toUpperCase()}`,
+      expiryDate: "2031-12-31",
+      rack: "Rack A",
+    }));
+    handleReceiveGRN(poId, warehouseId, grnItems);
+    setPurchaseOrders(prev => prev.map(p =>
+      p.id === poId ? { ...p, status: "completed" as const } : p
+    ));
+    toast.success("Stock Updated", `PO ${po.poNumber} received — inventory updated automatically`);
+  };
+
+  // Payment recorded → auto-post income to Finance
+  const handlePaymentRecorded = (invoiceId: string, amount: number, method: string, invoiceNumber: string, customerName: string) => {
+    const finTx: Transaction = {
+      id: `tx-${Date.now()}`,
+      type: "INCOME",
+      category: "Payment Received",
+      amount,
+      date: new Date().toISOString().split("T")[0],
+      referenceId: invoiceNumber,
+      paymentMethod: method === "Bank Transfer" ? "BANK" : method === "UPI" ? "UPI" : method === "Cash" ? "CASH" : "BANK",
+      description: `Payment received from ${customerName} for ${invoiceNumber}`,
+      branchId: currentBranch.id,
+    };
+    setTransactions(prev => [finTx, ...prev]);
+    // Clear customer outstanding balance
+    const inv = invoices.find(i => i.id === invoiceId);
+    if (inv) {
+      setCustomers(prev => prev.map(c =>
+        c.id === inv.customerId
+          ? { ...c, outstandingBalance: Math.max(0, c.outstandingBalance - amount) }
+          : c
+      ));
+    }
+  };
+
   // -------------------------------------------------------------
   // -------------------------------------------------------------
   // FLOATING QUICK ACTION SAVING CALLBACKS
@@ -961,6 +1006,7 @@ export default function App() {
             warehouses={defaultWarehouses}
             userRole={currentUser.role}
             onReceiveGRN={handleReceiveGRN}
+            onMarkPOReceived={handleMarkPOReceived}
           />
         );
       case "sales-crm":
@@ -976,6 +1022,7 @@ export default function App() {
             batchStocks={batchStocks}
             userRole={currentUser.role}
             onGenerateInvoice={handleGenerateInvoice}
+            onPaymentRecorded={handlePaymentRecorded}
             companyId={currentUser.companyId}
           />
         );

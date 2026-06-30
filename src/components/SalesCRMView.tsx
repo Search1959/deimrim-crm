@@ -28,6 +28,7 @@ interface SalesCRMViewProps {
   batchStocks: BatchStock[];
   userRole: UserRole;
   onGenerateInvoice: (invoiceId: string, customerId: string, items: Array<{ productId: string; qty: number }>, customTotalAmount?: number) => void;
+  onPaymentRecorded?: (invoiceId: string, amount: number, method: string, invoiceNumber: string, customerName: string) => void;
   companyId: string;
 }
 
@@ -44,6 +45,7 @@ export default function SalesCRMView({
   batchStocks,
   userRole,
   onGenerateInvoice,
+  onPaymentRecorded,
   companyId
 }: SalesCRMViewProps) {
   const [activeTab, setActiveTab] = useState<ActiveCRMTab>("leads");
@@ -75,19 +77,20 @@ export default function SalesCRMView({
         return <QuotationsPanel customers={customers} companyId={companyId} />;
       case "invoices":
         return (
-          <InvoicesPanel 
-            invoices={invoices} 
-            setInvoices={setInvoices} 
-            customers={customers} 
-            products={products} 
-            onGenerateInvoice={onGenerateInvoice} 
+          <InvoicesPanel
+            invoices={invoices}
+            setInvoices={setInvoices}
+            customers={customers}
+            products={products}
+            batchStocks={batchStocks}
+            onGenerateInvoice={onGenerateInvoice}
             companyId={companyId}
           />
         );
       case "do":
         return <DeliveryOrdersPanel customers={customers} companyId={companyId} />;
       case "payments":
-        return <PaymentsPanel invoices={invoices} setInvoices={setInvoices} customers={customers} companyId={companyId} />;
+        return <PaymentsPanel invoices={invoices} setInvoices={setInvoices} customers={customers} companyId={companyId} onPaymentRecorded={onPaymentRecorded} />;
       case "targets":
         return <TargetsPanel companyId={companyId} />;
       case "companies":

@@ -8,9 +8,10 @@ interface PaymentsPanelProps {
   setInvoices: React.Dispatch<React.SetStateAction<Invoice[]>>;
   customers: Customer[];
   companyId: string;
+  onPaymentRecorded?: (invoiceId: string, amount: number, method: string, invoiceNumber: string, customerName: string) => void;
 }
 
-export default function PaymentsPanel({ invoices, setInvoices, customers, companyId }: PaymentsPanelProps) {
+export default function PaymentsPanel({ invoices, setInvoices, customers, companyId, onPaymentRecorded }: PaymentsPanelProps) {
   const [payments, setPayments] = useState<Payment[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [showAddModal, setShowAddModal] = useState(false);
@@ -97,10 +98,15 @@ export default function PaymentsPanel({ invoices, setInvoices, customers, compan
       return inv;
     }));
 
+    // Auto-post to Finance module
+    if (onPaymentRecorded) {
+      onPaymentRecorded(invoiceId, paymentAmount, paymentMethod, targetInvoice.invoiceNumber, targetCust?.name ?? "Unknown");
+    }
+
     const updated = [newPay, ...payments];
     savePayments(updated);
     setShowAddModal(false);
-    toast.success("Payment Recorded", `${formatINR(paymentAmount)} applied to ${targetInvoice.invoiceNumber}`);
+    toast.success("Payment Recorded", `${formatINR(paymentAmount)} applied to ${targetInvoice.invoiceNumber} — Finance updated`);
   };
 
   const filteredPayments = payments.filter(p =>

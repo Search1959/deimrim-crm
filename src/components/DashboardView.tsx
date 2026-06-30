@@ -232,7 +232,7 @@ export default function DashboardView({
   const totalPurchaseVal = purchaseOrders.reduce((sum, po) => sum + po.totalAmount, 0);
   
   const todayExpenses = transactions
-    .filter(t => t.type === "EXPENSE" && t.date === "2026-06-01" || t.date === "2026-05-30")
+    .filter(t => t.type === "EXPENSE" && (t.date === "2026-06-01" || t.date === "2026-05-30"))
     .reduce((sum, t) => sum + t.amount, 0);
 
   const totalRevenue = transactions
@@ -248,7 +248,7 @@ export default function DashboardView({
 
   const pendingPaymentsSum = invoices
     .filter(inv => inv.status !== "paid")
-    .reduce((sum, inv) => sum + (inv.totalAmount - (inv.status === "partially_paid" ? 5000 : 0)), 0);
+    .reduce((sum, inv) => sum + inv.totalAmount, 0);
 
   // Compute stock levels per product
   const productStockMap = products.reduce((acc, p) => {
@@ -627,10 +627,10 @@ export default function DashboardView({
                     <Users className="h-4 w-4 text-indigo-500" />
                     <span>Employee Attendance</span>
                   </span>
-                  <span className="font-mono font-bold text-slate-800">3 / {employees.length} Present</span>
+                  <span className="font-mono font-bold text-slate-800">{employees.length} / {employees.length} Present</span>
                 </div>
                 <div className="mt-2 h-1.5 w-full rounded-full bg-gray-100">
-                  <div className="h-full rounded-full bg-indigo-600" style={{ width: "75%" }}></div>
+                  <div className="h-full rounded-full bg-indigo-600" style={{ width: employees.length > 0 ? "100%" : "0%" }}></div>
                 </div>
               </div>
             )}
