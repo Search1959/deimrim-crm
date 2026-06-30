@@ -6,9 +6,10 @@ interface PaymentsPanelProps {
   invoices: Invoice[];
   setInvoices: React.Dispatch<React.SetStateAction<Invoice[]>>;
   customers: Customer[];
+  companyId: string;
 }
 
-export default function PaymentsPanel({ invoices, setInvoices, customers }: PaymentsPanelProps) {
+export default function PaymentsPanel({ invoices, setInvoices, customers, companyId }: PaymentsPanelProps) {
   const [payments, setPayments] = useState<Payment[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [showAddModal, setShowAddModal] = useState(false);
@@ -21,8 +22,10 @@ export default function PaymentsPanel({ invoices, setInvoices, customers }: Paym
   const [referenceNo, setReferenceNo] = useState("");
   const [notes, setNotes] = useState("");
 
+  const storageKey = `deinrim_payments_${companyId}`;
+
   useEffect(() => {
-    const stored = localStorage.getItem("deinrim_payments");
+    const stored = localStorage.getItem(storageKey);
     if (stored) {
       try { setPayments(JSON.parse(stored)); } catch (e) {}
     } else {
@@ -41,13 +44,13 @@ export default function PaymentsPanel({ invoices, setInvoices, customers }: Paym
         }
       ];
       setPayments(defaultP);
-      localStorage.setItem("deinrim_payments", JSON.stringify(defaultP));
+      localStorage.setItem(storageKey, JSON.stringify(defaultP));
     }
-  }, [invoices]);
+  }, [companyId, invoices]);
 
   const savePayments = (updated: Payment[]) => {
     setPayments(updated);
-    localStorage.setItem("deinrim_payments", JSON.stringify(updated));
+    localStorage.setItem(storageKey, JSON.stringify(updated));
   };
 
   const handleOpenAdd = () => {

@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { 
   MessageSquare, ShieldAlert, FileText, CreditCard, Award, 
-  Building2, Users, AlertCircle, Calendar, Sparkles, LayoutGrid, ClipboardCheck 
+  Building2, Users, AlertCircle, Calendar, Sparkles, LayoutGrid, ClipboardCheck, Truck 
 } from "lucide-react";
 import { Lead, Customer, Invoice, Product, BatchStock, UserRole } from "../types";
 
@@ -10,6 +10,7 @@ import LeadsPanel from "./crm/LeadsPanel";
 import DealsPanel from "./crm/DealsPanel";
 import QuotationsPanel from "./crm/QuotationsPanel";
 import InvoicesPanel from "./crm/InvoicesPanel";
+import DeliveryOrdersPanel from "./crm/DeliveryOrdersPanel";
 import PaymentsPanel from "./crm/PaymentsPanel";
 import TargetsPanel from "./crm/TargetsPanel";
 import CompaniesPanel from "./crm/CompaniesPanel";
@@ -26,10 +27,11 @@ interface SalesCRMViewProps {
   products: Product[];
   batchStocks: BatchStock[];
   userRole: UserRole;
-  onGenerateInvoice: (invoiceId: string, customerId: string, items: Array<{ productId: string; qty: number }>) => void;
+  onGenerateInvoice: (invoiceId: string, customerId: string, items: Array<{ productId: string; qty: number }>, customTotalAmount?: number) => void;
+  companyId: string;
 }
 
-type ActiveCRMTab = "leads" | "deals" | "quotations" | "invoices" | "payments" | "targets" | "companies" | "contacts" | "tickets";
+type ActiveCRMTab = "leads" | "deals" | "quotations" | "invoices" | "do" | "payments" | "targets" | "companies" | "contacts" | "tickets";
 
 export default function SalesCRMView({
   leads,
@@ -41,7 +43,8 @@ export default function SalesCRMView({
   products,
   batchStocks,
   userRole,
-  onGenerateInvoice
+  onGenerateInvoice,
+  companyId
 }: SalesCRMViewProps) {
   const [activeTab, setActiveTab] = useState<ActiveCRMTab>("leads");
 
@@ -51,6 +54,7 @@ export default function SalesCRMView({
     { id: "deals", label: "Deals", icon: ShieldAlert },
     { id: "quotations", label: "Quotations", icon: FileText },
     { id: "invoices", label: "Invoices", icon: ClipboardCheck },
+    { id: "do", label: "Delivery Orders (DO)", icon: Truck },
     { id: "payments", label: "Payments", icon: CreditCard },
     { id: "targets", label: "Sales Targets", icon: Award },
   ] as const;
@@ -66,9 +70,9 @@ export default function SalesCRMView({
       case "leads":
         return <LeadsPanel leads={leads} setLeads={setLeads} customers={customers} />;
       case "deals":
-        return <DealsPanel leads={leads} />;
+        return <DealsPanel leads={leads} companyId={companyId} />;
       case "quotations":
-        return <QuotationsPanel customers={customers} />;
+        return <QuotationsPanel customers={customers} companyId={companyId} />;
       case "invoices":
         return (
           <InvoicesPanel 
@@ -77,18 +81,21 @@ export default function SalesCRMView({
             customers={customers} 
             products={products} 
             onGenerateInvoice={onGenerateInvoice} 
+            companyId={companyId}
           />
         );
+      case "do":
+        return <DeliveryOrdersPanel customers={customers} companyId={companyId} />;
       case "payments":
-        return <PaymentsPanel invoices={invoices} setInvoices={setInvoices} customers={customers} />;
+        return <PaymentsPanel invoices={invoices} setInvoices={setInvoices} customers={customers} companyId={companyId} />;
       case "targets":
-        return <TargetsPanel />;
+        return <TargetsPanel companyId={companyId} />;
       case "companies":
-        return <CompaniesPanel customers={customers} setCustomers={setCustomers} />;
+        return <CompaniesPanel customers={customers} setCustomers={setCustomers} companyId={companyId} />;
       case "contacts":
-        return <ContactsPanel customers={customers} />;
+        return <ContactsPanel customers={customers} companyId={companyId} />;
       case "tickets":
-        return <TicketsPanel customers={customers} />;
+        return <TicketsPanel customers={customers} companyId={companyId} />;
       default:
         return <LeadsPanel leads={leads} setLeads={setLeads} customers={customers} />;
     }
@@ -153,20 +160,18 @@ export default function SalesCRMView({
       </div>
 
       {/* Main Workspace Frame */}
-      <div className="flex-1 bg-slate-900/20 border border-slate-800 rounded-2xl p-5 min-h-[500px] flex flex-col justify-between">
-        <div className="space-y-4">
-          <div className="flex items-center justify-between border-b border-slate-800 pb-3">
-            <div className="flex items-center gap-2">
-              <Sparkles className="h-4 w-4 text-indigo-400" />
-              <h2 className="text-sm font-bold text-white uppercase tracking-wider font-mono">
-                {getTabHeaderTitle()}
-              </h2>
-            </div>
+      <div className="flex-1 bg-slate-900/20 border border-slate-800 rounded-2xl p-5 min-h-[500px] flex flex-col">
+        <div className="flex items-center justify-between border-b border-slate-800 pb-3 mb-4 shrink-0">
+          <div className="flex items-center gap-2">
+            <Sparkles className="h-4 w-4 text-indigo-400" />
+            <h2 className="text-sm font-bold text-white uppercase tracking-wider font-mono">
+              {getTabHeaderTitle()}
+            </h2>
           </div>
+        </div>
 
-          <div className="mt-2">
-            {renderActivePanel()}
-          </div>
+        <div className="flex-1 flex flex-col">
+          {renderActivePanel()}
         </div>
       </div>
     </div>

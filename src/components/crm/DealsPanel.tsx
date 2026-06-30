@@ -1,17 +1,19 @@
 import React, { useState, useEffect } from "react";
-import { Plus, Search, Edit, Trash2, ShieldAlert, Award } from "lucide-react";
+import { Plus, Search, Edit, Trash2, ShieldAlert, Award, Eye } from "lucide-react";
 import { Deal, Lead, formatINR } from "../../types";
 
 interface DealsPanelProps {
   leads: Lead[];
+  companyId: string;
 }
 
-export default function DealsPanel({ leads }: DealsPanelProps) {
+export default function DealsPanel({ leads, companyId }: DealsPanelProps) {
   const [deals, setDeals] = useState<Deal[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [stageFilter, setStageFilter] = useState<string>("All");
   const [showAddModal, setShowAddModal] = useState(false);
   const [editingDeal, setEditingDeal] = useState<Deal | null>(null);
+  const [viewingDeal, setViewingDeal] = useState<Deal | null>(null);
 
   // Form states
   const [title, setTitle] = useState("");
@@ -24,7 +26,8 @@ export default function DealsPanel({ leads }: DealsPanelProps) {
 
   // Load from localStorage
   useEffect(() => {
-    const stored = localStorage.getItem("deinrim_deals");
+    const key = `deinrim_deals_${companyId}`;
+    const stored = localStorage.getItem(key);
     if (stored) {
       try {
         setDeals(JSON.parse(stored));
@@ -32,8 +35,8 @@ export default function DealsPanel({ leads }: DealsPanelProps) {
         console.error("Failed to parse deals", e);
       }
     } else {
-      // Seed default deals
-      const initialDeals: Deal[] = [
+      // Seed default deals if they are on comp-1 (default demo company)
+      const initialDeals: Deal[] = companyId === "comp-1" ? [
         {
           id: "deal-1",
           title: "SLA Office Automation Network Setup",
@@ -58,15 +61,15 @@ export default function DealsPanel({ leads }: DealsPanelProps) {
           notes: "Demo delivered. Client liked the whitelabel sub-accounts system.",
           createdAt: "2026-06-25"
         }
-      ];
+      ] : [];
       setDeals(initialDeals);
-      localStorage.setItem("deinrim_deals", JSON.stringify(initialDeals));
+      localStorage.setItem(key, JSON.stringify(initialDeals));
     }
-  }, [leads]);
+  }, [leads, companyId]);
 
   const saveDealsToStorage = (updated: Deal[]) => {
     setDeals(updated);
-    localStorage.setItem("deinrim_deals", JSON.stringify(updated));
+    localStorage.setItem(`deinrim_deals_${companyId}`, JSON.stringify(updated));
   };
 
   const handleOpenAdd = () => {
@@ -274,6 +277,13 @@ export default function DealsPanel({ leads }: DealsPanelProps) {
                   <td className="px-4 py-3 text-right">
                     <div className="flex items-center justify-end gap-1.5">
                       <button
+                        onClick={() => setViewingDeal(d)}
+                        className="p-1 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded transition-all cursor-pointer"
+                        title="View Deal"
+                      >
+                        <Eye className="h-3.5 w-3.5" />
+                      </button>
+                      <button
                         onClick={() => handleOpenEdit(d)}
                         className="p-1 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded transition-all cursor-pointer"
                         title="Edit Deal"
@@ -422,6 +432,77 @@ export default function DealsPanel({ leads }: DealsPanelProps) {
               </button>
             </div>
           </form>
+        </div>
+      )}
+
+      {/* Viewing Deal Details Modal */}
+      {viewingDeal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4">
+          <div className="w-full max-w-lg rounded-xl border border-slate-800 bg-slate-950 p-6 shadow-2xl text-left space-y-4">
+            <div className="border-b border-slate-800 pb-2 flex items-center justify-between">
+              <span className="font-mono text-xs font-bold text-indigo-400">Deal Details</span>
+              <button type="button" onClick={() => setViewingDeal(null)} className="text-slate-400 hover:text-white font-bold">×</button>
+            </div>
+
+            <div className="space-y-3 text-xs">
+              <div>
+                <span className="block text-[9px] font-bold uppercase tracking-wider font-mono text-slate-400">Deal Title</span>
+                <strong className="text-slate-200 text-sm">{viewingDeal.title}</strong>
+              </div>
+
+              <div className="grid grid-cols-2 gap-2 text-slate-400 border-b border-slate-900 pb-2 font-semibold">
+                <div>
+                  <span className="block text-[9px] font-bold uppercase tracking-wider font-mono">Linked Lead</span>
+                  <strong className="text-slate-200">{viewingDeal.leadTitle || "—"}</strong>
+                </div>
+                <div>
+                  <span className="block text-[9px] font-bold uppercase tracking-wider font-mono">Deal Value</span>
+                  <strong className="text-emerald-400 font-mono font-bold text-sm">{formatINR(viewingDeal.value)}</strong>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-2 text-slate-400 border-b border-slate-900 pb-2 font-semibold">
+                <div>
+                  <span className="block text-[9px] font-bold uppercase tracking-wider font-mono">Sales Stage</span>
+                  <span className="inline-flex items-center mt-1 px-1.5 py-0.5 rounded text-[9px] font-bold uppercase bg-amber-500/10 text-amber-400 border border-amber-500/20">
+                    {viewingDeal.stage}
+                  </span>
+                </div>
+                <div>
+                  <span className="block text-[9px] font-bold uppercase tracking-wider font-mono">Win Probability</span>
+                  <strong className="text-indigo-400 font-mono font-bold">{viewingDeal.probability}%</strong>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-2 text-slate-400 border-b border-slate-900 pb-2 font-semibold">
+                <div>
+                  <span className="block text-[9px] font-bold uppercase tracking-wider font-mono">Expected Close Date</span>
+                  <strong className="text-slate-200">{viewingDeal.expectedCloseDate || "—"}</strong>
+                </div>
+                <div>
+                  <span className="block text-[9px] font-bold uppercase tracking-wider font-mono">Created On</span>
+                  <strong className="text-slate-200">{viewingDeal.createdAt || "—"}</strong>
+                </div>
+              </div>
+
+              {viewingDeal.notes && (
+                <div className="p-2.5 bg-slate-900/40 rounded-lg border border-slate-850 text-slate-400 text-[10px] space-y-1">
+                  <strong className="text-slate-300">Timeline & Operational Notes:</strong>
+                  <p>{viewingDeal.notes}</p>
+                </div>
+              )}
+            </div>
+
+            <div className="flex justify-end pt-2 border-t border-slate-800/80">
+              <button
+                type="button"
+                onClick={() => setViewingDeal(null)}
+                className="px-4 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-xs font-bold cursor-pointer"
+              >
+                Close
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>

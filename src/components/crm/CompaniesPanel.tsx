@@ -5,9 +5,10 @@ import { Customer } from "../../types";
 interface CompaniesPanelProps {
   customers: Customer[];
   setCustomers: React.Dispatch<React.SetStateAction<Customer[]>>;
+  companyId: string;
 }
 
-export default function CompaniesPanel({ customers, setCustomers }: CompaniesPanelProps) {
+export default function CompaniesPanel({ customers, setCustomers, companyId }: CompaniesPanelProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const [showAddModal, setShowAddModal] = useState(false);
   const [editingCustomer, setEditingCustomer] = useState<Customer | null>(null);
@@ -34,7 +35,7 @@ export default function CompaniesPanel({ customers, setCustomers }: CompaniesPan
 
     const newCompany: Customer = {
       id: `cust-${Date.now()}`,
-      companyId: "comp-1",
+      companyId: companyId,
       name,
       code: `CUST-${Date.now().toString().slice(-4)}`,
       email: email || "contact@business.com",

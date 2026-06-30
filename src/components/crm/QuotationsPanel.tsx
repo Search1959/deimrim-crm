@@ -4,14 +4,16 @@ import { Quotation, Customer, Deal, formatINR } from "../../types";
 
 interface QuotationsPanelProps {
   customers: Customer[];
+  companyId: string;
 }
 
-export default function QuotationsPanel({ customers }: QuotationsPanelProps) {
+export default function QuotationsPanel({ customers, companyId }: QuotationsPanelProps) {
   const [quotations, setQuotations] = useState<Quotation[]>([]);
   const [deals, setDeals] = useState<Deal[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [showAddModal, setShowAddModal] = useState(false);
   const [viewingQuotation, setViewingQuotation] = useState<Quotation | null>(null);
+  const [editingQuotation, setEditingQuotation] = useState<Quotation | null>(null);
 
   // Form states
   const [companyName, setCompanyName] = useState("");
@@ -29,11 +31,12 @@ export default function QuotationsPanel({ customers }: QuotationsPanelProps) {
 
   // Load state
   useEffect(() => {
-    const storedQ = localStorage.getItem("deinrim_quotations");
+    const keyQ = `deinrim_quotations_${companyId}`;
+    const storedQ = localStorage.getItem(keyQ);
     if (storedQ) {
       try { setQuotations(JSON.parse(storedQ)); } catch (e) {}
     } else {
-      const defaultQ: Quotation[] = [
+      const defaultQ: Quotation[] = companyId === "comp-1" ? [
         {
           id: "quot-1",
           quotationNumber: "QT-2026-001",
@@ -50,20 +53,21 @@ export default function QuotationsPanel({ customers }: QuotationsPanelProps) {
           createdAt: "2026-06-25",
           status: "Pending"
         }
-      ];
+      ] : [];
       setQuotations(defaultQ);
-      localStorage.setItem("deinrim_quotations", JSON.stringify(defaultQ));
+      localStorage.setItem(keyQ, JSON.stringify(defaultQ));
     }
 
-    const storedD = localStorage.getItem("deinrim_deals");
+    const keyD = `deinrim_deals_${companyId}`;
+    const storedD = localStorage.getItem(keyD);
     if (storedD) {
       try { setDeals(JSON.parse(storedD)); } catch (e) {}
     }
-  }, []);
+  }, [companyId]);
 
   const saveQuotations = (updated: Quotation[]) => {
     setQuotations(updated);
-    localStorage.setItem("deinrim_quotations", JSON.stringify(updated));
+    localStorage.setItem(`deinrim_quotations_${companyId}`, JSON.stringify(updated));
   };
 
   const handleOpenAdd = () => {
@@ -153,6 +157,52 @@ export default function QuotationsPanel({ customers }: QuotationsPanelProps) {
     });
     saveQuotations(updated);
     alert("Quotation accepted! Outbound stock auto-deducted under current ERP rules.");
+  };
+
+  const handleOpenEdit = (q: Quotation) => {
+    setEditingQuotation(q);
+    setCompanyName(q.companyName);
+    setContactPerson(q.contactPerson);
+    setGstNo(q.gstNo || "19AABCT1234D1Z5");
+    setBillingAddress(q.billingAddress || "");
+    setQuotationNo(q.quotationNumber);
+    setDealId(q.dealId || "");
+    setValidUntil(q.validUntil || "");
+    setNotes(q.notes || "");
+    setItems(q.items || [{ productName: "", unit: "pcs", quantity: 1, unitPrice: 0, amount: 0 }]);
+    setOverrideTotal(q.totalAmount ? q.totalAmount.toString() : "");
+  };
+
+  const handleSaveEdit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingQuotation || !companyName) return;
+
+    const calculatedSum = items.reduce((sum, item) => sum + item.amount, 0);
+    const finalTotal = overrideTotal ? parseFloat(overrideTotal) : calculatedSum;
+    const linkedDeal = deals.find(d => d.id === dealId);
+
+    const updated = quotations.map(q => {
+      if (q.id === editingQuotation.id) {
+        return {
+          ...q,
+          quotationNumber: quotationNo,
+          companyName,
+          contactPerson,
+          gstNo,
+          billingAddress,
+          dealId,
+          dealTitle: linkedDeal ? linkedDeal.title : "",
+          validUntil,
+          notes,
+          items,
+          totalAmount: finalTotal
+        };
+      }
+      return q;
+    });
+
+    saveQuotations(updated);
+    setEditingQuotation(null);
   };
 
   const handleDelete = (id: string) => {
@@ -246,6 +296,13 @@ export default function QuotationsPanel({ customers }: QuotationsPanelProps) {
                         <FileText className="h-3.5 w-3.5" />
                       </button>
                       <button
+                        onClick={() => handleOpenEdit(q)}
+                        className="p-1 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded transition-all cursor-pointer"
+                        title="Edit Quotation"
+                      >
+                        <Edit className="h-3.5 w-3.5" />
+                      </button>
+                      <button
                         onClick={() => handleDelete(q.id)}
                         className="p-1 bg-red-500/10 hover:bg-red-500/20 text-red-400 rounded transition-all cursor-pointer"
                         title="Delete Quotation"
@@ -261,16 +318,24 @@ export default function QuotationsPanel({ customers }: QuotationsPanelProps) {
         </table>
       </div>
 
-      {/* Add Quotation Modal */}
-      {showAddModal && (
+      {/* Add / Edit Quotation Modal */}
+      {(showAddModal || editingQuotation) && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 overflow-y-auto">
           <form 
-            onSubmit={handleSaveQuotation}
+            onSubmit={editingQuotation ? handleSaveEdit : handleSaveQuotation}
             className="w-full max-w-2xl rounded-xl border border-slate-800 bg-slate-950 p-5 shadow-2xl text-left space-y-4 my-8"
           >
             <div className="border-b border-slate-800 pb-2 flex items-center justify-between">
-              <h3 className="text-sm font-bold text-white uppercase tracking-wider font-mono">New Quotation</h3>
-              <button type="button" onClick={() => setShowAddModal(false)} className="text-slate-400 hover:text-white font-bold">×</button>
+              <h3 className="text-sm font-bold text-white uppercase tracking-wider font-mono">
+                {editingQuotation ? "Edit Quotation" : "New Quotation"}
+              </h3>
+              <button 
+                type="button" 
+                onClick={() => { setShowAddModal(false); setEditingQuotation(null); }} 
+                className="text-slate-400 hover:text-white font-bold"
+              >
+                ×
+              </button>
             </div>
 
             <div className="max-h-[60vh] overflow-y-auto space-y-4 pr-1">
@@ -483,7 +548,7 @@ export default function QuotationsPanel({ customers }: QuotationsPanelProps) {
             <div className="flex justify-end gap-2.5 pt-3 border-t border-slate-800/80">
               <button
                 type="button"
-                onClick={() => setShowAddModal(false)}
+                onClick={() => { setShowAddModal(false); setEditingQuotation(null); }}
                 className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-xs font-bold transition-all cursor-pointer"
               >
                 Cancel
@@ -492,7 +557,7 @@ export default function QuotationsPanel({ customers }: QuotationsPanelProps) {
                 type="submit"
                 className="px-4 py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg text-xs font-bold shadow-xs transition-all cursor-pointer"
               >
-                Save Quotation
+                {editingQuotation ? "Save Changes" : "Save Quotation"}
               </button>
             </div>
           </form>

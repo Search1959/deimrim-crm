@@ -272,6 +272,8 @@ export interface Invoice {
   status: "unpaid" | "partially_paid" | "paid" | "overdue" | "void";
   createdAt: string;
   dueDate: string;
+  notes?: string;
+  terms?: string;
 }
 
 // ==========================================

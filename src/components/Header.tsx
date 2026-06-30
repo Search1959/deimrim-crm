@@ -164,6 +164,7 @@ export default function Header({
                     onClick={() => {
                       setCurrentUser(u);
                       setShowRoleMenu(false);
+                      window.scrollTo({ top: 0, behavior: "smooth" });
                     }}
                     className={`flex w-full items-start gap-2.5 rounded-lg px-3 py-2 text-left text-sm transition-colors ${
                       u.id === currentUser.id

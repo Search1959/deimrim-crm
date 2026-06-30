@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Plus, Search, Trash2, Calendar, FileText, Check, AlertCircle, ShoppingBag, Eye, X } from "lucide-react";
+import { Plus, Search, Trash2, Calendar, FileText, Check, AlertCircle, ShoppingBag, Eye, X, Edit, Download } from "lucide-react";
 import { PurchaseOrder, Supplier, Product, PurchaseRequisition, formatINR } from "../../types";
 
 interface OrdersPanelProps {
@@ -14,6 +14,7 @@ export default function OrdersPanel({ suppliers, products }: OrdersPanelProps) {
   const [statusFilter, setStatusFilter] = useState<string>("All");
   const [showAddModal, setShowAddModal] = useState(false);
   const [selectedOrderView, setSelectedOrderView] = useState<PurchaseOrder | null>(null);
+  const [editingOrder, setEditingOrder] = useState<PurchaseOrder | null>(null);
 
   // Form states matching Image 3
   const [vendorId, setVendorId] = useState("");
@@ -96,6 +97,30 @@ export default function OrdersPanel({ suppliers, products }: OrdersPanelProps) {
     setPaymentTerms("Net 30");
     setGstType("CGST + SGST (Intra-state)");
     setNotes("");
+    setEditingOrder(null);
+    setShowAddModal(true);
+  };
+
+  const handleOpenEdit = (po: PurchaseOrder) => {
+    setEditingOrder(po);
+    setVendorId(po.supplierId);
+    setLinkedPrId("");
+    // Reconstruct line items description
+    const customItems = po.items.map(it => {
+      const prodName = products.find(p => p.id === it.productId)?.name || "Product Item";
+      return {
+        description: prodName,
+        quantity: it.quantity,
+        unit: "Nos",
+        unitPrice: it.unitPrice
+      };
+    });
+    setLineItems(customItems.length > 0 ? customItems : [{ description: "Equipment Module Upgrade", quantity: 1, unit: "Nos", unitPrice: po.totalAmount / 1.18 }]);
+    setExpectedDeliveryDate(po.deliveryDate || "");
+    setPoValidUntil("");
+    setPaymentTerms("Net 30");
+    setGstType("CGST + SGST (Intra-state)");
+    setNotes(po.remarks || "");
     setShowAddModal(true);
   };
 
@@ -153,6 +178,33 @@ export default function OrdersPanel({ suppliers, products }: OrdersPanelProps) {
     }
 
     const grandTotal = calculateGrandTotal();
+
+    if (editingOrder) {
+      const updatedOrders = orders.map(po => {
+        if (po.id === editingOrder.id) {
+          return {
+            ...po,
+            supplierId: vendorId,
+            items: lineItems.map((item, idx) => ({
+              productId: products.find(p => p.name === item.description)?.id || products[idx % products.length]?.id || "prod-1",
+              quantity: item.quantity,
+              unitPrice: item.unitPrice,
+              receivedQuantity: po.items[idx]?.receivedQuantity || 0
+            })),
+            totalAmount: grandTotal,
+            deliveryDate: expectedDeliveryDate || undefined,
+            remarks: notes || `Payment terms: ${paymentTerms}. GST type: ${gstType}.`,
+          };
+        }
+        return po;
+      });
+      saveOrders(updatedOrders);
+      setEditingOrder(null);
+      setShowAddModal(false);
+      alert("Purchase Order updated successfully!");
+      return;
+    }
+
     const poNumber = `PO-2026-000${orders.length + 1}`;
 
     const newPO: PurchaseOrder = {
@@ -215,6 +267,131 @@ export default function OrdersPanel({ suppliers, products }: OrdersPanelProps) {
     });
     saveOrders(updated);
     alert("Purchase Order Approved & Published successfully!");
+  };
+
+  const downloadPOPDF = (po: PurchaseOrder) => {
+    const vendor = suppliers.find(s => s.id === po.supplierId);
+    const lineItemsHtml = po.items.map((it, idx) => {
+      const prod = products.find(p => p.id === it.productId);
+      return `
+        <tr style="border-bottom: 1px solid #e2e8f0;">
+          <td style="padding: 12px 10px; font-weight: 500; font-size: 13px; color: #0f172a;">${prod?.name || "Product Procurement Item"}</td>
+          <td style="padding: 12px 10px; font-family: monospace; text-align: center; font-size: 13px; color: #475569;">${prod?.sku || "SKU-UNSPEC"}</td>
+          <td style="padding: 12px 10px; font-family: monospace; text-align: right; font-size: 13px; color: #0f172a;">${it.quantity}</td>
+          <td style="padding: 12px 10px; font-family: monospace; text-align: right; font-size: 13px; color: #475569;">₹${it.unitPrice.toLocaleString('en-IN')}</td>
+          <td style="padding: 12px 10px; font-family: monospace; text-align: right; font-weight: bold; font-size: 13px; color: #0f172a;">₹${(it.quantity * it.unitPrice).toLocaleString('en-IN')}</td>
+        </tr>
+      `;
+    }).join('');
+
+    const subtotal = po.items.reduce((sum, it) => sum + (it.quantity * it.unitPrice), 0);
+    const gstAmount = subtotal * 0.18;
+
+    const htmlContent = `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <meta charset="utf-8">
+        <title>Purchase Order ${po.poNumber}</title>
+        <style>
+          body { font-family: 'Inter', system-ui, -apple-system, sans-serif; color: #1e293b; padding: 40px; max-width: 800px; margin: auto; background-color: #ffffff; }
+          .header { display: flex; justify-content: space-between; border-bottom: 2px solid #e2e8f0; padding-bottom: 20px; margin-bottom: 20px; }
+          .po-title { font-size: 26px; font-weight: 800; color: #4f46e5; letter-spacing: -0.025em; }
+          .meta-grid { display: grid; grid-template-cols: 1fr 1fr; gap: 20px; margin-bottom: 30px; }
+          .meta-box { border: 1px solid #e2e8f0; padding: 15px; border-radius: 8px; background-color: #f8fafc; }
+          .table { width: 100%; border-collapse: collapse; margin-bottom: 30px; }
+          .table th { background-color: #f1f5f9; padding: 10px; text-align: left; font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; color: #475569; }
+          .summary-box { float: right; width: 300px; margin-top: 20px; }
+          .summary-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #f1f5f9; font-size: 13px; }
+          .print-btn { background-color: #4f46e5; color: white; border: none; padding: 10px 20px; font-size: 14px; font-weight: 600; border-radius: 6px; cursor: pointer; float: right; margin-bottom: 20px; }
+          @media print { .print-btn { display: none; } }
+        </style>
+      </head>
+      <body>
+        <button class="print-btn" onclick="window.print()">Print or Save as PDF</button>
+        <div class="header">
+          <div>
+            <div class="po-title">PURCHASE ORDER</div>
+            <div style="font-size: 12px; color: #64748b; margin-top: 5px;">Order Number: <strong>${po.poNumber}</strong></div>
+          </div>
+          <div style="text-align: right;">
+            <strong style="font-size: 16px; color: #0f172a;">DeInrim Enterprises</strong>
+            <div style="font-size: 12px; color: #64748b; margin-top: 5px;">HQ Central Operations, Salt Lake Sector V, Kolkata</div>
+          </div>
+        </div>
+        <div class="meta-grid">
+          <div class="meta-box">
+            <strong style="font-size: 11px; text-transform: uppercase; color: #475569; display: block; margin-bottom: 8px;">Vendor Details:</strong>
+            <div style="font-size: 13px; font-weight: bold; color: #0f172a; margin-bottom: 4px;">${vendor?.name || "Unlisted Vendor"}</div>
+            <div style="font-size: 12px; color: #475569;">Code: ${vendor?.code || "—"}</div>
+            <div style="font-size: 12px; color: #475569;">Email: ${vendor?.email || "—"}</div>
+            <div style="font-size: 12px; color: #475569;">Phone: ${vendor?.phone || "—"}</div>
+            <div style="font-size: 12px; color: #475569;">GSTIN: ${vendor?.taxId || "—"}</div>
+          </div>
+          <div class="meta-box">
+            <strong style="font-size: 11px; text-transform: uppercase; color: #475569; display: block; margin-bottom: 8px;">Order Details:</strong>
+            <div style="font-size: 12px; color: #475569; margin-bottom: 4px;">Date Issued: <strong>${new Date(po.createdAt).toLocaleDateString()}</strong></div>
+            <div style="font-size: 12px; color: #475569; margin-bottom: 4px;">Expected Delivery: <strong>${po.deliveryDate || "Not scheduled"}</strong></div>
+            <div style="font-size: 12px; color: #475569; margin-bottom: 4px;">Payment Terms: <strong>Net 30</strong></div>
+            <div style="font-size: 12px; color: #475569; margin-bottom: 4px;">Status: <strong style="color: #4f46e5; text-transform: uppercase;">${po.status}</strong></div>
+            <div style="font-size: 12px; color: #475569; margin-bottom: 4px;">Settlement: <strong style="text-transform: uppercase;">${po.paymentStatus}</strong></div>
+          </div>
+        </div>
+        <table class="table">
+          <thead>
+            <tr>
+              <th style="width: 45%;">Item / Description</th>
+              <th style="text-align: center; width: 15%;">SKU</th>
+              <th style="text-align: right; width: 10%;">Qty</th>
+              <th style="text-align: right; width: 15%;">Rate</th>
+              <th style="text-align: right; width: 15%;">Total</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${lineItemsHtml}
+          </tbody>
+        </table>
+        <div style="display: flex; justify-content: space-between; margin-top: 40px; border-top: 1px solid #f1f5f9; padding-top: 20px;">
+          <div style="font-size: 11px; color: #64748b; max-width: 400px;">
+            <strong>Remarks / Instructions:</strong><br/>
+            ${po.remarks || "Standard procurement guidelines apply. Please send invoice along with Delivery Challan to HQ central reception."}
+          </div>
+          <div class="summary-box">
+            <div class="summary-row">
+              <span>Subtotal:</span>
+              <strong>₹${subtotal.toLocaleString('en-IN')}</strong>
+            </div>
+            <div class="summary-row">
+              <span>GST (18%):</span>
+              <strong>₹${gstAmount.toLocaleString('en-IN')}</strong>
+            </div>
+            <div class="summary-row" style="font-size: 15px; border-top: 2px solid #e2e8f0; padding-top: 10px;">
+              <span style="color: #4f46e5;">Grand Total:</span>
+              <strong style="color: #4f46e5;">₹${po.totalAmount.toLocaleString('en-IN')}</strong>
+            </div>
+          </div>
+        </div>
+        <div style="margin-top: 80px; display: grid; grid-template-cols: 1fr 1fr; gap: 40px; text-align: center; font-size: 12px; color: #475569;">
+          <div>
+            <div style="border-top: 1px solid #cbd5e1; padding-top: 8px; margin-top: 40px;">Prepared By</div>
+            <div style="font-weight: 500; font-size: 11px; color: #94a3b8; margin-top: 4px;">System Generated</div>
+          </div>
+          <div>
+            <div style="border-top: 1px solid #cbd5e1; padding-top: 8px; margin-top: 40px;">Authorised Signatory</div>
+            <div style="font-weight: 500; font-size: 11px; color: #94a3b8; margin-top: 4px;">Finance Director</div>
+          </div>
+        </div>
+      </body>
+      </html>
+    `;
+
+    const win = window.open("", "_blank");
+    if (win) {
+      win.document.write(htmlContent);
+      win.document.close();
+    } else {
+      alert("Popup blocked! Please allow popups to download/print.");
+    }
   };
 
   const filtered = orders.filter(po => {

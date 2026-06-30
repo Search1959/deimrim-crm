@@ -4,9 +4,10 @@ import { Contact, Customer } from "../../types";
 
 interface ContactsPanelProps {
   customers: Customer[];
+  companyId: string;
 }
 
-export default function ContactsPanel({ customers }: ContactsPanelProps) {
+export default function ContactsPanel({ customers, companyId }: ContactsPanelProps) {
   const [contacts, setContacts] = useState<Contact[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [showAddModal, setShowAddModal] = useState(false);
@@ -19,8 +20,10 @@ export default function ContactsPanel({ customers }: ContactsPanelProps) {
   const [phone, setPhone] = useState("");
   const [designation, setDesignation] = useState("");
 
+  const storageKey = `deinrim_contacts_${companyId}`;
+
   useEffect(() => {
-    const stored = localStorage.getItem("deinrim_contacts");
+    const stored = localStorage.getItem(storageKey);
     if (stored) {
       try { setContacts(JSON.parse(stored)); } catch (e) {}
     } else {
@@ -45,13 +48,13 @@ export default function ContactsPanel({ customers }: ContactsPanelProps) {
         }
       ];
       setContacts(defaultC);
-      localStorage.setItem("deinrim_contacts", JSON.stringify(defaultC));
+      localStorage.setItem(storageKey, JSON.stringify(defaultC));
     }
-  }, []);
+  }, [companyId]);
 
   const saveContacts = (updated: Contact[]) => {
     setContacts(updated);
-    localStorage.setItem("deinrim_contacts", JSON.stringify(updated));
+    localStorage.setItem(storageKey, JSON.stringify(updated));
   };
 
   const handleOpenAdd = () => {

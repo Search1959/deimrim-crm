@@ -4,9 +4,10 @@ import { ServiceTicket, Customer } from "../../types";
 
 interface TicketsPanelProps {
   customers: Customer[];
+  companyId: string;
 }
 
-export default function TicketsPanel({ customers }: TicketsPanelProps) {
+export default function TicketsPanel({ customers, companyId }: TicketsPanelProps) {
   const [tickets, setTickets] = useState<ServiceTicket[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [priorityFilter, setPriorityFilter] = useState<string>("All");
@@ -22,8 +23,10 @@ export default function TicketsPanel({ customers }: TicketsPanelProps) {
   const [assignedTo, setAssignedTo] = useState("");
   const [description, setDescription] = useState("");
 
+  const storageKey = `deinrim_service_tickets_${companyId}`;
+
   useEffect(() => {
-    const stored = localStorage.getItem("deinrim_service_tickets");
+    const stored = localStorage.getItem(storageKey);
     if (stored) {
       try { setTickets(JSON.parse(stored)); } catch (e) {}
     } else {
@@ -54,13 +57,13 @@ export default function TicketsPanel({ customers }: TicketsPanelProps) {
         }
       ];
       setTickets(defaultT);
-      localStorage.setItem("deinrim_service_tickets", JSON.stringify(defaultT));
+      localStorage.setItem(storageKey, JSON.stringify(defaultT));
     }
-  }, []);
+  }, [companyId]);
 
   const saveTickets = (updated: ServiceTicket[]) => {
     setTickets(updated);
-    localStorage.setItem("deinrim_service_tickets", JSON.stringify(updated));
+    localStorage.setItem(storageKey, JSON.stringify(updated));
   };
 
   const handleOpenAdd = () => {

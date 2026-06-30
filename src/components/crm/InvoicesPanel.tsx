@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Plus, Search, Eye, Trash2, Calendar, FileText } from "lucide-react";
+import { Plus, Search, Eye, Trash2, Calendar, FileText, Edit, Download } from "lucide-react";
 import { Invoice, Customer, Product, formatINR } from "../../types";
 
 interface InvoicesPanelProps {
@@ -7,7 +7,8 @@ interface InvoicesPanelProps {
   setInvoices: React.Dispatch<React.SetStateAction<Invoice[]>>;
   customers: Customer[];
   products: Product[];
-  onGenerateInvoice: (invoiceId: string, customerId: string, items: Array<{ productId: string; qty: number }>) => void;
+  onGenerateInvoice: (invoiceId: string, customerId: string, items: Array<{ productId: string; qty: number }>, customTotalAmount?: number) => void;
+  companyId: string;
 }
 
 export default function InvoicesPanel({ 
@@ -15,11 +16,13 @@ export default function InvoicesPanel({
   setInvoices, 
   customers, 
   products, 
-  onGenerateInvoice 
+  onGenerateInvoice,
+  companyId
 }: InvoicesPanelProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const [showAddModal, setShowAddModal] = useState(false);
   const [viewingInvoice, setViewingInvoice] = useState<Invoice | null>(null);
+  const [editingInvoice, setEditingInvoice] = useState<Invoice | null>(null);
 
   // Form states
   const [customerId, setCustomerId] = useState("");
@@ -45,6 +48,68 @@ export default function InvoicesPanel({
     setNotes("");
     setTerms("");
     setShowAddModal(true);
+  };
+
+  const handleOpenEdit = (inv: Invoice) => {
+    setEditingInvoice(inv);
+    setCustomerId(inv.customerId);
+    setInvoiceDate(inv.createdAt);
+    setDueDate(inv.dueDate);
+    const notesParts = (inv.notes || "").split(" | HSN: ");
+    setNotes(notesParts[0] || "");
+    setTerms(inv.terms || "");
+    
+    const customLineItems = inv.items && inv.items.length > 0 ? inv.items.map(it => {
+      const prodName = products.find(p => p.id === it.productId)?.name || "Enterprise Workspace Licence";
+      return {
+        desc: prodName,
+        hsn: notesParts[1] || "998311",
+        qty: it.quantity,
+        unit: "Nos",
+        rate: it.unitPrice,
+        amount: it.quantity * it.unitPrice
+      };
+    }) : [{ desc: "Enterprise SLA Item", hsn: "998311", qty: 1, unit: "Nos", rate: inv.subtotal || 0, amount: inv.subtotal || 0 }];
+    
+    setLineItems(customLineItems);
+    setGstPct(inv.taxAmount && inv.subtotal ? Math.round((inv.taxAmount / inv.subtotal) * 100).toString() : "18");
+  };
+
+  const handleSaveEditInvoice = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingInvoice || !customerId) return;
+
+    const subtotal = lineItems.reduce((sum, item) => sum + item.amount, 0);
+    const taxPct = parseFloat(gstPct) / 100;
+    const taxAmount = subtotal * taxPct;
+    const totalAmount = subtotal + taxAmount;
+
+    const matchedProduct = products[0]?.id || "prod-1";
+    // Propagate correct financial calculations to double-entry ledger!
+    onGenerateInvoice(editingInvoice.id, customerId, [{ productId: matchedProduct, qty: 1 }], totalAmount);
+
+    setInvoices(prev => prev.map(inv => {
+      if (inv.id === editingInvoice.id) {
+        return {
+          ...inv,
+          customerId,
+          items: lineItems.map(li => ({
+            productId: matchedProduct,
+            quantity: li.qty,
+            unitPrice: li.rate,
+          })),
+          subtotal,
+          taxAmount,
+          totalAmount,
+          createdAt: invoiceDate,
+          dueDate: dueDate || invoiceDate,
+          notes: `${notes || ""} | HSN: ${lineItems[0]?.hsn || ""}`,
+          terms
+        };
+      }
+      return inv;
+    }));
+    setEditingInvoice(null);
   };
 
   const handleAddLineItem = () => {
@@ -86,8 +151,8 @@ export default function InvoicesPanel({
     // Standard items mapping for standard hook
     const matchedProduct = products[0]?.id || "prod-1"; // Fallback to avoid crash
     
-    // Call the original onGenerateInvoice standard hook to trigger double-entry finance ledgers
-    onGenerateInvoice(invId, customerId, [{ productId: matchedProduct, qty: 1 }]);
+    // Call the original onGenerateInvoice standard hook to trigger double-entry finance ledgers with actual calculated totalAmount!
+    onGenerateInvoice(invId, customerId, [{ productId: matchedProduct, qty: 1 }], totalAmount);
 
     // Insert rich custom fields
     const newInv: Invoice & { notes?: string; terms?: string } = {
@@ -112,6 +177,130 @@ export default function InvoicesPanel({
 
     setInvoices(prev => [newInv, ...prev]);
     setShowAddModal(false);
+  };
+
+  const downloadInvoicePDF = (inv: Invoice) => {
+    const cust = customers.find(c => c.id === inv.customerId);
+    const notesParts = (inv.notes || "").split(" | HSN: ");
+    const pureNotes = notesParts[0] || "";
+    const hsnCode = notesParts[1] || "998311";
+
+    const lineItemsHtml = inv.items && inv.items.length > 0 ? inv.items.map((item, idx) => `
+      <tr style="border-bottom: 1px solid #e2e8f0;">
+        <td style="padding: 12px 10px; font-weight: 500; font-size: 13px;">Item / SLA Service Module #${idx + 1}</td>
+        <td style="padding: 12px 10px; font-family: monospace; text-align: center; font-size: 13px;">${hsnCode}</td>
+        <td style="padding: 12px 10px; font-family: monospace; text-align: right; font-size: 13px;">${item.quantity}</td>
+        <td style="padding: 12px 10px; font-family: monospace; text-align: right; font-size: 13px;">₹${item.unitPrice.toLocaleString('en-IN')}</td>
+        <td style="padding: 12px 10px; font-family: monospace; text-align: right; font-weight: bold; font-size: 13px;">₹${(item.quantity * item.unitPrice).toLocaleString('en-IN')}</td>
+      </tr>
+    `).join('') : `
+      <tr style="border-bottom: 1px solid #e2e8f0;">
+        <td style="padding: 12px 10px; font-weight: 500; font-size: 13px;">Enterprise Services SLA</td>
+        <td style="padding: 12px 10px; font-family: monospace; text-align: center; font-size: 13px;">${hsnCode}</td>
+        <td style="padding: 12px 10px; font-family: monospace; text-align: right; font-size: 13px;">1</td>
+        <td style="padding: 12px 10px; font-family: monospace; text-align: right; font-size: 13px;">₹${(inv.subtotal || 0).toLocaleString('en-IN')}</td>
+        <td style="padding: 12px 10px; font-family: monospace; text-align: right; font-weight: bold; font-size: 13px;">₹${(inv.subtotal || 0).toLocaleString('en-IN')}</td>
+      </tr>
+    `;
+
+    const htmlContent = `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <meta charset="utf-8">
+        <title>Invoice ${inv.invoiceNumber}</title>
+        <style>
+          body { font-family: 'Inter', system-ui, -apple-system, sans-serif; color: #1e293b; padding: 40px; max-width: 800px; margin: auto; background-color: #ffffff; }
+          .header { display: flex; justify-content: space-between; border-bottom: 2px solid #e2e8f0; padding-bottom: 20px; margin-bottom: 20px; }
+          .invoice-title { font-size: 26px; font-weight: 800; color: #4f46e5; letter-spacing: -0.025em; }
+          .meta-grid { display: grid; grid-template-cols: 1fr 1fr; gap: 20px; margin-bottom: 30px; }
+          .meta-box { border: 1px solid #e2e8f0; padding: 15px; border-radius: 8px; background-color: #f8fafc; }
+          .meta-title { font-size: 10px; text-transform: uppercase; letter-spacing: 0.05em; color: #64748b; font-weight: bold; margin-bottom: 6px; }
+          table { width: 100%; border-collapse: collapse; margin-bottom: 30px; }
+          th { background-color: #f1f5f9; padding: 10px; text-align: left; font-size: 11px; text-transform: uppercase; color: #475569; letter-spacing: 0.05em; }
+          .totals { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; font-family: monospace; font-size: 14px; }
+          .print-btn { background-color: #4f46e5; color: white; padding: 12px 24px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; margin-bottom: 25px; box-shadow: 0 4px 6px -1px rgba(79, 70, 229, 0.2); transition: all 0.2s; }
+          .print-btn:hover { background-color: #4338ca; }
+          @media print { .print-btn { display: none; } body { padding: 0; } }
+        </style>
+      </head>
+      <body>
+        <div style="text-align: center;">
+          <button class="print-btn" onclick="window.print()">Print or Save as PDF</button>
+        </div>
+        <div class="header">
+          <div>
+            <span class="invoice-title">TAX INVOICE</span>
+            <div style="font-family: monospace; margin-top: 5px; font-weight: bold; font-size: 15px; color: #475569;"># ${inv.invoiceNumber}</div>
+          </div>
+          <div style="text-align: right;">
+            <strong style="color: #4f46e5; font-size: 16px;">DEINRIM ERP GLOBAL</strong><br>
+            <span style="font-size: 12px; color: #64748b;">Enterprise CRM & Supply Chain Node</span>
+          </div>
+        </div>
+
+        <div class="meta-grid">
+          <div class="meta-box">
+            <div class="meta-title">Billed To (Customer)</div>
+            <strong style="font-size: 14px; color: #0f172a;">${cust?.name || "Client Account"}</strong><br>
+            <span style="font-size: 12px; color: #475569; display: block; margin-top: 4px;"><strong>GSTIN:</strong> ${cust?.gstin || "19AABCT1234D1Z5"}</span>
+            <span style="font-size: 12px; color: #475569; display: block;"><strong>Email:</strong> ${cust?.email || "—"}</span>
+            <span style="font-size: 12px; color: #475569; display: block;"><strong>Address:</strong> ${cust?.address || "—"}</span>
+          </div>
+          <div class="meta-box">
+            <div class="meta-title">Invoice Specifications</div>
+            <span style="font-size: 12px; display: block; margin-bottom: 2px;"><strong>Invoice Date:</strong> ${inv.createdAt}</span>
+            <span style="font-size: 12px; display: block; margin-bottom: 2px;"><strong>Due Date:</strong> ${inv.dueDate}</span>
+            <span style="font-size: 12px; display: block;"><strong>Status:</strong> <span style="color: #10b981; font-weight: bold; text-transform: uppercase;">${inv.status}</span></span>
+          </div>
+        </div>
+
+        <table>
+          <thead>
+            <tr>
+              <th style="border-top-left-radius: 6px; border-bottom-left-radius: 6px;">Description</th>
+              <th style="text-align: center;">HSN/SAC</th>
+              <th style="text-align: right;">Quantity</th>
+              <th style="text-align: right;">Unit Price</th>
+              <th style="text-align: right; border-top-right-radius: 6px; border-bottom-right-radius: 6px;">Total Amount</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${lineItemsHtml}
+          </tbody>
+        </table>
+
+        <div class="totals">
+          <div style="color: #475569;">Subtotal: <span style="font-weight: 600; color: #1e293b;">₹${(inv.subtotal || 0).toLocaleString('en-IN')}</span></div>
+          <div style="color: #475569;">Tax Amount: <span style="font-weight: 600; color: #1e293b;">₹${(inv.taxAmount || 0).toLocaleString('en-IN')}</span></div>
+          <div style="font-size: 18px; font-weight: 800; color: #4f46e5; border-top: 2px solid #4f46e5; padding-top: 8px; margin-top: 8px; letter-spacing: -0.025em;">
+            Grand Total (INR): ₹${inv.totalAmount.toLocaleString('en-IN')}
+          </div>
+        </div>
+
+        ${pureNotes ? `
+          <div style="margin-top: 35px; padding: 15px; border: 1px solid #e2e8f0; border-radius: 8px; background-color: #fafafa; font-size: 12px;">
+            <strong style="color: #475569; display: block; margin-bottom: 4px;">Terms & Instructions:</strong>
+            <p style="margin: 0; color: #334155;">${pureNotes}</p>
+          </div>
+        ` : ''}
+
+        <div style="margin-top: 50px; border-top: 1px solid #e2e8f0; padding-top: 20px; font-size: 11px; color: #94a3b8; text-align: center; font-weight: 500;">
+          This is an electronically generated Tax Invoice under deinrim Cloud Workspace regulations.
+        </div>
+      </body>
+      </html>
+    `;
+
+    const blob = new Blob([htmlContent], { type: 'text/html' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `Invoice_${inv.invoiceNumber}.html`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
   };
 
   const handleDelete = (id: string) => {
@@ -198,12 +387,28 @@ export default function InvoicesPanel({
                         <button
                           onClick={() => setViewingInvoice(inv)}
                           className="p-1 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded transition-all cursor-pointer"
+                          title="View Invoice"
                         >
                           <Eye className="h-3.5 w-3.5" />
                         </button>
                         <button
+                          onClick={() => handleOpenEdit(inv)}
+                          className="p-1 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded transition-all cursor-pointer"
+                          title="Edit Invoice"
+                        >
+                          <Edit className="h-3.5 w-3.5" />
+                        </button>
+                        <button
+                          onClick={() => downloadInvoicePDF(inv)}
+                          className="p-1 bg-indigo-600/20 hover:bg-indigo-600/40 text-indigo-400 border border-indigo-500/10 rounded transition-all cursor-pointer"
+                          title="Download Invoice HTML/PDF"
+                        >
+                          <Download className="h-3.5 w-3.5" />
+                        </button>
+                        <button
                           onClick={() => handleDelete(inv.id)}
                           className="p-1 bg-red-500/10 hover:bg-red-500/20 text-red-400 rounded transition-all cursor-pointer"
+                          title="Void Invoice"
                         >
                           <Trash2 className="h-3.5 w-3.5" />
                         </button>
@@ -217,16 +422,24 @@ export default function InvoicesPanel({
         </table>
       </div>
 
-      {/* New Invoice Modal */}
-      {showAddModal && (
+      {/* New / Edit Invoice Modal */}
+      {(showAddModal || editingInvoice) && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 overflow-y-auto">
           <form 
-            onSubmit={handleSaveInvoice}
+            onSubmit={editingInvoice ? handleSaveEditInvoice : handleSaveInvoice}
             className="w-full max-w-2xl rounded-xl border border-slate-800 bg-slate-950 p-5 shadow-2xl text-left space-y-4 my-8 animate-scaleUp"
           >
             <div className="border-b border-slate-800 pb-2 flex items-center justify-between">
-              <h3 className="text-sm font-bold text-white uppercase tracking-wider font-mono">New Invoice</h3>
-              <button type="button" onClick={() => setShowAddModal(false)} className="text-slate-400 hover:text-white font-bold">×</button>
+              <h3 className="text-sm font-bold text-white uppercase tracking-wider font-mono">
+                {editingInvoice ? "Edit Invoice" : "New Invoice"}
+              </h3>
+              <button 
+                type="button" 
+                onClick={() => { setShowAddModal(false); setEditingInvoice(null); }} 
+                className="text-slate-400 hover:text-white font-bold"
+              >
+                ×
+              </button>
             </div>
 
             <div className="max-h-[60vh] overflow-y-auto space-y-4 pr-1">
@@ -432,7 +645,7 @@ export default function InvoicesPanel({
             <div className="flex justify-end gap-2.5 pt-3 border-t border-slate-800/80">
               <button
                 type="button"
-                onClick={() => setShowAddModal(false)}
+                onClick={() => { setShowAddModal(false); setEditingInvoice(null); }}
                 className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-xs font-bold transition-all cursor-pointer"
               >
                 Cancel
@@ -441,7 +654,7 @@ export default function InvoicesPanel({
                 type="submit"
                 className="px-4 py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg text-xs font-bold shadow-xs transition-all cursor-pointer"
               >
-                Create Invoice
+                {editingInvoice ? "Save Changes" : "Create Invoice"}
               </button>
             </div>
           </form>
@@ -481,7 +694,15 @@ export default function InvoicesPanel({
               )}
             </div>
 
-            <div className="flex justify-end pt-2 border-t border-slate-800/80">
+            <div className="flex justify-end gap-2 pt-2 border-t border-slate-800/80">
+              <button
+                type="button"
+                onClick={() => downloadInvoicePDF(viewingInvoice)}
+                className="flex items-center gap-1.5 px-4 py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg text-xs font-bold cursor-pointer"
+              >
+                <Download className="h-3.5 w-3.5" />
+                <span>Download PDF</span>
+              </button>
               <button
                 type="button"
                 onClick={() => setViewingInvoice(null)}
