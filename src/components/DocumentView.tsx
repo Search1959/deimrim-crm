@@ -1,3 +1,4 @@
+﻿import { toast } from "../utils/toast";
 /**
  * @license
  * SPDX-License-Identifier: Apache-2.0
@@ -47,7 +48,7 @@ export default function DocumentView({
 
   const handleUploadDoc = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newDoc.name || !newDoc.attachedToId) return alert("Please specify name and select dynamic attachment record.");
+    if (!newDoc.name || !newDoc.attachedToId) { toast.error("Specify document name and attachment"); return; }
 
     const document: AppDocument = {
       id: `doc-${Date.now()}`,
@@ -70,12 +71,12 @@ export default function DocumentView({
       attachedToId: "",
     });
     setShowUploadForm(false);
-    alert("Document uploaded and attached successfully!");
+    toast.success("Document Uploaded", "File attached to record")
   };
 
   const handleDeleteDoc = (id: string) => {
     setDocuments(prev => prev.filter(d => d.id !== id));
-    alert("Document deleted from archives.");
+    toast.warning("Document Deleted", "Removed from archive")
   };
 
   return (
@@ -215,7 +216,7 @@ export default function DocumentView({
                 <span>By: {doc.uploadedBy}</span>
                 <div className="flex items-center gap-1.5">
                   <button
-                    onClick={() => alert(`Simulating file download of archive: ${doc.name}`)}
+                    onClick={() => toast.info("Download", `Downloading ${doc.name}...`)}
                     className="rounded p-1 text-gray-500 hover:bg-gray-100 hover:text-indigo-600"
                     title="Download File"
                   >

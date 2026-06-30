@@ -1,6 +1,8 @@
-import React, { useState, useEffect } from "react";
-import { Plus, Search, Eye, Trash2, Calendar, FileText, Edit, Download } from "lucide-react";
+import React, { useState } from "react";
+import { Plus, Search, Eye, Trash2, FileText, Edit, Download, Share2 } from "lucide-react";
 import { Invoice, Customer, Product, formatINR } from "../../types";
+import { toast } from "../../utils/toast";
+import { exportInvoicesCSV } from "../../utils/exportCSV";
 
 interface InvoicesPanelProps {
   invoices: Invoice[];
@@ -95,6 +97,9 @@ export default function InvoicesPanel({
           customerId,
           items: lineItems.map(li => ({
             productId: matchedProduct,
+            description: li.desc,
+            hsn: li.hsn,
+            unit: li.unit,
             quantity: li.qty,
             unitPrice: li.rate,
           })),
@@ -103,13 +108,14 @@ export default function InvoicesPanel({
           totalAmount,
           createdAt: invoiceDate,
           dueDate: dueDate || invoiceDate,
-          notes: `${notes || ""} | HSN: ${lineItems[0]?.hsn || ""}`,
-          terms
+          notes: notes || "",
+          terms: terms || "",
         };
       }
       return inv;
     }));
     setEditingInvoice(null);
+    toast.success("Invoice Updated", `${editingInvoice.invoiceNumber} saved successfully`);
   };
 
   const handleAddLineItem = () => {
@@ -138,30 +144,29 @@ export default function InvoicesPanel({
 
   const handleSaveInvoice = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!customerId) return alert("Please select a customer");
+    if (!customerId) { toast.error("Please select a customer"); return; }
 
     const subtotal = lineItems.reduce((sum, item) => sum + item.amount, 0);
     const taxPct = parseFloat(gstPct) / 100;
     const taxAmount = subtotal * taxPct;
     const totalAmount = subtotal + taxAmount;
 
-    const invoiceNumber = `INV-2026-000${invoices.length + 1}`;
+    const invoiceNumber = `INV-2026-${String(invoices.length + 1).padStart(4, "0")}`;
     const invId = `inv-${Date.now()}`;
+    const matchedProduct = products[0]?.id || "prod-1";
 
-    // Standard items mapping for standard hook
-    const matchedProduct = products[0]?.id || "prod-1"; // Fallback to avoid crash
-    
-    // Call the original onGenerateInvoice standard hook to trigger double-entry finance ledgers with actual calculated totalAmount!
     onGenerateInvoice(invId, customerId, [{ productId: matchedProduct, qty: 1 }], totalAmount);
 
-    // Insert rich custom fields
-    const newInv: Invoice & { notes?: string; terms?: string } = {
+    const newInv: Invoice = {
       id: invId,
       invoiceNumber,
       customerId,
       branchId: "br-hq",
       items: lineItems.map(li => ({
         productId: matchedProduct,
+        description: li.desc,
+        hsn: li.hsn,
+        unit: li.unit,
         quantity: li.qty,
         unitPrice: li.rate,
       })),
@@ -171,141 +176,163 @@ export default function InvoicesPanel({
       status: "unpaid",
       createdAt: invoiceDate,
       dueDate: dueDate || invoiceDate,
-      notes: `${notes || ""} | HSN: ${lineItems[0]?.hsn || ""}`,
-      terms
+      notes: notes || "",
+      terms: terms || "",
     };
 
     setInvoices(prev => [newInv, ...prev]);
     setShowAddModal(false);
+    toast.success("Invoice Created", `${invoiceNumber} — ${formatINR(totalAmount)}`);
   };
 
   const downloadInvoicePDF = (inv: Invoice) => {
     const cust = customers.find(c => c.id === inv.customerId);
-    const notesParts = (inv.notes || "").split(" | HSN: ");
-    const pureNotes = notesParts[0] || "";
-    const hsnCode = notesParts[1] || "998311";
+    const subtotal = inv.subtotal || 0;
+    const taxTotal = inv.taxAmount || 0;
+    const cgst = taxTotal / 2;
+    const sgst = taxTotal / 2;
 
-    const lineItemsHtml = inv.items && inv.items.length > 0 ? inv.items.map((item, idx) => `
-      <tr style="border-bottom: 1px solid #e2e8f0;">
-        <td style="padding: 12px 10px; font-weight: 500; font-size: 13px;">Item / SLA Service Module #${idx + 1}</td>
-        <td style="padding: 12px 10px; font-family: monospace; text-align: center; font-size: 13px;">${hsnCode}</td>
-        <td style="padding: 12px 10px; font-family: monospace; text-align: right; font-size: 13px;">${item.quantity}</td>
-        <td style="padding: 12px 10px; font-family: monospace; text-align: right; font-size: 13px;">₹${item.unitPrice.toLocaleString('en-IN')}</td>
-        <td style="padding: 12px 10px; font-family: monospace; text-align: right; font-weight: bold; font-size: 13px;">₹${(item.quantity * item.unitPrice).toLocaleString('en-IN')}</td>
+    const inr = (n: number) => "₹" + Number(n).toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+    const rowsBg = ["#ffffff", "#f8fafc"];
+    const lineItemsHtml = (inv.items || []).map((item, idx) => {
+      const desc = item.description || `Service Item #${idx + 1}`;
+      const hsn  = item.hsn  || "998311";
+      const unit = item.unit || "Nos";
+      const amt  = item.quantity * item.unitPrice;
+      return `
+        <tr style="background:${rowsBg[idx % 2]}">
+          <td style="padding:10px 12px;font-size:12px;">${idx + 1}</td>
+          <td style="padding:10px 12px;font-size:12px;font-weight:500;">${desc}</td>
+          <td style="padding:10px 12px;font-size:12px;text-align:center;font-family:monospace;">${hsn}</td>
+          <td style="padding:10px 12px;font-size:12px;text-align:center;">${unit}</td>
+          <td style="padding:10px 12px;font-size:12px;text-align:right;font-family:monospace;">${item.quantity}</td>
+          <td style="padding:10px 12px;font-size:12px;text-align:right;font-family:monospace;">${inr(item.unitPrice)}</td>
+          <td style="padding:10px 12px;font-size:12px;text-align:right;font-family:monospace;font-weight:600;">${inr(amt)}</td>
+        </tr>`;
+    }).join("") || `<tr><td colspan="7" style="padding:16px;text-align:center;color:#64748b;">No line items.</td></tr>`;
+
+    const html = `<!DOCTYPE html><html lang="en"><head>
+<meta charset="utf-8">
+<title>TAX INVOICE — ${inv.invoiceNumber}</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:system-ui,-apple-system,sans-serif;color:#1e293b;background:#fff;padding:0}
+  .page{max-width:794px;margin:auto;padding:40px}
+  .no-print{background:#4f46e5;color:#fff;border:none;border-radius:8px;padding:10px 22px;font-weight:700;cursor:pointer;font-size:13px;margin-bottom:20px}
+  .no-print:hover{background:#4338ca}
+  @media print{.no-print{display:none}.page{padding:20px}}
+  .logo-row{display:flex;justify-content:space-between;align-items:flex-start;border-bottom:3px solid #4f46e5;padding-bottom:16px;margin-bottom:20px}
+  .company-name{font-size:22px;font-weight:800;color:#4f46e5;letter-spacing:-0.02em}
+  .company-sub{font-size:11px;color:#64748b;margin-top:3px}
+  .inv-badge{background:#4f46e5;color:#fff;font-size:11px;font-weight:700;letter-spacing:.1em;padding:4px 10px;border-radius:4px;display:inline-block;margin-bottom:4px}
+  .inv-num{font-size:18px;font-weight:800;color:#1e293b;font-family:monospace}
+  .meta-row{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px}
+  .meta-box{border:1px solid #e2e8f0;border-radius:8px;padding:14px;background:#f8fafc}
+  .meta-label{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#94a3b8;margin-bottom:6px}
+  .meta-val{font-size:13px;font-weight:700;color:#0f172a}
+  .meta-sub{font-size:11px;color:#475569;margin-top:3px;line-height:1.5}
+  table{width:100%;border-collapse:collapse;margin-bottom:16px;font-size:12px}
+  thead tr{background:#1e293b;color:#fff}
+  th{padding:10px 12px;text-align:left;font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase}
+  th:not(:first-child){text-align:right}
+  th:nth-child(3),th:nth-child(4),th:nth-child(5){text-align:center}
+  td{border-bottom:1px solid #f1f5f9}
+  .totals-box{display:flex;justify-content:flex-end;margin-bottom:24px}
+  .totals-inner{width:280px;border:1px solid #e2e8f0;border-radius:8px;overflow:hidden}
+  .totals-row{display:flex;justify-content:space-between;padding:8px 14px;font-size:12px;border-bottom:1px solid #f1f5f9}
+  .totals-row:last-child{border-bottom:none;background:#4f46e5;color:#fff;font-weight:800;font-size:14px;padding:12px 14px}
+  .notice{border:1px solid #e2e8f0;border-radius:8px;padding:14px;font-size:11px;color:#475569;line-height:1.6;margin-bottom:20px}
+  .footer{border-top:1px solid #e2e8f0;padding-top:14px;font-size:10px;color:#94a3b8;text-align:center}
+  .status-badge{display:inline-block;padding:2px 8px;border-radius:4px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;background:${inv.status==="paid"?"#dcfce7":"#fef3c7"};color:${inv.status==="paid"?"#15803d":"#92400e"}}
+</style></head><body>
+<div class="page">
+  <div style="text-align:center;margin-bottom:16px">
+    <button class="no-print" onclick="window.print()">🖨️ Print / Save as PDF</button>
+  </div>
+
+  <div class="logo-row">
+    <div>
+      <div class="company-name">DEINRIM OMS</div>
+      <div class="company-sub">Enterprise Office Management System · deinrim360.in</div>
+    </div>
+    <div style="text-align:right">
+      <div class="inv-badge">TAX INVOICE</div>
+      <div class="inv-num">${inv.invoiceNumber}</div>
+    </div>
+  </div>
+
+  <div class="meta-row">
+    <div class="meta-box">
+      <div class="meta-label">Bill To</div>
+      <div class="meta-val">${cust?.name || "—"}</div>
+      <div class="meta-sub">
+        ${cust?.address ? `${cust.address}<br>` : ""}
+        ${cust?.gstin ? `<strong>GSTIN:</strong> ${cust.gstin}<br>` : ""}
+        ${cust?.email || ""} · ${cust?.phone || ""}
+      </div>
+    </div>
+    <div class="meta-box">
+      <div class="meta-label">Invoice Details</div>
+      <div class="meta-sub" style="font-size:12px;line-height:2">
+        <strong>Invoice No.:</strong> ${inv.invoiceNumber}<br>
+        <strong>Invoice Date:</strong> ${inv.createdAt}<br>
+        <strong>Due Date:</strong> ${inv.dueDate}<br>
+        <strong>Status:</strong> <span class="status-badge">${inv.status}</span>
+      </div>
+    </div>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th style="width:36px">#</th>
+        <th style="text-align:left">Description of Goods / Services</th>
+        <th style="width:80px">HSN/SAC</th>
+        <th style="width:56px">Unit</th>
+        <th style="width:60px">Qty</th>
+        <th style="width:110px">Rate (₹)</th>
+        <th style="width:120px">Amount (₹)</th>
       </tr>
-    `).join('') : `
-      <tr style="border-bottom: 1px solid #e2e8f0;">
-        <td style="padding: 12px 10px; font-weight: 500; font-size: 13px;">Enterprise Services SLA</td>
-        <td style="padding: 12px 10px; font-family: monospace; text-align: center; font-size: 13px;">${hsnCode}</td>
-        <td style="padding: 12px 10px; font-family: monospace; text-align: right; font-size: 13px;">1</td>
-        <td style="padding: 12px 10px; font-family: monospace; text-align: right; font-size: 13px;">₹${(inv.subtotal || 0).toLocaleString('en-IN')}</td>
-        <td style="padding: 12px 10px; font-family: monospace; text-align: right; font-weight: bold; font-size: 13px;">₹${(inv.subtotal || 0).toLocaleString('en-IN')}</td>
-      </tr>
-    `;
+    </thead>
+    <tbody>${lineItemsHtml}</tbody>
+  </table>
 
-    const htmlContent = `
-      <!DOCTYPE html>
-      <html>
-      <head>
-        <meta charset="utf-8">
-        <title>Invoice ${inv.invoiceNumber}</title>
-        <style>
-          body { font-family: 'Inter', system-ui, -apple-system, sans-serif; color: #1e293b; padding: 40px; max-width: 800px; margin: auto; background-color: #ffffff; }
-          .header { display: flex; justify-content: space-between; border-bottom: 2px solid #e2e8f0; padding-bottom: 20px; margin-bottom: 20px; }
-          .invoice-title { font-size: 26px; font-weight: 800; color: #4f46e5; letter-spacing: -0.025em; }
-          .meta-grid { display: grid; grid-template-cols: 1fr 1fr; gap: 20px; margin-bottom: 30px; }
-          .meta-box { border: 1px solid #e2e8f0; padding: 15px; border-radius: 8px; background-color: #f8fafc; }
-          .meta-title { font-size: 10px; text-transform: uppercase; letter-spacing: 0.05em; color: #64748b; font-weight: bold; margin-bottom: 6px; }
-          table { width: 100%; border-collapse: collapse; margin-bottom: 30px; }
-          th { background-color: #f1f5f9; padding: 10px; text-align: left; font-size: 11px; text-transform: uppercase; color: #475569; letter-spacing: 0.05em; }
-          .totals { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; font-family: monospace; font-size: 14px; }
-          .print-btn { background-color: #4f46e5; color: white; padding: 12px 24px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; margin-bottom: 25px; box-shadow: 0 4px 6px -1px rgba(79, 70, 229, 0.2); transition: all 0.2s; }
-          .print-btn:hover { background-color: #4338ca; }
-          @media print { .print-btn { display: none; } body { padding: 0; } }
-        </style>
-      </head>
-      <body>
-        <div style="text-align: center;">
-          <button class="print-btn" onclick="window.print()">Print or Save as PDF</button>
-        </div>
-        <div class="header">
-          <div>
-            <span class="invoice-title">TAX INVOICE</span>
-            <div style="font-family: monospace; margin-top: 5px; font-weight: bold; font-size: 15px; color: #475569;"># ${inv.invoiceNumber}</div>
-          </div>
-          <div style="text-align: right;">
-            <strong style="color: #4f46e5; font-size: 16px;">DEINRIM ERP GLOBAL</strong><br>
-            <span style="font-size: 12px; color: #64748b;">Enterprise CRM & Supply Chain Node</span>
-          </div>
-        </div>
+  <div class="totals-box">
+    <div class="totals-inner">
+      <div class="totals-row"><span>Subtotal</span><span style="font-family:monospace">${inr(subtotal)}</span></div>
+      <div class="totals-row"><span>CGST (${(taxTotal / subtotal * 50).toFixed(0)}%)</span><span style="font-family:monospace">${inr(cgst)}</span></div>
+      <div class="totals-row"><span>SGST (${(taxTotal / subtotal * 50).toFixed(0)}%)</span><span style="font-family:monospace">${inr(sgst)}</span></div>
+      <div class="totals-row"><span>GRAND TOTAL</span><span style="font-family:monospace">${inr(inv.totalAmount)}</span></div>
+    </div>
+  </div>
 
-        <div class="meta-grid">
-          <div class="meta-box">
-            <div class="meta-title">Billed To (Customer)</div>
-            <strong style="font-size: 14px; color: #0f172a;">${cust?.name || "Client Account"}</strong><br>
-            <span style="font-size: 12px; color: #475569; display: block; margin-top: 4px;"><strong>GSTIN:</strong> ${cust?.gstin || "19AABCT1234D1Z5"}</span>
-            <span style="font-size: 12px; color: #475569; display: block;"><strong>Email:</strong> ${cust?.email || "—"}</span>
-            <span style="font-size: 12px; color: #475569; display: block;"><strong>Address:</strong> ${cust?.address || "—"}</span>
-          </div>
-          <div class="meta-box">
-            <div class="meta-title">Invoice Specifications</div>
-            <span style="font-size: 12px; display: block; margin-bottom: 2px;"><strong>Invoice Date:</strong> ${inv.createdAt}</span>
-            <span style="font-size: 12px; display: block; margin-bottom: 2px;"><strong>Due Date:</strong> ${inv.dueDate}</span>
-            <span style="font-size: 12px; display: block;"><strong>Status:</strong> <span style="color: #10b981; font-weight: bold; text-transform: uppercase;">${inv.status}</span></span>
-          </div>
-        </div>
+  ${inv.notes || inv.terms ? `
+  <div class="notice">
+    ${inv.notes ? `<div><strong>Notes / Payment Instructions:</strong><br>${inv.notes}</div>` : ""}
+    ${inv.notes && inv.terms ? "<br>" : ""}
+    ${inv.terms ? `<div><strong>Terms &amp; Conditions:</strong><br>${inv.terms}</div>` : ""}
+  </div>` : ""}
 
-        <table>
-          <thead>
-            <tr>
-              <th style="border-top-left-radius: 6px; border-bottom-left-radius: 6px;">Description</th>
-              <th style="text-align: center;">HSN/SAC</th>
-              <th style="text-align: right;">Quantity</th>
-              <th style="text-align: right;">Unit Price</th>
-              <th style="text-align: right; border-top-right-radius: 6px; border-bottom-right-radius: 6px;">Total Amount</th>
-            </tr>
-          </thead>
-          <tbody>
-            ${lineItemsHtml}
-          </tbody>
-        </table>
+  <div class="footer">
+    This is a computer-generated Tax Invoice. No physical signature required.<br>
+    Generated by DEINRIM OMS · deinrim360.in · ${new Date().toLocaleDateString("en-IN")}
+  </div>
+</div>
+</body></html>`;
 
-        <div class="totals">
-          <div style="color: #475569;">Subtotal: <span style="font-weight: 600; color: #1e293b;">₹${(inv.subtotal || 0).toLocaleString('en-IN')}</span></div>
-          <div style="color: #475569;">Tax Amount: <span style="font-weight: 600; color: #1e293b;">₹${(inv.taxAmount || 0).toLocaleString('en-IN')}</span></div>
-          <div style="font-size: 18px; font-weight: 800; color: #4f46e5; border-top: 2px solid #4f46e5; padding-top: 8px; margin-top: 8px; letter-spacing: -0.025em;">
-            Grand Total (INR): ₹${inv.totalAmount.toLocaleString('en-IN')}
-          </div>
-        </div>
-
-        ${pureNotes ? `
-          <div style="margin-top: 35px; padding: 15px; border: 1px solid #e2e8f0; border-radius: 8px; background-color: #fafafa; font-size: 12px;">
-            <strong style="color: #475569; display: block; margin-bottom: 4px;">Terms & Instructions:</strong>
-            <p style="margin: 0; color: #334155;">${pureNotes}</p>
-          </div>
-        ` : ''}
-
-        <div style="margin-top: 50px; border-top: 1px solid #e2e8f0; padding-top: 20px; font-size: 11px; color: #94a3b8; text-align: center; font-weight: 500;">
-          This is an electronically generated Tax Invoice under deinrim Cloud Workspace regulations.
-        </div>
-      </body>
-      </html>
-    `;
-
-    const blob = new Blob([htmlContent], { type: 'text/html' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `Invoice_${inv.invoiceNumber}.html`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
+    const win = window.open("", "_blank");
+    if (win) {
+      win.document.write(html);
+      win.document.close();
+    }
+    toast.info("Invoice Opened", "Use Ctrl+P or the Print button to save as PDF");
   };
 
   const handleDelete = (id: string) => {
-    if (confirm("Are you sure you want to void this invoice?")) {
+    if (confirm("Void this invoice? This cannot be undone.")) {
       setInvoices(prev => prev.filter(inv => inv.id !== id));
+      toast.warning("Invoice Voided", "The invoice has been removed");
     }
   };
 
@@ -333,13 +360,23 @@ export default function InvoicesPanel({
             className="w-full bg-slate-900 border border-slate-800 rounded-lg pl-8.5 pr-3 py-1.5 text-xs text-slate-200 focus:outline-hidden focus:border-indigo-500 font-semibold"
           />
         </div>
-        <button
-          onClick={handleOpenAdd}
-          className="flex items-center gap-1.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg px-3 py-1.5 text-xs font-bold transition-all cursor-pointer"
-        >
-          <Plus className="h-3.5 w-3.5" />
-          <span>New Invoice</span>
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => exportInvoicesCSV(invoices, customers)}
+            className="flex items-center gap-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg px-3 py-1.5 text-xs font-bold transition-all cursor-pointer"
+            title="Export to CSV"
+          >
+            <Share2 className="h-3.5 w-3.5" />
+            <span>Export CSV</span>
+          </button>
+          <button
+            onClick={handleOpenAdd}
+            className="flex items-center gap-1.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg px-3 py-1.5 text-xs font-bold transition-all cursor-pointer"
+          >
+            <Plus className="h-3.5 w-3.5" />
+            <span>New Invoice</span>
+          </button>
+        </div>
       </div>
 
       {/* Table */}

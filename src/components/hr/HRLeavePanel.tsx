@@ -1,3 +1,4 @@
+﻿import { toast } from "../../utils/toast";
 import React from "react";
 import { Check, X, Calendar, AlertCircle } from "lucide-react";
 import { LeaveRequest, Employee } from "../../types";
@@ -23,7 +24,7 @@ export default function HRLeavePanel({
       }
       return req;
     }));
-    alert(`Leave request has been marked as ${decision}.`);
+    toast.success("Leave " + decision.charAt(0).toUpperCase() + decision.slice(1), `Leave request marked as ${decision}`);
   };
 
   const pendingCount = leaveRequests.filter(l => l.status === "pending").length;

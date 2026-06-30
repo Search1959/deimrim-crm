@@ -1,3 +1,4 @@
+﻿import { toast } from "../../utils/toast";
 import React, { useState, useEffect } from "react";
 import { Plus, Search, Trash2, Calendar, ClipboardCheck, ArrowUpRight, FileText, FileUp, Sparkles, CheckCircle, AlertTriangle } from "lucide-react";
 import { GRN, PurchaseOrder, Supplier, formatINR } from "../../types";
@@ -112,7 +113,7 @@ export default function GRNPanel({ orders, suppliers, onReceiveGRN }: GRNPanelPr
   const handleCreateGRN = (e: React.FormEvent) => {
     e.preventDefault();
     if (!poId || !deliveryChallan || lineItems.length === 0) {
-      alert("Please select a PO, enter Delivery Challan Ref, and review line items!");
+      toast.error("Select PO, enter Challan Ref, and review items")
       return;
     }
 

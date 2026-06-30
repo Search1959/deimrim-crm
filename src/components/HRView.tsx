@@ -1,3 +1,4 @@
+﻿import { toast } from "../utils/toast";
 import React, { useState } from "react";
 import { 
   LayoutDashboard, 
@@ -52,7 +53,7 @@ export default function HRView({
   ].includes(userRole);
 
   const handleBackToSuperAdmin = () => {
-    alert("SuperAdmin connection established. Navigating back to the administrative control panel...");
+    toast.info("SuperAdmin Mode", "Connected to admin control panel")
   };
 
   return (

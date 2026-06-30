@@ -1,3 +1,4 @@
+﻿import { toast } from "../../utils/toast";
 import React, { useState, useEffect } from "react";
 import { Plus, Search, Edit, Trash2, FileText, Check } from "lucide-react";
 import { Quotation, Customer, Deal, formatINR } from "../../types";
@@ -119,7 +120,7 @@ export default function QuotationsPanel({ customers, companyId }: QuotationsPane
 
   const handleSaveQuotation = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!companyName) return alert("Please select a company");
+    if (!companyName) { toast.error("Please select a company"); return; }
 
     const calculatedSum = items.reduce((sum, item) => sum + item.amount, 0);
     const finalTotal = overrideTotal ? parseFloat(overrideTotal) : calculatedSum;
@@ -156,7 +157,7 @@ export default function QuotationsPanel({ customers, companyId }: QuotationsPane
       return q;
     });
     saveQuotations(updated);
-    alert("Quotation accepted! Outbound stock auto-deducted under current ERP rules.");
+    toast.success("Quotation Accepted", "Stock auto-deducted per ERP rules")
   };
 
   const handleOpenEdit = (q: Quotation) => {

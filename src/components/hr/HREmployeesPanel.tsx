@@ -1,3 +1,4 @@
+﻿import { toast } from "../../utils/toast";
 import React, { useState } from "react";
 import { 
   Users2, 
@@ -67,7 +68,7 @@ export default function HREmployeesPanel({
   const handleCreateEmployee = (e: React.FormEvent) => {
     e.preventDefault();
     if (!form.name || !form.email) {
-      alert("Name and Email are required fields.");
+      toast.error("Name and Email are required"); return
       return;
     }
 
@@ -102,7 +103,7 @@ export default function HREmployeesPanel({
     setEmployees(prev => [emp, ...prev]);
     setForm(initialFormState);
     setShowAddEmployee(false);
-    alert(`Successfully registered profile for ${emp.name}!`);
+    toast.success("Employee Registered", `${emp.name} profile created`);
   };
 
   const handleSaveEdit = (e: React.FormEvent) => {
@@ -136,7 +137,7 @@ export default function HREmployeesPanel({
     }));
 
     setEmployeeToEdit(null);
-    alert("Employee record updated successfully.");
+    toast.success("Employee Updated", "Profile saved successfully")
   };
 
   const handleDeleteEmployee = (id: string, name: string) => {
@@ -178,10 +179,10 @@ export default function HREmployeesPanel({
 
   const handleImportCSV = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!csvText.trim()) return alert("Please paste or type CSV data");
+    if (!csvText.trim()) { toast.error("Please paste CSV data first"); return; }
 
     const lines = csvText.split("\n").map(l => l.trim()).filter(Boolean);
-    if (lines.length < 2) return alert("CSV must contain a header and at least one data row");
+    if (lines.length < 2) { toast.error("CSV needs header + at least one data row"); return; }
 
     let count = 0;
     const newEmps: Employee[] = [];

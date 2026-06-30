@@ -1,3 +1,4 @@
+﻿import { toast } from "../utils/toast";
 import React, { useState } from "react";
 import { 
   ShoppingBag, 
@@ -79,7 +80,7 @@ export default function PurchaseView({
     };
 
     setSuppliers(prev => [...prev, fresh]);
-    alert("Vendor profile successfully saved into Approved Vendor Directory!");
+    toast.success("Vendor Saved", "Added to approved vendor directory")
   };
 
   const handleDeleteSupplier = (id: string) => {

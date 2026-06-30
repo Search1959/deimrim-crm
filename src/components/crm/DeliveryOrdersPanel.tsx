@@ -1,3 +1,4 @@
+﻿import { toast } from "../../utils/toast";
 import React, { useState, useEffect } from "react";
 import { Plus, Search, Eye, Trash2, Calendar, FileText, Edit, Download, Truck, User, MapPin, Check, X } from "lucide-react";
 import { Customer, Product, formatINR } from "../../types";
@@ -146,9 +147,9 @@ export default function DeliveryOrdersPanel({ customers, companyId }: DeliveryOr
 
   const handleSaveDO = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!customerId) return alert("Please select a Customer!");
+    if (!customerId) { toast.error("Please select a customer"); return; }
     if (lineItems.some(i => !i.description || i.quantity <= 0)) {
-      return alert("Please ensure all line items have description and positive quantity!");
+      { toast.error("All items need description and positive quantity"); return; }
     }
 
     if (editingDO) {
@@ -171,7 +172,7 @@ export default function DeliveryOrdersPanel({ customers, companyId }: DeliveryOr
       });
       saveDOs(updated);
       setEditingDO(null);
-      alert("Delivery Order updated successfully!");
+      toast.success("DO Updated", "Delivery order saved")
     } else {
       const doNumber = `DO-2026-000${deliveryOrders.length + 1}`;
       const newDO: DeliveryOrder = {
@@ -189,7 +190,7 @@ export default function DeliveryOrdersPanel({ customers, companyId }: DeliveryOr
         createdAt: new Date().toISOString().split("T")[0]
       };
       saveDOs([newDO, ...deliveryOrders]);
-      alert("Delivery Order created successfully!");
+      toast.success("DO Created", "Delivery order issued")
     }
     setShowAddModal(false);
   };
@@ -290,7 +291,7 @@ export default function DeliveryOrdersPanel({ customers, companyId }: DeliveryOr
       win.document.write(htmlContent);
       win.document.close();
     } else {
-      alert("Popup blocked! Please allow popups to print/download Delivery Orders.");
+      toast.warning("Popup Blocked", "Allow popups to print Delivery Orders")
     }
   };
 

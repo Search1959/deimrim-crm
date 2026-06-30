@@ -1,3 +1,4 @@
+﻿import { toast } from "../utils/toast";
 /**
  * @license
  * SPDX-License-Identifier: Apache-2.0
@@ -247,7 +248,7 @@ export default function AdminView({
   const isSystemAdmin = userRole === UserRole.SYSTEM_ADMIN || userRole === UserRole.COMPANY_ADMIN;
 
   const handleToggleCompanySetting = (key: "whatsappEnabled" | "emailNotifications" | "smsNotifications") => {
-    if (!isSystemAdmin) return alert("System Admin privileges required to edit parameters.");
+    if (!isSystemAdmin) { toast.error("System Admin privileges required"); return; }
     setCompany(prev => ({
       ...prev,
       settings: {
@@ -259,7 +260,7 @@ export default function AdminView({
 
   const handleUpdateCompanyDetails = (e: React.FormEvent) => {
     e.preventDefault();
-    alert("Company administration parameters updated successfully.");
+    toast.success("Settings Saved", "Company parameters updated")
   };
 
   return (
@@ -484,7 +485,7 @@ export default function AdminView({
                       <span className="text-xs font-bold uppercase tracking-wider text-slate-300 font-mono">{action} Action</span>
                       <button
                         onClick={() => {
-                          if (!isSystemAdmin) return alert("Requires Admin login.");
+                          if (!isSystemAdmin) { toast.error("Admin login required"); return; }
                           handleTogglePermission(selectedPermissionRole, action);
                         }}
                         disabled={!isSystemAdmin}
@@ -1087,7 +1088,7 @@ export default function AdminView({
                             <span className="px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 font-bold border border-emerald-500/20 uppercase tracking-wide text-[9px]">PAID</span>
                           </td>
                           <td className="px-5 py-3 text-right">
-                            <button onClick={() => alert("Downloading receipt INV-2026-06.pdf")} className="text-indigo-400 hover:text-indigo-300 font-semibold uppercase text-[10px] cursor-pointer">PDF Download</button>
+                            <button onClick={() => toast.info("PDF Download", "Receipt INV-2026-06 downloading...")} className="text-indigo-400 hover:text-indigo-300 font-semibold uppercase text-[10px] cursor-pointer">PDF Download</button>
                           </td>
                         </tr>
                         <tr className="hover:bg-slate-900/40 transition-colors">
@@ -1098,7 +1099,7 @@ export default function AdminView({
                             <span className="px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 font-bold border border-emerald-500/20 uppercase tracking-wide text-[9px]">PAID</span>
                           </td>
                           <td className="px-5 py-3 text-right">
-                            <button onClick={() => alert("Downloading receipt INV-2026-05.pdf")} className="text-indigo-400 hover:text-indigo-300 font-semibold uppercase text-[10px] cursor-pointer">PDF Download</button>
+                            <button onClick={() => toast.info("PDF Download", "Receipt INV-2026-05 downloading...")} className="text-indigo-400 hover:text-indigo-300 font-semibold uppercase text-[10px] cursor-pointer">PDF Download</button>
                           </td>
                         </tr>
                         <tr className="hover:bg-slate-900/40 transition-colors">
@@ -1109,7 +1110,7 @@ export default function AdminView({
                             <span className="px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 font-bold border border-emerald-500/20 uppercase tracking-wide text-[9px]">PAID</span>
                           </td>
                           <td className="px-5 py-3 text-right">
-                            <button onClick={() => alert("Downloading receipt INV-2026-04.pdf")} className="text-indigo-400 hover:text-indigo-300 font-semibold uppercase text-[10px] cursor-pointer">PDF Download</button>
+                            <button onClick={() => toast.info("PDF Download", "Receipt INV-2026-04 downloading...")} className="text-indigo-400 hover:text-indigo-300 font-semibold uppercase text-[10px] cursor-pointer">PDF Download</button>
                           </td>
                         </tr>
                       </tbody>
@@ -1178,7 +1179,7 @@ function ClientSubscribedSection({
   const handleClientPayment = (e: React.FormEvent) => {
     e.preventDefault();
     if (!checkoutCardholder || !checkoutCardNumber || !checkoutExpiry || !checkoutCVV) {
-      alert("Please complete all secure bank card parameters.");
+      toast.error("Complete all bank card parameters")
       return;
     }
     handleUpdateSubscriptionStatus(mySub.id, "Paid");

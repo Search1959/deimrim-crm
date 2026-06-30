@@ -16,6 +16,7 @@ import FinanceView from "./components/FinanceView";
 import AdminView from "./components/AdminView";
 import DocumentView from "./components/DocumentView";
 import HomePage from "./components/HomePage";
+import ToastContainer from "./components/ToastContainer";
 
 // Seed states imports
 import {
@@ -1519,6 +1520,7 @@ export default function App() {
           </div>
         </div>
       )}
+      <ToastContainer />
     </div>
   );
 }

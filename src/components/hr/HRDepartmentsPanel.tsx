@@ -1,3 +1,4 @@
+﻿import { toast } from "../../utils/toast";
 import React, { useState } from "react";
 import { Plus, Building2, Network, Tag, Trash2, Edit2, X } from "lucide-react";
 import { Department, Designation, Employee } from "../../types";
@@ -35,7 +36,7 @@ export default function HRDepartmentsPanel({
     setDepts(prev => [...prev, dept]);
     setNewDept({ name: "", code: "" });
     setShowAddDept(false);
-    alert(`Department ${dept.name} created!`);
+    toast.success("Department Created", `${dept.name} added successfully`);
   };
 
   const handleCreateDesig = (e: React.FormEvent) => {
@@ -50,13 +51,13 @@ export default function HRDepartmentsPanel({
     setDesigs(prev => [...prev, des]);
     setNewDesig({ name: "" });
     setShowAddDesig(false);
-    alert(`Designation ${des.name} created!`);
+    toast.success("Designation Created", `${des.name} added successfully`);
   };
 
   const handleDeleteDept = (id: string, name: string) => {
     const deptEmployees = employees.filter(e => e.departmentId === id);
     if (deptEmployees.length > 0) {
-      alert(`Cannot delete department "${name}" because it currently contains ${deptEmployees.length} registered employees. Reassign them first.`);
+      toast.warning("Cannot Delete", `"${name}" has ${deptEmployees.length} employee(s). Reassign them first`);
       return;
     }
     if (confirm(`Are you sure you want to remove the department "${name}"?`)) {
@@ -67,7 +68,7 @@ export default function HRDepartmentsPanel({
   const handleDeleteDesig = (id: string, name: string) => {
     const desEmployees = employees.filter(e => e.designationId === id);
     if (desEmployees.length > 0) {
-      alert(`Cannot delete designation "${name}" because it is currently assigned to ${desEmployees.length} employees.`);
+      toast.warning("Cannot Delete", `"${name}" is assigned to ${desEmployees.length} employee(s)`);
       return;
     }
     if (confirm(`Are you sure you want to remove the designation "${name}"?`)) {

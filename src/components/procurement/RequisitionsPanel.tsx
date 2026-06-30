@@ -1,3 +1,4 @@
+﻿import { toast } from "../../utils/toast";
 import React, { useState, useEffect } from "react";
 import { Plus, Search, Trash2, Calendar, FileText, FileUp, AlertCircle, Sparkles } from "lucide-react";
 import { PurchaseRequisition, formatINR } from "../../types";
@@ -115,7 +116,7 @@ export default function RequisitionsPanel({ onLinkToPR }: RequisitionsPanelProps
   const handleCreatePR = (e: React.FormEvent) => {
     e.preventDefault();
     if (!department || !category || !itemTitle || !requiredByDate) {
-      alert("Please fill in all required fields marked with *");
+      toast.error("Please fill in all required fields")
       return;
     }
 

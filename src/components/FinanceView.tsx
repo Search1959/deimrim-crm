@@ -1,3 +1,4 @@
+﻿import { toast } from "../utils/toast";
 /**
  * @license
  * SPDX-License-Identifier: Apache-2.0
@@ -118,7 +119,7 @@ export default function FinanceView({
       description: "",
     });
     setShowAddTx(false);
-    alert("Financial transaction logged! Operational ledgers re-calculated.");
+    toast.success("Transaction Logged", "Financial ledgers updated")
   };
 
   const handleSaveTxEdit = (e: React.FormEvent) => {
@@ -139,7 +140,7 @@ export default function FinanceView({
       return t;
     }));
     setTxToEdit(null);
-    alert("Transaction entry updated.");
+    toast.success("Transaction Updated", "Entry saved to ledger")
   };
 
   const handleDeleteTx = (id: string) => {
@@ -175,7 +176,7 @@ export default function FinanceView({
       depreciationRate: "10",
     });
     setShowAddAsset(false);
-    alert("Capital asset registered.");
+    toast.success("Asset Registered", "Capital asset added to registry")
   };
 
   const handleSaveAssetEdit = (e: React.FormEvent) => {
@@ -196,7 +197,7 @@ export default function FinanceView({
       return a;
     }));
     setAssetToEdit(null);
-    alert("Capital asset record modified.");
+    toast.success("Asset Updated", "Capital asset record modified")
   };
 
   const handleDeleteAsset = (id: string, name: string) => {

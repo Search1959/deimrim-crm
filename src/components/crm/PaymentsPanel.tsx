@@ -1,3 +1,4 @@
+﻿import { toast } from "../../utils/toast";
 import React, { useState, useEffect } from "react";
 import { Plus, Search, CreditCard, Check } from "lucide-react";
 import { Payment, Invoice, Customer, formatINR } from "../../types";
@@ -65,10 +66,10 @@ export default function PaymentsPanel({ invoices, setInvoices, customers, compan
 
   const handleRecordPayment = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!invoiceId || !amount) return alert("Please fill required fields");
+    if (!invoiceId || !amount) { toast.error("Please fill all required fields"); return; }
 
     const targetInvoice = invoices.find(inv => inv.id === invoiceId);
-    if (!targetInvoice) return alert("Select a valid invoice");
+    if (!targetInvoice) { toast.error("Select a valid invoice"); return; }
 
     const paymentAmount = parseFloat(amount) || 0;
     const targetCust = customers.find(c => c.id === targetInvoice.customerId);
@@ -99,7 +100,7 @@ export default function PaymentsPanel({ invoices, setInvoices, customers, compan
     const updated = [newPay, ...payments];
     savePayments(updated);
     setShowAddModal(false);
-    alert(`Payment of ${formatINR(paymentAmount)} recorded against Invoice ${targetInvoice.invoiceNumber}!`);
+    toast.success("Payment Recorded", `${formatINR(paymentAmount)} applied to ${targetInvoice.invoiceNumber}`);
   };
 
   const filteredPayments = payments.filter(p =>

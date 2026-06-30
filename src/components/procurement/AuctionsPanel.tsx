@@ -1,3 +1,4 @@
+﻿import { toast } from "../../utils/toast";
 import React, { useState, useEffect, useRef } from "react";
 import { Plus, Search, Trash2, Calendar, Gavel, Play, RefreshCw, AlertTriangle, Sparkles, TrendingDown } from "lucide-react";
 import { EAuction, Supplier, RequestForQuotation, formatINR } from "../../types";
@@ -114,7 +115,7 @@ export default function AuctionsPanel({ suppliers }: AuctionsPanelProps) {
   const handleCreateAuction = (e: React.FormEvent) => {
     e.preventDefault();
     if (!auctionTitle || startingPrice <= 0 || !endDate || selectedVendors.length === 0) {
-      alert("Please fill in all fields and invite at least one Vendor!");
+      toast.error("Fill all fields and invite at least one vendor")
       return;
     }
 
@@ -197,7 +198,7 @@ export default function AuctionsPanel({ suppliers }: AuctionsPanelProps) {
             return a;
           }));
 
-          alert(`E-Auction completed! Winning low bid: ${formatINR(finalLowest)} by ${finalLowestBidder}`);
+          toast.success("Auction Closed", `Winning bid: ${formatINR(finalLowest)} by ${finalLowestBidder}`);
           setLiveAuctionId(null);
           return 0;
         }

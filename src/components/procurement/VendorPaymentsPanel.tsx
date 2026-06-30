@@ -1,3 +1,4 @@
+﻿import { toast } from "../../utils/toast";
 import React, { useState, useEffect } from "react";
 import { Plus, Search, Trash2, Calendar, FileText, CheckCircle, Landmark, Sparkles, FileUp } from "lucide-react";
 import { VendorPayment, VendorInvoice, formatINR } from "../../types";
@@ -115,7 +116,7 @@ export default function VendorPaymentsPanel({ bills }: VendorPaymentsPanelProps)
   const handleRecordPayment = (e: React.FormEvent) => {
     e.preventDefault();
     if (!invoiceId || amount <= 0 || !referenceNo) {
-      alert("Please ensure Invoice reference, Amount, and Transaction Reference are specified!");
+      toast.error("Invoice ref, amount, and transaction reference required")
       return;
     }
 

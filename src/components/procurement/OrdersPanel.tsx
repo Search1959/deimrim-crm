@@ -1,3 +1,4 @@
+﻿import { toast } from "../../utils/toast";
 import React, { useState, useEffect } from "react";
 import { Plus, Search, Trash2, Calendar, FileText, Check, AlertCircle, ShoppingBag, Eye, X, Edit, Download } from "lucide-react";
 import { PurchaseOrder, Supplier, Product, PurchaseRequisition, formatINR } from "../../types";
@@ -172,9 +173,9 @@ export default function OrdersPanel({ suppliers, products }: OrdersPanelProps) {
 
   const handleCreatePO = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!vendorId) return alert("Please select a Vendor!");
+    if (!vendorId) { toast.error("Please select a vendor"); return; }
     if (lineItems.some(i => !i.description || i.quantity <= 0 || i.unitPrice < 0)) {
-      return alert("Please ensure all line items possess descriptions, positive quantities, and valid prices.");
+      { toast.error("All line items need description, qty, and price"); return; }
     }
 
     const grandTotal = calculateGrandTotal();
@@ -201,7 +202,7 @@ export default function OrdersPanel({ suppliers, products }: OrdersPanelProps) {
       saveOrders(updatedOrders);
       setEditingOrder(null);
       setShowAddModal(false);
-      alert("Purchase Order updated successfully!");
+      toast.success("PO Updated", "Purchase order saved successfully")
       return;
     }
 
@@ -266,7 +267,7 @@ export default function OrdersPanel({ suppliers, products }: OrdersPanelProps) {
       return po;
     });
     saveOrders(updated);
-    alert("Purchase Order Approved & Published successfully!");
+    toast.success("PO Approved", "Purchase order published to vendor")
   };
 
   const downloadPOPDF = (po: PurchaseOrder) => {
@@ -390,7 +391,7 @@ export default function OrdersPanel({ suppliers, products }: OrdersPanelProps) {
       win.document.write(htmlContent);
       win.document.close();
     } else {
-      alert("Popup blocked! Please allow popups to download/print.");
+      toast.warning("Popup Blocked", "Allow popups to print the PO document")
     }
   };
 

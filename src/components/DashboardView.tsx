@@ -3,12 +3,14 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState } from "react";
-import { 
-  TrendingUp, 
-  ShoppingBag, 
-  Wallet, 
-  DollarSign, 
+import React, { useState, useMemo } from "react";
+import { toast } from "../utils/toast";
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from "recharts";
+import {
+  TrendingUp,
+  ShoppingBag,
+  Wallet,
+  DollarSign,
   Percent, 
   AlertTriangle, 
   Users, 
@@ -106,8 +108,7 @@ export default function DashboardView({
   const handleQuickAddLead = (e: React.FormEvent) => {
     e.preventDefault();
     if (!leadTitle.trim()) {
-      alert("Please specify a Lead Title!");
-      return;
+      toast.error("Lead title is required"); return;
     }
 
     const newLead: Lead = {
@@ -132,17 +133,17 @@ export default function DashboardView({
     setLeadStatus("New");
     setLeadValue("");
     setLeadNotes("");
-    alert(`Lead "${leadTitle}" has been added successfully!`);
+    toast.success("Lead Added", `"${leadTitle}" saved to CRM pipeline`);
   };
 
   const handleQuickCreatePO = (e: React.FormEvent) => {
     e.preventDefault();
     if (!poSupplierId) {
-      alert("Please select a Vendor/Supplier!");
+      toast.error("Please select a vendor/supplier"); return;
       return;
     }
     if (!poAmount || Number(poAmount) <= 0) {
-      alert("Please enter a valid PO Amount!");
+      toast.error("Enter a valid PO amount"); return;
       return;
     }
 
@@ -178,17 +179,17 @@ export default function DashboardView({
     setPoAmount("");
     setPoDeliveryDate("");
     setPoRemarks("");
-    alert(`Purchase Order ${newPO.poNumber} has been created as draft successfully!`);
+    toast.success("Purchase Order Created", `${newPO.poNumber} saved as draft`);
   };
 
   const handleQuickRequestLeave = (e: React.FormEvent) => {
     e.preventDefault();
     if (!leaveEmployeeId) {
-      alert("Please select an Employee!");
+      toast.error("Please select an employee"); return;
       return;
     }
     if (!leaveStartDate || !leaveEndDate) {
-      alert("Please specify Start and End dates!");
+      toast.error("Please specify start and end dates"); return;
       return;
     }
 
@@ -209,7 +210,7 @@ export default function DashboardView({
     setLeaveStartDate("");
     setLeaveEndDate("");
     setLeaveReason("");
-    alert("Leave request has been submitted successfully!");
+    toast.success("Leave Request Submitted", "Pending approval from HR manager");
   };
   
   // Widget customization states
@@ -269,6 +270,26 @@ export default function DashboardView({
   });
 
   const activeLeadsFollowups = leads.filter(l => l.status !== "Won" && l.status !== "Lost");
+
+  // Build last-6-months revenue vs expense chart data from transactions
+  const revenueChartData = useMemo(() => {
+    const months: Record<string, { month: string; Revenue: number; Expenses: number }> = {};
+    const now = new Date();
+    for (let i = 5; i >= 0; i--) {
+      const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+      const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
+      const label = d.toLocaleString("en-IN", { month: "short", year: "2-digit" });
+      months[key] = { month: label, Revenue: 0, Expenses: 0 };
+    }
+    transactions.forEach(t => {
+      const key = t.date?.slice(0, 7);
+      if (key && months[key]) {
+        if (t.type === "INCOME") months[key].Revenue += t.amount;
+        else months[key].Expenses += t.amount;
+      }
+    });
+    return Object.values(months);
+  }, [transactions]);
 
   return (
     <div className="flex-1 space-y-6 overflow-y-auto p-6 text-left">
@@ -508,6 +529,44 @@ export default function DashboardView({
       </div>
 
       {/* Operational Alerts & Status row */}
+      {/* Revenue vs Expenses — 6-Month Trend Chart */}
+      <div className="rounded-xl border border-gray-100 bg-white p-5 shadow-xs">
+        <div className="flex items-center justify-between mb-4">
+          <div>
+            <h3 className="text-sm font-bold text-slate-800 uppercase tracking-wider">Revenue vs Expenses</h3>
+            <p className="text-[11px] text-slate-400 mt-0.5">Last 6 months financial flow</p>
+          </div>
+          <div className="flex items-center gap-4 text-[10px] font-bold uppercase tracking-wider">
+            <span className="flex items-center gap-1.5 text-indigo-600"><span className="h-2 w-2 rounded-full bg-indigo-500 inline-block" />Revenue</span>
+            <span className="flex items-center gap-1.5 text-rose-500"><span className="h-2 w-2 rounded-full bg-rose-400 inline-block" />Expenses</span>
+          </div>
+        </div>
+        <ResponsiveContainer width="100%" height={200}>
+          <AreaChart data={revenueChartData} margin={{ top: 5, right: 10, left: 0, bottom: 0 }}>
+            <defs>
+              <linearGradient id="gradRevenue" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="5%" stopColor="#6366f1" stopOpacity={0.15} />
+                <stop offset="95%" stopColor="#6366f1" stopOpacity={0} />
+              </linearGradient>
+              <linearGradient id="gradExpenses" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="5%" stopColor="#f43f5e" stopOpacity={0.10} />
+                <stop offset="95%" stopColor="#f43f5e" stopOpacity={0} />
+              </linearGradient>
+            </defs>
+            <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
+            <XAxis dataKey="month" tick={{ fontSize: 10, fill: "#94a3b8", fontWeight: 600 }} axisLine={false} tickLine={false} />
+            <YAxis tickFormatter={v => v >= 100000 ? `₹${(v/100000).toFixed(0)}L` : `₹${(v/1000).toFixed(0)}K`} tick={{ fontSize: 10, fill: "#94a3b8" }} axisLine={false} tickLine={false} width={52} />
+            <Tooltip
+              formatter={(val: number) => [`₹${Number(val).toLocaleString("en-IN")}`, ""]}
+              contentStyle={{ background: "#0f172a", border: "1px solid #1e293b", borderRadius: 8, fontSize: 11, color: "#e2e8f0" }}
+              labelStyle={{ color: "#94a3b8", fontWeight: 700, marginBottom: 4 }}
+            />
+            <Area type="monotone" dataKey="Revenue" stroke="#6366f1" strokeWidth={2} fill="url(#gradRevenue)" dot={{ r: 3, fill: "#6366f1" }} activeDot={{ r: 5 }} />
+            <Area type="monotone" dataKey="Expenses" stroke="#f43f5e" strokeWidth={2} fill="url(#gradExpenses)" dot={{ r: 3, fill: "#f43f5e" }} activeDot={{ r: 5 }} />
+          </AreaChart>
+        </ResponsiveContainer>
+      </div>
+
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Low / Negative Stock Widget */}
         <div className="rounded-xl border border-gray-100 bg-white p-5 shadow-xs">

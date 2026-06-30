@@ -1,3 +1,4 @@
+﻿import { toast } from "../../utils/toast";
 import React, { useState, useEffect } from "react";
 import { Plus, Search, Trash2, Calendar, Send, FileUp, ShieldAlert, BadgeInfo, CheckCircle, Users } from "lucide-react";
 import { RequestForQuotation, Supplier, PurchaseRequisition } from "../../types";
@@ -107,7 +108,7 @@ export default function RFQPanel({ suppliers }: RFQPanelProps) {
   const handleCreateRFQ = (e: React.FormEvent) => {
     e.preventDefault();
     if (!rfqTitle || !itemName || !responseDeadline || selectedVendors.length === 0) {
-      alert("Please specify RFQ Title, Item Name, Response Deadline, and select at least one Vendor!");
+      toast.error("RFQ title, item, deadline, and vendor required")
       return;
     }
 

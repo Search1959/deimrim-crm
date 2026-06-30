@@ -1,3 +1,4 @@
+﻿import { toast } from "../../utils/toast";
 import React, { useState, useEffect } from "react";
 import { Plus, Search, Trash2, ShieldCheck, Mail, Phone, MapPin, Landmark, CreditCard, Sparkles } from "lucide-react";
 import { Supplier } from "../../types";
@@ -51,7 +52,7 @@ export default function VendorsPanel({ suppliers, onAddSupplier, onDeleteSupplie
   const handleCreateVendor = (e: React.FormEvent) => {
     e.preventDefault();
     if (!name || !code || !email || !contactPerson) {
-      alert("Please enter Name, Code, Email and Contact Person!");
+      toast.error("Name, Code, Email and Contact Person required")
       return;
     }
 

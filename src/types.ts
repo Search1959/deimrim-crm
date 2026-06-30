@@ -262,6 +262,9 @@ export interface Invoice {
   branchId: string;
   items: Array<{
     productId: string;
+    description?: string;
+    hsn?: string;
+    unit?: string;
     quantity: number;
     unitPrice: number;
     discount?: number;

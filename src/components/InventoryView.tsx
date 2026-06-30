@@ -4,6 +4,8 @@
  */
 
 import React, { useState } from "react";
+import { toast } from "../utils/toast";
+import { exportProductsCSV } from "../utils/exportCSV";
 import { 
   Boxes, 
   Warehouse, 
@@ -163,7 +165,7 @@ export default function InventoryView({
   // Handle Create Product
   const handleCreateProduct = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formSku || !formName) return alert("SKU and Name are required");
+    if (!formSku || !formName) { toast.error("SKU and Name are required"); return; }
 
     const newProductObj: Product = {
       id: `prod-${Date.now()}`,
@@ -293,10 +295,10 @@ DR-IOT-TEMP1,IoT Ambient Temperature Sensor,cat-3,Unit,45,95,20,200,88091100225,
   // Parse & Import CSV
   const handleImportCSV = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!csvTextInput.trim()) return alert("Please enter or load some CSV content");
+    if (!csvTextInput.trim()) { toast.error("Please paste CSV content first"); return; }
 
     const lines = csvTextInput.split("\n").map(l => l.trim()).filter(Boolean);
-    if (lines.length < 2) return alert("CSV must contain a header row and at least one data row");
+    if (lines.length < 2) { toast.error("CSV needs a header row + at least one data row"); return; }
 
     let importedCount = 0;
     const newProducts: Product[] = [];
@@ -359,7 +361,7 @@ DR-IOT-TEMP1,IoT Ambient Temperature Sensor,cat-3,Unit,45,95,20,200,88091100225,
         setCsvTextInput("");
       }, 3000);
     } else {
-      alert("Failed to parse any valid product rows from CSV. Please check formatting.");
+      toast.error("CSV Import Failed", "No valid product rows found. Check formatting.");
     }
   };
 
@@ -680,7 +682,7 @@ DR-IOT-TEMP1,IoT Ambient Temperature Sensor,cat-3,Unit,45,95,20,200,88091100225,
             
             <form onSubmit={(e) => {
               e.preventDefault();
-              if (!newCatName.trim()) return alert("Category Name is required");
+              if (!newCatName.trim()) { toast.error("Category name is required"); return; }
               const code = newCatCode.trim() || newCatName.slice(0, 3).toUpperCase();
               const newCat = {
                 id: `cat-${Date.now()}`,
@@ -765,7 +767,7 @@ DR-IOT-TEMP1,IoT Ambient Temperature Sensor,cat-3,Unit,45,95,20,200,88091100225,
                           <button
                             onClick={() => {
                               if (count > 0) {
-                                alert(`Cannot delete category "${c.name}" because it is currently linked to ${count} product SKU(s).`);
+                                toast.warning("Cannot Delete Category", `"${c.name}" is linked to ${count} product(s)`);
                                 return;
                               }
                               if (confirm(`Are you sure you want to delete category "${c.name}"?`)) {
@@ -807,7 +809,7 @@ DR-IOT-TEMP1,IoT Ambient Temperature Sensor,cat-3,Unit,45,95,20,200,88091100225,
             
             <form onSubmit={(e) => {
               e.preventDefault();
-              if (!newBrandName.trim()) return alert("Brand Name is required");
+              if (!newBrandName.trim()) { toast.error("Brand name is required"); return; }
               const newBrand = {
                 id: `b-${Date.now()}`,
                 name: newBrandName
@@ -864,7 +866,7 @@ DR-IOT-TEMP1,IoT Ambient Temperature Sensor,cat-3,Unit,45,95,20,200,88091100225,
                           <button
                             onClick={() => {
                               if (count > 0) {
-                                alert(`Cannot delete brand "${b.name}" because it is currently linked to ${count} product SKU(s).`);
+                                toast.warning("Cannot Delete Brand", `"${b.name}" is linked to ${count} product(s)`);
                                 return;
                               }
                               if (confirm(`Are you sure you want to delete brand "${b.name}"?`)) {

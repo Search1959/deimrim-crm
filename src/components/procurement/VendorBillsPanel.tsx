@@ -1,3 +1,4 @@
+﻿import { toast } from "../../utils/toast";
 import React, { useState, useEffect } from "react";
 import { Plus, Search, Trash2, Calendar, FileCheck, Landmark, CheckSquare } from "lucide-react";
 import { VendorInvoice, Supplier, PurchaseOrder, formatINR } from "../../types";
@@ -100,7 +101,7 @@ export default function VendorBillsPanel({ suppliers, orders }: VendorBillsPanel
   const handleCreateBill = (e: React.FormEvent) => {
     e.preventDefault();
     if (!vendorId || amountBeforeGst <= 0 || !dueDate) {
-      alert("Please ensure Vendor, Pre-Tax Amount, and Due Date are completed!");
+      toast.error("Vendor, pre-tax amount, and due date required")
       return;
     }
 

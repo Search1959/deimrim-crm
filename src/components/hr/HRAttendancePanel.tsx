@@ -1,3 +1,4 @@
+﻿import { toast } from "../../utils/toast";
 import React, { useState } from "react";
 import { Clock, UserCheck, Search, ShieldCheck } from "lucide-react";
 import { Employee, Department } from "../../types";
@@ -19,10 +20,10 @@ export default function HRAttendancePanel({ employees, departments }: HRAttendan
   const [searchQuery, setSearchQuery] = useState("");
 
   const handlePunchIn = () => {
-    if (!simEmployeeId) return alert("Please select an employee to simulate punch-in");
+    if (!simEmployeeId) { toast.error("Select an employee to punch-in"); return; }
     
     if (clockInState[simEmployeeId]) {
-      alert("This employee is already clocked in for today!");
+      toast.warning("Already Clocked In", "This employee already has an active punch-in")
       return;
     }
 
@@ -33,12 +34,12 @@ export default function HRAttendancePanel({ employees, departments }: HRAttendan
     }));
 
     const targetEmpName = employees.find(e => e.id === simEmployeeId)?.name || "Officer";
-    alert(`Attendance verified! Punch-in recorded for ${targetEmpName} at ${time}.`);
+    toast.success("Punch-In Recorded", `${targetEmpName} clocked in at ${time}`);
   };
 
   const handlePunchOut = () => {
-    if (!simEmployeeId) return alert("Please select an employee to simulate punch-out");
-    if (!clockInState[simEmployeeId]) return alert("This employee has not clocked in yet!");
+    if (!simEmployeeId) { toast.error("Select an employee to punch-out"); return; }
+    if (!clockInState[simEmployeeId]) { toast.error("Employee has not clocked in yet"); return; }
 
     setClockInState(prev => {
       const copy = { ...prev };
@@ -47,7 +48,7 @@ export default function HRAttendancePanel({ employees, departments }: HRAttendan
     });
 
     const targetEmpName = employees.find(e => e.id === simEmployeeId)?.name || "Officer";
-    alert(`Punch-out registered successfully for ${targetEmpName}. Shift closed.`);
+    toast.success("Punch-Out Recorded", `${targetEmpName} shift closed`);
   };
 
   const getStatusBadge = (status: string) => {

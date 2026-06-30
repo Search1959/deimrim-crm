@@ -1,3 +1,4 @@
+﻿import { toast } from "../../utils/toast";
 import React, { useState } from "react";
 import { DollarSign, Wallet, Check, Download, Printer, User, Eye, X, Calculator, ShieldAlert, Plus, Edit3 } from "lucide-react";
 import { Employee, formatINR } from "../../types";
@@ -39,7 +40,7 @@ export default function HRPayrollPanel({ employees }: HRPayrollPanelProps) {
 
   const handleMarkAsPaid = (id: string) => {
     setPayrollStatus(prev => ({ ...prev, [id]: "paid" }));
-    alert("Salary disbursement transaction posted successfully into Ledger.");
+    toast.success("Payroll Posted", "Salary disbursement recorded in ledger")
   };
 
   // Tax calculations
@@ -78,11 +79,11 @@ export default function HRPayrollPanel({ employees }: HRPayrollPanelProps) {
     }));
 
     setShowAdjustmentModal(false);
-    alert("Payroll compensation components adjusted successfully!");
+    toast.success("Payroll Updated", "Compensation components adjusted")
   };
 
   const handleDownloadPayslip = (name: string) => {
-    alert(`Downloading PDF Payslip sheet for ${name} - Period: ${payslipMonth}...`);
+    toast.info("Payslip", `Payslip for ${name} - ${payslipMonth} (feature coming soon)`);
   };
 
   const getCalculatedRecord = (emp: Employee) => {
