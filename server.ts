@@ -166,6 +166,11 @@ async function startServer() {
     }
   });
 
+  // ── Help page ──────────────────────────────────────────────────────────
+  app.get("/help", (_req, res) => {
+    res.sendFile(path.join(process.cwd(), "public", "help.html"));
+  });
+
   // ── Vite dev middleware / static prod files ────────────────────────────
 
   if (process.env.NODE_ENV !== "production") {

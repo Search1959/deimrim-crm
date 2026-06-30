@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DEINRIM OMS — Module Flow Guide</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', Arial, sans-serif; background: #0f172a; color: #e2e8f0; min-height: 100vh; }
+
+  /* TOP NAV */
+  .topbar { background: #1e293b; border-bottom: 2px solid #3b82f6; padding: 14px 24px; display: flex; align-items: center; justify-content: space-between; }
+  .topbar-title { font-size: 20px; font-weight: 700; color: #38bdf8; }
+  .topbar-sub { font-size: 12px; color: #64748b; }
+  .topbar-link { font-size: 13px; color: #38bdf8; text-decoration: none; padding: 6px 16px; border: 1px solid #38bdf8; border-radius: 20px; }
+  .topbar-link:hover { background: #38bdf8; color: #0f172a; }
+
+  .container { max-width: 960px; margin: 0 auto; padding: 24px 16px 60px; }
+
+  /* TABS */
+  .tabs { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-bottom: 24px; }
+  .tab { padding: 8px 18px; border-radius: 24px; cursor: pointer; font-size: 13px; font-weight: 600; border: 2px solid transparent; transition: all 0.2s; background: #1e293b; color: #94a3b8; white-space: nowrap; }
+  .tab:hover { border-color: #38bdf8; color: #38bdf8; }
+  .tab.active { background: #3b82f6; color: #ffffff; border-color: #3b82f6; }
+
+  /* MODULE */
+  .module { display: none; animation: fadeIn 0.2s ease; }
+  .module.active { display: block; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+
+  .module-header { display: flex; align-items: flex-start; gap: 14px; margin-bottom: 20px; padding: 16px 20px; background: #1e293b; border-radius: 12px; border-left: 5px solid var(--accent); }
+  .module-icon { font-size: 30px; line-height: 1; }
+  .module-title { font-size: 20px; font-weight: 700; color: var(--accent); }
+  .module-desc { font-size: 13px; color: #94a3b8; margin-top: 3px; }
+
+  /* STEPS */
+  .flow { display: flex; flex-direction: column; }
+  .step-wrap { display: flex; align-items: flex-start; gap: 0; }
+  .step-line { display: flex; flex-direction: column; align-items: center; width: 44px; flex-shrink: 0; }
+  .step-num { width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; background: var(--accent); color: #0f172a; flex-shrink: 0; }
+  .step-connector { width: 2px; flex: 1; min-height: 16px; background: linear-gradient(to bottom, var(--accent), #1e293b); margin: 3px 0; }
+  .step-content { flex: 1; background: #1e293b; border-radius: 10px; padding: 14px 16px; margin-bottom: 10px; margin-left: 8px; border: 1px solid #334155; }
+  .step-title { font-size: 15px; font-weight: 700; color: #f1f5f9; margin-bottom: 4px; }
+  .step-where { font-size: 11px; color: var(--accent); margin-bottom: 8px; font-weight: 600; letter-spacing: 0.3px; }
+  .step-items { list-style: none; }
+  .step-items li { font-size: 13px; color: #cbd5e1; padding: 3px 0 3px 18px; position: relative; line-height: 1.5; }
+  .step-items li::before { content: '→'; position: absolute; left: 0; color: var(--accent); font-weight: 700; }
+
+  /* TIP */
+  .tip { background: #052e16; border: 1px solid #16a34a; border-left: 4px solid #16a34a; border-radius: 8px; padding: 12px 16px; margin-top: 14px; font-size: 13px; color: #86efac; line-height: 1.6; }
+  .tip strong { color: #4ade80; }
+
+  /* ROLE TABLE */
+  .role-table { width: 100%; border-collapse: collapse; margin-top: 16px; }
+  .role-table th { background: #1e40af; color: #fff; padding: 12px 16px; text-align: left; font-size: 14px; }
+  .role-table td { padding: 10px 16px; font-size: 13px; border-bottom: 1px solid #1e293b; }
+  .role-table tr:nth-child(even) td { background: #1e293b; }
+  .role-table tr:nth-child(odd) td { background: #0f172a; }
+  .role-name { color: #60a5fa; font-weight: 700; }
+
+  /* FOOTER */
+  .footer { text-align: center; margin-top: 40px; padding: 20px; border-top: 1px solid #1e293b; color: #475569; font-size: 12px; }
+  .footer a { color: #38bdf8; text-decoration: none; }
+
+  @media (max-width: 600px) {
+    .topbar { flex-direction: column; gap: 8px; text-align: center; }
+    .tab { font-size: 12px; padding: 6px 12px; }
+    .step-content { padding: 10px 12px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div>
+    <div class="topbar-title">🏢 DEINRIM OMS — Module Flow Guide</div>
+    <div class="topbar-sub">Step-by-step guide for every module · Non-technical user reference</div>
+  </div>
+  <a class="topbar-link" href="/">← Back to App</a>
+</div>
+
+<div class="container">
+
+  <div class="tabs">
+    <div class="tab active" onclick="show('setup',this)">⚙️ First Setup</div>
+    <div class="tab" onclick="show('purchase',this)">📦 Purchase</div>
+    <div class="tab" onclick="show('inventory',this)">🗃️ Inventory</div>
+    <div class="tab" onclick="show('crm',this)">🤝 Sales CRM</div>
+    <div class="tab" onclick="show('hr',this)">👥 HR</div>
+    <div class="tab" onclick="show('finance',this)">💰 Finance</div>
+    <div class="tab" onclick="show('documents',this)">📄 Documents</div>
+    <div class="tab" onclick="show('admin',this)">🔑 Admin</div>
+    <div class="tab" onclick="show('roles',this)">👁️ Role Access</div>
+  </div>
+
+  <!-- SETUP -->
+  <div class="module active" id="setup" style="--accent:#f59e0b">
+    <div class="module-header">
+      <div class="module-icon">⚙️</div>
+      <div><div class="module-title">First-Time Setup</div><div class="module-desc">Do this ONCE before using any other module</div></div>
+    </div>
+    <div class="flow">
+      <div class="step-wrap"><div class="step-line"><div class="step-num">1</div><div class="step-connector"></div></div><div class="step-content"><div class="step-title">Login as Super Admin</div><div class="step-where">📍 deinrim360.in → Login screen</div><ul class="step-items"><li>Open deinrim360.in in your browser</li><li>Enter your admin email & password</li><li>Select your company from the dropdown</li><li>Click Login</li></ul></div></div>
+      <div class="step-wrap"><div class="step-line"><div class="step-num">2</div><div class="step-connector"></div></div><div class="step-content"><div class="step-title">Set Company Profile</div><div class="step-where">📍 Admin → Company Settings</div><ul class="step-items"><li>Enter company name, GST number, address</li><li>Upload your company logo</li><li>Set tax scheme (GST-18 is default)</li><li>Click Save</li></ul></div></div>
+      <div class="step-wrap"><div class="step-line"><div class="step-num">3</div><div class="step-connector"></div></div><div class="step-content"><div class="step-title">Add Branches</div><div class="step-where">📍 Admin → Branches</div><ul class="step-items"><li>Click +Add Branch</li><li>Enter branch name and code (e.g. KOL-HQ)</li><li>Add all your office and warehouse locations</li></ul></div></div>
+      <div class="step-wrap"><div class="step-line"><div class="step-num">4</div><div class="step-connector"></div></div><div class="step-content"><div class="step-title">Add Users & Assign Roles</div><div class="step-where">📍 Admin → User Management</div><ul class="step-items"><li>Click +Add User → enter name, email, password</li><li>Assign role: Manager / Sales / Purchase / HR / Finance / Viewer</li><li>Each role sees only their permitted modules</li></ul></div></div>
+      <div class="step-wrap"><div class="step-line"><div class="step-num">5</div></div><div class="step-content"><div class="step-title">Add Categories & Brands</div><div class="step-where">📍 Inventory → Categories tab & Brands tab</div><ul class="step-items"><li>Categories tab: add product categories (e.g. Electronics, Furniture)</li><li>Brands tab: add brands (e.g. Samsung, Local)</li><li>⚠️ Required before you can add any products</li></ul></div></div>
+    </div>
+    <div class="tip"><strong>✅ Setup complete!</strong> Next steps: Purchase → Add Suppliers → Inventory → Add Products → Start raising Purchase Orders</div>
+  </div>
+
+  <!-- PURCHASE -->
+  <div class="module" id="purchase" style="--accent:#a78bfa">
+    <div class="module-header">
+      <div class="module-icon">📦</div>
+      <div><div class="module-title">Purchase Module</div><div class="module-desc">Order goods from suppliers → Receive stock → Stock enters Inventory automatically</div></div>
+    </div>
+    <div class="flow">
+      <div class="step-wrap"><div class="step-line"><div class="step-num">1</div><div class="step-connector"></div></div><div class="step-content"><div class="step-title">Add Supplier</div><div class="step-where">📍 Purchase → Suppliers → +Add Supplier</div><ul class="step-items"><li>Enter supplier name, contact number, GST number, address</li><li>Click Save → supplier now appears in PO dropdown</li></ul></div></div>
+      <div class="step-wrap"><div class="step-line"><div class="step-num">2</div><div class="step-connector"></div></div><div class="step-content"><div class="step-title">Create Purchase Order (PO)</div><div class="step-where">📍 Purchase → Purchase Orders → +New PO</div><ul class="step-items"><li>Select Supplier from the dropdown</li><li>Add products with quantity & unit price</li><li>Set expected delivery date</li><li>Click Save → Status = PENDING</li></ul></div></div>
+      <div class="step-wrap"><div class="step-line"><div class="step-num">3</div><div class="step-connector"></div></div><div class="step-content"><div class="step-title">Approve the PO</div><div class="step-where">📍 Purchase → click the PO → Approve</div><ul class="step-items"><li>Manager reviews the PO</li><li>Click Approve → status becomes APPROVED</li><li>PO is now confirmed with the supplier</li></ul></div></div>
+      <div class="step-wrap"><div class="step-line"><div class="step-num">4</div><div class="step-connector"></div></div><div class="step-content"><div class="step-title">Receive Goods — Stock In</div><div class="step-where">📍 Purchase → click the PO → Mark as Received</div><ul class="step-items"><li>When goods physically arrive at your location</li><li>Click Mark as Received → status = RECEIVED</li><li>Stock quantity automatically increases in Inventory</li><li>Batch stock entry is created with date & quantity</li></ul></div></div>
+      <div class="step-wrap"><div class="step-line"><div class="step-num">5</div></div><div class="step-content"><div class="step-title">Record Payment to Supplier</div><div class="step-where">📍 Finance → Transactions → +Add Transaction</div><ul class="step-items"><li>Type: Expense | Category: Purchase Payment</li><li>Enter amount, date, supplier name in description</li></ul></div></div>
+    </div>
+    <div class="tip"><strong>📌 Full flow:</strong> Add Supplier → Create PO → Approve PO → Goods Arrive → Mark Received → Stock auto-updates → Record payment in Finance</div>
+  </div>
+
+  <!-- INVENTORY -->
+  <div class="module" id="inventory" style="--accent:#34d399">
+    <div class="module-header">
+      <div class="module-icon">🗃️</div>
+      <div><div class="module-title">Inventory Module</div><div class="module-desc">Manage products, stock levels, and batch tracking</div></div>
+    </div>
+    <div class="flow">
+      <div class="step-wrap"><div class="step-line"><div class="step-num">1</div><div class="step-connector"></div></div><div class="step-content"><div class="step-title">Add a Product</div><div class="step-where">📍 Inventory → Products → +Add Product</div><ul class="step-items"><li>Enter product name, SKU code, category, brand</li><li>Set unit price, HSN code, GST rate</li><li>Set minimum stock alert level</li><li>Click Save</li></ul></div></div>
+      <div class="step-wrap"><div class="step-line"><div class="step-num">2</div><div class="step-connector"></div></div><div class="step-content"><div class="step-title">Stock Comes In — Automatic</div><div class="step-where">📍 Auto-updates when PO is marked Received</div><ul class="step-items"><li>No manual entry needed for PO-based stock</li><li>Batch Stock tab shows each entry with date & quantity</li></ul></div></div>
+      <div class="step-wrap"><div class="step-line"><div class="step-num">3</div><div class="step-connector"></div></div><div class="step-content"><div class="step-title">Manual Stock Entry (Opening Stock)</div><div class="step-where">📍 Inventory → Batch Stocks → +Add Stock</div><ul class="step-items"><li>Use for opening stock when you first start using the system</li><li>Enter product, quantity, batch number, expiry date</li></ul></div></div>
+      <div class="step-wrap"><div class="step-line"><div class="step-num">4</div><div class="step-connector"></div></div><div class="step-content"><div class="step-title">Stock Goes Out — Automatic</div><div class="step-where">📍 Auto-reduces when a Sales Invoice is created</div><ul class="step-items"><li>No manual entry needed — stock reduces on invoice</li><li>System tracks which batch was used</li></ul></div></div>
+      <div class="step-wrap"><div class="step-line"><div class="step-num">5</div></div><div class="step-content"><div class="step-title">Check Stock & Export Report</div><div class="step-where">📍 Inventory → Products tab</div><ul class="step-items"><li>Items in RED = below minimum stock level</li><li>Low stock alert also shown on Dashboard</li><li>Click Export CSV to download full stock report</li></ul></div></div>
+    </div>
+    <div class="tip"><strong>📌 Full flow:</strong> Add Product → Stock In via PO Receipt → Stock Out via Invoice → Monitor low stock on Dashboard → Export CSV anytime</div>
+  </div>
+
+  <!-- CRM -->
+  <div class="module" id="crm" style="--accent:#f472b6">
+    <div class="module-header">
+      <div class="module-icon">🤝</div>
+      <div><div class="module-title">Sales CRM Module</div><div class="module-desc">Manage leads → Convert to customers → Raise invoices → Collect payment</div></div>
+    </div>
+    <div class="flow">
+      <div class="step-wrap"><div class="step-line"><div class="step-num">1</div><div class="step-connector"></div></div><div class="step-content"><div class="step-title">Add a Lead</div><div class="step-where">📍 Sales CRM → Leads → +Add Lead</div><ul class="step-items"><li>Enter prospect name, phone, email, source (how they found you)</li><li>Status starts as NEW</li></ul></div></div>
+      <div class="step-wrap"><div class="step-line"><div class="step-num">2</div><div class="step-connector"></div></div><div class="step-content"><div class="step-title">Follow Up & Update Lead Status</div><div class="step-where">📍 Sales CRM → Leads → click lead → Edit</div><ul class="step-items"><li>Update status as you follow up:</li><li>NEW → CONTACTED → QUALIFIED → NEGOTIATION → WON or LOST</li><li>Add a note each time you speak to the prospect</li><li>Assign to a salesperson if needed</li></ul></div></div>
+      <div class="step-wrap"><div class="step-line"><div class="step-num">3</div><div class="step-connector"></div></div><div class="step-content"><div class="step-title">Convert Lead to Customer</div><div class="step-where">📍 Sales CRM → Customers → +Add Customer</div><ul class="step-items"><li>When lead status = WON, add them as a Customer</li><li>Enter GST number, billing address, credit limit</li><li>Customer now appears in Invoice dropdown</li></ul></div></div>
+      <div class="step-wrap"><div class="step-line"><div class="step-num">4</div><div class="step-connector"></div></div><div class="step-content"><div class="step-title">Raise a Sales Invoice</div><div class="step-where">📍 Sales CRM → Invoices → +New Invoice</div><ul class="step-items"><li>Select Customer from dropdown</li><li>Add line items: product, HSN code, qty, rate, description</li><li>CGST + SGST calculates automatically</li><li>Save → status = DRAFT → change to SENT when emailed</li></ul></div></div>
+      <div class="step-wrap"><div class="step-line"><div class="step-num">5</div><div class="step-connector"></div></div><div class="step-content"><div class="step-title">Download & Print Invoice PDF</div><div class="step-where">📍 Sales CRM → Invoices → click invoice → Download PDF</div><ul class="step-items"><li>GST-format A4 invoice opens in a new browser tab</li><li>Print it or save as PDF to email to the customer</li></ul></div></div>
+      <div class="step-wrap"><div class="step-line"><div class="step-num">6</div></div><div class="step-content"><div class="step-title">Mark Invoice as Paid</div><div class="step-where">📍 Sales CRM → Invoices → click invoice → Mark as Paid</div><ul class="step-items"><li>When customer pays, click Mark as Paid</li><li>Then go to Finance → Transactions and record as Income</li></ul></div></div>
+    </div>
+    <div class="tip"><strong>📌 Full flow:</strong> Add Lead → Follow up → Lead WON → Add Customer → Raise Invoice → Send PDF → Mark Paid → Record Income in Finance</div>
+  </div>
+
+  <!-- HR -->
+  <div class="module" id="hr" style="--accent:#fb923c">
+    <div class="module-header">
+      <div class="module-icon">👥</div>
+      <div><div class="module-title">HR Module</div><div class="module-desc">Manage employees, salaries, and leave requests</div></div>
+    </div>
+    <div class="flow">
+      <div class="step-wrap"><div class="step-line"><div class="step-num">1</div><div class="step-connector"></div></div><div class="step-content"><div class="step-title">Add an Employee</div><div class="step-where">📍 HR → Employees → +Add Employee</div><ul class="step-items"><li>Enter name, department, designation, joining date</li><li>Set salary amount and bank details</li><li>Assign to a branch</li><li>Click Save</li></ul></div></div>
+      <div class="step-wrap"><div class="step-line"><div class="step-num">2</div><div class="step-connector"></div></div><div class="step-content"><div class="step-title">Record Monthly Salary</div><div class="step-where">📍 Finance → Transactions → +Add (do every month)</div><ul class="step-items"><li>Type: Expense | Category: Salary</li><li>Amount = employee salary | Add employee name in description</li><li>Repeat for each employee every month</li></ul></div></div>
+      <div class="step-wrap"><div class="step-line"><div class="step-num">3</div><div class="step-connector"></div></div><div class="step-content"><div class="step-title">Employee Applies for Leave</div><div class="step-where">📍 HR → Leave Requests → +New Request</div><ul class="step-items"><li>Select employee, leave type (Sick / Casual / Annual)</li><li>Set from date and to date, add reason</li><li>Status = PENDING</li></ul></div></div>
+      <div class="step-wrap"><div class="step-line"><div class="step-num">4</div></div><div class="step-content"><div class="step-title">Approve or Reject Leave</div><div class="step-where">📍 HR → Leave Requests → click request</div><ul class="step-items"><li>HR Manager: Click Approve or Reject</li><li>Status updates automatically</li><li>Leave balance adjusts accordingly</li></ul></div></div>
+    </div>
+    <div class="tip"><strong>📌 Full flow:</strong> Add Employee → Monthly: Record salary in Finance → Leave: Employee requests → Manager approves or rejects</div>
+  </div>
+
+  <!-- FINANCE -->
+  <div class="module" id="finance" style="--accent:#22d3ee">
+    <div class="module-header">
+      <div class="module-icon">💰</div>
+      <div><div class="module-title">Finance Module</div><div class="module-desc">Track all money coming in (Income) and going out (Expense)</div></div>
+    </div>
+    <div class="flow">
+      <div class="step-wrap"><div class="step-line"><div class="step-num">1</div><div class="step-connector"></div></div><div class="step-content"><div class="step-title">Record Income</div><div class="step-where">📍 Finance → Transactions → +Add Transaction</div><ul class="step-items"><li>Type: Income | Category: Sales / Service / Other</li><li>Enter amount, date, description (e.g. Payment for Invoice INV-001)</li></ul></div></div>
+      <div class="step-wrap"><div class="step-line"><div class="step-num">2</div><div class="step-connector"></div></div><div class="step-content"><div class="step-title">Record Expense</div><div class="step-where">📍 Finance → Transactions → +Add Transaction</div><ul class="step-items"><li>Type: Expense | Category: Salary / Purchase / Rent / Utility / Other</li><li>Enter amount, date, description</li></ul></div></div>
+      <div class="step-wrap"><div class="step-line"><div class="step-num">3</div><div class="step-connector"></div></div><div class="step-content"><div class="step-title">View Profit & Loss</div><div class="step-where">📍 Dashboard home page</div><ul class="step-items"><li>Revenue vs Expenses chart shows 6-month trend</li><li>Net Profit = Total Income minus Total Expenses</li><li>Updates live as you add entries</li></ul></div></div>
+      <div class="step-wrap"><div class="step-line"><div class="step-num">4</div></div><div class="step-content"><div class="step-title">Export for Accountant / CA</div><div class="step-where">📍 Finance → Export CSV button</div><ul class="step-items"><li>Downloads all transactions as Excel-ready CSV file</li><li>Share with your CA every month for GST filing</li></ul></div></div>
+    </div>
+    <div class="tip"><strong>📌 Full flow:</strong> Every sale payment = Income entry | Every purchase / salary / rent = Expense | Dashboard shows live P&L | Export monthly for CA</div>
+  </div>
+
+  <!-- DOCUMENTS -->
+  <div class="module" id="documents" style="--accent:#a3e635">
+    <div class="module-header">
+      <div class="module-icon">📄</div>
+      <div><div class="module-title">Documents Module</div><div class="module-desc">Store and access all business documents — contracts, certificates, policies</div></div>
+    </div>
+    <div class="flow">
+      <div class="step-wrap"><div class="step-line"><div class="step-num">1</div><div class="step-connector"></div></div><div class="step-content"><div class="step-title">Upload a Document</div><div class="step-where">📍 Documents → +Upload Document</div><ul class="step-items"><li>Enter document title and type (Contract / Certificate / Policy / Other)</li><li>Add expiry date if applicable (e.g. trade licence)</li><li>Add file URL or link → Click Save</li></ul></div></div>
+      <div class="step-wrap"><div class="step-line"><div class="step-num">2</div><div class="step-connector"></div></div><div class="step-content"><div class="step-title">Find & Open a Document</div><div class="step-where">📍 Documents → Search bar</div><ul class="step-items"><li>Search by title or type</li><li>Click the document to open or download</li></ul></div></div>
+      <div class="step-wrap"><div class="step-line"><div class="step-num">3</div></div><div class="step-content"><div class="step-title">Expiry Alerts</div><div class="step-where">📍 Dashboard → Notifications</div><ul class="step-items"><li>System alerts you when a document expiry is approaching</li><li>Renew the document and re-upload the new version</li></ul></div></div>
+    </div>
+    <div class="tip"><strong>📌 Store:</strong> GST certificate, trade licence, supplier contracts, employee offer letters, insurance policies, company PAN & TAN copies</div>
+  </div>
+
+  <!-- ADMIN -->
+  <div class="module" id="admin" style="--accent:#f87171">
+    <div class="module-header">
+      <div class="module-icon">🔑</div>
+      <div><div class="module-title">Admin Module</div><div class="module-desc">Control users, roles, and company settings — Super Admin only</div></div>
+    </div>
+    <div class="flow">
+      <div class="step-wrap"><div class="step-line"><div class="step-num">1</div><div class="step-connector"></div></div><div class="step-content"><div class="step-title">Add New User / Staff Member</div><div class="step-where">📍 Admin → Users → +Add User</div><ul class="step-items"><li>Enter name, email, password, role, company</li><li>User can login immediately after creation</li></ul></div></div>
+      <div class="step-wrap"><div class="step-line"><div class="step-num">2</div><div class="step-connector"></div></div><div class="step-content"><div class="step-title">Edit or Deactivate a User</div><div class="step-where">📍 Admin → Users → click user → Edit</div><ul class="step-items"><li>Change role, reset password, update details</li><li>Set status to Inactive to remove login access</li></ul></div></div>
+      <div class="step-wrap"><div class="step-line"><div class="step-num">3</div><div class="step-connector"></div></div><div class="step-content"><div class="step-title">Manage Office Branches</div><div class="step-where">📍 Admin → Branches</div><ul class="step-items"><li>Add or edit branch locations</li><li>Each branch can have separate stock and staff</li></ul></div></div>
+      <div class="step-wrap"><div class="step-line"><div class="step-num">4</div><div class="step-connector"></div></div><div class="step-content"><div class="step-title">View Audit Log</div><div class="step-where">📍 Admin → Audit Logs</div><ul class="step-items"><li>Every action by every user is permanently recorded</li><li>Shows who did what, when, and from which IP</li><li>Cannot be deleted — permanent security record</li></ul></div></div>
+      <div class="step-wrap"><div class="step-line"><div class="step-num">5</div></div><div class="step-content"><div class="step-title">Add New Client Company (Tenant)</div><div class="step-where">📍 Admin → Companies → +Add Company</div><ul class="step-items"><li>Enter unique company ID and name</li><li>Assign a Super Admin user to that company</li><li>Their data is fully separate from your data</li></ul></div></div>
+    </div>
+    <div class="tip"><strong>📌 Role access:</strong> Viewer=read only | Sales=CRM | Purchase=PO+Inventory | HR=HR only | Finance=Finance only | Manager=all except Admin | SuperAdmin=everything</div>
+  </div>
+
+  <!-- ROLES -->
+  <div class="module" id="roles" style="--accent:#818cf8">
+    <div class="module-header">
+      <div class="module-icon">👁️</div>
+      <div><div class="module-title">Role Access Summary</div><div class="module-desc">Each user has one role. The role controls which modules they can see and use.</div></div>
+    </div>
+    <table class="role-table">
+      <tr><th>Role</th><th>What They Can Access</th></tr>
+      <tr><td class="role-name">Viewer</td><td>Read-only. Can see all data but cannot add, edit, or delete anything.</td></tr>
+      <tr><td class="role-name">Sales</td><td>CRM module only: Leads, Customers, Invoices.</td></tr>
+      <tr><td class="role-name">Purchase</td><td>Purchase Orders and Inventory modules.</td></tr>
+      <tr><td class="role-name">HR</td><td>HR module only: Employees and Leave Requests.</td></tr>
+      <tr><td class="role-name">Finance</td><td>Finance module only: Transactions and export reports.</td></tr>
+      <tr><td class="role-name">Manager</td><td>All modules except Admin settings. Cannot manage users or companies.</td></tr>
+      <tr><td class="role-name">Admin</td><td>All modules including Admin settings. Can manage users and branches.</td></tr>
+      <tr><td class="role-name">Super Admin</td><td>Everything — including adding new client companies and all users.</td></tr>
+    </table>
+    <div class="tip" style="margin-top:20px"><strong>💡 Tip:</strong> Assign the minimum role needed. Give Sales staff the "Sales" role, not "Manager", so they only see what they need.</div>
+  </div>
+
+</div>
+
+<div class="footer">
+  DEINRIM OMS &nbsp;·&nbsp; <a href="/">deinrim360.in</a> &nbsp;·&nbsp; deinrimsolutionss@gmail.com
+</div>
+
+<script>
+function show(id, el) {
+  document.querySelectorAll('.module').forEach(function(m){ m.classList.remove('active'); });
+  document.querySelectorAll('.tab').forEach(function(t){ t.classList.remove('active'); });
+  document.getElementById(id).classList.add('active');
+  el.classList.add('active');
+}
+</script>
+</body>
+</html>
