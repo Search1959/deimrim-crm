@@ -79,7 +79,7 @@ export default function SalesCRMView({
   const renderActivePanel = () => {
     switch (activeTab) {
       case "leads":
-        return <LeadsPanel leads={leads} setLeads={setLeads} customers={customers} />;
+        return <LeadsPanel leads={leads} setLeads={setLeads} customers={customers} companyId={companyId} />;
       case "deals":
         return <DealsPanel leads={leads} companyId={companyId} />;
       case "quotations":
@@ -112,7 +112,7 @@ export default function SalesCRMView({
       case "services":
         return <ServiceCatalogPanel serviceCatalog={serviceCatalog} setServiceCatalog={setServiceCatalog} />;
       default:
-        return <LeadsPanel leads={leads} setLeads={setLeads} customers={customers} />;
+        return <LeadsPanel leads={leads} setLeads={setLeads} customers={customers} companyId={companyId} />;
     }
   };
 

@@ -16,6 +16,7 @@ interface PurchaseViewProps {
   warehouses: any[];
   batchStocks?: any[];
   userRole: UserRole;
+  companyId: string;
   onReceiveGRN: (poId: string, warehouseId: string, items: Array<{ productId: string; qty: number; batchNumber: string; expiryDate?: string; rack?: string }>) => void;
   onMarkPOReceived: (poId: string) => void;
 }
@@ -30,6 +31,7 @@ export default function PurchaseView({
   products,
   batchStocks = [],
   userRole,
+  companyId,
   onMarkPOReceived,
 }: PurchaseViewProps) {
   const [activeTab, setActiveTab] = useState<ActiveTab>("orders");
@@ -37,7 +39,7 @@ export default function PurchaseView({
   const handleAddSupplier = (newSup: Omit<Supplier, "id">) => {
     const fresh: Supplier = {
       id: `sup-${Date.now()}`,
-      companyId: "comp-1",
+      companyId,
       name: newSup.name,
       code: newSup.code,
       contactPerson: newSup.contactPerson,

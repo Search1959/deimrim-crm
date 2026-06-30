@@ -6,9 +6,10 @@ interface LeadsPanelProps {
   leads: Lead[];
   setLeads: React.Dispatch<React.SetStateAction<Lead[]>>;
   customers: Customer[];
+  companyId: string;
 }
 
-export default function LeadsPanel({ leads, setLeads, customers }: LeadsPanelProps) {
+export default function LeadsPanel({ leads, setLeads, customers, companyId }: LeadsPanelProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("All");
   const [showAddModal, setShowAddModal] = useState(false);
@@ -42,8 +43,8 @@ export default function LeadsPanel({ leads, setLeads, customers }: LeadsPanelPro
 
     const newLeadItem: Lead & { title?: string; value?: number; closeDate?: string } = {
       id: `lead-${Date.now()}`,
-      companyId: "comp-1",
-      name: title, // Use title for name
+      companyId,
+      name: title,
       companyName: companyName,
       email: contactPerson ? `${contactPerson.toLowerCase().replace(/\s+/g, "")}@example.com` : "contact@example.com",
       phone: "+91 98300 00000",

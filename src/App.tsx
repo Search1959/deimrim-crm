@@ -200,13 +200,7 @@ export default function App() {
   const [batchStocks, setBatchStocks] = useState<BatchStock[]>(defaultBatchStocks);
   const [suppliers, setSuppliers] = useState<Supplier[]>(defaultSuppliers);
   const [purchaseOrders, setPurchaseOrders] = useState<PurchaseOrder[]>(defaultPurchaseOrders);
-  const [serviceCatalog, setServiceCatalog] = useState<ServiceCatalogItem[]>([
-    { id: "svc-1", name: "Consulting / Advisory", sacCode: "998311", unit: "Hour", defaultRate: 2500, description: "Professional consulting and advisory services" },
-    { id: "svc-2", name: "Annual Maintenance Contract (AMC)", sacCode: "998719", unit: "Year", defaultRate: 15000, description: "Comprehensive annual maintenance and support" },
-    { id: "svc-3", name: "Installation & Commissioning", sacCode: "995461", unit: "Job", defaultRate: 8000, description: "On-site installation and commissioning" },
-    { id: "svc-4", name: "Training & Capacity Building", sacCode: "999293", unit: "Day", defaultRate: 5000, description: "Staff training and skill development" },
-    { id: "svc-5", name: "Software / SaaS Subscription", sacCode: "998314", unit: "Month", defaultRate: 3000, description: "Software license or SaaS subscription fee" },
-  ]);
+  const [serviceCatalog, setServiceCatalog] = useState<ServiceCatalogItem[]>([]);
   const [leads, setLeads] = useState<Lead[]>(defaultLeads);
   const [customers, setCustomers] = useState<Customer[]>(defaultCustomers);
   const [invoices, setInvoices] = useState<Invoice[]>(defaultInvoices);
@@ -394,6 +388,13 @@ export default function App() {
       setAuditLogs(resolvedAudit as any);
       setAssets(resolvedAssets as any);
       setStockMovements(resolvedMovements as any);
+      setServiceCatalog(isDemo ? [
+        { id: "svc-1", name: "Consulting / Advisory", sacCode: "998311", unit: "Hour", defaultRate: 2500, description: "Professional consulting and advisory services" },
+        { id: "svc-2", name: "Annual Maintenance Contract (AMC)", sacCode: "998719", unit: "Year", defaultRate: 15000, description: "Comprehensive annual maintenance and support" },
+        { id: "svc-3", name: "Installation & Commissioning", sacCode: "995461", unit: "Job", defaultRate: 8000, description: "On-site installation and commissioning" },
+        { id: "svc-4", name: "Training & Capacity Building", sacCode: "999293", unit: "Day", defaultRate: 5000, description: "Staff training and skill development" },
+        { id: "svc-5", name: "Software / SaaS Subscription", sacCode: "998314", unit: "Month", defaultRate: 3000, description: "Software license or SaaS subscription fee" },
+      ] : []);
     })();
   }, [isLoggedIn, currentUser.companyId]);
 
@@ -1014,6 +1015,7 @@ export default function App() {
             products={products}
             warehouses={defaultWarehouses}
             userRole={currentUser.role}
+            companyId={currentUser.companyId}
             onReceiveGRN={handleReceiveGRN}
             onMarkPOReceived={handleMarkPOReceived}
           />
