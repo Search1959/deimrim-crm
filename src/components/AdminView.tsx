@@ -5,16 +5,16 @@
  */
 
 import React, { useState, useEffect } from "react";
-import { 
-  Settings, 
-  Building, 
-  ShieldAlert, 
-  Users, 
-  ToggleLeft, 
-  ToggleRight, 
-  Check, 
-  X, 
-  Save, 
+import {
+  Settings,
+  Building,
+  ShieldAlert,
+  Users,
+  ToggleLeft,
+  ToggleRight,
+  Check,
+  X,
+  Save,
   Key,
   ShieldCheck,
   Building2,
@@ -26,7 +26,9 @@ import {
   AlertCircle,
   RefreshCw,
   Clock,
-  Send
+  Send,
+  Edit,
+  Trash2
 } from "lucide-react";
 import { Company, Branch, User, UserRole, formatINR } from "../types";
 
@@ -156,6 +158,44 @@ export default function AdminView({
   const [staffPassword, setStaffPassword] = useState("");
   const [staffRole, setStaffRole] = useState<UserRole>(UserRole.EMPLOYEE);
   const [staffSuccessMsg, setStaffSuccessMsg] = useState("");
+
+  // Edit user modal state
+  const [editingUser, setEditingUser] = useState<User | null>(null);
+  const [editName, setEditName] = useState("");
+  const [editEmail, setEditEmail] = useState("");
+  const [editRole, setEditRole] = useState<UserRole>(UserRole.EMPLOYEE);
+  const [editStatus, setEditStatus] = useState<"active" | "inactive">("active");
+  const [editPassword, setEditPassword] = useState("");
+
+  const handleOpenEditUser = (u: User) => {
+    setEditingUser(u);
+    setEditName(u.name);
+    setEditEmail(u.email);
+    setEditRole(u.role);
+    setEditStatus(u.status);
+    setEditPassword("");
+  };
+
+  const handleSaveEditUser = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editName || !editEmail || !editingUser) return;
+    setUsers(prev => prev.map(u => u.id === editingUser.id ? {
+      ...u,
+      name: editName.trim(),
+      email: editEmail.trim().toLowerCase(),
+      role: editRole,
+      status: editStatus,
+      ...(editPassword ? { password: editPassword.trim() } : {}),
+    } : u));
+    setEditingUser(null);
+    toast.success("User Updated", `${editName} account updated successfully`);
+  };
+
+  const handleDeleteUser = (u: User) => {
+    if (!confirm(`Delete user "${u.name}" (${u.email})? This cannot be undone.`)) return;
+    setUsers(prev => prev.filter(x => x.id !== u.id));
+    toast.success("User Removed", `${u.name} has been deleted`);
+  };
 
   const handleCreateClient = (e: React.FormEvent) => {
     e.preventDefault();
@@ -764,29 +804,43 @@ export default function AdminView({
             <table className="min-w-full divide-y divide-slate-800 text-sm">
               <thead className="bg-slate-950 font-semibold text-slate-300 text-left">
                 <tr>
-                  <th className="px-5 py-3">User Profile</th>
-                  <th className="px-5 py-3">Mailing Address</th>
-                  <th className="px-5 py-3">Assigned Role</th>
-                  <th className="px-5 py-3">Login Status</th>
+                  <th className="px-5 py-3">User</th>
+                  <th className="px-5 py-3">Email</th>
+                  <th className="px-5 py-3">Role</th>
+                  <th className="px-5 py-3">Status</th>
+                  <th className="px-5 py-3">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-850 text-slate-300">
                 {(userRole === UserRole.SYSTEM_ADMIN ? users : users.filter(u => u.companyId === company.id)).map(u => (
                   <tr key={u.id} className="hover:bg-slate-900/40 transition-colors">
-                    <td className="px-5 py-4 flex items-center gap-3">
-                      <img src={u.avatarUrl || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=128&auto=format&fit=crop&q=60"} alt={u.name} className="h-8 w-8 rounded-full border border-slate-800" referrerPolicy="no-referrer" />
-                      <div>
-                        <div className="font-bold text-slate-200 leading-tight">{u.name}</div>
-                        <div className="text-[10px] text-indigo-400 font-mono font-bold uppercase mt-0.5">Tenant: {u.companyId.replace("comp-", "").toUpperCase()}</div>
-                      </div>
+                    <td className="px-5 py-4">
+                      <div className="font-bold text-slate-200 leading-tight">{u.name}</div>
+                      <div className="text-[10px] text-indigo-400 font-mono font-bold uppercase mt-0.5">Tenant: {u.companyId.replace("comp-", "").toUpperCase()}</div>
                     </td>
                     <td className="px-5 py-4 font-mono text-xs text-slate-400">{u.email}</td>
                     <td className="px-5 py-4 font-bold text-xs text-indigo-400">{u.role}</td>
                     <td className="px-5 py-4">
-                      <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wide border border-emerald-500/20 bg-emerald-500/10 text-emerald-400`}>
-                        <span className="h-1.5 w-1.5 rounded-full bg-emerald-400"></span>
+                      <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wide ${u.status === "active" ? "border border-emerald-500/20 bg-emerald-500/10 text-emerald-400" : "border border-slate-700 bg-slate-800 text-slate-400"}`}>
+                        <span className={`h-1.5 w-1.5 rounded-full ${u.status === "active" ? "bg-emerald-400" : "bg-slate-500"}`}></span>
                         <span>{u.status}</span>
                       </span>
+                    </td>
+                    <td className="px-5 py-4">
+                      <div className="flex items-center gap-2">
+                        <button
+                          onClick={() => handleOpenEditUser(u)}
+                          className="flex items-center gap-1 px-2.5 py-1 bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white rounded-lg text-[10px] font-bold cursor-pointer transition-all"
+                        >
+                          <Edit className="h-3 w-3" /> Edit
+                        </button>
+                        <button
+                          onClick={() => handleDeleteUser(u)}
+                          className="flex items-center gap-1 px-2.5 py-1 bg-red-500/10 hover:bg-red-500/20 text-red-400 hover:text-red-300 rounded-lg text-[10px] font-bold cursor-pointer transition-all"
+                        >
+                          <Trash2 className="h-3 w-3" /> Delete
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))}
@@ -795,6 +849,65 @@ export default function AdminView({
           </div>
         </div>
       </div>
+      )}
+
+      {/* Edit User Modal */}
+      {editingUser && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+          <form onSubmit={handleSaveEditUser} className="w-full max-w-md rounded-xl border border-slate-800 bg-slate-950 p-6 shadow-2xl space-y-4">
+            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+              <div className="flex items-center gap-2">
+                <Edit className="h-4 w-4 text-indigo-400" />
+                <h3 className="text-sm font-bold text-white font-mono">Edit User — {editingUser.name}</h3>
+              </div>
+              <button type="button" onClick={() => setEditingUser(null)} className="text-slate-400 hover:text-white font-bold text-lg leading-none cursor-pointer">×</button>
+            </div>
+
+            <div className="space-y-3 text-xs">
+              <div>
+                <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 font-mono">Full Name *</label>
+                <input required type="text" value={editName} onChange={e => setEditName(e.target.value)}
+                  className="w-full bg-slate-900 border border-slate-800 rounded-lg p-2 text-xs text-white focus:outline-none focus:border-indigo-500" />
+              </div>
+              <div>
+                <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 font-mono">Email *</label>
+                <input required type="email" value={editEmail} onChange={e => setEditEmail(e.target.value)}
+                  className="w-full bg-slate-900 border border-slate-800 rounded-lg p-2 text-xs text-white font-mono focus:outline-none focus:border-indigo-500" />
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 font-mono">Role</label>
+                  <select value={editRole} onChange={e => setEditRole(e.target.value as UserRole)}
+                    className="w-full bg-slate-900 border border-slate-800 rounded-lg p-2 text-xs text-white focus:outline-none focus:border-indigo-500">
+                    {Object.values(UserRole).map(r => <option key={r} value={r}>{r}</option>)}
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 font-mono">Status</label>
+                  <select value={editStatus} onChange={e => setEditStatus(e.target.value as "active" | "inactive")}
+                    className="w-full bg-slate-900 border border-slate-800 rounded-lg p-2 text-xs text-white focus:outline-none focus:border-indigo-500">
+                    <option value="active">Active</option>
+                    <option value="inactive">Inactive</option>
+                  </select>
+                </div>
+              </div>
+              <div>
+                <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 font-mono">New Password <span className="text-slate-600 font-normal lowercase">(leave blank to keep current)</span></label>
+                <input type="password" value={editPassword} onChange={e => setEditPassword(e.target.value)} placeholder="••••••••"
+                  className="w-full bg-slate-900 border border-slate-800 rounded-lg p-2 text-xs text-white focus:outline-none focus:border-indigo-500" />
+              </div>
+            </div>
+
+            <div className="flex justify-end gap-2 pt-2 border-t border-slate-800">
+              <button type="button" onClick={() => setEditingUser(null)}
+                className="px-4 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-xs font-bold cursor-pointer">Cancel</button>
+              <button type="submit"
+                className="flex items-center gap-1.5 px-4 py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg text-xs font-bold cursor-pointer">
+                <Check className="h-3.5 w-3.5" /> Save Changes
+              </button>
+            </div>
+          </form>
+        </div>
       )}
 
       {/* SUB-TAB: BILLING & SUBSCRIPTION */}
