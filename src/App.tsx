@@ -286,6 +286,8 @@ export default function App() {
     if (!isLoggedIn) return;
     const companyId = currentUser.companyId;
 
+    const isDemo = companyId === "comp-1";
+
     const lsGet = (key: string) => {
       const v = localStorage.getItem(`deinrim_${key}_${companyId}`);
       try { return v ? JSON.parse(v) : null; } catch { return null; }
@@ -293,12 +295,25 @@ export default function App() {
 
     const pick = <T,>(fromAPI: T | null | undefined, lsKey: string, fallback: T): T => {
       if (fromAPI != null) return fromAPI;
-      const cached = lsGet(lsKey);
-      if (cached != null) return cached;
+      // For non-demo tenants, NEVER fall back to localStorage.
+      // localStorage may hold contaminated demo data from a previous session bug.
+      // MySQL is the source of truth; if MySQL has no data, the company is new → blank slate.
+      if (isDemo) {
+        const cached = lsGet(lsKey);
+        if (cached != null) return cached;
+      }
       return fallback;
     };
 
     tenantLoading.current = true;
+    // For non-demo tenants: purge ALL their localStorage keys so any contaminated demo
+    // data from a previous session bug is erased. MySQL is their source of truth.
+    if (companyId !== "comp-1") {
+      ["company","branches","products","categories","brands","batchStocks","suppliers",
+       "purchaseOrders","leads","customers","invoices","employees","leaveRequests",
+       "transactions","documents","notifications","auditLogs","assets","stockMovements"
+      ].forEach(key => localStorage.removeItem(`deinrim_${key}_${companyId}`));
+    }
     // Immediately wipe previous-tenant data so persistTenant (which fires on state change)
     // cannot write the old tenant's data into this tenant's localStorage before the async
     // API load completes and sets the correct data.
@@ -322,8 +337,7 @@ export default function App() {
         d.notifications, d.auditLogs, d.assets, d.stockMovements,
       ]);
 
-      // Build blank tenant defaults for new companies
-      const isDemo = companyId === "comp-1";
+      // Build blank tenant defaults for new companies (isDemo defined above)
       const cleanCode = companyId.replace("comp-", "").toUpperCase();
 
       const blankCompany = isDemo ? defaultCompany : {
