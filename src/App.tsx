@@ -75,6 +75,9 @@ export default function App() {
   
   // Login Session state
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  // Guard: prevents persistTenant from writing stale previous-tenant data
+  // into the new tenant's localStorage before the loading useEffect completes
+  const tenantLoading = useRef(false);
 
   // Dynamic SEO Title and Meta Description updater
   useEffect(() => {
@@ -295,6 +298,14 @@ export default function App() {
       return fallback;
     };
 
+    tenantLoading.current = true;
+    // Immediately wipe previous-tenant data so persistTenant (which fires on state change)
+    // cannot write the old tenant's data into this tenant's localStorage before the async
+    // API load completes and sets the correct data.
+    setProducts([]); setBatchStocks([]); setSuppliers([]); setPurchaseOrders([]);
+    setLeads([]); setCustomers([]); setInvoices([]); setEmployees([]); setLeaveRequests([]);
+    setTransactions([]); setDocuments([]); setNotifications([]); setAuditLogs([]);
+    setAssets([]); setStockMovements([]); setServiceCatalog([]);
     (async () => {
       // Load all 19 entities from MySQL in parallel (one round-trip each via Promise.all)
       const [
@@ -388,6 +399,7 @@ export default function App() {
       setAuditLogs(resolvedAudit as any);
       setAssets(resolvedAssets as any);
       setStockMovements(resolvedMovements as any);
+      tenantLoading.current = false;
       setServiceCatalog(isDemo ? [
         { id: "svc-1", name: "Consulting / Advisory", sacCode: "998311", unit: "Hour", defaultRate: 2500, description: "Professional consulting and advisory services" },
         { id: "svc-2", name: "Annual Maintenance Contract (AMC)", sacCode: "998719", unit: "Year", defaultRate: 15000, description: "Comprehensive annual maintenance and support" },
@@ -403,6 +415,7 @@ export default function App() {
 
   const persistTenant = useCallback(() => {
     if (!isLoggedIn) return;
+    if (tenantLoading.current) return; // block writes while tenant data is loading
     const cid = currentUser.companyId;
 
     // Write-through to localStorage immediately (instant cache)
