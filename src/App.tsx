@@ -361,26 +361,33 @@ export default function App() {
       }];
 
       // Resolve each entity: API → localStorage → seed default
-      // For company: validate that the stored record actually belongs to this tenant.
-      // MySQL may hold a contaminated defaultCompany (id:"comp-1") saved under a different
-      // tenant key by the old race-condition bug. Discard it if the id doesn't match.
+      //
+      // Contamination guard: the old race-condition bug saved the entire demo dataset
+      // (comp-1 records) into this tenant's MySQL slot. The company record is the canary —
+      // if apiCompany.id !== companyId, the whole MySQL snapshot for this tenant is stale/
+      // contaminated. Discard ALL MySQL data in that case so every entity falls through to
+      // its clean fallback ([] for non-demo tenants).
       const validApiCompany = (apiCompany as any)?.id === companyId ? apiCompany : undefined;
-      const resolvedCompany   = pick(validApiCompany,   "company",        blankCompany);
-      const resolvedBranches  = pick(apiBranches,       "branches",       blankBranches);
-      const resolvedProducts  = pick(apiProducts,       "products",       isDemo ? defaultProducts       : []);
-      const resolvedCats      = pick(apiCategories,     "categories",     defaultCategories);
-      const resolvedBrands    = pick(apiBrands,         "brands",         defaultBrands);
-      const resolvedStocks    = pick(apiBatchStocks,    "batchStocks",    isDemo ? defaultBatchStocks    : []);
-      const resolvedSuppliers = pick(apiSuppliers,      "suppliers",      isDemo ? defaultSuppliers      : []);
-      const resolvedPOs       = pick(apiPOs,            "purchaseOrders", isDemo ? defaultPurchaseOrders : []);
-      const resolvedLeads     = pick(apiLeads,          "leads",          isDemo ? defaultLeads          : []);
-      const resolvedCustomers = pick(apiCustomers,      "customers",      isDemo ? defaultCustomers      : []);
-      const resolvedInvoices  = pick(apiInvoices,       "invoices",       isDemo ? defaultInvoices       : []);
-      const resolvedEmployees = pick(apiEmployees,      "employees",      isDemo ? defaultEmployees      : []);
-      const resolvedLeaves    = pick(apiLeaves,         "leaveRequests",  isDemo ? defaultLeaveRequests  : []);
-      const resolvedTxns      = pick(apiTransactions,   "transactions",   isDemo ? defaultTransactions   : []);
-      const resolvedDocs      = pick(apiDocs,           "documents",      isDemo ? defaultDocuments      : []);
-      const resolvedNotes     = pick(apiNotifications,  "notifications",  isDemo ? defaultNotifications  : [{
+      const dbContaminated  = validApiCompany === undefined && apiCompany !== undefined;
+      // When contaminated, treat every other MySQL result as if it returned nothing.
+      const safe = <T,>(v: T) => dbContaminated ? undefined : v;
+
+      const resolvedCompany   = pick(validApiCompany,        "company",        blankCompany);
+      const resolvedBranches  = pick(safe(apiBranches),      "branches",       blankBranches);
+      const resolvedProducts  = pick(safe(apiProducts),      "products",       isDemo ? defaultProducts       : []);
+      const resolvedCats      = pick(safe(apiCategories),    "categories",     defaultCategories);
+      const resolvedBrands    = pick(safe(apiBrands),        "brands",         defaultBrands);
+      const resolvedStocks    = pick(safe(apiBatchStocks),   "batchStocks",    isDemo ? defaultBatchStocks    : []);
+      const resolvedSuppliers = pick(safe(apiSuppliers),     "suppliers",      isDemo ? defaultSuppliers      : []);
+      const resolvedPOs       = pick(safe(apiPOs),           "purchaseOrders", isDemo ? defaultPurchaseOrders : []);
+      const resolvedLeads     = pick(safe(apiLeads),         "leads",          isDemo ? defaultLeads          : []);
+      const resolvedCustomers = pick(safe(apiCustomers),     "customers",      isDemo ? defaultCustomers      : []);
+      const resolvedInvoices  = pick(safe(apiInvoices),      "invoices",       isDemo ? defaultInvoices       : []);
+      const resolvedEmployees = pick(safe(apiEmployees),     "employees",      isDemo ? defaultEmployees      : []);
+      const resolvedLeaves    = pick(safe(apiLeaves),        "leaveRequests",  isDemo ? defaultLeaveRequests  : []);
+      const resolvedTxns      = pick(safe(apiTransactions),  "transactions",   isDemo ? defaultTransactions   : []);
+      const resolvedDocs      = pick(safe(apiDocs),          "documents",      isDemo ? defaultDocuments      : []);
+      const resolvedNotes     = pick(safe(apiNotifications), "notifications",  isDemo ? defaultNotifications  : [{
         id: `n-${Date.now()}`, title: "Tenant Space Activated",
         message: `Welcome to your whitelabel workspace: "${(resolvedCompany as any).name}".`,
         type: "success", read: false, createdAt: new Date().toISOString(),
