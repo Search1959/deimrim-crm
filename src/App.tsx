@@ -361,7 +361,11 @@ export default function App() {
       }];
 
       // Resolve each entity: API → localStorage → seed default
-      const resolvedCompany   = pick(apiCompany,        "company",        blankCompany);
+      // For company: validate that the stored record actually belongs to this tenant.
+      // MySQL may hold a contaminated defaultCompany (id:"comp-1") saved under a different
+      // tenant key by the old race-condition bug. Discard it if the id doesn't match.
+      const validApiCompany = (apiCompany as any)?.id === companyId ? apiCompany : undefined;
+      const resolvedCompany   = pick(validApiCompany,   "company",        blankCompany);
       const resolvedBranches  = pick(apiBranches,       "branches",       blankBranches);
       const resolvedProducts  = pick(apiProducts,       "products",       isDemo ? defaultProducts       : []);
       const resolvedCats      = pick(apiCategories,     "categories",     defaultCategories);
