@@ -3,7 +3,7 @@ import {
   MessageSquare, ShieldAlert, FileText, CreditCard, Award,
   Building2, Users, AlertCircle, ClipboardCheck, Truck, Wrench, Sparkles
 } from "lucide-react";
-import { Lead, Customer, Invoice, Product, BatchStock, UserRole, ServiceCatalogItem } from "../types";
+import { Lead, Customer, Invoice, Product, BatchStock, UserRole, ServiceCatalogItem, Company } from "../types";
 
 // Import modular CRM components
 import LeadsPanel from "./crm/LeadsPanel";
@@ -33,6 +33,7 @@ interface SalesCRMViewProps {
   onGenerateInvoice: (invoiceId: string, customerId: string, items: Array<{ productId: string; qty: number; itemType?: "product" | "service" }>, customTotalAmount?: number) => void;
   onPaymentRecorded?: (invoiceId: string, amount: number, method: string, invoiceNumber: string, customerName: string) => void;
   companyId: string;
+  company?: Company;
 }
 
 type ActiveCRMTab = "leads" | "deals" | "quotations" | "invoices" | "do" | "payments" | "targets" | "companies" | "contacts" | "tickets" | "services";
@@ -51,7 +52,8 @@ export default function SalesCRMView({
   userRole,
   onGenerateInvoice,
   onPaymentRecorded,
-  companyId
+  companyId,
+  company,
 }: SalesCRMViewProps) {
   const [activeTab, setActiveTab] = useState<ActiveCRMTab>("leads");
 
@@ -95,6 +97,7 @@ export default function SalesCRMView({
             serviceCatalog={serviceCatalog}
             onGenerateInvoice={onGenerateInvoice}
             companyId={companyId}
+            company={company}
           />
         );
       case "do":

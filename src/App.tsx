@@ -1080,6 +1080,7 @@ export default function App() {
             onGenerateInvoice={handleGenerateInvoice}
             onPaymentRecorded={handlePaymentRecorded}
             companyId={currentUser.companyId}
+            company={company}
           />
         );
       case "hr":

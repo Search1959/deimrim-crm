@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Plus, Search, Eye, Trash2, Download, Share2, Edit, Package, Wrench } from "lucide-react";
-import { Invoice, Customer, Product, BatchStock, ServiceCatalogItem, formatINR } from "../../types";
+import { Invoice, Customer, Product, BatchStock, ServiceCatalogItem, Company, formatINR } from "../../types";
 import { toast } from "../../utils/toast";
 import { exportInvoicesCSV } from "../../utils/exportCSV";
 
@@ -18,6 +18,7 @@ interface InvoicesPanelProps {
     customTotalAmount?: number
   ) => void;
   companyId: string;
+  company?: Company;
 }
 
 type LineItemType = "product" | "service";
@@ -43,7 +44,7 @@ const BLANK_ITEM = (type: LineItemType = "product"): LineItem => ({
 
 export default function InvoicesPanel({
   invoices, setInvoices, customers, products, batchStocks = [],
-  serviceCatalog = [], onGenerateInvoice, companyId,
+  serviceCatalog = [], onGenerateInvoice, companyId, company,
 }: InvoicesPanelProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const [showAddModal, setShowAddModal] = useState(false);
@@ -230,7 +231,7 @@ export default function InvoicesPanel({
 </head><body><div class="page">
 <div style="text-align:center;margin-bottom:16px"><button class="no-print" onclick="window.print()">Print / Save as PDF</button></div>
 <div style="display:flex;justify-content:space-between;border-bottom:3px solid #4f46e5;padding-bottom:16px;margin-bottom:20px">
-  <div><div style="font-size:22px;font-weight:800;color:#4f46e5;">DEINRIM OMS</div><div style="font-size:11px;color:#64748b;margin-top:3px">deinrim360.in</div></div>
+  <div><div style="font-size:22px;font-weight:800;color:#4f46e5;">${company?.name || "Your Company"}</div><div style="font-size:11px;color:#64748b;margin-top:3px">${company?.email || ""}</div></div>
   <div style="text-align:right"><div style="background:#4f46e5;color:#fff;font-size:11px;font-weight:700;padding:4px 10px;border-radius:4px;display:inline-block;margin-bottom:4px">TAX INVOICE</div><div style="font-size:18px;font-weight:800;font-family:monospace">${inv.invoiceNumber}</div></div>
 </div>
 <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px">
@@ -253,7 +254,7 @@ export default function InvoicesPanel({
   </div>
 </div>
 ${inv.notes ? `<div style="border:1px solid #e2e8f0;border-radius:8px;padding:14px;font-size:11px;color:#475569;margin-bottom:16px"><strong>Notes:</strong> ${inv.notes}</div>` : ""}
-<div style="border-top:1px solid #e2e8f0;padding-top:14px;font-size:10px;color:#94a3b8;text-align:center">Computer-generated Tax Invoice · DEINRIM OMS · deinrim360.in</div>
+<div style="border-top:1px solid #e2e8f0;padding-top:14px;font-size:10px;color:#94a3b8;text-align:center">Computer-generated Tax Invoice · ${company?.name || "Your Company"} · ${company?.email || ""}</div>
 </div></body></html>`;
 
     const win = window.open("", "_blank");
