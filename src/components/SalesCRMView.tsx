@@ -34,6 +34,7 @@ interface SalesCRMViewProps {
   onPaymentRecorded?: (invoiceId: string, amount: number, method: string, invoiceNumber: string, customerName: string) => void;
   companyId: string;
   company?: Company;
+  setCompany?: React.Dispatch<React.SetStateAction<Company>>;
 }
 
 type ActiveCRMTab = "leads" | "deals" | "quotations" | "invoices" | "do" | "payments" | "targets" | "companies" | "contacts" | "tickets" | "services";
@@ -54,6 +55,7 @@ export default function SalesCRMView({
   onPaymentRecorded,
   companyId,
   company,
+  setCompany,
 }: SalesCRMViewProps) {
   const [activeTab, setActiveTab] = useState<ActiveCRMTab>("leads");
 
@@ -98,6 +100,7 @@ export default function SalesCRMView({
             onGenerateInvoice={onGenerateInvoice}
             companyId={companyId}
             company={company}
+            setCompany={setCompany}
           />
         );
       case "do":

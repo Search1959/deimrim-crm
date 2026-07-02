@@ -3,6 +3,7 @@ import { Plus, Search, Eye, Trash2, Download, Share2, Edit, Package, Wrench } fr
 import { Invoice, Customer, Product, BatchStock, ServiceCatalogItem, Company, formatINR } from "../../types";
 import { toast } from "../../utils/toast";
 import { exportInvoicesCSV } from "../../utils/exportCSV";
+import GSTInvoiceBuilder from "./GSTInvoiceBuilder";
 
 interface InvoicesPanelProps {
   invoices: Invoice[];
@@ -19,6 +20,7 @@ interface InvoicesPanelProps {
   ) => void;
   companyId: string;
   company?: Company;
+  setCompany?: React.Dispatch<React.SetStateAction<Company>>;
 }
 
 type LineItemType = "product" | "service";
@@ -44,9 +46,10 @@ const BLANK_ITEM = (type: LineItemType = "product"): LineItem => ({
 
 export default function InvoicesPanel({
   invoices, setInvoices, customers, products, batchStocks = [],
-  serviceCatalog = [], onGenerateInvoice, companyId, company,
+  serviceCatalog = [], onGenerateInvoice, companyId, company, setCompany,
 }: InvoicesPanelProps) {
   const [searchQuery, setSearchQuery] = useState("");
+  const [showGSTBuilder, setShowGSTBuilder] = useState(false);
   const [showAddModal, setShowAddModal] = useState(false);
   const [viewingInvoice, setViewingInvoice] = useState<Invoice | null>(null);
   const [editingInvoice, setEditingInvoice] = useState<Invoice | null>(null);
@@ -288,9 +291,9 @@ ${inv.notes ? `<div style="border:1px solid #e2e8f0;border-radius:8px;padding:14
             className="flex items-center gap-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg px-3 py-1.5 text-xs font-bold cursor-pointer">
             <Share2 className="h-3.5 w-3.5" /> Export CSV
           </button>
-          <button onClick={handleOpenAdd}
+          <button onClick={() => setShowGSTBuilder(true)}
             className="flex items-center gap-1.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg px-3 py-1.5 text-xs font-bold cursor-pointer">
-            <Plus className="h-3.5 w-3.5" /> New Invoice
+            <Plus className="h-3.5 w-3.5" /> New GST Invoice
           </button>
         </div>
       </div>
@@ -594,6 +597,37 @@ ${inv.notes ? `<div style="border:1px solid #e2e8f0;border-radius:8px;padding:14
               <button onClick={() => setViewingInvoice(null)}
                 className="px-4 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-xs cursor-pointer">Close</button>
             </div>
+          </div>
+        </div>
+      )}
+      {/* GST Invoice Builder */}
+      {showGSTBuilder && company && setCompany && (
+        <GSTInvoiceBuilder
+          company={company}
+          setCompany={setCompany}
+          customers={customers}
+          products={products}
+          batchStocks={batchStocks}
+          serviceCatalog={serviceCatalog}
+          invoices={invoices}
+          onSave={(invoice) => {
+            setInvoices(prev => [invoice, ...prev]);
+            onGenerateInvoice(
+              invoice.id,
+              invoice.customerId,
+              invoice.items.map(it => ({ productId: it.productId, qty: it.quantity, itemType: it.itemType })),
+              invoice.totalAmount,
+            );
+            setShowGSTBuilder(false);
+          }}
+          onClose={() => setShowGSTBuilder(false)}
+        />
+      )}
+      {showGSTBuilder && (!company || !setCompany) && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60">
+          <div className="bg-slate-900 border border-slate-700 rounded-xl p-6 text-white text-sm max-w-md">
+            <p className="mb-4">Company profile not loaded. Please reload the page and try again.</p>
+            <button onClick={() => setShowGSTBuilder(false)} className="px-4 py-2 bg-slate-700 rounded-lg cursor-pointer">Close</button>
           </div>
         </div>
       )}

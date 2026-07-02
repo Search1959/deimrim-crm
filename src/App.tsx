@@ -1081,6 +1081,7 @@ export default function App() {
             onPaymentRecorded={handlePaymentRecorded}
             companyId={currentUser.companyId}
             company={company}
+            setCompany={setCompany}
           />
         );
       case "hr":

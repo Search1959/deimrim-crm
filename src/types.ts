@@ -42,6 +42,17 @@ export interface Company {
     smsNotifications: boolean;
     currency: string;
   };
+  // Extended GST & invoice fields
+  tagline?: string;
+  state?: string;
+  gstin?: string;
+  bankName?: string;
+  bankAccountName?: string;
+  bankAccountNumber?: string;
+  bankIFSC?: string;
+  bankAccountType?: string;
+  bankUPI?: string;
+  defaultTerms?: string;
 }
 
 export interface Branch {
@@ -278,15 +289,28 @@ export interface Invoice {
     quantity: number;
     unitPrice: number;
     discount?: number;
+    gstPct?: number;
   }>;
   subtotal: number;
   taxAmount: number;
+  cgst?: number;
+  sgst?: number;
   totalAmount: number;
   status: "unpaid" | "partially_paid" | "paid" | "overdue" | "void";
   createdAt: string;
   dueDate: string;
   notes?: string;
   terms?: string;
+  // GST invoice extended fields
+  placeOfSupply?: string;
+  reverseCharge?: string;
+  refPO?: string;
+  buyerName?: string;
+  buyerGSTIN?: string;
+  billingAddress?: string;
+  buyerState?: string;
+  buyerPhone?: string;
+  buyerEmail?: string;
 }
 
 // ==========================================
