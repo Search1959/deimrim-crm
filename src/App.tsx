@@ -286,7 +286,12 @@ export default function App() {
     if (!isLoggedIn) return;
     const companyId = currentUser.companyId;
 
-    const isDemo = companyId === "comp-1";
+    // HARD RULE: only the original built-in seeded accounts (IDs like u-apex, u-1 ... u-8,
+    // u-demo) ever see demo data. Any account created through the UI gets id starting with
+    // "u-client-" or "u-staff-" and ALWAYS starts with a blank slate — regardless of which
+    // companyId they happen to have.
+    const isCreatedAccount = currentUser.id.startsWith("u-client-") || currentUser.id.startsWith("u-staff-");
+    const isDemo = !isCreatedAccount && companyId === "comp-1";
 
     const lsGet = (key: string) => {
       const v = localStorage.getItem(`deinrim_${key}_${companyId}`);
