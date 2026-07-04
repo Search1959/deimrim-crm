@@ -30,34 +30,8 @@ export default function TicketsPanel({ customers, companyId }: TicketsPanelProps
     if (stored) {
       try { setTickets(JSON.parse(stored)); } catch (e) {}
     } else {
-      const defaultT: ServiceTicket[] = [
-        {
-          id: "tkt-1",
-          ticketNumber: "ST-2026-0901",
-          subject: "Whitelabel portal domain redirection issue",
-          companyName: "Tata Motors Ltd",
-          contactName: "Rohan Sen",
-          priority: "High",
-          status: "In Progress",
-          assignedTo: "Kolkata DevOps Node",
-          description: "CNAME configuration failing on whitelabel subdomain mapping.",
-          createdAt: "2026-06-25"
-        },
-        {
-          id: "tkt-2",
-          ticketNumber: "ST-2026-0902",
-          subject: "Duplicate billing items on invoice INV-2026-0001",
-          companyName: "Wipro Technologies",
-          contactName: "Aditi Roy",
-          priority: "Medium",
-          status: "Resolved",
-          assignedTo: "Finance Audit Team",
-          description: "System duplicated HSN line item on server reboot. Fixed immediately.",
-          createdAt: "2026-06-26"
-        }
-      ];
-      setTickets(defaultT);
-      localStorage.setItem(storageKey, JSON.stringify(defaultT));
+      setTickets([]);
+      localStorage.setItem(storageKey, JSON.stringify([]));
     }
   }, [companyId]);
 

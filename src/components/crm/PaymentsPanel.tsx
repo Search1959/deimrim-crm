@@ -31,22 +31,8 @@ export default function PaymentsPanel({ invoices, setInvoices, customers, compan
     if (stored) {
       try { setPayments(JSON.parse(stored)); } catch (e) {}
     } else {
-      const defaultP: Payment[] = [
-        {
-          id: "pay-1",
-          invoiceId: invoices[0]?.id || "inv-1",
-          invoiceNumber: invoices[0]?.invoiceNumber || "INV-2026-0001",
-          companyName: "Tata Motors Ltd",
-          amount: 450000,
-          paymentDate: "2026-06-26",
-          paymentMethod: "Bank Transfer",
-          referenceNo: "UTR98374291038",
-          notes: "Settled full invoice amount.",
-          createdAt: "2026-06-26"
-        }
-      ];
-      setPayments(defaultP);
-      localStorage.setItem(storageKey, JSON.stringify(defaultP));
+      setPayments([]);
+      localStorage.setItem(storageKey, JSON.stringify([]));
     }
   }, [companyId, invoices]);
 

@@ -617,21 +617,9 @@ export default function App() {
     toast.success("Stock Updated", `PO ${po.poNumber} received — inventory updated automatically`);
   };
 
-  // Payment recorded → auto-post income to Finance
-  const handlePaymentRecorded = (invoiceId: string, amount: number, method: string, invoiceNumber: string, customerName: string) => {
-    const finTx: Transaction = {
-      id: `tx-${Date.now()}`,
-      type: "INCOME",
-      category: "Payment Received",
-      amount,
-      date: new Date().toISOString().split("T")[0],
-      referenceId: invoiceNumber,
-      paymentMethod: method === "Bank Transfer" ? "BANK" : method === "UPI" ? "UPI" : method === "Cash" ? "CASH" : "BANK",
-      description: `Payment received from ${customerName} for ${invoiceNumber}`,
-      branchId: currentBranch.id,
-    };
-    setTransactions(prev => [finTx, ...prev]);
-    // Clear customer outstanding balance
+  // Payment recorded → clear outstanding balance only.
+  // Income was already posted on invoice generation (accrual basis) — do NOT post a second INCOME here.
+  const handlePaymentRecorded = (invoiceId: string, amount: number, _method: string, _invoiceNumber: string, _customerName: string) => {
     const inv = invoices.find(i => i.id === invoiceId);
     if (inv) {
       setCustomers(prev => prev.map(c =>
