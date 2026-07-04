@@ -29,7 +29,15 @@ export default function PaymentsPanel({ invoices, setInvoices, customers, compan
   useEffect(() => {
     const stored = localStorage.getItem(storageKey);
     if (stored) {
-      try { setPayments(JSON.parse(stored)); } catch (e) {}
+      try {
+        const parsed: Payment[] = JSON.parse(stored);
+        // Strip legacy seed entry that shipped with old builds
+        const cleaned = parsed.filter(p => p.id !== "pay-1");
+        if (cleaned.length !== parsed.length) {
+          localStorage.setItem(storageKey, JSON.stringify(cleaned));
+        }
+        setPayments(cleaned);
+      } catch (e) {}
     } else {
       setPayments([]);
       localStorage.setItem(storageKey, JSON.stringify([]));
