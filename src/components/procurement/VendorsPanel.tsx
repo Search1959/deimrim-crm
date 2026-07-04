@@ -7,9 +7,10 @@ interface VendorsPanelProps {
   suppliers: Supplier[];
   onAddSupplier: (supplier: Omit<Supplier, "id">) => void;
   onDeleteSupplier: (id: string) => void;
+  companyId: string;
 }
 
-export default function VendorsPanel({ suppliers, onAddSupplier, onDeleteSupplier }: VendorsPanelProps) {
+export default function VendorsPanel({ suppliers, onAddSupplier, onDeleteSupplier, companyId }: VendorsPanelProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const [showAddModal, setShowAddModal] = useState(false);
 
@@ -57,7 +58,7 @@ export default function VendorsPanel({ suppliers, onAddSupplier, onDeleteSupplie
     }
 
     const newVendor = {
-      companyId: "comp-1",
+      companyId: companyId,
       name,
       code,
       email,

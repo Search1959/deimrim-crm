@@ -1,15 +1,17 @@
 import React, { useState } from "react";
 import { Plus, Search, Edit, Trash2, ArrowUpRight, Award, MessageSquare } from "lucide-react";
-import { Lead, Customer, formatINR } from "../../types";
+import { Lead, Customer, formatINR, UserRole } from "../../types";
 
 interface LeadsPanelProps {
   leads: Lead[];
   setLeads: React.Dispatch<React.SetStateAction<Lead[]>>;
   customers: Customer[];
   companyId: string;
+  userRole?: UserRole;
 }
 
-export default function LeadsPanel({ leads, setLeads, customers, companyId }: LeadsPanelProps) {
+export default function LeadsPanel({ leads, setLeads, customers, companyId, userRole }: LeadsPanelProps) {
+  const canWrite = !userRole || (userRole !== UserRole.READ_ONLY && userRole !== UserRole.EMPLOYEE);
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("All");
   const [showAddModal, setShowAddModal] = useState(false);
@@ -24,6 +26,7 @@ export default function LeadsPanel({ leads, setLeads, customers, companyId }: Le
   const [value, setValue] = useState("");
   const [closeDate, setCloseDate] = useState("");
   const [notes, setNotes] = useState("");
+  const [leadEmail, setLeadEmail] = useState("");
 
   const handleOpenAdd = () => {
     setTitle("");
@@ -46,7 +49,7 @@ export default function LeadsPanel({ leads, setLeads, customers, companyId }: Le
       companyId,
       name: title,
       companyName: companyName,
-      email: contactPerson ? `${contactPerson.toLowerCase().replace(/\s+/g, "")}@example.com` : "contact@example.com",
+      email: leadEmail || (contactPerson ? `${contactPerson.toLowerCase().replace(/\s+/g, "")}@example.com` : "contact@example.com"),
       phone: "+91 98300 00000",
       status: status,
       source: source,
@@ -161,13 +164,13 @@ export default function LeadsPanel({ leads, setLeads, customers, companyId }: Le
           />
         </div>
         <div className="flex flex-wrap items-center gap-2">
-          <button
+          {canWrite && (<button
             onClick={handleOpenAdd}
             className="flex items-center gap-1.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg px-3 py-1.5 text-xs font-bold transition-all cursor-pointer"
           >
             <Plus className="h-3.5 w-3.5" />
             <span>Add Lead</span>
-          </button>
+          </button>)}
         </div>
       </div>
 
@@ -232,20 +235,20 @@ export default function LeadsPanel({ leads, setLeads, customers, companyId }: Le
                     <td className="px-4 py-3 font-mono font-semibold text-slate-200">{estValue > 0 ? formatINR(estValue) : "—"}</td>
                     <td className="px-4 py-3 text-right">
                       <div className="flex items-center justify-end gap-1.5">
-                        <button
+                        {canWrite && (<button
                           onClick={() => handleOpenEdit(l)}
                           className="p-1 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded transition-all"
                           title="Edit Lead"
                         >
                           <Edit className="h-3.5 w-3.5" />
-                        </button>
-                        <button
+                        </button>)}
+                        {canWrite && (<button
                           onClick={() => handleDelete(l.id)}
                           className="p-1 bg-red-500/10 hover:bg-red-500/20 text-red-400 rounded transition-all"
                           title="Delete Lead"
                         >
                           <Trash2 className="h-3.5 w-3.5" />
-                        </button>
+                        </button>)}
                       </div>
                     </td>
                   </tr>
@@ -269,7 +272,7 @@ export default function LeadsPanel({ leads, setLeads, customers, companyId }: Le
               </h3>
               <button 
                 type="button" 
-                onClick={() => { setShowAddModal(false); setEditingLead(null); }} 
+                onClick={() => { setShowAddModal(false); setEditingLead(null); setLeadEmail(""); }} 
                 className="text-slate-400 hover:text-white font-bold"
               >
                 ×
@@ -313,6 +316,11 @@ export default function LeadsPanel({ leads, setLeads, customers, companyId }: Le
                     className="w-full bg-slate-900 border border-slate-800 rounded-lg p-2 text-xs text-white focus:outline-hidden focus:border-indigo-500 font-semibold"
                   />
                 </div>
+              </div>
+
+              <div>
+                <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 font-mono">Email</label>
+                <input type="email" value={leadEmail} onChange={e => setLeadEmail(e.target.value)} placeholder="contact@company.com" className="w-full bg-slate-900 border border-slate-800 rounded px-3 py-2 text-xs text-white" />
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -385,7 +393,7 @@ export default function LeadsPanel({ leads, setLeads, customers, companyId }: Le
             <div className="flex justify-end gap-2.5 pt-3 border-t border-slate-800/80">
               <button
                 type="button"
-                onClick={() => { setShowAddModal(false); setEditingLead(null); }}
+                onClick={() => { setShowAddModal(false); setEditingLead(null); setLeadEmail(""); }}
                 className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-xs font-bold transition-all cursor-pointer"
               >
                 Cancel

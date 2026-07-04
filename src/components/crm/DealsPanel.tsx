@@ -5,9 +5,10 @@ import { Deal, Lead, formatINR } from "../../types";
 interface DealsPanelProps {
   leads: Lead[];
   companyId: string;
+  isDemo?: boolean;
 }
 
-export default function DealsPanel({ leads, companyId }: DealsPanelProps) {
+export default function DealsPanel({ leads, companyId, isDemo }: DealsPanelProps) {
   const [deals, setDeals] = useState<Deal[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [stageFilter, setStageFilter] = useState<string>("All");
@@ -36,7 +37,7 @@ export default function DealsPanel({ leads, companyId }: DealsPanelProps) {
       }
     } else {
       // Seed default deals if they are on comp-1 (default demo company)
-      const initialDeals: Deal[] = companyId === "comp-1" ? [
+      const initialDeals: Deal[] = isDemo === true ? [
         {
           id: "deal-1",
           title: "SLA Office Automation Network Setup",

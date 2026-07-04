@@ -601,7 +601,8 @@ export default function App() {
   const handleMarkPOReceived = (poId: string) => {
     const po = purchaseOrders.find(p => p.id === poId);
     if (!po) return;
-    const warehouseId = "wh-main";
+    const targetWh = defaultWarehouses.find(w => w.branchId === po.branchId) || defaultWarehouses[0];
+    const warehouseId = targetWh?.id || "wh-main";
     const grnItems = po.items.map(item => ({
       productId: item.productId,
       qty: item.quantity,
@@ -688,7 +689,9 @@ export default function App() {
     setAuditLogs(prev => [audit, ...prev]);
 
     // Go to view
-    setActiveView("sales-crm");
+    if ([UserRole.SYSTEM_ADMIN, UserRole.COMPANY_ADMIN, UserRole.SALES_MANAGER, UserRole.CRM_EXECUTIVE].includes(currentUser.role)) {
+      setActiveView("sales-crm");
+    }
   };
 
   const handleQuickSavePO = (e: React.FormEvent) => {
@@ -735,7 +738,9 @@ export default function App() {
     };
     setAuditLogs(prev => [audit, ...prev]);
 
-    setActiveView("purchase");
+    if ([UserRole.SYSTEM_ADMIN, UserRole.COMPANY_ADMIN, UserRole.PURCHASE_MANAGER].includes(currentUser.role)) {
+      setActiveView("purchase");
+    }
   };
 
   const handleQuickSaveLeave = (e: React.FormEvent) => {
@@ -782,7 +787,9 @@ export default function App() {
     };
     setAuditLogs(prev => [audit, ...prev]);
 
-    setActiveView("hr");
+    if ([UserRole.SYSTEM_ADMIN, UserRole.COMPANY_ADMIN, UserRole.HR_MANAGER].includes(currentUser.role)) {
+      setActiveView("hr");
+    }
   };
 
   // 2. Sales Billing Invoices triggers Stock Depletion & Ledgers updates
@@ -1046,6 +1053,8 @@ export default function App() {
             setBatchStocks={setBatchStocks}
             movements={stockMovements}
             setMovements={setStockMovements}
+            userRole={currentUser.role}
+            currentUserId={currentUser.id}
           />
         );
       case "purchase":
@@ -1082,6 +1091,8 @@ export default function App() {
             companyId={currentUser.companyId}
             company={company}
             setCompany={setCompany}
+            branchId={currentBranch.id}
+            isDemo={!currentUser.id.startsWith("u-client-") && !currentUser.id.startsWith("u-staff-") && currentUser.companyId === "comp-1"}
           />
         );
       case "hr":
@@ -1103,6 +1114,7 @@ export default function App() {
             setTransactions={setTransactions}
             assets={assets}
             userRole={currentUser.role}
+            branchId={currentBranch.id}
           />
         );
       case "admin":
@@ -1127,6 +1139,7 @@ export default function App() {
             employees={employees}
             assets={assets}
             userRole={currentUser.role}
+            currentUserName={currentUser.name}
           />
         );
       default:
@@ -1200,7 +1213,7 @@ export default function App() {
       </div>
 
       {/* Floating Quick Action Menu (one-click access to Add Lead, Create PO, Request Leave) */}
-      <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-2">
+      {currentUser.role !== UserRole.READ_ONLY && <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-2">
         {/* Expanded Options */}
         {showQuickActionMenu && (
           <div className="flex flex-col items-end gap-2 mb-2 animate-fadeIn">
@@ -1273,7 +1286,7 @@ export default function App() {
             <Zap className="h-6 w-6 animate-pulse" />
           )}
         </button>
-      </div>
+      </div>}
 
       {/* MODAL: QUICK ADD LEAD */}
       {showQuickAddLeadModal && (

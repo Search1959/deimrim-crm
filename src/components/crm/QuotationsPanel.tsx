@@ -6,9 +6,10 @@ import { Quotation, Customer, Deal, formatINR } from "../../types";
 interface QuotationsPanelProps {
   customers: Customer[];
   companyId: string;
+  isDemo?: boolean;
 }
 
-export default function QuotationsPanel({ customers, companyId }: QuotationsPanelProps) {
+export default function QuotationsPanel({ customers, companyId, isDemo }: QuotationsPanelProps) {
   const [quotations, setQuotations] = useState<Quotation[]>([]);
   const [deals, setDeals] = useState<Deal[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
@@ -37,7 +38,7 @@ export default function QuotationsPanel({ customers, companyId }: QuotationsPane
     if (storedQ) {
       try { setQuotations(JSON.parse(storedQ)); } catch (e) {}
     } else {
-      const defaultQ: Quotation[] = companyId === "comp-1" ? [
+      const defaultQ: Quotation[] = isDemo === true ? [
         {
           id: "quot-1",
           quotationNumber: "QT-2026-001",

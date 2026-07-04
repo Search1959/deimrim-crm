@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Plus, Search, Eye, Trash2, Download, Share2, Edit, Package, Wrench } from "lucide-react";
-import { Invoice, Customer, Product, BatchStock, ServiceCatalogItem, Company, formatINR } from "../../types";
+import { Invoice, Customer, Product, BatchStock, ServiceCatalogItem, Company, formatINR, UserRole } from "../../types";
 import { toast } from "../../utils/toast";
 import { exportInvoicesCSV } from "../../utils/exportCSV";
 import GSTInvoiceBuilder from "./GSTInvoiceBuilder";
@@ -21,6 +21,8 @@ interface InvoicesPanelProps {
   companyId: string;
   company?: Company;
   setCompany?: React.Dispatch<React.SetStateAction<Company>>;
+  userRole?: UserRole;
+  branchId?: string;
 }
 
 type LineItemType = "product" | "service";
@@ -47,7 +49,9 @@ const BLANK_ITEM = (type: LineItemType = "product"): LineItem => ({
 export default function InvoicesPanel({
   invoices, setInvoices, customers, products, batchStocks = [],
   serviceCatalog = [], onGenerateInvoice, companyId, company, setCompany,
+  userRole, branchId = "br-hq",
 }: InvoicesPanelProps) {
+  const canWrite = !userRole || (userRole !== UserRole.READ_ONLY && userRole !== UserRole.EMPLOYEE);
   const [searchQuery, setSearchQuery] = useState("");
   const [showGSTBuilder, setShowGSTBuilder] = useState(false);
   const [showAddModal, setShowAddModal] = useState(false);
@@ -182,10 +186,10 @@ export default function InvoicesPanel({
       itemType: li.itemType,
     }));
 
-    onGenerateInvoice(invId, customerId, stockItems, totalSum);
+    if (!editingInvoice) { onGenerateInvoice(invId, customerId, stockItems, totalSum); }
 
     const inv: Invoice = {
-      id: invId, invoiceNumber, customerId, branchId: "br-hq",
+      id: invId, invoiceNumber, customerId, branchId: branchId,
       items: invoiceItems, subtotal: subtotalSum, taxAmount: gstTax,
       totalAmount: totalSum, status: editingInvoice?.status ?? "unpaid",
       createdAt: invoiceDate, dueDate: dueDate || invoiceDate,
@@ -291,10 +295,10 @@ ${inv.notes ? `<div style="border:1px solid #e2e8f0;border-radius:8px;padding:14
             className="flex items-center gap-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg px-3 py-1.5 text-xs font-bold cursor-pointer">
             <Share2 className="h-3.5 w-3.5" /> Export CSV
           </button>
-          <button onClick={() => setShowGSTBuilder(true)}
+          {canWrite && (<button onClick={() => setShowGSTBuilder(true)}
             className="flex items-center gap-1.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg px-3 py-1.5 text-xs font-bold cursor-pointer">
             <Plus className="h-3.5 w-3.5" /> New GST Invoice
-          </button>
+          </button>)}
         </div>
       </div>
 
@@ -343,9 +347,9 @@ ${inv.notes ? `<div style="border:1px solid #e2e8f0;border-radius:8px;padding:14
                   <td className="px-4 py-3 text-right">
                     <div className="flex items-center justify-end gap-1.5">
                       <button onClick={() => setViewingInvoice(inv)} className="p-1 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded cursor-pointer"><Eye className="h-3.5 w-3.5" /></button>
-                      <button onClick={() => handleOpenEdit(inv)} className="p-1 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded cursor-pointer"><Edit className="h-3.5 w-3.5" /></button>
+                      {canWrite && (<button onClick={() => handleOpenEdit(inv)} className="p-1 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded cursor-pointer"><Edit className="h-3.5 w-3.5" /></button>)}
                       <button onClick={() => downloadInvoicePDF(inv)} className="p-1 bg-indigo-600/20 hover:bg-indigo-600/40 text-indigo-400 border border-indigo-500/10 rounded cursor-pointer"><Download className="h-3.5 w-3.5" /></button>
-                      <button onClick={() => handleDelete(inv.id)} className="p-1 bg-red-500/10 hover:bg-red-500/20 text-red-400 rounded cursor-pointer"><Trash2 className="h-3.5 w-3.5" /></button>
+                      {canWrite && (<button onClick={() => handleDelete(inv.id)} className="p-1 bg-red-500/10 hover:bg-red-500/20 text-red-400 rounded cursor-pointer"><Trash2 className="h-3.5 w-3.5" /></button>)}
                     </div>
                   </td>
                 </tr>

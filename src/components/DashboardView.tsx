@@ -113,7 +113,7 @@ export default function DashboardView({
 
     const newLead: Lead = {
       id: `lead-${Date.now()}`,
-      companyId: company?.id || "comp-1",
+      companyId: company?.id || "",
       name: leadTitle,
       companyName: leadCompany,
       email: `${leadTitle.toLowerCase().replace(/\s+/g, "") || "contact"}@example.com`,
@@ -164,7 +164,7 @@ export default function DashboardView({
     };
 
     // Save in LocalStorage as well to sync since OrdersPanel loads independently
-    const companyId = currentUser.companyId || "comp-1";
+    const companyId = currentUser.companyId || "";
     try {
       const stored = localStorage.getItem(`deinrim_purchaseOrders_${companyId}`);
       const list = stored ? JSON.parse(stored) : [];

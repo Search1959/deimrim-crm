@@ -5,9 +5,10 @@ import { RequestForQuotation, Supplier, PurchaseRequisition } from "../../types"
 
 interface RFQPanelProps {
   suppliers: Supplier[];
+  companyId?: string;
 }
 
-export default function RFQPanel({ suppliers }: RFQPanelProps) {
+export default function RFQPanel({ suppliers, companyId }: RFQPanelProps) {
   const [rfqs, setRfqs] = useState<RequestForQuotation[]>([]);
   const [requisitions, setRequisitions] = useState<PurchaseRequisition[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
@@ -138,7 +139,7 @@ export default function RFQPanel({ suppliers }: RFQPanelProps) {
     setShowAddModal(false);
 
     // Write audit trail entry
-    const auditLogs = localStorage.getItem("deinrim_auditLogs_comp-1");
+    const auditLogs = localStorage.getItem(`deinrim_auditLogs_${companyId ?? "comp-1"}`);
     if (auditLogs) {
       try {
         const parsed = JSON.parse(auditLogs);
@@ -153,7 +154,7 @@ export default function RFQPanel({ suppliers }: RFQPanelProps) {
           timestamp: new Date().toISOString(),
           ipAddress: "127.0.0.1"
         };
-        localStorage.setItem("deinrim_auditLogs_comp-1", JSON.stringify([newAudit, ...parsed]));
+        localStorage.setItem(`deinrim_auditLogs_${companyId ?? "comp-1"}`, JSON.stringify([newAudit, ...parsed]));
       } catch (err) {}
     }
   };

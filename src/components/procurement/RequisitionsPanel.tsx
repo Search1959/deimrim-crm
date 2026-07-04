@@ -5,9 +5,10 @@ import { PurchaseRequisition, formatINR } from "../../types";
 
 interface RequisitionsPanelProps {
   onLinkToPR?: (pr: PurchaseRequisition) => void;
+  companyId?: string;
 }
 
-export default function RequisitionsPanel({ onLinkToPR }: RequisitionsPanelProps) {
+export default function RequisitionsPanel({ onLinkToPR, companyId }: RequisitionsPanelProps) {
   const [requisitions, setRequisitions] = useState<PurchaseRequisition[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [priorityFilter, setPriorityFilter] = useState<string>("All");
@@ -143,7 +144,7 @@ export default function RequisitionsPanel({ onLinkToPR }: RequisitionsPanelProps
     setShowAddModal(false);
 
     // Write audit trail entry
-    const auditLogs = localStorage.getItem("deinrim_auditLogs_comp-1");
+    const auditLogs = localStorage.getItem(`deinrim_auditLogs_${companyId ?? "comp-1"}`);
     if (auditLogs) {
       try {
         const parsed = JSON.parse(auditLogs);
@@ -158,7 +159,7 @@ export default function RequisitionsPanel({ onLinkToPR }: RequisitionsPanelProps
           timestamp: new Date().toISOString(),
           ipAddress: "127.0.0.1"
         };
-        localStorage.setItem("deinrim_auditLogs_comp-1", JSON.stringify([newAudit, ...parsed]));
+        localStorage.setItem(`deinrim_auditLogs_${companyId ?? "comp-1"}`, JSON.stringify([newAudit, ...parsed]));
       } catch (err) {}
     }
   };

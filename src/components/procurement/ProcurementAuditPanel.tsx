@@ -13,12 +13,16 @@ interface AuditLog {
   ipAddress: string;
 }
 
-export default function ProcurementAuditPanel() {
+interface ProcurementAuditPanelProps {
+  companyId?: string;
+}
+
+export default function ProcurementAuditPanel({ companyId }: ProcurementAuditPanelProps) {
   const [logs, setLogs] = useState<AuditLog[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
 
   const loadLogs = () => {
-    const stored = localStorage.getItem("deinrim_auditLogs_comp-1");
+    const stored = localStorage.getItem(`deinrim_auditLogs_${companyId ?? "comp-1"}`);
     if (stored) {
       try {
         setLogs(JSON.parse(stored));
@@ -60,7 +64,7 @@ export default function ProcurementAuditPanel() {
         }
       ];
       setLogs(defaultLogs);
-      localStorage.setItem("deinrim_auditLogs_comp-1", JSON.stringify(defaultLogs));
+      localStorage.setItem(`deinrim_auditLogs_${companyId ?? "comp-1"}`, JSON.stringify(defaultLogs));
     }
   };
 

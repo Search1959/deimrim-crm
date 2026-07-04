@@ -7,9 +7,10 @@ interface GRNPanelProps {
   orders: PurchaseOrder[];
   suppliers: Supplier[];
   onReceiveGRN: (poId: string, receivedItems: Array<{ productId: string; quantity: number }>) => void;
+  companyId?: string;
 }
 
-export default function GRNPanel({ orders, suppliers, onReceiveGRN }: GRNPanelProps) {
+export default function GRNPanel({ orders, suppliers, onReceiveGRN, companyId }: GRNPanelProps) {
   const [grns, setGrns] = useState<any[]>([]);
   const [activeOrders, setActiveOrders] = useState<PurchaseOrder[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
@@ -149,7 +150,7 @@ export default function GRNPanel({ orders, suppliers, onReceiveGRN }: GRNPanelPr
     setShowAddModal(false);
 
     // Save linked PO reference back in Audit Logs
-    const auditLogs = localStorage.getItem("deinrim_auditLogs_comp-1");
+    const auditLogs = localStorage.getItem(`deinrim_auditLogs_${companyId ?? "comp-1"}`);
     if (auditLogs) {
       try {
         const parsed = JSON.parse(auditLogs);
@@ -164,7 +165,7 @@ export default function GRNPanel({ orders, suppliers, onReceiveGRN }: GRNPanelPr
           timestamp: new Date().toISOString(),
           ipAddress: "127.0.0.1"
         };
-        localStorage.setItem("deinrim_auditLogs_comp-1", JSON.stringify([newAudit, ...parsed]));
+        localStorage.setItem(`deinrim_auditLogs_${companyId ?? "comp-1"}`, JSON.stringify([newAudit, ...parsed]));
       } catch (err) {}
     }
   };

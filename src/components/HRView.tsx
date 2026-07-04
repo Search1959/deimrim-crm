@@ -58,8 +58,22 @@ export default function HRView({
 
   return (
     <div className="flex flex-1 h-full overflow-hidden text-left bg-slate-950/20 text-slate-100">
+      {/* Mobile tab bar */}
+      <div className="flex md:hidden gap-2 overflow-x-auto pb-2 mb-0 border-b border-slate-800 bg-slate-950/60 px-3 py-2">
+        {[
+          {id:'dashboard',label:'Dashboard'},
+          {id:'employees',label:'Employees'},
+          {id:'departments',label:'Departments'},
+          {id:'attendance',label:'Attendance'},
+          {id:'leaves',label:'Leaves'},
+          {id:'payroll',label:'Payroll'}
+        ].map(tab => (
+          <button key={tab.id} onClick={() => setActiveSubTab(tab.id as any)} className={`shrink-0 px-3 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap cursor-pointer ${activeSubTab===tab.id ? 'bg-indigo-600 text-white' : 'bg-slate-800 text-slate-400 hover:text-white'}`}>{tab.label}</button>
+        ))}
+      </div>
+
       {/* 1. CUSTOM HR SUITE SUB-SIDEBAR (Matches Image 1 layout exactly) */}
-      <aside className="w-64 border-r border-slate-900 bg-slate-950/60 flex flex-col justify-between shrink-0 font-sans">
+      <aside className="w-64 border-r border-slate-900 bg-slate-950/60 flex flex-col justify-between shrink-0 font-sans hidden md:flex">
         <div className="flex flex-col">
           {/* Logo header matching 'HR Suite' branding in Image 1 */}
           <div className="flex items-center gap-3 p-5 border-b border-slate-900">

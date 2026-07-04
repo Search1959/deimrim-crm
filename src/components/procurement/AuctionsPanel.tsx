@@ -5,9 +5,10 @@ import { EAuction, Supplier, RequestForQuotation, formatINR } from "../../types"
 
 interface AuctionsPanelProps {
   suppliers: Supplier[];
+  companyId?: string;
 }
 
-export default function AuctionsPanel({ suppliers }: AuctionsPanelProps) {
+export default function AuctionsPanel({ suppliers, companyId }: AuctionsPanelProps) {
   const [auctions, setAuctions] = useState<EAuction[]>([]);
   const [rfqs, setRfqs] = useState<RequestForQuotation[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
@@ -145,7 +146,7 @@ export default function AuctionsPanel({ suppliers }: AuctionsPanelProps) {
     setShowAddModal(false);
 
     // Write audit trail entry
-    const auditLogs = localStorage.getItem("deinrim_auditLogs_comp-1");
+    const auditLogs = localStorage.getItem(`deinrim_auditLogs_${companyId ?? "comp-1"}`);
     if (auditLogs) {
       try {
         const parsed = JSON.parse(auditLogs);
@@ -160,7 +161,7 @@ export default function AuctionsPanel({ suppliers }: AuctionsPanelProps) {
           timestamp: new Date().toISOString(),
           ipAddress: "127.0.0.1"
         };
-        localStorage.setItem("deinrim_auditLogs_comp-1", JSON.stringify([newAudit, ...parsed]));
+        localStorage.setItem(`deinrim_auditLogs_${companyId ?? "comp-1"}`, JSON.stringify([newAudit, ...parsed]));
       } catch (err) {}
     }
   };

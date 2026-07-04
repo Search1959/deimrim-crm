@@ -33,6 +33,8 @@ interface SalesCRMViewProps {
   onGenerateInvoice: (invoiceId: string, customerId: string, items: Array<{ productId: string; qty: number; itemType?: "product" | "service" }>, customTotalAmount?: number) => void;
   onPaymentRecorded?: (invoiceId: string, amount: number, method: string, invoiceNumber: string, customerName: string) => void;
   companyId: string;
+  branchId?: string;
+  isDemo?: boolean;
   company?: Company;
   setCompany?: React.Dispatch<React.SetStateAction<Company>>;
 }
@@ -54,6 +56,8 @@ export default function SalesCRMView({
   onGenerateInvoice,
   onPaymentRecorded,
   companyId,
+  branchId,
+  isDemo,
   company,
   setCompany,
 }: SalesCRMViewProps) {
@@ -83,11 +87,11 @@ export default function SalesCRMView({
   const renderActivePanel = () => {
     switch (activeTab) {
       case "leads":
-        return <LeadsPanel leads={leads} setLeads={setLeads} customers={customers} companyId={companyId} />;
+        return <LeadsPanel leads={leads} setLeads={setLeads} customers={customers} companyId={companyId} userRole={userRole} />;
       case "deals":
-        return <DealsPanel leads={leads} companyId={companyId} />;
+        return <DealsPanel leads={leads} companyId={companyId} isDemo={isDemo} />;
       case "quotations":
-        return <QuotationsPanel customers={customers} companyId={companyId} />;
+        return <QuotationsPanel customers={customers} companyId={companyId} isDemo={isDemo} />;
       case "invoices":
         return (
           <InvoicesPanel
@@ -99,6 +103,8 @@ export default function SalesCRMView({
             serviceCatalog={serviceCatalog}
             onGenerateInvoice={onGenerateInvoice}
             companyId={companyId}
+            userRole={userRole}
+            branchId={branchId}
             company={company}
             setCompany={setCompany}
           />
@@ -118,7 +124,7 @@ export default function SalesCRMView({
       case "services":
         return <ServiceCatalogPanel serviceCatalog={serviceCatalog} setServiceCatalog={setServiceCatalog} />;
       default:
-        return <LeadsPanel leads={leads} setLeads={setLeads} customers={customers} companyId={companyId} />;
+        return <LeadsPanel leads={leads} setLeads={setLeads} customers={customers} companyId={companyId} userRole={userRole} />;
     }
   };
 

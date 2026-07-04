@@ -30,6 +30,7 @@ interface FinanceViewProps {
   assets: Asset[];
   setAssets?: React.Dispatch<React.SetStateAction<Asset[]>>; // Made optional or provided
   userRole: UserRole;
+  branchId?: string;
 }
 
 export default function FinanceView({
@@ -38,6 +39,7 @@ export default function FinanceView({
   assets: initialAssets,
   setAssets,
   userRole,
+  branchId = "br-hq",
 }: FinanceViewProps) {
   const [activeSubTab, setActiveSubTab] = useState<"ledger" | "pl" | "assets">("ledger");
   const [showAddTx, setShowAddTx] = useState(false);
@@ -107,7 +109,7 @@ export default function FinanceView({
       date: new Date().toISOString().split("T")[0],
       paymentMethod: newTx.paymentMethod as any,
       description: newTx.description,
-      branchId: "br-hq",
+      branchId: branchId,
     };
 
     setTransactions(prev => [transaction, ...prev]);
@@ -289,7 +291,7 @@ Office Ergonomic Chairs,AST-CH-99,Furniture,1200,1050,12`;
           date: new Date().toISOString().split("T")[0],
           paymentMethod: (paymentMethod as any) || "BANK",
           description: description || "Imported transactional balance",
-          branchId: "br-hq",
+          branchId: branchId,
         });
         count++;
       }
@@ -460,7 +462,7 @@ Office Ergonomic Chairs,AST-CH-99,Furniture,1200,1050,12`;
                 <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1 font-mono">Amount Value (₹)</label>
                 <input
                   type="number"
-                  min="1"
+                  min="0.01"
                   required
                   value={newTx.amount}
                   onChange={(e) => setNewTx(prev => ({ ...prev, amount: e.target.value }))}

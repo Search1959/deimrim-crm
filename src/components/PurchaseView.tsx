@@ -84,6 +84,7 @@ export default function PurchaseView({
             suppliers={suppliers}
             onAddSupplier={handleAddSupplier}
             onDeleteSupplier={handleDeleteSupplier}
+            companyId={companyId}
           />
         );
       case "bills":

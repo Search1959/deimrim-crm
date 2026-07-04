@@ -267,7 +267,7 @@ export default function AdminView({
     [UserRole.COMPANY_ADMIN]: { create: true, read: true, update: true, delete: true, approve: true },
     [UserRole.PURCHASE_MANAGER]: { create: true, read: true, update: true, delete: false, approve: true },
     [UserRole.INVENTORY_MANAGER]: { create: true, read: true, update: true, delete: false, approve: false },
-    [UserRole.SALES_MANAGER]: { create: true, text: true, update: true, delete: false, approve: true },
+    [UserRole.SALES_MANAGER]: { create: true, read: true, update: true, delete: false, approve: true },
     [UserRole.CRM_EXECUTIVE]: { create: true, read: true, update: true, delete: false, approve: false },
     [UserRole.HR_MANAGER]: { create: true, read: true, update: true, delete: false, approve: true },
     [UserRole.FINANCE_MANAGER]: { create: true, read: true, update: true, delete: false, approve: true },
@@ -879,7 +879,7 @@ export default function AdminView({
                   <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 font-mono">Role</label>
                   <select value={editRole} onChange={e => setEditRole(e.target.value as UserRole)}
                     className="w-full bg-slate-900 border border-slate-800 rounded-lg p-2 text-xs text-white focus:outline-none focus:border-indigo-500">
-                    {Object.values(UserRole).map(r => <option key={r} value={r}>{r}</option>)}
+                    {Object.values(UserRole).filter(r => userRole === UserRole.SYSTEM_ADMIN || r !== UserRole.SYSTEM_ADMIN).map(r => <option key={r} value={r}>{r}</option>)}
                   </select>
                 </div>
                 <div>

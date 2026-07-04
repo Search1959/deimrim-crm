@@ -375,7 +375,7 @@ export default function GSTInvoiceBuilder({
                 <thead>
                   <tr className="bg-slate-800/60 text-slate-400 text-[10px] uppercase tracking-wider">
                     <th className="px-2 py-2 text-left w-6">#</th>
-                    <th className="px-2 py-2 text-left w-16">Type</th>
+                    <th className="px-2 py-2 text-left w-28">Type</th>
                     <th className="px-2 py-2 text-left min-w-[160px]">Description</th>
                     <th className="px-2 py-2 text-left w-24">HSN/SAC</th>
                     <th className="px-2 py-2 text-right w-16">Qty</th>

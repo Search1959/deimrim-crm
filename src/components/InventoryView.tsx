@@ -29,7 +29,7 @@ import {
   X,
   Check
 } from "lucide-react";
-import { Product, BatchStock, StockMovement, Category, Brand, Warehouse as WarehouseType, formatINR } from "../types";
+import { Product, BatchStock, StockMovement, Category, Brand, Warehouse as WarehouseType, formatINR, UserRole } from "../types";
 
 interface InventoryViewProps {
   products: Product[];
@@ -43,6 +43,8 @@ interface InventoryViewProps {
   setBatchStocks: React.Dispatch<React.SetStateAction<BatchStock[]>>;
   movements: StockMovement[];
   setMovements: React.Dispatch<React.SetStateAction<StockMovement[]>>;
+  userRole: UserRole;
+  currentUserId: string;
 }
 
 export default function InventoryView({
@@ -57,7 +59,10 @@ export default function InventoryView({
   setBatchStocks,
   movements,
   setMovements,
+  userRole,
+  currentUserId,
 }: InventoryViewProps) {
+  const canWrite = userRole !== UserRole.READ_ONLY && userRole !== UserRole.EMPLOYEE;
   const [activeSubTab, setActiveSubTab] = useState<"catalog" | "categories" | "brands" | "warehouses" | "movements">("catalog");
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("");
@@ -196,7 +201,7 @@ export default function InventoryView({
       referenceId: "SYS-ADD",
       quantity: 0,
       unitPrice: newProductObj.purchasePrice,
-      userId: "u-1",
+      userId: currentUserId,
       timestamp: new Date().toISOString(),
       remarks: `Product ${newProductObj.name} registered into inventory catalog.`,
     };
@@ -465,6 +470,7 @@ DR-IOT-TEMP1,IoT Ambient Temperature Sensor,cat-3,Unit,45,95,20,200,88091100225,
           {/* Import / Export / Add buttons */}
           {activeSubTab === "catalog" && (
             <div className="flex gap-1.5">
+              {canWrite && (
               <button
                 onClick={openAddModal}
                 className="flex items-center gap-1 rounded-lg bg-indigo-600 hover:bg-indigo-500 px-3 py-2 text-xs font-bold text-white transition-all shadow-md cursor-pointer"
@@ -472,7 +478,9 @@ DR-IOT-TEMP1,IoT Ambient Temperature Sensor,cat-3,Unit,45,95,20,200,88091100225,
                 <Plus className="h-3.5 w-3.5" />
                 <span>Add Product</span>
               </button>
+              )}
 
+              {canWrite && (
               <button
                 onClick={() => setShowImportModal(true)}
                 className="flex items-center gap-1 rounded-lg border border-slate-800 bg-slate-900 hover:bg-slate-800 px-3 py-2 text-xs font-bold text-slate-300 transition-colors cursor-pointer"
@@ -481,6 +489,7 @@ DR-IOT-TEMP1,IoT Ambient Temperature Sensor,cat-3,Unit,45,95,20,200,88091100225,
                 <Upload className="h-3.5 w-3.5 text-slate-400" />
                 <span>Import CSV</span>
               </button>
+              )}
 
               <button
                 onClick={handleExportCSV}
@@ -560,6 +569,7 @@ DR-IOT-TEMP1,IoT Ambient Temperature Sensor,cat-3,Unit,45,95,20,200,88091100225,
                             <Eye className="h-3.5 w-3.5" />
                           </button>
 
+                          {canWrite && (
                           <button
                             onClick={(e) => openEditModal(p, e)}
                             className="rounded-lg p-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 transition-colors"
@@ -567,7 +577,9 @@ DR-IOT-TEMP1,IoT Ambient Temperature Sensor,cat-3,Unit,45,95,20,200,88091100225,
                           >
                             <Edit className="h-3.5 w-3.5" />
                           </button>
+                          )}
 
+                          {canWrite && (
                           <button
                             onClick={(e) => handleDeleteProduct(p.id, p.name, e)}
                             className="rounded-lg p-1.5 bg-red-500/10 hover:bg-red-500/20 text-red-400 transition-colors"
@@ -575,6 +587,7 @@ DR-IOT-TEMP1,IoT Ambient Temperature Sensor,cat-3,Unit,45,95,20,200,88091100225,
                           >
                             <Trash2 className="h-3.5 w-3.5" />
                           </button>
+                          )}
                         </div>
                       </td>
                     </tr>
@@ -674,7 +687,7 @@ DR-IOT-TEMP1,IoT Ambient Temperature Sensor,cat-3,Unit,45,95,20,200,88091100225,
       {activeSubTab === "categories" && (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 text-left">
           {/* Add Category Form Column */}
-          <div className="bg-slate-950/60 border border-slate-800 rounded-xl p-5 space-y-4 h-fit">
+          {canWrite && (<div className="bg-slate-950/60 border border-slate-800 rounded-xl p-5 space-y-4 h-fit">
             <h3 className="text-sm font-bold text-slate-200 uppercase tracking-wider font-mono flex items-center gap-2">
               <Plus className="h-4 w-4 text-indigo-400" /> Register Category
             </h3>
@@ -732,7 +745,7 @@ DR-IOT-TEMP1,IoT Ambient Temperature Sensor,cat-3,Unit,45,95,20,200,88091100225,
                 <Plus className="h-4 w-4" /> Save Category Class
               </button>
             </form>
-          </div>
+          </div>)}
 
           {/* Categories List Column */}
           <div className="lg:col-span-2 bg-slate-950/60 border border-slate-800 rounded-xl overflow-hidden">
@@ -764,7 +777,7 @@ DR-IOT-TEMP1,IoT Ambient Temperature Sensor,cat-3,Unit,45,95,20,200,88091100225,
                         </td>
                         <td className="px-5 py-4 font-mono text-xs font-bold text-slate-300">{count} SKU(s)</td>
                         <td className="px-5 py-4 text-center">
-                          <button
+                          {canWrite && (<button
                             onClick={() => {
                               if (count > 0) {
                                 toast.warning("Cannot Delete Category", `"${c.name}" is linked to ${count} product(s)`);
@@ -778,7 +791,7 @@ DR-IOT-TEMP1,IoT Ambient Temperature Sensor,cat-3,Unit,45,95,20,200,88091100225,
                             title="Delete category"
                           >
                             <Trash2 className="h-4 w-4" />
-                          </button>
+                          </button>)}
                         </td>
                       </tr>
                     );
@@ -801,7 +814,7 @@ DR-IOT-TEMP1,IoT Ambient Temperature Sensor,cat-3,Unit,45,95,20,200,88091100225,
       {activeSubTab === "brands" && (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 text-left">
           {/* Add Brand Form Column */}
-          <div className="bg-slate-950/60 border border-slate-800 rounded-xl p-5 space-y-4 h-fit">
+          {canWrite && (<div className="bg-slate-950/60 border border-slate-800 rounded-xl p-5 space-y-4 h-fit">
             <h3 className="text-sm font-bold text-slate-200 uppercase tracking-wider font-mono flex items-center gap-2">
               <Plus className="h-4 w-4 text-indigo-400" /> Register Brand
             </h3>
@@ -835,7 +848,7 @@ DR-IOT-TEMP1,IoT Ambient Temperature Sensor,cat-3,Unit,45,95,20,200,88091100225,
                 <Plus className="h-4 w-4" /> Save Brand Entity
               </button>
             </form>
-          </div>
+          </div>)}
 
           {/* Brands List Column */}
           <div className="lg:col-span-2 bg-slate-950/60 border border-slate-800 rounded-xl overflow-hidden">
@@ -863,7 +876,7 @@ DR-IOT-TEMP1,IoT Ambient Temperature Sensor,cat-3,Unit,45,95,20,200,88091100225,
                         <td className="px-5 py-4 font-semibold text-white">{b.name}</td>
                         <td className="px-5 py-4 font-mono text-xs font-bold text-slate-300">{count} SKU(s)</td>
                         <td className="px-5 py-4 text-center">
-                          <button
+                          {canWrite && (<button
                             onClick={() => {
                               if (count > 0) {
                                 toast.warning("Cannot Delete Brand", `"${b.name}" is linked to ${count} product(s)`);
@@ -877,7 +890,7 @@ DR-IOT-TEMP1,IoT Ambient Temperature Sensor,cat-3,Unit,45,95,20,200,88091100225,
                             title="Delete brand"
                           >
                             <Trash2 className="h-4 w-4" />
-                          </button>
+                          </button>)}
                         </td>
                       </tr>
                     );
