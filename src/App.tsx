@@ -617,9 +617,20 @@ export default function App() {
     toast.success("Stock Updated", `PO ${po.poNumber} received — inventory updated automatically`);
   };
 
-  // Payment recorded → clear outstanding balance only.
-  // Income was already posted on invoice generation (accrual basis) — do NOT post a second INCOME here.
-  const handlePaymentRecorded = (invoiceId: string, amount: number, _method: string, _invoiceNumber: string, _customerName: string) => {
+  // Payment recorded → post INCOME to Finance (cash basis) + clear outstanding balance.
+  const handlePaymentRecorded = (invoiceId: string, amount: number, method: string, invoiceNumber: string, customerName: string) => {
+    const finTx: Transaction = {
+      id: `tx-${Date.now()}`,
+      type: "INCOME",
+      category: "Payment Received",
+      amount,
+      date: new Date().toISOString().split("T")[0],
+      referenceId: invoiceNumber,
+      paymentMethod: method === "Bank Transfer" ? "BANK" : method === "UPI" ? "UPI" : method === "Cash" ? "CASH" : "BANK",
+      description: `Payment received from ${customerName} for ${invoiceNumber}`,
+      branchId: currentBranch.id,
+    };
+    setTransactions(prev => [finTx, ...prev]);
     const inv = invoices.find(i => i.id === invoiceId);
     if (inv) {
       setCustomers(prev => prev.map(c =>
@@ -842,25 +853,8 @@ export default function App() {
       return c;
     }));
 
-    // D. Post revenue to Finance — category reflects whether it's services, products, or mixed
-    const hasServices = items.some(i => i.itemType === "service");
-    const hasProducts = items.some(i => i.itemType !== "service" && i.productId);
-    const financeCategory = hasServices && hasProducts ? "Mixed Sales (Products + Services)"
-      : hasServices ? "Service Revenue" : "Product Sales";
-
-    const targetCustName = customers.find(c => c.id === customerId)?.name || "Client Account";
-    const financeLog: Transaction = {
-      id: `tx-${Date.now()}`,
-      type: "INCOME",
-      category: financeCategory,
-      amount: billingTotalCost,
-      date: new Date().toISOString().split("T")[0],
-      referenceId: invoiceNum,
-      paymentMethod: "BANK",
-      description: `Revenue receivable from ${targetCustName} for ${invoiceNum}`,
-      branchId: currentBranch.id,
-    };
-    setTransactions(prev => [financeLog, ...prev]);
+    // D. Invoice raised — income posts only when payment is recorded (cash basis).
+    // No Finance transaction here; just update customer outstanding balance above.
 
     // E. Raise System Alert & audit logs
     const alertLog: AppNotification = {
