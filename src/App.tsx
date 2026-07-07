@@ -385,7 +385,12 @@ export default function App() {
       const resolvedInvoices  = pick(safe(apiInvoices),      "invoices",       isDemo ? defaultInvoices       : []);
       const resolvedEmployees = pick(safe(apiEmployees),     "employees",      isDemo ? defaultEmployees      : []);
       const resolvedLeaves    = pick(safe(apiLeaves),        "leaveRequests",  isDemo ? defaultLeaveRequests  : []);
-      const resolvedTxns      = pick(safe(apiTransactions),  "transactions",   isDemo ? defaultTransactions   : []);
+      const rawTxns           = pick(safe(apiTransactions),  "transactions",   isDemo ? defaultTransactions   : []);
+      // Migration: remove stale accrual entries auto-posted by old handleGenerateInvoice code.
+      // Cash-basis model: only payment-recording entries belong in the ledger.
+      const resolvedTxns = (rawTxns as any[]).filter(
+        (t: any) => !(t.description?.startsWith("Revenue receivable from"))
+      );
       const resolvedDocs      = pick(safe(apiDocs),          "documents",      isDemo ? defaultDocuments      : []);
       const resolvedNotes     = pick(safe(apiNotifications), "notifications",  isDemo ? defaultNotifications  : [{
         id: `n-${Date.now()}`, title: "Tenant Space Activated",
