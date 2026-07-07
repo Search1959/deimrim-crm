@@ -215,11 +215,11 @@ export default function FinanceView({
 
   const cashAccountSum = transactions
     .filter(t => t.paymentMethod === "CASH" || t.paymentMethod === "UPI")
-    .reduce((sum, t) => sum + (t.type === "INCOME" ? t.amount : -t.amount), 1500);
+    .reduce((sum, t) => sum + (t.type === "INCOME" ? t.amount : -t.amount), 0);
 
   const bankAccountSum = transactions
     .filter(t => t.paymentMethod === "BANK" || t.paymentMethod === "CHEQUE")
-    .reduce((sum, t) => sum + (t.type === "INCOME" ? t.amount : -t.amount), 52000);
+    .reduce((sum, t) => sum + (t.type === "INCOME" ? t.amount : -t.amount), 0);
 
   const totalAssetsVal = activeAssets.reduce((sum, a) => sum + a.currentValue, 0);
 
