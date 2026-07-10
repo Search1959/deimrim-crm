@@ -1,6 +1,6 @@
 import { toast } from "../../utils/toast";
 import React, { useState, useEffect } from "react";
-import { DollarSign, Wallet, Check, Download, Printer, Eye, X, Calculator, Edit3, Search } from "lucide-react";
+import { Wallet, Check, Printer, Eye, X, Calculator, Edit3, Search, Settings, Info } from "lucide-react";
 import { Employee, formatINR } from "../../types";
 
 interface HRPayrollPanelProps {
@@ -16,7 +16,29 @@ interface SalaryAdjustment {
   customDeduction: number;
 }
 
-// Generate last 12 month options dynamically
+interface TaxConfig {
+  epfPct: number;          // Employee PF %  (default 12)
+  esicPct: number;         // ESIC %         (default 0.75)
+  esicCeiling: number;     // ESIC max salary (default 21000)
+  ptAmount: number;        // Prof Tax flat  (default 200)
+  ptThreshold: number;     // PT applies above (default 15000)
+  tdsSlabs: Array<{ above: number; pct: number }>; // ascending order
+}
+
+const DEFAULT_TAX: TaxConfig = {
+  epfPct: 12,
+  esicPct: 0.75,
+  esicCeiling: 21000,
+  ptAmount: 200,
+  ptThreshold: 15000,
+  tdsSlabs: [
+    { above: 100000, pct: 15 },
+    { above: 50000,  pct: 10 },
+    { above: 25000,  pct: 5  },
+    { above: 0,      pct: 0  },
+  ],
+};
+
 function generateMonthOptions(): string[] {
   const options: string[] = [];
   const now = new Date();
@@ -32,6 +54,10 @@ export default function HRPayrollPanel({ employees, companyId, onSalaryDisbursed
   const [payslipMonth, setPayslipMonth] = useState(monthOptions[0]);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedEmpForSlip, setSelectedEmpForSlip] = useState<Employee | null>(null);
+  const [showTaxConfig, setShowTaxConfig] = useState(false);
+  const [taxConfig, setTaxConfig] = useState<TaxConfig>(DEFAULT_TAX);
+  const [taxForm, setTaxForm] = useState<TaxConfig>(DEFAULT_TAX);
+  const taxKey = `deinrim_payroll_taxcfg_${companyId}`;
 
   const adjKey    = `deinrim_payroll_adj_${companyId}`;
   const statusKey = `deinrim_payroll_status_${companyId}`;
@@ -48,6 +74,14 @@ export default function HRPayrollPanel({ employees, companyId, onSalaryDisbursed
     try {
       const storedStatus = localStorage.getItem(statusKey);
       if (storedStatus) setPayrollStatus(JSON.parse(storedStatus));
+    } catch {}
+    try {
+      const storedTax = localStorage.getItem(taxKey);
+      if (storedTax) {
+        const parsed = JSON.parse(storedTax) as TaxConfig;
+        setTaxConfig(parsed);
+        setTaxForm(parsed);
+      }
     } catch {}
   }, [companyId]);
 
@@ -69,15 +103,21 @@ export default function HRPayrollPanel({ employees, companyId, onSalaryDisbursed
   const [formBonus, setFormBonus] = useState("0");
   const [formCustomDeduction, setFormCustomDeduction] = useState("0");
 
-  // Tax calculations (Indian statutory)
-  const calcEPF  = (s: number) => s * 0.12;
-  const calcESIC = (s: number) => s >= 21000 ? 0 : s * 0.0075;
-  const calcPT   = (s: number) => s >= 15000 ? 200 : 0;
+  // Tax calculations using configurable rates
+  const calcEPF  = (s: number) => s * (taxConfig.epfPct / 100);
+  const calcESIC = (s: number) => s >= taxConfig.esicCeiling ? 0 : s * (taxConfig.esicPct / 100);
+  const calcPT   = (s: number) => s >= taxConfig.ptThreshold ? taxConfig.ptAmount : 0;
   const calcTDS  = (gross: number) => {
-    if (gross > 100000) return gross * 0.15;
-    if (gross > 50000)  return gross * 0.10;
-    if (gross > 25000)  return gross * 0.05;
+    const slabs = [...taxConfig.tdsSlabs].sort((a, b) => b.above - a.above);
+    for (const slab of slabs) {
+      if (gross > slab.above) return gross * (slab.pct / 100);
+    }
     return 0;
+  };
+
+  const saveTaxConfig = (cfg: TaxConfig) => {
+    setTaxConfig(cfg);
+    localStorage.setItem(taxKey, JSON.stringify(cfg));
   };
 
   const getCalc = (emp: Employee) => {
@@ -185,6 +225,13 @@ export default function HRPayrollPanel({ employees, companyId, onSalaryDisbursed
             >
               {monthOptions.map(m => <option key={m} value={m}>{m}</option>)}
             </select>
+            <button
+              onClick={() => { setTaxForm({ ...taxConfig }); setShowTaxConfig(true); }}
+              className="flex items-center gap-1.5 rounded-lg border border-amber-500/30 bg-amber-500/10 hover:bg-amber-500/20 text-amber-400 px-3 py-1.5 text-xs font-bold cursor-pointer transition-all"
+              title="Configure Tax Rates (EPF / ESIC / PT / TDS)"
+            >
+              <Settings className="h-3.5 w-3.5" /> Tax Config
+            </button>
           </div>
         </div>
 
@@ -320,6 +367,146 @@ export default function HRPayrollPanel({ employees, companyId, onSalaryDisbursed
         );
       })()}
 
+      {/* TAX CONFIG MODAL */}
+      {showTaxConfig && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+          <div className="w-full max-w-lg rounded-2xl border border-slate-800 bg-slate-950 p-6 shadow-2xl text-left space-y-5 max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+              <div>
+                <h3 className="font-bold text-sm text-white font-mono uppercase tracking-wider flex items-center gap-2">
+                  <Settings className="h-4 w-4 text-amber-400" /> Statutory Tax Configuration
+                </h3>
+                <p className="text-[10px] text-slate-500 mt-0.5">Update when government rules change. Rates are saved and applied to all future payroll calculations.</p>
+              </div>
+              <button onClick={() => setShowTaxConfig(false)} className="p-1 text-slate-400 hover:text-white rounded bg-slate-900 border border-slate-800 cursor-pointer">
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+
+            {/* EPF */}
+            <div className="bg-slate-900/50 border border-slate-800 rounded-xl p-4 space-y-3">
+              <h4 className="text-[11px] font-extrabold text-indigo-400 uppercase tracking-wider font-mono">EPF — Employee Provident Fund</h4>
+              <div className="flex items-center gap-3">
+                <label className="text-xs text-slate-400 w-48 shrink-0">Employee Contribution Rate (%)</label>
+                <input
+                  type="number" min="0" max="100" step="0.01"
+                  value={taxForm.epfPct}
+                  onChange={e => setTaxForm(f => ({ ...f, epfPct: parseFloat(e.target.value) || 0 }))}
+                  className="flex-1 rounded border border-slate-700 bg-slate-950 px-2.5 py-1.5 text-white text-xs font-mono focus:outline-none focus:border-indigo-500"
+                />
+              </div>
+            </div>
+
+            {/* ESIC */}
+            <div className="bg-slate-900/50 border border-slate-800 rounded-xl p-4 space-y-3">
+              <h4 className="text-[11px] font-extrabold text-blue-400 uppercase tracking-wider font-mono">ESIC — Employee State Insurance</h4>
+              <div className="flex items-center gap-3">
+                <label className="text-xs text-slate-400 w-48 shrink-0">Employee Contribution Rate (%)</label>
+                <input
+                  type="number" min="0" max="100" step="0.01"
+                  value={taxForm.esicPct}
+                  onChange={e => setTaxForm(f => ({ ...f, esicPct: parseFloat(e.target.value) || 0 }))}
+                  className="flex-1 rounded border border-slate-700 bg-slate-950 px-2.5 py-1.5 text-white text-xs font-mono focus:outline-none focus:border-indigo-500"
+                />
+              </div>
+              <div className="flex items-center gap-3">
+                <label className="text-xs text-slate-400 w-48 shrink-0">Salary Ceiling (₹) — exempt above this</label>
+                <input
+                  type="number" min="0"
+                  value={taxForm.esicCeiling}
+                  onChange={e => setTaxForm(f => ({ ...f, esicCeiling: parseFloat(e.target.value) || 0 }))}
+                  className="flex-1 rounded border border-slate-700 bg-slate-950 px-2.5 py-1.5 text-white text-xs font-mono focus:outline-none focus:border-indigo-500"
+                />
+              </div>
+            </div>
+
+            {/* Professional Tax */}
+            <div className="bg-slate-900/50 border border-slate-800 rounded-xl p-4 space-y-3">
+              <h4 className="text-[11px] font-extrabold text-purple-400 uppercase tracking-wider font-mono">PT — Professional Tax</h4>
+              <div className="flex items-center gap-3">
+                <label className="text-xs text-slate-400 w-48 shrink-0">Fixed Monthly Amount (₹)</label>
+                <input
+                  type="number" min="0"
+                  value={taxForm.ptAmount}
+                  onChange={e => setTaxForm(f => ({ ...f, ptAmount: parseFloat(e.target.value) || 0 }))}
+                  className="flex-1 rounded border border-slate-700 bg-slate-950 px-2.5 py-1.5 text-white text-xs font-mono focus:outline-none focus:border-indigo-500"
+                />
+              </div>
+              <div className="flex items-center gap-3">
+                <label className="text-xs text-slate-400 w-48 shrink-0">Minimum Salary Threshold (₹)</label>
+                <input
+                  type="number" min="0"
+                  value={taxForm.ptThreshold}
+                  onChange={e => setTaxForm(f => ({ ...f, ptThreshold: parseFloat(e.target.value) || 0 }))}
+                  className="flex-1 rounded border border-slate-700 bg-slate-950 px-2.5 py-1.5 text-white text-xs font-mono focus:outline-none focus:border-indigo-500"
+                />
+              </div>
+            </div>
+
+            {/* TDS Slabs */}
+            <div className="bg-slate-900/50 border border-slate-800 rounded-xl p-4 space-y-3">
+              <h4 className="text-[11px] font-extrabold text-red-400 uppercase tracking-wider font-mono flex items-center gap-1.5">
+                TDS — Income Tax Slabs
+                <span className="text-[9px] text-slate-500 font-normal normal-case">(highest matching slab applies)</span>
+              </h4>
+              {taxForm.tdsSlabs.map((slab, i) => (
+                <div key={i} className="flex items-center gap-2">
+                  <span className="text-xs text-slate-500 w-28 shrink-0 font-mono">
+                    {i === taxForm.tdsSlabs.length - 1 ? "Base (₹0+)" : `Above ₹`}
+                  </span>
+                  {i < taxForm.tdsSlabs.length - 1 && (
+                    <input
+                      type="number" min="0"
+                      value={slab.above}
+                      onChange={e => setTaxForm(f => {
+                        const slabs = [...f.tdsSlabs];
+                        slabs[i] = { ...slabs[i], above: parseFloat(e.target.value) || 0 };
+                        return { ...f, tdsSlabs: slabs };
+                      })}
+                      className="w-28 rounded border border-slate-700 bg-slate-950 px-2 py-1.5 text-white text-xs font-mono focus:outline-none focus:border-red-500"
+                    />
+                  )}
+                  {i === taxForm.tdsSlabs.length - 1 && <span className="w-28 text-xs text-slate-600 font-mono px-2">—</span>}
+                  <span className="text-xs text-slate-500 shrink-0">→ Rate %</span>
+                  <input
+                    type="number" min="0" max="100" step="0.1"
+                    value={slab.pct}
+                    onChange={e => setTaxForm(f => {
+                      const slabs = [...f.tdsSlabs];
+                      slabs[i] = { ...slabs[i], pct: parseFloat(e.target.value) || 0 };
+                      return { ...f, tdsSlabs: slabs };
+                    })}
+                    className="w-20 rounded border border-slate-700 bg-slate-950 px-2 py-1.5 text-white text-xs font-mono focus:outline-none focus:border-red-500"
+                  />
+                  <span className="text-xs text-slate-600">%</span>
+                </div>
+              ))}
+              <div className="flex items-center gap-1.5 mt-1 text-[10px] text-slate-600">
+                <Info className="h-3 w-3" /> Example: "Above ₹1,00,000 → 15%" means 15% TDS if gross salary exceeds ₹1 lakh.
+              </div>
+            </div>
+
+            <div className="flex items-center justify-between pt-2 border-t border-slate-800">
+              <button
+                onClick={() => { setTaxForm({ ...DEFAULT_TAX }); }}
+                className="text-xs text-slate-500 hover:text-amber-400 underline cursor-pointer"
+              >
+                Reset to Defaults
+              </button>
+              <div className="flex gap-2">
+                <button onClick={() => setShowTaxConfig(false)} className="rounded bg-slate-900 border border-slate-800 text-slate-400 hover:text-white px-3 py-1.5 text-xs font-bold cursor-pointer">Cancel</button>
+                <button
+                  onClick={() => { saveTaxConfig(taxForm); setShowTaxConfig(false); toast.success("Tax Config Saved", "New rates will apply to all payroll calculations."); }}
+                  className="rounded bg-amber-600 hover:bg-amber-500 text-white px-4 py-1.5 text-xs font-bold cursor-pointer"
+                >
+                  Save Tax Rates
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* PAYSLIP MODAL */}
       {selectedEmpForSlip && (() => {
         const emp = selectedEmpForSlip;
@@ -383,8 +570,8 @@ export default function HRPayrollPanel({ employees, companyId, onSalaryDisbursed
                   <div className="space-y-2">
                     <span className="block text-[10px] font-extrabold text-red-600 uppercase tracking-wider border-b border-red-500 pb-1">DEDUCTIONS</span>
                     {[
-                      ["EPF (12%)", calc.epf],
-                      ["ESIC (0.75%)", calc.esic],
+                      [`EPF (${taxConfig.epfPct}%)`, calc.epf],
+                      [`ESIC (${taxConfig.esicPct}%)`, calc.esic],
                       ["Professional Tax", calc.pt],
                       ["TDS (Income Tax)", calc.tds],
                       ...(calc.adj.customDeduction > 0 ? [["Custom / Loss of Pay", calc.adj.customDeduction]] : []),
