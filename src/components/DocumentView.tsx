@@ -92,13 +92,13 @@ export default function DocumentView({
           <p className="text-sm text-slate-400 mt-1">Upload and attach legal agreements, sheets, or physical cargo logs to target accounts.</p>
         </div>
 
-        {canWrite && (<button
+        <button
           onClick={() => setShowUploadForm(!showUploadForm)}
           className="flex items-center gap-1.5 rounded-lg bg-indigo-600 px-3.5 py-2 text-xs font-bold text-white hover:bg-indigo-700 self-start cursor-pointer"
         >
-          <UploadCloud className="h-4.5 w-4.5" />
+          <UploadCloud className="h-4 w-4" />
           <span>Upload File</span>
-        </button>)}
+        </button>
       </div>
 
       {/* DYNAMIC UPLOAD FORM */}
@@ -191,6 +191,17 @@ export default function DocumentView({
       )}
 
       {/* DOCUMENT GRID ARCHIVE */}
+      {documents.length === 0 && !showUploadForm && (
+        <div className="flex flex-col items-center justify-center py-20 gap-4 text-center">
+          <div className="p-4 bg-indigo-500/10 rounded-2xl">
+            <FolderOpen className="h-10 w-10 text-indigo-400" />
+          </div>
+          <div>
+            <p className="text-slate-300 font-bold text-sm">No documents uploaded yet</p>
+            <p className="text-slate-500 text-xs mt-1">Click <strong className="text-indigo-400">Upload File</strong> above to attach your first document.</p>
+          </div>
+        </div>
+      )}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {documents.map((doc) => {
           let anchorName = "Unanchored";
