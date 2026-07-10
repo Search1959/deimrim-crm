@@ -622,6 +622,22 @@ export default function App() {
     toast.success("Stock Updated", `PO ${po.poNumber} received — inventory updated automatically`);
   };
 
+  // Salary disbursed → post EXPENSE to Finance
+  const handleSalaryDisbursed = (_employeeId: string, employeeName: string, amount: number, month: string) => {
+    const tx: Transaction = {
+      id: `tx-${Date.now()}`,
+      type: "EXPENSE",
+      category: "Salary & Payroll",
+      amount,
+      date: new Date().toISOString().split("T")[0],
+      referenceId: `SAL-${month.replace(" ", "-").toUpperCase()}`,
+      paymentMethod: "BANK",
+      description: `Salary disbursed to ${employeeName} for ${month}`,
+      branchId: currentBranch.id,
+    };
+    setTransactions(prev => [tx, ...prev]);
+  };
+
   // Payment recorded → post INCOME to Finance (cash basis) + clear outstanding balance.
   const handlePaymentRecorded = (invoiceId: string, amount: number, method: string, invoiceNumber: string, customerName: string) => {
     const finTx: Transaction = {
@@ -1092,6 +1108,8 @@ export default function App() {
             departments={defaultDepartments}
             designations={defaultDesignations}
             userRole={currentUser.role}
+            companyId={currentUser.companyId || ""}
+            onSalaryDisbursed={handleSalaryDisbursed}
           />
         );
       case "finance":

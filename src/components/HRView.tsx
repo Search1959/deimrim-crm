@@ -30,6 +30,8 @@ interface HRViewProps {
   departments: Department[];
   designations: Designation[];
   userRole: UserRole;
+  companyId: string;
+  onSalaryDisbursed?: (employeeId: string, employeeName: string, amount: number, month: string) => void;
 }
 
 export default function HRView({
@@ -40,6 +42,8 @@ export default function HRView({
   departments,
   designations,
   userRole,
+  companyId,
+  onSalaryDisbursed,
 }: HRViewProps) {
   // Local active menu subtab mapping to sidebar options
   const [activeSubTab, setActiveSubTab] = useState<
@@ -261,8 +265,10 @@ export default function HRView({
         )}
 
         {activeSubTab === "payroll" && (
-          <HRPayrollPanel 
+          <HRPayrollPanel
             employees={employees}
+            companyId={companyId}
+            onSalaryDisbursed={onSalaryDisbursed}
           />
         )}
       </main>
