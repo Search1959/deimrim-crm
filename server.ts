@@ -171,6 +171,13 @@ async function startServer() {
     res.sendFile(path.join(process.cwd(), "public", "help.html"));
   });
 
+  // ── DEINRIM Services app at /services ────────────────────────────────
+  const servicesPath = path.join(process.cwd(), "services-dist");
+  app.use("/services", express.static(servicesPath));
+  app.get("/services/*", (_req, res) => {
+    res.sendFile(path.join(servicesPath, "index.html"));
+  });
+
   // ── Vite dev middleware / static prod files ────────────────────────────
 
   if (process.env.NODE_ENV !== "production") {
