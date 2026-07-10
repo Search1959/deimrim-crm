@@ -4,21 +4,23 @@
  */
 
 import React from "react";
-import { 
-  LayoutDashboard, 
-  Settings, 
-  ShoppingBag, 
-  Boxes, 
-  TrendingUp, 
-  Users2, 
-  Wallet, 
-  FolderOpen, 
+import {
+  LayoutDashboard,
+  Settings,
+  ShoppingBag,
+  Boxes,
+  TrendingUp,
+  Users2,
+  Wallet,
+  FolderOpen,
   Terminal,
   Menu,
   ChevronLeft,
   ChevronRight,
   ShieldCheck,
-  Building
+  Building,
+  Briefcase,
+  ExternalLink
 } from "lucide-react";
 import { Company, UserRole } from "../types";
 
@@ -222,6 +224,33 @@ export default function Sidebar({
           );
         })}
       </nav>
+
+      {/* DEINRIM Services external link */}
+      <div className="px-3 pb-3">
+        <a
+          href="https://deinrim360.in/services"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="group flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm font-medium transition-all duration-150 bg-indigo-950/60 hover:bg-indigo-900/60 border border-indigo-800/40 hover:border-indigo-600/60 text-indigo-300 hover:text-indigo-100"
+          title="Open DEINRIM Services"
+        >
+          <Briefcase className="h-5 w-5 shrink-0 text-indigo-400 group-hover:text-indigo-200" />
+          {!collapsed && (
+            <div className="flex-1 overflow-hidden">
+              <div className="flex items-center justify-between">
+                <span className="truncate leading-none font-semibold">AD Services</span>
+                <ExternalLink className="h-3 w-3 text-indigo-500 group-hover:text-indigo-300" />
+              </div>
+              <span className="block text-[10px] mt-0.5 text-indigo-500 group-hover:text-indigo-400">Salon, Agency & more</span>
+            </div>
+          )}
+          {collapsed && (
+            <div className="pointer-events-none absolute left-full ml-4 rounded-md bg-slate-950 px-2 py-1 text-xs font-medium text-white opacity-0 transition-opacity duration-150 group-hover:opacity-100 z-50 whitespace-nowrap shadow-md">
+              AD Services
+            </div>
+          )}
+        </a>
+      </div>
 
       {/* Collapsible Sidebar Footer */}
       {!collapsed && (
