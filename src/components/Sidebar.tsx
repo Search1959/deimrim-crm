@@ -20,7 +20,8 @@ import {
   ShieldCheck,
   Building,
   Briefcase,
-  ExternalLink
+  ExternalLink,
+  FileSpreadsheet
 } from "lucide-react";
 import { Company, UserRole } from "../types";
 
@@ -98,6 +99,13 @@ export default function Sidebar({
       name: "Documents Hub",
       icon: FolderOpen,
       description: "Shared files storage",
+      badge: null,
+    },
+    {
+      id: "gst",
+      name: "GST Compliance",
+      icon: FileSpreadsheet,
+      description: "Returns, GSTR-1, GSTR-3B, AI",
       badge: null,
     },
   ];

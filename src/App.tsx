@@ -17,6 +17,7 @@ import HRView from "./components/HRView";
 import FinanceView from "./components/FinanceView";
 import AdminView from "./components/AdminView";
 import DocumentView from "./components/DocumentView";
+import GSTView from "./components/GSTView";
 import HomePage from "./components/HomePage";
 import ToastContainer from "./components/ToastContainer";
 
@@ -186,6 +187,8 @@ export default function App() {
       case "hr":
         return role === UserRole.HR_MANAGER;
       case "finance":
+        return role === UserRole.FINANCE_MANAGER;
+      case "gst":
         return role === UserRole.FINANCE_MANAGER;
       default:
         return false;
@@ -1145,6 +1148,16 @@ export default function App() {
             assets={assets}
             userRole={currentUser.role}
             currentUserName={currentUser.name}
+          />
+        );
+      case "gst":
+        return (
+          <GSTView
+            invoices={invoices}
+            customers={customers}
+            transactions={transactions}
+            company={company}
+            userRole={currentUser.role}
           />
         );
       default:
