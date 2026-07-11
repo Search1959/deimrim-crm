@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import {
   FileSpreadsheet, Brain, Bell, Settings, BarChart3, FileText,
-  CheckCircle2, AlertCircle, Clock, Send, ChevronRight, Shield
+  CheckCircle2, AlertCircle, Clock, Send, ChevronRight, Shield, Calculator
 } from "lucide-react";
 import { Invoice, Customer, Transaction, Company } from "../types";
 import { formatINR } from "../types";
@@ -14,7 +14,7 @@ interface Props {
   userRole: string;
 }
 
-type GSTTab = "dashboard" | "gstr1" | "gstr3b" | "hsn" | "ai" | "notifications" | "settings";
+type GSTTab = "dashboard" | "gstr1" | "gstr3b" | "hsn" | "calculator" | "ai" | "notifications" | "settings";
 
 // ── AI GST Engine ──────────────────────────────────────────────────────────
 function gstAI(query: string, invoices: Invoice[], transactions: Transaction[], company: Company): string {
@@ -68,6 +68,153 @@ function getCurrentPeriod() {
 function periodLabel(p: string) {
   const [y, m] = p.split("-");
   return new Date(Number(y), Number(m) - 1).toLocaleString("en-IN", { month: "long", year: "numeric" });
+}
+
+// ── GST Calculator ───────────────────────────────────────────────────────────
+function GSTCalculator() {
+  const [mode, setMode] = useState<"forward" | "reverse">("forward");
+  const [supplyType, setSupplyType] = useState<"intra" | "inter">("intra");
+  const [baseAmount, setBaseAmount] = useState("");
+  const [gstRate, setGstRate] = useState(18);
+  const [inclusiveAmount, setInclusiveAmount] = useState("");
+  const [copied, setCopied] = useState(false);
+
+  const GST_RATES = [0, 0.1, 0.25, 1, 1.5, 3, 5, 7.5, 12, 18, 28];
+  const base = parseFloat(baseAmount) || 0;
+  const incl = parseFloat(inclusiveAmount) || 0;
+
+  const fwdTax   = base * gstRate / 100;
+  const fwdTotal = base + fwdTax;
+  const fwdCGST  = supplyType === "intra" ? fwdTax / 2 : 0;
+  const fwdSGST  = supplyType === "intra" ? fwdTax / 2 : 0;
+  const fwdIGST  = supplyType === "inter" ? fwdTax : 0;
+
+  const revBase  = incl / (1 + gstRate / 100);
+  const revTax   = incl - revBase;
+  const revCGST  = supplyType === "intra" ? revTax / 2 : 0;
+  const revSGST  = supplyType === "intra" ? revTax / 2 : 0;
+  const revIGST  = supplyType === "inter" ? revTax : 0;
+
+  const fmt = (n: number) => "₹" + n.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+  const copyResult = () => {
+    const lines = mode === "forward"
+      ? [`Base Amount: ${fmt(base)}`, `GST @ ${gstRate}%: ${fmt(fwdTax)}`,
+         supplyType === "intra" ? `  CGST (${gstRate/2}%): ${fmt(fwdCGST)}\n  SGST (${gstRate/2}%): ${fmt(fwdSGST)}` : `  IGST (${gstRate}%): ${fmt(fwdIGST)}`,
+         `Total Amount: ${fmt(fwdTotal)}`]
+      : [`GST-Inclusive Amount: ${fmt(incl)}`, `Base Amount: ${fmt(revBase)}`, `GST @ ${gstRate}%: ${fmt(revTax)}`,
+         supplyType === "intra" ? `  CGST (${gstRate/2}%): ${fmt(revCGST)}\n  SGST (${gstRate/2}%): ${fmt(revSGST)}` : `  IGST (${gstRate}%): ${fmt(revIGST)}`];
+    navigator.clipboard.writeText(lines.join("\n")).then(() => { setCopied(true); setTimeout(() => setCopied(false), 2000); });
+  };
+
+  const inputCls = "w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2.5 text-sm text-white focus:outline-none focus:border-emerald-500 transition-colors";
+  const ResultRow = ({ label, value, highlight = false }: { label: string; value: string; highlight?: boolean }) => (
+    <div className={`flex items-center justify-between py-2.5 border-b border-slate-800 last:border-0 ${highlight ? "text-white font-black" : "text-slate-400"}`}>
+      <span className="text-sm">{label}</span>
+      <span className={`font-mono text-sm ${highlight ? "text-emerald-400 text-base" : ""}`}>{value}</span>
+    </div>
+  );
+
+  return (
+    <div className="space-y-5 max-w-xl">
+      <div>
+        <h2 className="text-base font-black text-white uppercase tracking-tight flex items-center gap-2">
+          <Calculator className="h-5 w-5 text-emerald-400" /> GST Calculator
+        </h2>
+        <p className="text-xs text-slate-400 mt-0.5">Forward (add GST on base price) or Reverse (extract GST from inclusive price)</p>
+      </div>
+
+      <div className="grid grid-cols-2 gap-3">
+        <div>
+          <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider font-mono block mb-1.5">Mode</label>
+          <div className="flex rounded-lg overflow-hidden border border-slate-700">
+            {(["forward", "reverse"] as const).map(m => (
+              <button key={m} type="button" onClick={() => setMode(m)}
+                className={`flex-1 py-2 text-xs font-bold transition-all cursor-pointer ${mode === m ? "bg-emerald-600 text-white" : "bg-slate-900 text-slate-400 hover:text-white"}`}>
+                {m === "forward" ? "➕ Add GST" : "➖ Extract GST"}
+              </button>
+            ))}
+          </div>
+        </div>
+        <div>
+          <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider font-mono block mb-1.5">Supply Type</label>
+          <div className="flex rounded-lg overflow-hidden border border-slate-700">
+            {(["intra", "inter"] as const).map(t => (
+              <button key={t} type="button" onClick={() => setSupplyType(t)}
+                className={`flex-1 py-2 text-xs font-bold transition-all cursor-pointer ${supplyType === t ? "bg-indigo-600 text-white" : "bg-slate-900 text-slate-400 hover:text-white"}`}>
+                {t === "intra" ? "Intra-State" : "Inter-State"}
+              </button>
+            ))}
+          </div>
+          <p className="text-[10px] text-slate-600 mt-1">{supplyType === "intra" ? "CGST + SGST" : "IGST only"}</p>
+        </div>
+      </div>
+
+      <div>
+        <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider font-mono block mb-1.5">GST Rate</label>
+        <div className="flex flex-wrap gap-1.5">
+          {GST_RATES.map(r => (
+            <button key={r} type="button" onClick={() => setGstRate(r)}
+              className={`px-3 py-1.5 rounded-lg text-xs font-bold border transition-all cursor-pointer ${gstRate === r ? "bg-emerald-600 border-emerald-500 text-white" : "bg-slate-900 border-slate-700 text-slate-400 hover:border-slate-500 hover:text-white"}`}>
+              {r}%
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {mode === "forward" ? (
+        <div>
+          <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider font-mono block mb-1.5">Base Amount (excl. GST) ₹</label>
+          <input type="number" min="0" value={baseAmount} onChange={e => setBaseAmount(e.target.value)}
+            placeholder="e.g. 50000" className={inputCls} />
+        </div>
+      ) : (
+        <div>
+          <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider font-mono block mb-1.5">GST-Inclusive Amount ₹</label>
+          <input type="number" min="0" value={inclusiveAmount} onChange={e => setInclusiveAmount(e.target.value)}
+            placeholder="e.g. 59000" className={inputCls} />
+        </div>
+      )}
+
+      <div className="bg-slate-950/60 border border-slate-700 rounded-xl p-4 space-y-0.5">
+        <div className="flex items-center justify-between mb-3">
+          <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider font-mono">Breakdown</span>
+          <button onClick={copyResult} className="text-xs text-emerald-400 hover:text-emerald-300 border border-emerald-500/30 px-2.5 py-1 rounded-lg cursor-pointer transition-all">
+            {copied ? "✓ Copied!" : "Copy"}
+          </button>
+        </div>
+        {mode === "forward" ? (
+          <>
+            <ResultRow label="Base Amount" value={fmt(base)} />
+            <ResultRow label={`GST @ ${gstRate}%`} value={fmt(fwdTax)} />
+            {supplyType === "intra" ? (<>
+              <ResultRow label={`  CGST @ ${gstRate/2}%`} value={fmt(fwdCGST)} />
+              <ResultRow label={`  SGST @ ${gstRate/2}%`} value={fmt(fwdSGST)} />
+            </>) : (
+              <ResultRow label={`  IGST @ ${gstRate}%`} value={fmt(fwdIGST)} />
+            )}
+            <ResultRow label="Total Invoice Amount" value={fmt(fwdTotal)} highlight />
+          </>
+        ) : (
+          <>
+            <ResultRow label="GST-Inclusive Amount" value={fmt(incl)} />
+            <ResultRow label="Base Amount (excl. GST)" value={fmt(revBase)} />
+            <ResultRow label={`GST @ ${gstRate}%`} value={fmt(revTax)} />
+            {supplyType === "intra" ? (<>
+              <ResultRow label={`  CGST @ ${gstRate/2}%`} value={fmt(revCGST)} />
+              <ResultRow label={`  SGST @ ${gstRate/2}%`} value={fmt(revSGST)} />
+            </>) : (
+              <ResultRow label={`  IGST @ ${gstRate}%`} value={fmt(revIGST)} />
+            )}
+          </>
+        )}
+      </div>
+
+      <p className="text-[10px] text-slate-600 leading-relaxed">
+        Intra-state: CGST + SGST (same state). Inter-state: IGST only (different states, imports/exports).
+      </p>
+    </div>
+  );
 }
 
 export default function GSTView({ invoices, customers, transactions, company }: Props) {
@@ -127,6 +274,7 @@ export default function GSTView({ invoices, customers, transactions, company }: 
     { id: "gstr1",         label: "GSTR-1",          icon: FileText },
     { id: "gstr3b",        label: "GSTR-3B",         icon: FileSpreadsheet },
     { id: "hsn",           label: "HSN / SAC",       icon: Shield },
+    { id: "calculator",    label: "GST Calculator",  icon: Calculator },
     { id: "ai",            label: "AI Assistant",    icon: Brain },
     { id: "notifications", label: "Due Date Alerts", icon: Bell },
     { id: "settings",      label: "GST Settings",    icon: Settings },
@@ -427,6 +575,9 @@ export default function GSTView({ invoices, customers, transactions, company }: 
             </div>
           </div>
         )}
+
+        {/* ── GST CALCULATOR ── */}
+        {activeTab === "calculator" && <GSTCalculator />}
 
         {/* ── AI ASSISTANT ── */}
         {activeTab === "ai" && (
