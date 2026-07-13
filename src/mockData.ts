@@ -1,4 +1,4 @@
-/**
+﻿/**
  * @license
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -93,7 +93,7 @@ export const defaultUsers: User[] = [
     companyId: "comp-1",
     branchId: "br-hq",
     departmentId: "dept-it",
-    avatarUrl: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=face",
+
     status: "active",
   },
   {
@@ -103,7 +103,7 @@ export const defaultUsers: User[] = [
     role: UserRole.READ_ONLY,
     companyId: "comp-1",
     branchId: "br-hq",
-    avatarUrl: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100&h=100&fit=crop&crop=face",
+
     status: "active",
   },
   {
@@ -114,7 +114,7 @@ export const defaultUsers: User[] = [
     companyId: "comp-1",
     branchId: "br-hq",
     departmentId: "dept-it",
-    avatarUrl: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&h=100&fit=crop&crop=face",
+
     status: "active",
   },
   {
@@ -125,7 +125,7 @@ export const defaultUsers: User[] = [
     companyId: "comp-1",
     branchId: "br-hq",
     departmentId: "dept-ops",
-    avatarUrl: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop&crop=face",
+
     status: "active",
   },
   {
@@ -136,7 +136,7 @@ export const defaultUsers: User[] = [
     companyId: "comp-1",
     branchId: "br-hq",
     departmentId: "dept-ops",
-    avatarUrl: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&crop=face",
+
     status: "active",
   },
   {
@@ -147,7 +147,7 @@ export const defaultUsers: User[] = [
     companyId: "comp-1",
     branchId: "br-se",
     departmentId: "dept-ops",
-    avatarUrl: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&h=100&fit=crop&crop=face",
+
     status: "active",
   },
   {
@@ -158,7 +158,7 @@ export const defaultUsers: User[] = [
     companyId: "comp-1",
     branchId: "br-hq",
     departmentId: "dept-sales",
-    avatarUrl: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&h=100&fit=crop&crop=face",
+
     status: "active",
   },
   {
@@ -169,7 +169,7 @@ export const defaultUsers: User[] = [
     companyId: "comp-1",
     branchId: "br-hq",
     departmentId: "dept-fin",
-    avatarUrl: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=100&h=100&fit=crop&crop=face",
+
     status: "active",
   },
   {
@@ -180,7 +180,7 @@ export const defaultUsers: User[] = [
     companyId: "comp-1",
     branchId: "br-hq",
     departmentId: "dept-hr",
-    avatarUrl: "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=100&h=100&fit=crop&crop=face",
+
     status: "active",
   },
 ];

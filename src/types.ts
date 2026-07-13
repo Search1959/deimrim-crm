@@ -73,7 +73,6 @@ export interface User {
   companyId: string;
   branchId: string;
   departmentId?: string;
-  avatarUrl?: string;
   status: "active" | "inactive";
   password?: string;
   companyName?: string;

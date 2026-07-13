@@ -248,7 +248,6 @@ export default function AdminView({
       status: "active",
       password: staffPassword.trim(),
       companyName: company.name,
-      avatarUrl: `https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=128&auto=format&fit=crop&q=60`, // generic nice avatar
     };
 
     setUsers(prev => [...prev, newStaffUser]);

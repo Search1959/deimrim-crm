@@ -180,11 +180,9 @@ export default function Header({
                         : "text-slate-300 hover:bg-slate-900"
                     }`}
                   >
-                    <img
-                      src={u.avatarUrl || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&h=100&fit=crop&crop=face"}
-                      alt={u.name}
-                      className="h-8 w-8 rounded-full border border-slate-800 shrink-0"
-                    />
+                    <div className="h-8 w-8 rounded-full border border-slate-700 bg-slate-800 flex items-center justify-center shrink-0 text-xs font-bold text-indigo-400">
+                      {u.name.charAt(0).toUpperCase()}
+                    </div>
                     <div className="flex flex-col overflow-hidden">
                       <span className="font-bold text-xs leading-none mb-1 text-slate-200">{u.name}</span>
                       <span className="text-[10px] text-slate-400 font-medium leading-none mb-1">{u.role}</span>
@@ -290,11 +288,9 @@ export default function Header({
             onClick={() => { setShowProfileMenu(p => !p); setShowRoleMenu(false); setShowBranchMenu(false); setShowNotificationTray(false); }}
             className="flex items-center gap-2 rounded-lg px-2 py-1 hover:bg-slate-800 transition-colors focus:outline-none"
           >
-            <img
-              src={currentUser.avatarUrl || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&h=100&fit=crop&crop=face"}
-              alt={currentUser.name}
-              className="h-9 w-9 rounded-full border border-slate-800"
-            />
+            <div className="h-9 w-9 rounded-full border border-slate-700 bg-slate-800 flex items-center justify-center text-sm font-bold text-indigo-400">
+              {currentUser.name.charAt(0).toUpperCase()}
+            </div>
             <div className="hidden lg:flex flex-col text-left">
               <span className="text-sm font-semibold text-slate-200 leading-tight">{currentUser.name}</span>
               <span className="text-[10px] font-medium text-slate-400 leading-none">{currentUser.role}</span>
