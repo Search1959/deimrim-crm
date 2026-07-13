@@ -1200,7 +1200,7 @@ export default function App() {
       />
 
       {/* Main Panel Workspace */}
-      <div className="flex flex-1 flex-col overflow-hidden">
+      <div className="flex flex-1 flex-col min-h-0">
         {/* Dynamic header panel */}
         <Header
           currentUser={currentUser}
