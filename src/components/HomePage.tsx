@@ -375,25 +375,6 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
             </div>
           </div>
 
-          {/* SECTION 2 — TRUST BAR (from SaaS master prompt guidelines) */}
-          <div className="bg-slate-950/40 rounded-2xl p-4 border border-slate-800/60 grid grid-cols-2 md:grid-cols-4 gap-4 divide-y md:divide-y-0 md:divide-x divide-slate-800/60">
-            <div className="text-center md:text-left md:px-3">
-              <span className="block text-xl font-black text-white tracking-tight">500+</span>
-              <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Active Users</span>
-            </div>
-            <div className="text-center md:text-left pt-3 md:pt-0 md:px-4">
-              <span className="block text-xl font-black text-indigo-400 tracking-tight">50+</span>
-              <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Organizations</span>
-            </div>
-            <div className="text-center md:text-left pt-3 md:pt-0 md:px-4">
-              <span className="block text-xl font-black text-emerald-400 tracking-tight">99.9%</span>
-              <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Guaranteed Uptime</span>
-            </div>
-            <div className="text-center md:text-left pt-3 md:pt-0 md:px-4">
-              <span className="block text-xl font-black text-purple-400 tracking-tight">100K+</span>
-              <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Transactions Logs</span>
-            </div>
-          </div>
 
           <div className="flex flex-wrap items-center justify-center sm:justify-start gap-4 px-2 text-[10px] font-mono text-slate-500 font-bold uppercase">
             <span className="flex items-center gap-1 bg-slate-950/20 px-2 py-1 rounded border border-slate-850"><Check className="h-3.5 w-3.5 text-emerald-500" /> SSL SECURE 🔒</span>
