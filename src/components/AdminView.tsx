@@ -367,60 +367,116 @@ export default function AdminView({
       {activeSubTab === "company" && (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 text-left">
           {/* Company details form */}
-          <form onSubmit={handleUpdateCompanyDetails} className="lg:col-span-2 bg-slate-950/60 border border-slate-800 rounded-xl p-6 space-y-4 shadow-xs">
+          <form onSubmit={handleUpdateCompanyDetails} className="lg:col-span-2 bg-slate-950/60 border border-slate-800 rounded-xl p-6 space-y-5 shadow-xs">
             <h3 className="text-sm font-bold text-slate-300 uppercase tracking-wider border-b border-slate-800 pb-2 font-mono">Registered Company Settings</h3>
-            
+
+            {/* Basic Info */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1 font-mono">Entity Legal Name</label>
-                <input
-                  type="text"
-                  required
-                  disabled={!isSystemAdmin}
-                  value={company.name}
+                <input type="text" required disabled={!isSystemAdmin} value={company.name}
                   onChange={(e) => setCompany(prev => ({ ...prev, name: e.target.value }))}
-                  className="w-full rounded-lg border border-slate-800 bg-slate-900 p-2.5 text-sm text-white focus:outline-hidden disabled:opacity-50"
-                />
+                  className="w-full rounded-lg border border-slate-800 bg-slate-900 p-2.5 text-sm text-white focus:outline-hidden disabled:opacity-50" />
               </div>
               <div>
-                <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1 font-mono">Registered VAT Tax ID</label>
-                <input
-                  type="text"
-                  disabled={!isSystemAdmin}
-                  value={company.taxId}
-                  onChange={(e) => setCompany(prev => ({ ...prev, taxId: e.target.value }))}
-                  className="w-full rounded-lg border border-slate-800 bg-slate-900 p-2.5 text-sm text-white focus:outline-hidden disabled:opacity-50"
-                />
+                <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1 font-mono">GSTIN</label>
+                <input type="text" value={company.gstin || ""}
+                  onChange={(e) => setCompany(prev => ({ ...prev, gstin: e.target.value }))}
+                  placeholder="e.g. 19AABCB1234A1ZX"
+                  className="w-full rounded-lg border border-slate-800 bg-slate-900 p-2.5 text-sm text-white font-mono focus:outline-hidden" />
+              </div>
+              <div>
+                <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1 font-mono">State</label>
+                <input type="text" value={company.state || ""}
+                  onChange={(e) => setCompany(prev => ({ ...prev, state: e.target.value }))}
+                  placeholder="e.g. West Bengal"
+                  className="w-full rounded-lg border border-slate-800 bg-slate-900 p-2.5 text-sm text-white focus:outline-hidden" />
+              </div>
+              <div>
+                <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1 font-mono">Phone</label>
+                <input type="text" value={company.phone || ""}
+                  onChange={(e) => setCompany(prev => ({ ...prev, phone: e.target.value }))}
+                  placeholder="+91 98361-30393"
+                  className="w-full rounded-lg border border-slate-800 bg-slate-900 p-2.5 text-sm text-white focus:outline-hidden" />
               </div>
               <div>
                 <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1 font-mono">Admin Contact Email</label>
-                <input
-                  type="email"
-                  disabled={!isSystemAdmin}
-                  value={company.email}
+                <input type="email" disabled={!isSystemAdmin} value={company.email}
                   onChange={(e) => setCompany(prev => ({ ...prev, email: e.target.value }))}
-                  className="w-full rounded-lg border border-slate-800 bg-slate-900 p-2.5 text-sm text-white focus:outline-hidden disabled:opacity-50"
-                />
+                  className="w-full rounded-lg border border-slate-800 bg-slate-900 p-2.5 text-sm text-white focus:outline-hidden disabled:opacity-50" />
               </div>
               <div>
                 <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1 font-mono">Branch Code Identifier</label>
-                <input
-                  type="text"
-                  disabled
-                  value={company.code}
-                  className="w-full rounded-lg border border-slate-800 bg-slate-900 p-2.5 text-sm text-slate-500 font-mono disabled:opacity-50"
-                />
+                <input type="text" disabled value={company.code}
+                  className="w-full rounded-lg border border-slate-800 bg-slate-900 p-2.5 text-sm text-slate-500 font-mono disabled:opacity-50" />
+              </div>
+            </div>
+
+            {/* Office Address */}
+            <div>
+              <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1 font-mono">Office / Billing Address</label>
+              <textarea value={company.address || ""}
+                onChange={(e) => setCompany(prev => ({ ...prev, address: e.target.value }))}
+                rows={2}
+                placeholder="Full office address (appears on GST invoices)"
+                className="w-full rounded-lg border border-slate-800 bg-slate-900 p-2.5 text-sm text-white focus:outline-hidden resize-none" />
+            </div>
+
+            {/* Bank Details */}
+            <div>
+              <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3 font-mono border-t border-slate-800 pt-4">Bank Details (for Invoice Payment Section)</h4>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1 font-mono">Bank Name</label>
+                  <input type="text" value={company.bankName || ""}
+                    onChange={(e) => setCompany(prev => ({ ...prev, bankName: e.target.value }))}
+                    placeholder="e.g. State Bank of India"
+                    className="w-full rounded-lg border border-slate-800 bg-slate-900 p-2.5 text-sm text-white focus:outline-hidden" />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1 font-mono">Account Holder Name</label>
+                  <input type="text" value={company.bankAccountName || ""}
+                    onChange={(e) => setCompany(prev => ({ ...prev, bankAccountName: e.target.value }))}
+                    placeholder="As on bank records"
+                    className="w-full rounded-lg border border-slate-800 bg-slate-900 p-2.5 text-sm text-white focus:outline-hidden" />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1 font-mono">Account Number</label>
+                  <input type="text" value={company.bankAccountNumber || ""}
+                    onChange={(e) => setCompany(prev => ({ ...prev, bankAccountNumber: e.target.value }))}
+                    placeholder="Account number"
+                    className="w-full rounded-lg border border-slate-800 bg-slate-900 p-2.5 text-sm text-white font-mono focus:outline-hidden" />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1 font-mono">IFSC Code</label>
+                  <input type="text" value={company.bankIFSC || ""}
+                    onChange={(e) => setCompany(prev => ({ ...prev, bankIFSC: e.target.value }))}
+                    placeholder="e.g. SBIN0001234"
+                    className="w-full rounded-lg border border-slate-800 bg-slate-900 p-2.5 text-sm text-white font-mono focus:outline-hidden" />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1 font-mono">Account Type</label>
+                  <select value={company.bankAccountType || "Current"}
+                    onChange={(e) => setCompany(prev => ({ ...prev, bankAccountType: e.target.value }))}
+                    className="w-full rounded-lg border border-slate-800 bg-slate-900 p-2.5 text-sm text-white focus:outline-hidden">
+                    <option>Current</option><option>Savings</option><option>OD</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1 font-mono">UPI ID (optional)</label>
+                  <input type="text" value={company.bankUPI || ""}
+                    onChange={(e) => setCompany(prev => ({ ...prev, bankUPI: e.target.value }))}
+                    placeholder="e.g. business@upi"
+                    className="w-full rounded-lg border border-slate-800 bg-slate-900 p-2.5 text-sm text-white font-mono focus:outline-hidden" />
+                </div>
               </div>
             </div>
 
             <div className="text-right border-t border-slate-800 pt-4">
-              <button
-                type="submit"
-                disabled={!isSystemAdmin}
-                className="inline-flex items-center gap-1.5 rounded-lg bg-indigo-600 px-4 py-2 text-xs font-bold text-white hover:bg-indigo-500 disabled:opacity-50 transition-colors"
-              >
+              <button type="submit"
+                className="inline-flex items-center gap-1.5 rounded-lg bg-indigo-600 px-4 py-2 text-xs font-bold text-white hover:bg-indigo-500 transition-colors">
                 <Save className="h-4 w-4" />
-                <span>Save Company details</span>
+                <span>Save Company Details</span>
               </button>
             </div>
           </form>
