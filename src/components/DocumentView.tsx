@@ -1,22 +1,16 @@
-﻿import { toast } from "../utils/toast";
+import { toast } from "../utils/toast";
 /**
  * @license
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState } from "react";
-import { 
-  FolderOpen, 
-  UploadCloud, 
-  FileText, 
-  Trash2, 
-  Download, 
-  Paperclip, 
-  Check, 
-  Plus,
-  X
+import React, { useState, useRef } from "react";
+import {
+  FolderOpen, FolderPlus, UploadCloud, FileText, Trash2,
+  Download, Plus, X, ChevronRight, Home, File,
+  FileImage, FileSpreadsheet, Folder, Search
 } from "lucide-react";
-import { AppDocument, Supplier, Customer, Employee, Asset, UserRole } from "../types";
+import { AppDocument, DocFolder, Supplier, Customer, Employee, Asset, UserRole } from "../types";
 
 interface DocumentViewProps {
   documents: AppDocument[];
@@ -29,227 +23,375 @@ interface DocumentViewProps {
   currentUserName: string;
 }
 
+function fileIcon(type: string) {
+  const t = type.toUpperCase();
+  if (["JPG","JPEG","PNG","GIF","SVG","WEBP"].includes(t)) return <FileImage className="h-5 w-5 text-pink-400" />;
+  if (["XLSX","XLS","CSV"].includes(t)) return <FileSpreadsheet className="h-5 w-5 text-emerald-400" />;
+  if (t === "PDF") return <FileText className="h-5 w-5 text-red-400" />;
+  return <File className="h-5 w-5 text-indigo-400" />;
+}
+
+function formatBytes(bytes: number) {
+  if (bytes === 0) return "0 B";
+  const k = 1024;
+  const sizes = ["B","KB","MB","GB"];
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+  return `${parseFloat((bytes / Math.pow(k, i)).toFixed(1))} ${sizes[i]}`;
+}
+
 export default function DocumentView({
-  documents,
-  setDocuments,
-  suppliers,
-  customers,
-  employees,
-  assets,
-  userRole,
-  currentUserName,
+  documents, setDocuments,
+  suppliers, customers, employees, assets,
+  userRole, currentUserName,
 }: DocumentViewProps) {
   const canWrite = userRole !== UserRole.READ_ONLY;
-  const [showUploadForm, setShowUploadForm] = useState(false);
-  const [newDoc, setNewDoc] = useState({
-    name: "",
-    fileSize: "1.2 MB",
-    fileType: "PDF",
-    attachedToType: "SUPPLIER" as AppDocument["attachedToType"],
-    attachedToId: "",
-  });
 
-  const handleUploadDoc = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!newDoc.name || !newDoc.attachedToId) { toast.error("Specify document name and attachment"); return; }
+  // Folder state (session-scoped)
+  const [folders, setFolders] = useState<DocFolder[]>([]);
+  const [currentFolderId, setCurrentFolderId] = useState<string | null>(null);
 
-    const document: AppDocument = {
-      id: `doc-${Date.now()}`,
-      name: newDoc.name,
-      fileSize: newDoc.fileSize,
-      fileType: newDoc.fileType,
-      uploadedAt: new Date().toISOString(),
-      uploadedBy: currentUserName,
-      attachedToType: newDoc.attachedToType,
-      attachedToId: newDoc.attachedToId,
-      url: "#",
+  // UI state
+  const [showUpload, setShowUpload] = useState(false);
+  const [showNewFolder, setShowNewFolder] = useState(false);
+  const [newFolderName, setNewFolderName] = useState("");
+  const [search, setSearch] = useState("");
+  const [attachType, setAttachType] = useState<AppDocument["attachedToType"]>("GENERAL");
+  const [attachId, setAttachId] = useState("");
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+
+  // Breadcrumb path
+  const buildPath = (fid: string | null): DocFolder[] => {
+    const path: DocFolder[] = [];
+    let id = fid;
+    while (id) {
+      const f = folders.find(x => x.id === id);
+      if (!f) break;
+      path.unshift(f);
+      id = f.parentId;
+    }
+    return path;
+  };
+  const breadcrumb = buildPath(currentFolderId);
+
+  // Current folder's subfolders + files
+  const subFolders = folders.filter(f => f.parentId === currentFolderId);
+  const currentDocs = documents.filter(d =>
+    (d.folderId ?? null) === currentFolderId &&
+    (search === "" || d.name.toLowerCase().includes(search.toLowerCase()))
+  );
+
+  // Create folder
+  const handleCreateFolder = () => {
+    if (!newFolderName.trim()) return;
+    const folder: DocFolder = {
+      id: `folder-${Date.now()}`,
+      name: newFolderName.trim(),
+      parentId: currentFolderId,
+      createdAt: new Date().toISOString(),
+      createdBy: currentUserName,
     };
-
-    setDocuments(prev => [document, ...prev]);
-    setNewDoc({
-      name: "",
-      fileSize: "1.2 MB",
-      fileType: "PDF",
-      attachedToType: "SUPPLIER",
-      attachedToId: "",
-    });
-    setShowUploadForm(false);
-    toast.success("Document Uploaded", "File attached to record")
+    setFolders(prev => [...prev, folder]);
+    setNewFolderName("");
+    setShowNewFolder(false);
+    toast.success("Folder created");
   };
 
-  const handleDeleteDoc = (id: string) => {
-    if (!confirm("Delete this document? This cannot be undone.")) return;
+  const handleDeleteFolder = (id: string) => {
+    if (!confirm("Delete folder and all its files?")) return;
+    const collectIds = (fid: string): string[] => {
+      const children = folders.filter(f => f.parentId === fid).map(f => f.id);
+      return [fid, ...children.flatMap(collectIds)];
+    };
+    const ids = collectIds(id);
+    setFolders(prev => prev.filter(f => !ids.includes(f.id)));
+    setDocuments(prev => prev.filter(d => !ids.includes(d.folderId ?? "")));
+    toast.warning("Folder deleted");
+  };
+
+  // File picker
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) setSelectedFiles(Array.from(e.target.files));
+  };
+
+  // Upload multiple files
+  const handleUpload = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (selectedFiles.length === 0) { toast.error("Select at least one file"); return; }
+
+    const now = new Date().toISOString();
+    const newDocs: AppDocument[] = selectedFiles.map(file => ({
+      id: `doc-${Date.now()}-${Math.random().toString(36).slice(2)}`,
+      name: file.name,
+      fileSize: formatBytes(file.size),
+      fileType: file.name.split(".").pop()?.toUpperCase() || "FILE",
+      uploadedAt: now,
+      uploadedBy: currentUserName,
+      attachedToType: attachType,
+      attachedToId: attachId || "none",
+      url: URL.createObjectURL(file),
+      folderId: currentFolderId,
+    }));
+
+    setDocuments(prev => [...newDocs, ...prev]);
+    setSelectedFiles([]);
+    setAttachType("GENERAL");
+    setAttachId("");
+    setShowUpload(false);
+    if (fileInputRef.current) fileInputRef.current.value = "";
+    toast.success(`${newDocs.length} file${newDocs.length > 1 ? "s" : ""} uploaded`);
+  };
+
+  const handleDelete = (id: string) => {
+    if (!confirm("Delete this file?")) return;
     setDocuments(prev => prev.filter(d => d.id !== id));
-    toast.warning("Document Deleted", "Removed from archive")
+    toast.warning("File deleted");
+  };
+
+  const anchorName = (doc: AppDocument) => {
+    if (doc.attachedToType === "SUPPLIER")  return suppliers.find(s => s.id === doc.attachedToId)?.name;
+    if (doc.attachedToType === "CUSTOMER")  return customers.find(c => c.id === doc.attachedToId)?.name;
+    if (doc.attachedToType === "EMPLOYEE")  return employees.find(e => e.id === doc.attachedToId)?.name;
+    if (doc.attachedToType === "ASSET")     return assets.find(a => a.id === doc.attachedToId)?.name;
+    return null;
   };
 
   return (
-    <div className="flex-1 space-y-6 overflow-y-auto p-6 text-left animate-fadeIn">
-      {/* Title */}
-      <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between border-b border-slate-700/50 pb-4">
+    <div className="flex-1 space-y-5 overflow-y-auto p-6 text-left animate-fadeIn">
+
+      {/* Header */}
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between border-b border-slate-700/50 pb-4">
         <div>
-          <h1 className="text-2xl font-bold text-white tracking-tight">Enterprise Document Vault</h1>
-          <p className="text-sm text-slate-400 mt-1">Upload and attach legal agreements, sheets, or physical cargo logs to target accounts.</p>
+          <h1 className="text-xl font-black text-white tracking-tight">Document Vault</h1>
+          <p className="text-xs text-slate-400 mt-0.5">{documents.length} files · {folders.length} folders</p>
         </div>
-
-        <button
-          onClick={() => setShowUploadForm(!showUploadForm)}
-          className="flex items-center gap-1.5 rounded-lg bg-indigo-600 px-3.5 py-2 text-xs font-bold text-white hover:bg-indigo-700 self-start cursor-pointer"
-        >
-          <UploadCloud className="h-4 w-4" />
-          <span>Upload File</span>
-        </button>
-      </div>
-
-      {/* DYNAMIC UPLOAD FORM */}
-      {showUploadForm && (
-        <form onSubmit={handleUploadDoc} className="bg-slate-900/40 border border-slate-700/50 rounded-xl p-6 space-y-5 grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="md:col-span-2 border-b border-gray-50 pb-2 flex items-center justify-between">
-            <h4 className="font-bold text-sm text-slate-200 flex items-center gap-1.5">
-              <Paperclip className="h-4.5 w-4.5 text-indigo-400" />
-              <span>Upload & Anchor Document</span>
-            </h4>
-            <button type="button" onClick={() => setShowUploadForm(false)} className="text-slate-500 hover:text-gray-600">
-              <X className="h-4 w-4" />
+        {canWrite && (
+          <div className="flex items-center gap-2">
+            <button onClick={() => { setShowNewFolder(true); setShowUpload(false); }}
+              className="flex items-center gap-1.5 rounded-lg border border-slate-700 bg-slate-800 hover:bg-slate-700 px-3 py-2 text-xs font-bold text-slate-200 cursor-pointer transition-all">
+              <FolderPlus className="h-3.5 w-3.5 text-amber-400" /> New Folder
+            </button>
+            <button onClick={() => { setShowUpload(true); setShowNewFolder(false); }}
+              className="flex items-center gap-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 px-3 py-2 text-xs font-bold text-white cursor-pointer transition-all">
+              <UploadCloud className="h-3.5 w-3.5" /> Upload Files
             </button>
           </div>
+        )}
+      </div>
 
-          <div>
-            <label className="block text-xs font-bold text-slate-400 uppercase">Document / File Name</label>
-            <input
-              type="text"
-              required
-              placeholder="Ex: Supplier_Agreement_TechDistributors_2026.pdf"
-              value={newDoc.name}
-              onChange={(e) => setNewDoc(prev => ({ ...prev, name: e.target.value }))}
-              className="mt-1 block w-full rounded bg-slate-800 border border-slate-700 text-white p-2 text-xs focus:border-indigo-500 focus:outline-none"
-            />
+      {/* Breadcrumb */}
+      <div className="flex items-center gap-1 text-xs text-slate-400">
+        <button onClick={() => setCurrentFolderId(null)}
+          className="flex items-center gap-1 hover:text-white cursor-pointer transition-colors">
+          <Home className="h-3.5 w-3.5" /> Root
+        </button>
+        {breadcrumb.map(f => (
+          <React.Fragment key={f.id}>
+            <ChevronRight className="h-3 w-3 text-slate-600" />
+            <button onClick={() => setCurrentFolderId(f.id)}
+              className="hover:text-white cursor-pointer transition-colors">{f.name}</button>
+          </React.Fragment>
+        ))}
+      </div>
+
+      {/* Search */}
+      <div className="relative max-w-sm">
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-500" />
+        <input value={search} onChange={e => setSearch(e.target.value)}
+          placeholder="Search files…"
+          className="w-full bg-slate-900 border border-slate-800 rounded-lg pl-9 pr-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500 transition-colors" />
+      </div>
+
+      {/* New Folder inline */}
+      {showNewFolder && (
+        <div className="flex items-center gap-2 bg-slate-900/60 border border-amber-500/30 rounded-xl p-3">
+          <Folder className="h-4 w-4 text-amber-400 shrink-0" />
+          <input autoFocus value={newFolderName} onChange={e => setNewFolderName(e.target.value)}
+            onKeyDown={e => e.key === "Enter" && handleCreateFolder()}
+            placeholder="Folder name…"
+            className="flex-1 bg-transparent text-sm text-white focus:outline-none placeholder:text-slate-500" />
+          <button onClick={handleCreateFolder}
+            className="px-3 py-1 bg-amber-500 hover:bg-amber-400 text-white text-xs font-bold rounded-lg cursor-pointer">Create</button>
+          <button onClick={() => { setShowNewFolder(false); setNewFolderName(""); }}
+            className="text-slate-500 hover:text-white cursor-pointer"><X className="h-4 w-4" /></button>
+        </div>
+      )}
+
+      {/* Upload form */}
+      {showUpload && (
+        <form onSubmit={handleUpload} className="bg-slate-900/50 border border-indigo-500/20 rounded-xl p-5 space-y-4">
+          <div className="flex items-center justify-between">
+            <p className="text-sm font-bold text-white flex items-center gap-2">
+              <UploadCloud className="h-4 w-4 text-indigo-400" /> Upload Files
+              {currentFolderId && <span className="text-xs text-slate-400 font-normal">→ {breadcrumb[breadcrumb.length - 1]?.name}</span>}
+            </p>
+            <button type="button" onClick={() => { setShowUpload(false); setSelectedFiles([]); }}
+              className="text-slate-500 hover:text-white cursor-pointer"><X className="h-4 w-4" /></button>
           </div>
 
-          <div>
-            <label className="block text-xs font-bold text-slate-400 uppercase">File Form Extension</label>
-            <select
-              value={newDoc.fileType}
-              onChange={(e) => setNewDoc(prev => ({ ...prev, fileType: e.target.value }))}
-              className="mt-1 block w-full rounded bg-slate-800 border border-slate-700 text-white p-2 text-xs focus:border-indigo-500 focus:outline-none"
-            >
-              <option value="PDF">PDF Agreement (.pdf)</option>
-              <option value="XLSX">Excel Spreadsheet (.xlsx)</option>
-              <option value="DOCX">Word Document (.docx)</option>
-              <option value="IMG">Image Attachment (.jpg / .png)</option>
-            </select>
+          {/* Drop zone */}
+          <div onClick={() => fileInputRef.current?.click()}
+            className="border-2 border-dashed border-slate-700 hover:border-indigo-500 rounded-xl p-8 text-center cursor-pointer transition-colors group">
+            <UploadCloud className="h-8 w-8 text-slate-600 group-hover:text-indigo-400 mx-auto mb-2 transition-colors" />
+            <p className="text-sm text-slate-400 group-hover:text-slate-200 transition-colors">Click to select files</p>
+            <p className="text-[10px] text-slate-600 mt-1">PDF, DOCX, XLSX, images — multiple files supported</p>
+            <input ref={fileInputRef} type="file" multiple onChange={handleFileChange} className="hidden" />
           </div>
 
-          <div>
-            <label className="block text-xs font-bold text-slate-400 uppercase">Attach To Model Category</label>
-            <select
-              value={newDoc.attachedToType}
-              onChange={(e) => setNewDoc(prev => ({
-                ...prev,
-                attachedToType: e.target.value as any,
-                attachedToId: "", // Reset target id when anchor type swaps
-              }))}
-              className="mt-1 block w-full rounded bg-slate-800 border border-slate-700 text-white p-2 text-xs focus:border-indigo-500 focus:outline-none"
-            >
-              <option value="SUPPLIER">Supplier Profile</option>
-              <option value="CUSTOMER">Customer Profile</option>
-              <option value="EMPLOYEE">HR Employee</option>
-              <option value="ASSET">Company Asset</option>
-            </select>
+          {/* Selected files list */}
+          {selectedFiles.length > 0 && (
+            <div className="space-y-1.5">
+              <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">{selectedFiles.length} file{selectedFiles.length > 1 ? "s" : ""} selected</p>
+              <div className="max-h-40 overflow-y-auto space-y-1">
+                {selectedFiles.map((f, i) => (
+                  <div key={i} className="flex items-center justify-between bg-slate-800/60 rounded-lg px-3 py-2">
+                    <div className="flex items-center gap-2">
+                      {fileIcon(f.name.split(".").pop() || "")}
+                      <span className="text-xs text-slate-200 truncate max-w-[240px]">{f.name}</span>
+                    </div>
+                    <span className="text-[10px] text-slate-500 font-mono shrink-0 ml-2">{formatBytes(f.size)}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Attach To (optional)</label>
+              <select value={attachType} onChange={e => { setAttachType(e.target.value as AppDocument["attachedToType"]); setAttachId(""); }}
+                className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500">
+                <option value="GENERAL">General / No attachment</option>
+                <option value="SUPPLIER">Supplier</option>
+                <option value="CUSTOMER">Customer</option>
+                <option value="EMPLOYEE">Employee</option>
+                <option value="ASSET">Asset</option>
+              </select>
+            </div>
+            {attachType !== "GENERAL" && (
+              <div>
+                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Record</label>
+                <select value={attachId} onChange={e => setAttachId(e.target.value)}
+                  className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500">
+                  <option value="">— choose —</option>
+                  {attachType === "SUPPLIER"  && suppliers.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
+                  {attachType === "CUSTOMER"  && customers.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+                  {attachType === "EMPLOYEE"  && employees.map(e => <option key={e.id} value={e.id}>{e.name}</option>)}
+                  {attachType === "ASSET"     && assets.map(a    => <option key={a.id} value={a.id}>{a.name}</option>)}
+                </select>
+              </div>
+            )}
           </div>
 
-          <div>
-            <label className="block text-xs font-bold text-slate-400 uppercase">Target Record anchor</label>
-            <select
-              required
-              value={newDoc.attachedToId}
-              onChange={(e) => setNewDoc(prev => ({ ...prev, attachedToId: e.target.value }))}
-              className="mt-1 block w-full rounded bg-slate-800 border border-slate-700 text-white p-2 text-xs focus:border-indigo-500 focus:outline-none"
-            >
-              <option value="">-- Choose Target record --</option>
-              {newDoc.attachedToType === "SUPPLIER" && suppliers.map(s => (
-                <option key={s.id} value={s.id}>{s.name} ({s.code})</option>
-              ))}
-              {newDoc.attachedToType === "CUSTOMER" && customers.map(c => (
-                <option key={c.id} value={c.id}>{c.name} ({c.code})</option>
-              ))}
-              {newDoc.attachedToType === "EMPLOYEE" && employees.map(e => (
-                <option key={e.id} value={e.id}>{e.name} ({e.employeeCode})</option>
-              ))}
-              {newDoc.attachedToType === "ASSET" && assets.map(a => (
-                <option key={a.id} value={a.id}>{a.name} ({a.code})</option>
-              ))}
-            </select>
-          </div>
-
-          <div className="md:col-span-2 text-right">
-            <button type="submit" className="rounded-lg bg-indigo-600 px-4 py-2 text-xs font-bold text-white hover:bg-indigo-700">
-              Complete Upload & Attach
+          <div className="flex justify-end gap-2">
+            <button type="button" onClick={() => { setShowUpload(false); setSelectedFiles([]); }}
+              className="px-4 py-2 text-xs font-bold text-slate-400 hover:text-white cursor-pointer">Cancel</button>
+            <button type="submit"
+              className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold rounded-lg cursor-pointer transition-all">
+              Upload {selectedFiles.length > 0 ? `${selectedFiles.length} File${selectedFiles.length > 1 ? "s" : ""}` : ""}
             </button>
           </div>
         </form>
       )}
 
-      {/* DOCUMENT GRID ARCHIVE */}
-      {documents.length === 0 && !showUploadForm && (
-        <div className="flex flex-col items-center justify-center py-20 gap-4 text-center">
-          <div className="p-4 bg-indigo-500/10 rounded-2xl">
-            <FolderOpen className="h-10 w-10 text-indigo-400" />
-          </div>
-          <div>
-            <p className="text-slate-300 font-bold text-sm">No documents uploaded yet</p>
-            <p className="text-slate-500 text-xs mt-1">Click <strong className="text-indigo-400">Upload File</strong> above to attach your first document.</p>
+      {/* Folders grid */}
+      {subFolders.length > 0 && (
+        <div>
+          <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-2">Folders</p>
+          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3">
+            {subFolders.map(f => {
+              const fileCount = documents.filter(d => d.folderId === f.id).length;
+              return (
+                <div key={f.id} className="group relative bg-slate-900/50 border border-slate-800 hover:border-amber-500/40 rounded-xl p-4 cursor-pointer transition-all"
+                  onClick={() => setCurrentFolderId(f.id)}>
+                  <Folder className="h-8 w-8 text-amber-400 mb-2" />
+                  <p className="text-xs font-bold text-white truncate">{f.name}</p>
+                  <p className="text-[10px] text-slate-500 mt-0.5">{fileCount} file{fileCount !== 1 ? "s" : ""}</p>
+                  {canWrite && (
+                    <button onClick={e => { e.stopPropagation(); handleDeleteFolder(f.id); }}
+                      className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 p-1 text-red-500 hover:bg-red-500/10 rounded cursor-pointer transition-all">
+                      <X className="h-3 w-3" />
+                    </button>
+                  )}
+                </div>
+              );
+            })}
           </div>
         </div>
       )}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {documents.map((doc) => {
-          let anchorName = "Unanchored";
-          if (doc.attachedToType === "SUPPLIER") anchorName = suppliers.find(s => s.id === doc.attachedToId)?.name || "Supplier";
-          if (doc.attachedToType === "CUSTOMER") anchorName = customers.find(c => c.id === doc.attachedToId)?.name || "Customer";
-          if (doc.attachedToType === "EMPLOYEE") anchorName = employees.find(e => e.id === doc.attachedToId)?.name || "Employee";
-          if (doc.attachedToType === "ASSET") anchorName = assets.find(a => a.id === doc.attachedToId)?.name || "Asset";
 
-          return (
-            <div key={doc.id} className="bg-slate-900/40 border border-slate-700/50 rounded-xl p-5 space-y-4 relative hover:border-indigo-100 transition-colors">
-              <div className="flex items-start gap-3">
-                <div className="h-10 w-10 shrink-0 flex items-center justify-center rounded-lg bg-indigo-900/30 text-indigo-300 font-bold">
-                  <FileText className="h-5 w-5" />
+      {/* Files grid */}
+      {currentDocs.length > 0 && (
+        <div>
+          <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-2">Files</p>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {currentDocs.map(doc => (
+              <div key={doc.id} className="bg-slate-900/40 border border-slate-800 hover:border-slate-600 rounded-xl p-4 space-y-3 transition-colors">
+                <div className="flex items-start gap-3">
+                  <div className="h-9 w-9 shrink-0 flex items-center justify-center rounded-lg bg-slate-800">
+                    {fileIcon(doc.fileType)}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-xs font-bold text-slate-100 truncate" title={doc.name}>{doc.name}</p>
+                    <p className="text-[10px] text-slate-500 font-mono mt-0.5">{doc.fileSize} · {doc.fileType}</p>
+                  </div>
                 </div>
-                <div className="flex-1 overflow-hidden">
-                  <h4 className="font-bold text-slate-100 text-xs truncate max-w-[200px]" title={doc.name}>{doc.name}</h4>
-                  <span className="text-[10px] text-slate-500 font-mono font-bold mt-1 block">Size: {doc.fileSize} / {doc.fileType}</span>
-                </div>
-              </div>
 
-              <div className="bg-slate-800/30 p-2.5 rounded-lg border border-slate-700/50/50 text-[11px] text-slate-400 space-y-1">
-                <div>Attached To: <strong className="text-slate-300 font-semibold">{doc.attachedToType}</strong></div>
-                <div className="truncate font-medium text-indigo-400">Ref: {anchorName}</div>
-              </div>
+                {anchorName(doc) && (
+                  <div className="bg-slate-800/40 rounded-lg px-3 py-1.5 text-[10px] text-slate-400">
+                    📎 {doc.attachedToType} · <span className="text-indigo-400">{anchorName(doc)}</span>
+                  </div>
+                )}
 
-              <div className="flex items-center justify-between text-[10px] text-slate-500 font-mono border-t border-gray-50 pt-2.5">
-                <span>By: {doc.uploadedBy}</span>
-                <div className="flex items-center gap-1.5">
-                  <button
-                    onClick={() => toast.info("Download", `Downloading ${doc.name}...`)}
-                    className="rounded p-1 text-slate-400 hover:bg-slate-800 hover:text-indigo-400"
-                    title="Download File"
-                  >
-                    <Download className="h-4 w-4" />
-                  </button>
-                  {canWrite && (<button
-                    onClick={() => handleDeleteDoc(doc.id)}
-                    className="rounded p-1 text-red-500 hover:bg-red-50"
-                    title="Delete File"
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </button>)}
+                <div className="flex items-center justify-between text-[10px] text-slate-600 border-t border-slate-800 pt-2">
+                  <span>{doc.uploadedBy} · {new Date(doc.uploadedAt).toLocaleDateString("en-IN")}</span>
+                  <div className="flex gap-1">
+                    <a href={doc.url} download={doc.name}
+                      className="p-1.5 rounded hover:bg-slate-800 text-slate-400 hover:text-indigo-400 transition-colors" title="Download">
+                      <Download className="h-3.5 w-3.5" />
+                    </a>
+                    {canWrite && (
+                      <button onClick={() => handleDelete(doc.id)}
+                        className="p-1.5 rounded hover:bg-red-500/10 text-slate-500 hover:text-red-400 transition-colors cursor-pointer" title="Delete">
+                        <Trash2 className="h-3.5 w-3.5" />
+                      </button>
+                    )}
+                  </div>
                 </div>
               </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Empty state */}
+      {subFolders.length === 0 && currentDocs.length === 0 && !showUpload && !showNewFolder && (
+        <div className="flex flex-col items-center justify-center py-24 gap-4 text-center">
+          <div className="p-5 bg-indigo-500/10 rounded-2xl">
+            <FolderOpen className="h-10 w-10 text-indigo-400" />
+          </div>
+          <div>
+            <p className="text-slate-300 font-bold text-sm">
+              {currentFolderId ? "This folder is empty" : "No documents yet"}
+            </p>
+            <p className="text-slate-500 text-xs mt-1">
+              Use <strong className="text-indigo-400">Upload Files</strong> to add files or <strong className="text-amber-400">New Folder</strong> to organise.
+            </p>
+          </div>
+          {canWrite && (
+            <div className="flex gap-2 mt-2">
+              <button onClick={() => setShowNewFolder(true)}
+                className="flex items-center gap-1.5 px-4 py-2 bg-slate-800 hover:bg-slate-700 border border-slate-700 text-amber-400 text-xs font-bold rounded-xl cursor-pointer transition-all">
+                <FolderPlus className="h-4 w-4" /> New Folder
+              </button>
+              <button onClick={() => setShowUpload(true)}
+                className="flex items-center gap-1.5 px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold rounded-xl cursor-pointer transition-all">
+                <UploadCloud className="h-4 w-4" /> Upload Files
+              </button>
             </div>
-          );
-        })}
-      </div>
+          )}
+        </div>
+      )}
     </div>
   );
 }

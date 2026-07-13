@@ -400,9 +400,18 @@ export interface AppDocument {
   fileType: string;
   uploadedAt: string;
   uploadedBy: string;
-  attachedToType: "CUSTOMER" | "SUPPLIER" | "EMPLOYEE" | "PURCHASE" | "SALES" | "ASSET";
+  attachedToType: "CUSTOMER" | "SUPPLIER" | "EMPLOYEE" | "PURCHASE" | "SALES" | "ASSET" | "GENERAL";
   attachedToId: string;
   url: string;
+  folderId?: string | null;
+}
+
+export interface DocFolder {
+  id: string;
+  name: string;
+  parentId: string | null;
+  createdAt: string;
+  createdBy: string;
 }
 
 export interface AppNotification {
