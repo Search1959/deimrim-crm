@@ -1,6 +1,7 @@
 // server.ts
 import express from "express";
 import path from "path";
+import fs from "fs";
 import { createServer as createViteServer } from "vite";
 import mysql from "mysql2/promise";
 import * as dotenv from "dotenv";
@@ -127,6 +128,48 @@ async function startServer() {
       res.status(500).json({ error: "DB write failed" });
     }
   });
+  // -- Services app state persistence (MySQL + file fallback) ------------------
+  const SERVICES_DATA_FILE = path.join(process.cwd(), "data", "services-state.json");
+
+  app.get("/api/services/state", async (_req, res) => {
+    if (pool) {
+      try {
+        const [rows] = await pool.execute(
+          "SELECT data FROM tenant_data WHERE company_id = ? AND entity_type = ?",
+          ["services-platform", "app-state"]
+        );
+        if (rows.length > 0) return res.json(JSON.parse(rows[0].data));
+      } catch (err) { console.error("MySQL services read failed:", err); }
+    }
+    try {
+      if (fs.existsSync(SERVICES_DATA_FILE))
+        return res.json(JSON.parse(fs.readFileSync(SERVICES_DATA_FILE, "utf-8")));
+    } catch (err) { console.error("File services read failed:", err); }
+    res.json(null);
+  });
+
+  app.post("/api/services/state", async (req, res) => {
+    const state = req.body;
+    if (pool) {
+      try {
+        await pool.execute(
+          `INSERT INTO tenant_data (company_id, entity_type, data) VALUES (?, ?, ?)
+           ON DUPLICATE KEY UPDATE data = VALUES(data), updated_at = NOW()`,
+          ["services-platform", "app-state", JSON.stringify(state)]
+        );
+        return res.json({ ok: true, persisted: "mysql" });
+      } catch (err) { console.error("MySQL services write failed:", err); }
+    }
+    try {
+      const dir = path.dirname(SERVICES_DATA_FILE);
+      if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+      fs.writeFileSync(SERVICES_DATA_FILE, JSON.stringify(state), "utf-8");
+      return res.json({ ok: true, persisted: "file" });
+    } catch (err) {
+      res.status(500).json({ error: String(err) });
+    }
+  });
+
   app.get("/help", (_req, res) => {
     res.sendFile(path.join(process.cwd(), "public", "help.html"));
   });
