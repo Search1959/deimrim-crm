@@ -1219,8 +1219,13 @@ export default function App() {
           }}
           onLogout={() => {
             setIsLoggedIn(false);
-            // Default view back to dashboard for next login
             setActiveView("dashboard");
+          }}
+          onUpdateCredentials={(userId, newEmail, newPassword) => {
+            setUsers(prev => prev.map(u =>
+              u.id === userId ? { ...u, email: newEmail, password: newPassword } : u
+            ));
+            setCurrentUser(prev => ({ ...prev, email: newEmail, password: newPassword }));
           }}
         />
 
