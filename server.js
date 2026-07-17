@@ -1,16 +1,39 @@
+var __create = Object.create;
+var __defProp = Object.defineProperty;
+var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
+var __getOwnPropNames = Object.getOwnPropertyNames;
+var __getProtoOf = Object.getPrototypeOf;
+var __hasOwnProp = Object.prototype.hasOwnProperty;
+var __copyProps = (to, from, except, desc) => {
+  if (from && typeof from === "object" || typeof from === "function") {
+    for (let key of __getOwnPropNames(from))
+      if (!__hasOwnProp.call(to, key) && key !== except)
+        __defProp(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc(from, key)) || desc.enumerable });
+  }
+  return to;
+};
+var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__getProtoOf(mod)) : {}, __copyProps(
+  // If the importer is in node compatibility mode or this is not an ESM
+  // file that has been converted to a CommonJS file using a Babel-
+  // compatible transform (i.e. "__esModule" has not been set), then set
+  // "default" to the CommonJS "module.exports" for node compatibility.
+  isNodeMode || !mod || !mod.__esModule ? __defProp(target, "default", { value: mod, enumerable: true }) : target,
+  mod
+));
+
 // server.ts
-import express from "express";
-import path from "path";
-import { createServer as createViteServer } from "vite";
-import mysql from "mysql2/promise";
-import * as dotenv from "dotenv";
-import multer from "multer";
-import * as XLSX from "xlsx";
+var import_express = __toESM(require("express"), 1);
+var import_path = __toESM(require("path"), 1);
+var import_vite = require("vite");
+var import_promise = __toESM(require("mysql2/promise"), 1);
+var dotenv = __toESM(require("dotenv"), 1);
+var import_multer = __toESM(require("multer"), 1);
+var XLSX = __toESM(require("xlsx"), 1);
 dotenv.config();
 var pool = null;
 var DB_ENABLED = process.env.DB_HOST && process.env.DB_USER && process.env.DB_NAME;
 if (DB_ENABLED) {
-  pool = mysql.createPool({
+  pool = import_promise.default.createPool({
     host: process.env.DB_HOST,
     port: Number(process.env.DB_PORT || 3306),
     user: process.env.DB_USER,
@@ -54,9 +77,9 @@ async function initDB() {
   }
 }
 async function startServer() {
-  const app = express();
+  const app = (0, import_express.default)();
   const PORT = Number(process.env.PORT || 3e3);
-  app.use(express.json({ limit: "10mb" }));
+  app.use(import_express.default.json({ limit: "10mb" }));
   app.get("/api/health", async (_req, res) => {
     let dbStatus = "disabled";
     if (pool) {
@@ -101,7 +124,7 @@ async function startServer() {
       res.status(500).json({ error: "DB write failed" });
     }
   });
-  const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 10 * 1024 * 1024 } });
+  const upload = (0, import_multer.default)({ storage: import_multer.default.memoryStorage(), limits: { fileSize: 10 * 1024 * 1024 } });
   app.post("/api/stock/import/:companyId", upload.single("file"), async (req, res) => {
     if (!pool) return res.status(503).json({ error: "DB not available" });
     const { companyId } = req.params;
@@ -206,8 +229,8 @@ async function startServer() {
         if (existing) {
           existing.unit = unit || existing.unit;
           existing.sellingPrice = rate || existing.sellingPrice;
-          existing.category = catId || existing.category;
-          if (hsn) existing.hsnCode = hsn;
+          existing.categoryId = catId || existing.categoryId;
+          existing.description = hsn ? `HSN: ${hsn}` : existing.description || "";
           const bs = batchStocks.find((b) => b.productId === existing.id);
           if (bs) {
             bs.quantity = qty;
@@ -218,7 +241,7 @@ async function startServer() {
           updated++;
         } else {
           const newId = `p-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
-          products.push({ id: newId, name: description, hsnCode: hsn, unit, sellingPrice: rate, purchasePrice: 0, category: catId, minStockLevel: 0, createdAt: (/* @__PURE__ */ new Date()).toISOString() });
+          products.push({ id: newId, sku: "", name: description, categoryId: catId, brandId: "", unit, sellingPrice: rate, purchasePrice: 0, minStockLevel: 0, maxStockLevel: 0, description: hsn ? `HSN: ${hsn}` : "", createdAt: (/* @__PURE__ */ new Date()).toISOString() });
           batchStocks.push({ id: `bs-${newId}`, productId: newId, batchNumber: "STOCK", quantity: qty, unit, purchasePrice: 0, expiryDate: "", location: "", createdAt: (/* @__PURE__ */ new Date()).toISOString() });
           added++;
         }
@@ -261,24 +284,24 @@ async function startServer() {
     }
   });
   app.get("/help", (_req, res) => {
-    res.sendFile(path.join(process.cwd(), "public", "help.html"));
+    res.sendFile(import_path.default.join(process.cwd(), "public", "help.html"));
   });
-  const servicesPath = path.join(process.cwd(), "services-dist");
-  app.use("/services", express.static(servicesPath));
+  const servicesPath = import_path.default.join(process.cwd(), "services-dist");
+  app.use("/services", import_express.default.static(servicesPath));
   app.get("/services/*", (_req, res) => {
-    res.sendFile(path.join(servicesPath, "index.html"));
+    res.sendFile(import_path.default.join(servicesPath, "index.html"));
   });
   if (process.env.NODE_ENV !== "production") {
-    const vite = await createViteServer({
+    const vite = await (0, import_vite.createServer)({
       server: { middlewareMode: true },
       appType: "spa"
     });
     app.use(vite.middlewares);
   } else {
-    const distPath = path.join(process.cwd(), "dist");
-    app.use(express.static(distPath));
+    const distPath = import_path.default.join(process.cwd(), "dist");
+    app.use(import_express.default.static(distPath));
     app.get("*", (_req, res) => {
-      res.sendFile(path.join(distPath, "index.html"));
+      res.sendFile(import_path.default.join(distPath, "index.html"));
     });
   }
   await initDB();

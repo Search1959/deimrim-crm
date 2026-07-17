@@ -260,15 +260,15 @@ async function startServer() {
         if (existing) {
           existing.unit         = unit || existing.unit;
           existing.sellingPrice = rate || existing.sellingPrice;
-          existing.category     = catId || existing.category;
-          if (hsn) existing.hsnCode = hsn;
+          existing.categoryId   = catId || existing.categoryId;
+          existing.description  = hsn ? `HSN: ${hsn}` : (existing.description || "");
           const bs = batchStocks.find((b: any) => b.productId === existing.id);
           if (bs) { bs.quantity = qty; bs.unit = unit || bs.unit; }
           else { batchStocks.push({ id: `bs-${existing.id}`, productId: existing.id, batchNumber: "STOCK", quantity: qty, unit, purchasePrice: 0, expiryDate: "", location: "", createdAt: new Date().toISOString() }); }
           updated++;
         } else {
           const newId = `p-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
-          products.push({ id: newId, name: description, hsnCode: hsn, unit, sellingPrice: rate, purchasePrice: 0, category: catId, minStockLevel: 0, createdAt: new Date().toISOString() });
+          products.push({ id: newId, sku: "", name: description, categoryId: catId, brandId: "", unit, sellingPrice: rate, purchasePrice: 0, minStockLevel: 0, maxStockLevel: 0, description: hsn ? `HSN: ${hsn}` : "", createdAt: new Date().toISOString() });
           batchStocks.push({ id: `bs-${newId}`, productId: newId, batchNumber: "STOCK", quantity: qty, unit, purchasePrice: 0, expiryDate: "", location: "", createdAt: new Date().toISOString() });
           added++;
         }
