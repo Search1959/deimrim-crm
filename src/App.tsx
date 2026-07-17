@@ -1048,6 +1048,7 @@ export default function App() {
       case "inventory":
         return (
           <InventoryView
+            companyId={currentUser.companyId}
             products={products}
             setProducts={setProducts}
             categories={categories}

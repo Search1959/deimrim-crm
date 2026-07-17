@@ -4,6 +4,8 @@ import path from "path";
 import { createServer as createViteServer } from "vite";
 import mysql from "mysql2/promise";
 import * as dotenv from "dotenv";
+import multer from "multer";
+import * as XLSX from "xlsx";
 dotenv.config();
 var pool = null;
 var DB_ENABLED = process.env.DB_HOST && process.env.DB_USER && process.env.DB_NAME;
@@ -44,34 +46,6 @@ async function initDB() {
         data         LONGTEXT     NOT NULL,
         updated_at   TIMESTAMP    DEFAULT CURRENT_TIMESTAMP
                                   ON UPDATE CURRENT_TIMESTAMP
-      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-    `);
-    await conn.execute(`
-      CREATE TABLE IF NOT EXISTS services_tenants (
-        id          VARCHAR(50)   PRIMARY KEY,
-        name        VARCHAR(255)  NOT NULL,
-        type        VARCHAR(50)   DEFAULT 'general',
-        owner_name  VARCHAR(255)  DEFAULT '',
-        email       VARCHAR(255)  DEFAULT '',
-        phone       VARCHAR(100)  DEFAULT '',
-        address     TEXT          DEFAULT '',
-        gstin       VARCHAR(50)   DEFAULT '',
-        state       VARCHAR(100)  DEFAULT '',
-        plan        VARCHAR(20)   DEFAULT 'free',
-        active      TINYINT(1)    DEFAULT 1,
-        created_at  VARCHAR(50)   DEFAULT ''
-      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-    `);
-    await conn.execute(`
-      CREATE TABLE IF NOT EXISTS services_users (
-        id          VARCHAR(50)   PRIMARY KEY,
-        tenant_id   VARCHAR(50)   DEFAULT 'SYSTEM',
-        name        VARCHAR(255)  NOT NULL,
-        email       VARCHAR(255)  NOT NULL,
-        password    VARCHAR(255)  DEFAULT '',
-        role        VARCHAR(50)   DEFAULT 'TENANT_ADMIN',
-        created_at  VARCHAR(50)   DEFAULT '',
-        UNIQUE KEY uq_email (email)
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
     `);
     console.log("\u2705 Database tables ready");
@@ -127,6 +101,74 @@ async function startServer() {
       res.status(500).json({ error: "DB write failed" });
     }
   });
+  const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 10 * 1024 * 1024 } });
+  app.post("/api/stock/import/:companyId", upload.single("file"), async (req, res) => {
+    if (!pool) return res.status(503).json({ error: "DB not available" });
+    const { companyId } = req.params;
+    if (!req.file) return res.status(400).json({ error: "No file uploaded" });
+    try {
+      const wb = XLSX.read(req.file.buffer, { type: "buffer" });
+      const allRows = [];
+      for (const sheetName of wb.SheetNames) {
+        const rows = XLSX.utils.sheet_to_json(wb.Sheets[sheetName], { defval: "" });
+        allRows.push(...rows);
+      }
+      const getEntity = async (entity) => {
+        const [rows] = await pool.execute(
+          "SELECT data FROM tenant_data WHERE company_id = ? AND entity_type = ?",
+          [companyId, entity]
+        );
+        return rows.length ? JSON.parse(rows[0].data) : [];
+      };
+      const saveEntity = async (entity, data) => {
+        await pool.execute(
+          `INSERT INTO tenant_data (company_id, entity_type, data)
+           VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE data = VALUES(data), updated_at = NOW()`,
+          [companyId, entity, JSON.stringify(data)]
+        );
+      };
+      const products = await getEntity("products");
+      const batchStocks = await getEntity("batchStocks");
+      let updated = 0, added = 0, skipped = 0;
+      for (const row of allRows) {
+        const description = String(row["Description"] || row["DESCRIPTION"] || row["description"] || row["name"] || row["Name"] || "").trim();
+        const hsn = String(row["HSN Code"] || row["HSN CODE"] || row["HSN"] || row["hsn"] || "").trim();
+        const rate = parseFloat(row["Rate"] || row["RATE"] || row["rate"] || row["price"] || 0) || 0;
+        const unit = String(row["Unit"] || row["UNIT"] || row["unit"] || "Nos").trim() || "Nos";
+        const qty = parseFloat(row["Closing Stock"] || row["CLOSING STOCK"] || row["qty"] || row["Qty"] || row["QTY"] || 0) || 0;
+        if (!description) {
+          skipped++;
+          continue;
+        }
+        let existing = hsn ? products.find((p) => p.hsnCode && String(p.hsnCode).trim() === hsn) : null;
+        if (!existing) {
+          existing = products.find(
+            (p) => p.name && p.name.trim().toLowerCase() === description.toLowerCase()
+          );
+        }
+        if (existing) {
+          const bs = batchStocks.find((b) => b.productId === existing.id);
+          if (bs) {
+            bs.quantity = qty;
+          } else {
+            batchStocks.push({ id: `bs-${existing.id}`, productId: existing.id, batchNumber: "STOCK", quantity: qty, unit, purchasePrice: 0, expiryDate: "", location: "", createdAt: (/* @__PURE__ */ new Date()).toISOString() });
+          }
+          updated++;
+        } else {
+          const newId = `p-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
+          products.push({ id: newId, name: description, hsnCode: hsn, unit, sellingPrice: rate, purchasePrice: 0, category: "Imported", minStockLevel: 0, createdAt: (/* @__PURE__ */ new Date()).toISOString() });
+          batchStocks.push({ id: `bs-${newId}`, productId: newId, batchNumber: "STOCK", quantity: qty, unit, purchasePrice: 0, expiryDate: "", location: "", createdAt: (/* @__PURE__ */ new Date()).toISOString() });
+          added++;
+        }
+      }
+      await saveEntity("products", products);
+      await saveEntity("batchStocks", batchStocks);
+      res.json({ ok: true, updated, added, skipped, total: allRows.length });
+    } catch (err) {
+      console.error("POST /api/stock/import error:", err);
+      res.status(500).json({ error: String(err) });
+    }
+  });
   app.get("/api/users", async (_req, res) => {
     if (!pool) return res.json(null);
     try {
@@ -155,123 +197,6 @@ async function startServer() {
       res.status(500).json({ error: "DB write failed" });
     }
   });
-  // -- Services: dedicated tenant + user tables (MySQL-primary, no localStorage dependency) --
-  // Tables created in initDB() below
-
-  // GET all tenants
-  app.get("/api/services/tenants", async (_req, res) => {
-    if (!pool) return res.json([]);
-    try {
-      const [rows] = await pool.execute("SELECT * FROM services_tenants ORDER BY created_at DESC");
-      res.json(rows);
-    } catch (err) { console.error("GET services_tenants:", err); res.json([]); }
-  });
-
-  // POST create tenant
-  app.post("/api/services/tenants", async (req, res) => {
-    if (!pool) return res.status(503).json({ error: "DB not available" });
-    const t = req.body;
-    try {
-      await pool.execute(
-        `INSERT INTO services_tenants (id,name,type,owner_name,email,phone,address,gstin,state,plan,active,created_at)
-         VALUES (?,?,?,?,?,?,?,?,?,?,?,?) ON DUPLICATE KEY UPDATE
-         name=VALUES(name),type=VALUES(type),owner_name=VALUES(owner_name),email=VALUES(email),
-         phone=VALUES(phone),address=VALUES(address),gstin=VALUES(gstin),state=VALUES(state),
-         plan=VALUES(plan),active=VALUES(active)`,
-        [t.id, t.name, t.type, t.ownerName||"", t.email||"", t.phone||"", t.address||"",
-         t.gstin||"", t.state||"", t.plan||"free", t.active?1:0, t.createdAt||new Date().toISOString()]
-      );
-      res.json({ ok: true });
-    } catch (err) { console.error("POST services_tenants:", err); res.status(500).json({ error: String(err) }); }
-  });
-
-  // PUT update tenant
-  app.put("/api/services/tenants/:id", async (req, res) => {
-    if (!pool) return res.status(503).json({ error: "DB not available" });
-    const t = req.body;
-    try {
-      await pool.execute(
-        `UPDATE services_tenants SET name=?,type=?,owner_name=?,email=?,phone=?,address=?,gstin=?,state=?,plan=?,active=?
-         WHERE id=?`,
-        [t.name, t.type, t.ownerName||"", t.email||"", t.phone||"", t.address||"",
-         t.gstin||"", t.state||"", t.plan||"free", t.active?1:0, req.params.id]
-      );
-      res.json({ ok: true });
-    } catch (err) { console.error("PUT services_tenants:", err); res.status(500).json({ error: String(err) }); }
-  });
-
-  // DELETE tenant
-  app.delete("/api/services/tenants/:id", async (req, res) => {
-    if (!pool) return res.status(503).json({ error: "DB not available" });
-    try {
-      await pool.execute("DELETE FROM services_tenants WHERE id=?", [req.params.id]);
-      await pool.execute("DELETE FROM services_users WHERE tenant_id=?", [req.params.id]);
-      res.json({ ok: true });
-    } catch (err) { console.error("DELETE services_tenants:", err); res.status(500).json({ error: String(err) }); }
-  });
-
-  // GET all service users
-  app.get("/api/services/users", async (_req, res) => {
-    if (!pool) return res.json([]);
-    try {
-      const [rows] = await pool.execute("SELECT * FROM services_users ORDER BY created_at DESC");
-      res.json(rows.map(r => ({ id: r.id, tenantId: r.tenant_id, name: r.name, email: r.email, password: r.password, role: r.role })));
-    } catch (err) { console.error("GET services_users:", err); res.json([]); }
-  });
-
-  // POST create / upsert user
-  app.post("/api/services/users", async (req, res) => {
-    if (!pool) return res.status(503).json({ error: "DB not available" });
-    const u = req.body;
-    try {
-      await pool.execute(
-        `INSERT INTO services_users (id,tenant_id,name,email,password,role,created_at)
-         VALUES (?,?,?,?,?,?,?) ON DUPLICATE KEY UPDATE
-         tenant_id=VALUES(tenant_id),name=VALUES(name),email=VALUES(email),
-         password=VALUES(password),role=VALUES(role)`,
-        [u.id, u.tenantId||"SYSTEM", u.name, u.email, u.password||"", u.role, new Date().toISOString()]
-      );
-      res.json({ ok: true });
-    } catch (err) { console.error("POST services_users:", err); res.status(500).json({ error: String(err) }); }
-  });
-
-  // PUT update user
-  app.put("/api/services/users/:id", async (req, res) => {
-    if (!pool) return res.status(503).json({ error: "DB not available" });
-    const u = req.body;
-    try {
-      await pool.execute(
-        "UPDATE services_users SET name=?,email=?,password=?,role=? WHERE id=?",
-        [u.name, u.email, u.password||"", u.role, req.params.id]
-      );
-      res.json({ ok: true });
-    } catch (err) { console.error("PUT services_users:", err); res.status(500).json({ error: String(err) }); }
-  });
-
-  // DELETE user
-  app.delete("/api/services/users/:id", async (req, res) => {
-    if (!pool) return res.status(503).json({ error: "DB not available" });
-    try {
-      await pool.execute("DELETE FROM services_users WHERE id=?", [req.params.id]);
-      res.json({ ok: true });
-    } catch (err) { console.error("DELETE services_users:", err); res.status(500).json({ error: String(err) }); }
-  });
-
-  // Login check endpoint for /services
-  app.post("/api/services/login", async (req, res) => {
-    if (!pool) return res.status(503).json({ error: "DB not available" });
-    const { email, password } = req.body;
-    try {
-      const [rows] = await pool.execute(
-        "SELECT u.*, t.name as tenant_name FROM services_users u LEFT JOIN services_tenants t ON u.tenant_id=t.id WHERE u.email=? AND u.password=?",
-        [email, password]
-      );
-      if (rows.length === 0) return res.status(401).json({ error: "Invalid credentials" });
-      const u = rows[0];
-      res.json({ id: u.id, tenantId: u.tenant_id, name: u.name, email: u.email, role: u.role, tenantName: u.tenant_name });
-    } catch (err) { console.error("POST services/login:", err); res.status(500).json({ error: String(err) }); }
-  });
-
   app.get("/help", (_req, res) => {
     res.sendFile(path.join(process.cwd(), "public", "help.html"));
   });

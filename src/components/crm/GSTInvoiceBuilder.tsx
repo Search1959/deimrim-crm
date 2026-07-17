@@ -142,6 +142,12 @@ export default function GSTInvoiceBuilder({
   const [terms, setTerms] = useState(company.defaultTerms || "1. Payment due within 30 days.\n2. Goods once sold will not be taken back.\n3. Interest @18% p.a. will be charged on overdue payments.\n4. Subject to local jurisdiction.");
   const [note, setNote] = useState("");
 
+  // Stock warnings: keyed by line item id
+  const [stockWarnings, setStockWarnings] = useState<Record<string, { type: "out" | "low"; available: number }>>({});
+
+  const getAvailableQty = (productId: string) =>
+    batchStocks.filter(b => b.productId === productId).reduce((s, b) => s + b.quantity, 0);
+
   const handleCustomerSelect = (cid: string) => {
     setSelectedCustomerId(cid);
     const c = customers.find(x => x.id === cid);
@@ -161,8 +167,32 @@ export default function GSTInvoiceBuilder({
     const p = products.find(x => x.id === productId);
     if (p) {
       updateItem(id, { productId, description: p.name, hsnSac: "", unit: p.unit || "Nos", rate: p.sellingPrice });
+      if (productId) {
+        const avail = getAvailableQty(productId);
+        if (avail === 0) {
+          setStockWarnings(prev => ({ ...prev, [id]: { type: "out", available: 0 } }));
+        } else {
+          setStockWarnings(prev => { const n = { ...prev }; delete n[id]; return n; });
+        }
+      }
     } else {
       updateItem(id, { productId });
+      setStockWarnings(prev => { const n = { ...prev }; delete n[id]; return n; });
+    }
+  };
+
+  const handleQtyChange = (id: string, qty: number) => {
+    updateItem(id, { qty });
+    const item = items.find(it => it.id === id);
+    if (item?.productId && item.itemType === "product") {
+      const avail = getAvailableQty(item.productId);
+      if (avail === 0) {
+        setStockWarnings(prev => ({ ...prev, [id]: { type: "out", available: 0 } }));
+      } else if (qty > avail) {
+        setStockWarnings(prev => ({ ...prev, [id]: { type: "low", available: avail } }));
+      } else {
+        setStockWarnings(prev => { const n = { ...prev }; delete n[id]; return n; });
+      }
     }
   };
 
@@ -417,6 +447,13 @@ export default function GSTInvoiceBuilder({
                                 <option value="">— Select product —</option>
                                 {products.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
                               </select>
+                              {stockWarnings[item.id] && (
+                                <div className={`text-[9px] font-semibold px-1.5 py-0.5 rounded mt-0.5 ${stockWarnings[item.id].type === "out" ? "bg-red-900/60 text-red-300" : "bg-amber-900/60 text-amber-300"}`}>
+                                  {stockWarnings[item.id].type === "out"
+                                    ? "⚠ OUT OF STOCK — sale can still proceed"
+                                    : `⚠ Only ${stockWarnings[item.id].available} unit(s) available`}
+                                </div>
+                              )}
                               <input
                                 value={item.description}
                                 onChange={e => updateItem(item.id, { description: e.target.value })}
@@ -447,7 +484,7 @@ export default function GSTInvoiceBuilder({
                           <input value={item.hsnSac} onChange={e => updateItem(item.id, { hsnSac: e.target.value })} className="bg-slate-800 border border-slate-700 rounded px-1.5 py-1 text-[10px] text-white w-full font-mono" placeholder="HSN/SAC" />
                         </td>
                         <td className="px-2 py-1.5">
-                          <input type="number" min="0" value={item.qty} onChange={e => updateItem(item.id, { qty: parseFloat(e.target.value) || 0 })} className="bg-slate-800 border border-slate-700 rounded px-1.5 py-1 text-[10px] text-white w-full text-right" />
+                          <input type="number" min="0" value={item.qty} onChange={e => handleQtyChange(item.id, parseFloat(e.target.value) || 0)} className="bg-slate-800 border border-slate-700 rounded px-1.5 py-1 text-[10px] text-white w-full text-right" />
                         </td>
                         <td className="px-2 py-1.5">
                           <input value={item.unit} onChange={e => updateItem(item.id, { unit: e.target.value })} className="bg-slate-800 border border-slate-700 rounded px-1.5 py-1 text-[10px] text-white w-full" />

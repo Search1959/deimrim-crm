@@ -32,6 +32,7 @@ import {
 import { Product, BatchStock, StockMovement, Category, Brand, Warehouse as WarehouseType, formatINR, UserRole } from "../types";
 
 interface InventoryViewProps {
+  companyId: string;
   products: Product[];
   setProducts: React.Dispatch<React.SetStateAction<Product[]>>;
   categories: Category[];
@@ -48,6 +49,7 @@ interface InventoryViewProps {
 }
 
 export default function InventoryView({
+  companyId,
   products,
   setProducts,
   categories,
@@ -69,6 +71,38 @@ export default function InventoryView({
   
   // Drill-down product detail state
   const [selectedProductDetail, setSelectedProductDetail] = useState<Product | null>(null);
+
+  // Excel stock import state
+  const [xlsxImporting, setXlsxImporting] = useState(false);
+  const [xlsxResult, setXlsxResult] = useState<{ updated: number; added: number; skipped: number } | null>(null);
+
+  const handleXlsxImport = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !companyId) return;
+    e.target.value = "";
+    setXlsxImporting(true);
+    setXlsxResult(null);
+    try {
+      const fd = new FormData();
+      fd.append("file", file);
+      const res = await fetch(`/api/stock/import/${companyId}`, { method: "POST", body: fd });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Import failed");
+      setXlsxResult({ updated: data.updated, added: data.added, skipped: data.skipped });
+      toast.success(`Stock imported: ${data.updated} updated · ${data.added} added`);
+      // Reload products + batchStocks from server
+      const [pRes, bRes] = await Promise.all([
+        fetch(`/api/data/${companyId}/products`),
+        fetch(`/api/data/${companyId}/batchStocks`),
+      ]);
+      if (pRes.ok) { const d = await pRes.json(); if (Array.isArray(d)) setProducts(d); }
+      if (bRes.ok) { const d = await bRes.json(); if (Array.isArray(d)) setBatchStocks(d); }
+    } catch (err: any) {
+      toast.error(err.message || "Import failed");
+    } finally {
+      setXlsxImporting(false);
+    }
+  };
 
   // CRUD & CSV Modals
   const [showAddModal, setShowAddModal] = useState(false);
@@ -489,6 +523,22 @@ DR-IOT-TEMP1,IoT Ambient Temperature Sensor,cat-3,Unit,45,95,20,200,88091100225,
                 <Upload className="h-3.5 w-3.5 text-slate-400" />
                 <span>Import CSV</span>
               </button>
+              )}
+
+              {canWrite && (
+              <label
+                className={`flex items-center gap-1 rounded-lg border px-3 py-2 text-xs font-bold transition-colors cursor-pointer ${xlsxImporting ? "border-indigo-700 bg-indigo-950 text-indigo-300" : "border-indigo-800 bg-indigo-950/60 hover:bg-indigo-900/60 text-indigo-300"}`}
+                title="Import stock from Excel (.xlsx) — smart upsert"
+              >
+                <input type="file" accept=".xlsx,.xls" className="hidden" onChange={handleXlsxImport} disabled={xlsxImporting} />
+                <Upload className="h-3.5 w-3.5" />
+                <span>{xlsxImporting ? "Importing…" : "Import Excel"}</span>
+              </label>
+              )}
+              {xlsxResult && (
+                <span className="text-[10px] text-emerald-400 font-mono self-center">
+                  ✓ {xlsxResult.updated} updated · {xlsxResult.added} added · {xlsxResult.skipped} skipped
+                </span>
               )}
 
               <button

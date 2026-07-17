@@ -3,6 +3,8 @@ import path from "path";
 import { createServer as createViteServer } from "vite";
 import mysql from "mysql2/promise";
 import * as dotenv from "dotenv";
+import multer from "multer";
+import * as XLSX from "xlsx";
 
 dotenv.config();
 
@@ -129,6 +131,96 @@ async function startServer() {
     } catch (err) {
       console.error("PUT /api/data error:", err);
       res.status(500).json({ error: "DB write failed" });
+    }
+  });
+
+  // ── STOCK IMPORT (Excel smart upsert) ────────────────────────────────
+  // POST /api/stock/import/:companyId   multipart: field "file" = .xlsx
+  // Matches rows by HSN code first, then product name (case-insensitive).
+  // If matched → updates batchStock qty. If new → creates product + batchStock.
+
+  const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 10 * 1024 * 1024 } });
+
+  app.post("/api/stock/import/:companyId", upload.single("file"), async (req, res) => {
+    if (!pool) return res.status(503).json({ error: "DB not available" });
+    const { companyId } = req.params;
+    if (!req.file) return res.status(400).json({ error: "No file uploaded" });
+
+    try {
+      // Parse workbook — merge all sheets
+      const wb = XLSX.read(req.file.buffer, { type: "buffer" });
+      const allRows: any[] = [];
+      for (const sheetName of wb.SheetNames) {
+        const rows = XLSX.utils.sheet_to_json(wb.Sheets[sheetName], { defval: "" }) as any[];
+        allRows.push(...rows);
+      }
+
+      // Load existing products + batchStocks from tenant_data
+      const getEntity = async (entity: string) => {
+        const [rows] = await pool!.execute(
+          "SELECT data FROM tenant_data WHERE company_id = ? AND entity_type = ?",
+          [companyId, entity]
+        ) as [mysql.RowDataPacket[], mysql.FieldPacket[]];
+        return rows.length ? JSON.parse(rows[0].data) : [];
+      };
+      const saveEntity = async (entity: string, data: any[]) => {
+        await pool!.execute(
+          `INSERT INTO tenant_data (company_id, entity_type, data)
+           VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE data = VALUES(data), updated_at = NOW()`,
+          [companyId, entity, JSON.stringify(data)]
+        );
+      };
+
+      const products: any[] = await getEntity("products");
+      const batchStocks: any[] = await getEntity("batchStocks");
+
+      let updated = 0, added = 0, skipped = 0;
+
+      for (const row of allRows) {
+        // Normalise column names from ISW Excel (Description, HSN Code, Rate, Unit, Closing Stock)
+        const description = String(row["Description"] || row["DESCRIPTION"] || row["description"] || row["name"] || row["Name"] || "").trim();
+        const hsn = String(row["HSN Code"] || row["HSN CODE"] || row["HSN"] || row["hsn"] || "").trim();
+        const rate = parseFloat(row["Rate"] || row["RATE"] || row["rate"] || row["price"] || 0) || 0;
+        const unit = String(row["Unit"] || row["UNIT"] || row["unit"] || "Nos").trim() || "Nos";
+        const qty = parseFloat(row["Closing Stock"] || row["CLOSING STOCK"] || row["qty"] || row["Qty"] || row["QTY"] || 0) || 0;
+
+        if (!description) { skipped++; continue; }
+
+        // Match: HSN first, then name
+        let existing = hsn
+          ? products.find((p: any) => p.hsnCode && String(p.hsnCode).trim() === hsn)
+          : null;
+        if (!existing) {
+          existing = products.find((p: any) =>
+            p.name && p.name.trim().toLowerCase() === description.toLowerCase()
+          );
+        }
+
+        if (existing) {
+          // Update batchStock qty
+          const bs = batchStocks.find((b: any) => b.productId === existing.id);
+          if (bs) {
+            bs.quantity = qty;
+          } else {
+            batchStocks.push({ id: `bs-${existing.id}`, productId: existing.id, batchNumber: "STOCK", quantity: qty, unit, purchasePrice: 0, expiryDate: "", location: "", createdAt: new Date().toISOString() });
+          }
+          updated++;
+        } else {
+          // Create new product + batchStock
+          const newId = `p-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
+          products.push({ id: newId, name: description, hsnCode: hsn, unit, sellingPrice: rate, purchasePrice: 0, category: "Imported", minStockLevel: 0, createdAt: new Date().toISOString() });
+          batchStocks.push({ id: `bs-${newId}`, productId: newId, batchNumber: "STOCK", quantity: qty, unit, purchasePrice: 0, expiryDate: "", location: "", createdAt: new Date().toISOString() });
+          added++;
+        }
+      }
+
+      await saveEntity("products", products);
+      await saveEntity("batchStocks", batchStocks);
+
+      res.json({ ok: true, updated, added, skipped, total: allRows.length });
+    } catch (err) {
+      console.error("POST /api/stock/import error:", err);
+      res.status(500).json({ error: String(err) });
     }
   });
 
