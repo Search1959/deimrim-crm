@@ -177,6 +177,7 @@ async function startServer() {
       const products = clearFirst ? [] : await getEntity("products");
       const batchStocks = clearFirst ? [] : await getEntity("batchStocks");
       const categories = await getEntity("categories");
+      const stockMovements = clearFirst ? [] : await getEntity("stockMovements");
       const getOrCreateCategoryId = (name) => {
         if (!name) return "";
         const existing = categories.find((c) => c.name.trim().toLowerCase() === name.trim().toLowerCase());
@@ -203,6 +204,7 @@ async function startServer() {
         if (!existing && hsn) {
           existing = products.find((p) => p.hsnCode && String(p.hsnCode).trim() === hsn);
         }
+        const importTs = (/* @__PURE__ */ new Date()).toISOString();
         if (existing) {
           existing.unit = unit || existing.unit;
           existing.sellingPrice = rate || existing.sellingPrice;
@@ -213,20 +215,27 @@ async function startServer() {
             bs.quantity = qty;
             bs.unit = unit || bs.unit;
           } else {
-            batchStocks.push({ id: `bs-${existing.id}`, productId: existing.id, batchNumber: "STOCK", quantity: qty, unit, purchasePrice: 0, expiryDate: "", location: "", createdAt: (/* @__PURE__ */ new Date()).toISOString() });
+            batchStocks.push({ id: `bs-${existing.id}`, productId: existing.id, batchNumber: "STOCK", quantity: qty, unit, purchasePrice: 0, expiryDate: "", location: "", createdAt: importTs });
+          }
+          if (qty > 0) {
+            stockMovements.push({ id: `mv-imp-${existing.id}-${Date.now()}`, productId: existing.id, warehouseId: "wh-default", type: "IN", source: "OPENING", referenceId: "EXCEL-IMPORT", quantity: qty, unitPrice: rate, userId: "system", timestamp: importTs, remarks: `Opening stock import \u2013 ${description}` });
           }
           updated++;
         } else {
           const newId = `p-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
-          products.push({ id: newId, sku: "", name: description, categoryId: catId, brandId: "", unit, sellingPrice: rate, purchasePrice: 0, minStockLevel: 0, maxStockLevel: 0, description: hsn ? `HSN: ${hsn}` : "", createdAt: (/* @__PURE__ */ new Date()).toISOString() });
-          batchStocks.push({ id: `bs-${newId}`, productId: newId, batchNumber: "STOCK", quantity: qty, unit, purchasePrice: 0, expiryDate: "", location: "", createdAt: (/* @__PURE__ */ new Date()).toISOString() });
+          products.push({ id: newId, sku: "", name: description, categoryId: catId, brandId: "", unit, sellingPrice: rate, purchasePrice: 0, minStockLevel: 0, maxStockLevel: 0, description: hsn ? `HSN: ${hsn}` : "", createdAt: importTs });
+          batchStocks.push({ id: `bs-${newId}`, productId: newId, batchNumber: "STOCK", quantity: qty, unit, purchasePrice: 0, expiryDate: "", location: "", createdAt: importTs });
+          if (qty > 0) {
+            stockMovements.push({ id: `mv-imp-${newId}`, productId: newId, warehouseId: "wh-default", type: "IN", source: "OPENING", referenceId: "EXCEL-IMPORT", quantity: qty, unitPrice: rate, userId: "system", timestamp: importTs, remarks: `Opening stock import \u2013 ${description}` });
+          }
           added++;
         }
       }
       await saveEntity("products", products);
       await saveEntity("batchStocks", batchStocks);
       await saveEntity("categories", categories);
-      res.json({ ok: true, updated, added, skipped, total: allRows.length, categories: categories.length });
+      await saveEntity("stockMovements", stockMovements);
+      res.json({ ok: true, updated, added, skipped, total: allRows.length, categories: categories.length, movementsLogged: stockMovements.length });
     } catch (err) {
       console.error("POST /api/stock/import error:", err);
       res.status(500).json({ error: String(err) });

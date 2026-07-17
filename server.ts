@@ -226,9 +226,10 @@ async function startServer() {
 
       // ?clear=true wipes existing products+stocks before import (clean slate)
       const clearFirst = req.query.clear === "true";
-      const products: any[]    = clearFirst ? [] : await getEntity("products");
-      const batchStocks: any[] = clearFirst ? [] : await getEntity("batchStocks");
-      const categories: any[]  = await getEntity("categories");
+      const products: any[]       = clearFirst ? [] : await getEntity("products");
+      const batchStocks: any[]    = clearFirst ? [] : await getEntity("batchStocks");
+      const categories: any[]     = await getEntity("categories");
+      const stockMovements: any[] = clearFirst ? [] : await getEntity("stockMovements");
 
       // Helper: find or create a category by name, returns its id
       const getOrCreateCategoryId = (name: string): string => {
@@ -258,6 +259,7 @@ async function startServer() {
           existing = products.find((p: any) => p.hsnCode && String(p.hsnCode).trim() === hsn);
         }
 
+        const importTs = new Date().toISOString();
         if (existing) {
           existing.unit         = unit || existing.unit;
           existing.sellingPrice = rate || existing.sellingPrice;
@@ -265,12 +267,18 @@ async function startServer() {
           existing.description  = hsn ? `HSN: ${hsn}` : (existing.description || "");
           const bs = batchStocks.find((b: any) => b.productId === existing.id);
           if (bs) { bs.quantity = qty; bs.unit = unit || bs.unit; }
-          else { batchStocks.push({ id: `bs-${existing.id}`, productId: existing.id, batchNumber: "STOCK", quantity: qty, unit, purchasePrice: 0, expiryDate: "", location: "", createdAt: new Date().toISOString() }); }
+          else { batchStocks.push({ id: `bs-${existing.id}`, productId: existing.id, batchNumber: "STOCK", quantity: qty, unit, purchasePrice: 0, expiryDate: "", location: "", createdAt: importTs }); }
+          if (qty > 0) {
+            stockMovements.push({ id: `mv-imp-${existing.id}-${Date.now()}`, productId: existing.id, warehouseId: "wh-default", type: "IN", source: "OPENING", referenceId: "EXCEL-IMPORT", quantity: qty, unitPrice: rate, userId: "system", timestamp: importTs, remarks: `Opening stock import – ${description}` });
+          }
           updated++;
         } else {
           const newId = `p-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
-          products.push({ id: newId, sku: "", name: description, categoryId: catId, brandId: "", unit, sellingPrice: rate, purchasePrice: 0, minStockLevel: 0, maxStockLevel: 0, description: hsn ? `HSN: ${hsn}` : "", createdAt: new Date().toISOString() });
-          batchStocks.push({ id: `bs-${newId}`, productId: newId, batchNumber: "STOCK", quantity: qty, unit, purchasePrice: 0, expiryDate: "", location: "", createdAt: new Date().toISOString() });
+          products.push({ id: newId, sku: "", name: description, categoryId: catId, brandId: "", unit, sellingPrice: rate, purchasePrice: 0, minStockLevel: 0, maxStockLevel: 0, description: hsn ? `HSN: ${hsn}` : "", createdAt: importTs });
+          batchStocks.push({ id: `bs-${newId}`, productId: newId, batchNumber: "STOCK", quantity: qty, unit, purchasePrice: 0, expiryDate: "", location: "", createdAt: importTs });
+          if (qty > 0) {
+            stockMovements.push({ id: `mv-imp-${newId}`, productId: newId, warehouseId: "wh-default", type: "IN", source: "OPENING", referenceId: "EXCEL-IMPORT", quantity: qty, unitPrice: rate, userId: "system", timestamp: importTs, remarks: `Opening stock import – ${description}` });
+          }
           added++;
         }
       }
@@ -278,8 +286,9 @@ async function startServer() {
       await saveEntity("products", products);
       await saveEntity("batchStocks", batchStocks);
       await saveEntity("categories", categories);
+      await saveEntity("stockMovements", stockMovements);
 
-      res.json({ ok: true, updated, added, skipped, total: allRows.length, categories: categories.length });
+      res.json({ ok: true, updated, added, skipped, total: allRows.length, categories: categories.length, movementsLogged: stockMovements.length });
     } catch (err) {
       console.error("POST /api/stock/import error:", err);
       res.status(500).json({ error: String(err) });
