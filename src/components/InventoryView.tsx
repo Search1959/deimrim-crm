@@ -163,11 +163,18 @@ export default function InventoryView({
 
   // Filter products list
   const filteredProducts = products.filter(p => {
-    const matchesSearch = p.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+    const matchesSearch = p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
                           p.sku.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesCategory = selectedCategory ? p.categoryId === selectedCategory : true;
     return matchesSearch && matchesCategory;
   });
+
+  const PAGE_SIZE = 50;
+  const [currentPage, setCurrentPage] = useState(1);
+  const totalPages = Math.max(1, Math.ceil(filteredProducts.length / PAGE_SIZE));
+  const pagedProducts = filteredProducts.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
+  // Reset to page 1 when filter changes
+  React.useEffect(() => { setCurrentPage(1); }, [searchQuery, selectedCategory]);
 
   // Open Add modal with reset values
   const openAddModal = () => {
@@ -581,7 +588,7 @@ DR-IOT-TEMP1,IoT Ambient Temperature Sensor,cat-3,Unit,45,95,20,200,88091100225,
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-800/60 text-slate-300">
-                {filteredProducts.map((p) => {
+                {pagedProducts.map((p) => {
                   const qty = productStockMap[p.id] || 0;
                   const category = categories.find(c => c.id === p.categoryId);
                   const isLow = qty <= p.minStockLevel;
@@ -656,6 +663,50 @@ DR-IOT-TEMP1,IoT Ambient Temperature Sensor,cat-3,Unit,45,95,20,200,88091100225,
               </tbody>
             </table>
           </div>
+          {/* Pagination */}
+          {totalPages > 1 && (
+            <div className="flex items-center justify-between px-5 py-3 border-t border-slate-800 bg-slate-950/60">
+              <span className="text-xs text-slate-500">
+                Showing {(currentPage - 1) * PAGE_SIZE + 1}–{Math.min(currentPage * PAGE_SIZE, filteredProducts.length)} of {filteredProducts.length} products
+              </span>
+              <div className="flex items-center gap-1">
+                <button
+                  onClick={() => setCurrentPage(1)}
+                  disabled={currentPage === 1}
+                  className="px-2 py-1 text-xs rounded border border-slate-700 bg-slate-900 text-slate-400 hover:bg-slate-800 disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer"
+                >«</button>
+                <button
+                  onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                  disabled={currentPage === 1}
+                  className="px-2.5 py-1 text-xs rounded border border-slate-700 bg-slate-900 text-slate-400 hover:bg-slate-800 disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer"
+                >‹</button>
+                {Array.from({ length: Math.min(7, totalPages) }, (_, i) => {
+                  let page: number;
+                  if (totalPages <= 7) { page = i + 1; }
+                  else if (currentPage <= 4) { page = i + 1; }
+                  else if (currentPage >= totalPages - 3) { page = totalPages - 6 + i; }
+                  else { page = currentPage - 3 + i; }
+                  return (
+                    <button
+                      key={page}
+                      onClick={() => setCurrentPage(page)}
+                      className={`px-2.5 py-1 text-xs rounded border cursor-pointer ${currentPage === page ? "border-indigo-500 bg-indigo-600 text-white font-bold" : "border-slate-700 bg-slate-900 text-slate-400 hover:bg-slate-800"}`}
+                    >{page}</button>
+                  );
+                })}
+                <button
+                  onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                  disabled={currentPage === totalPages}
+                  className="px-2.5 py-1 text-xs rounded border border-slate-700 bg-slate-900 text-slate-400 hover:bg-slate-800 disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer"
+                >›</button>
+                <button
+                  onClick={() => setCurrentPage(totalPages)}
+                  disabled={currentPage === totalPages}
+                  className="px-2 py-1 text-xs rounded border border-slate-700 bg-slate-900 text-slate-400 hover:bg-slate-800 disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer"
+                >»</button>
+              </div>
+            </div>
+          )}
         </div>
       )}
 
