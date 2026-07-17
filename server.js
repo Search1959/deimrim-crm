@@ -215,7 +215,7 @@ async function startServer() {
           skipped++;
           continue;
         }
-        if (!hsn && rate === 0 && qty === 0) {
+        if (description.endsWith("#") && !hsn && rate === 0 && qty === 0) {
           skipped++;
           continue;
         }

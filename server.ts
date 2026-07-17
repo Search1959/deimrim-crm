@@ -245,7 +245,8 @@ async function startServer() {
 
       for (const { description, hsn, rate, unit, qty, category } of allRows) {
         if (!description) { skipped++; continue; }
-        if (!hsn && rate === 0 && qty === 0) { skipped++; continue; }
+        // Only skip rows where description looks like a section header (ends with # and no price/qty/hsn)
+        if (description.endsWith("#") && !hsn && rate === 0 && qty === 0) { skipped++; continue; }
 
         const catId = getOrCreateCategoryId(category || "Water Treatment");
 
