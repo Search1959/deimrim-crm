@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   MessageSquare, ShieldAlert, FileText, CreditCard, Award,
   Building2, Users, AlertCircle, ClipboardCheck, Truck, Wrench, Sparkles
@@ -37,6 +37,8 @@ interface SalesCRMViewProps {
   isDemo?: boolean;
   company?: Company;
   setCompany?: React.Dispatch<React.SetStateAction<Company>>;
+  autoOpenInvoiceBuilder?: boolean;
+  onAutoOpenHandled?: () => void;
 }
 
 type ActiveCRMTab = "leads" | "deals" | "quotations" | "invoices" | "do" | "payments" | "targets" | "companies" | "contacts" | "tickets" | "services";
@@ -60,8 +62,16 @@ export default function SalesCRMView({
   isDemo,
   company,
   setCompany,
+  autoOpenInvoiceBuilder,
+  onAutoOpenHandled,
 }: SalesCRMViewProps) {
   const [activeTab, setActiveTab] = useState<ActiveCRMTab>("leads");
+
+  useEffect(() => {
+    if (autoOpenInvoiceBuilder) {
+      setActiveTab("invoices");
+    }
+  }, [autoOpenInvoiceBuilder]);
 
   // Sidebar layout specs
   const salesPipelineItems = [
@@ -107,6 +117,8 @@ export default function SalesCRMView({
             branchId={branchId}
             company={company}
             setCompany={setCompany}
+            autoOpenBuilder={autoOpenInvoiceBuilder}
+            onAutoOpenHandled={onAutoOpenHandled}
           />
         );
       case "do":

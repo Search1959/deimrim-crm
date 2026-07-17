@@ -225,6 +225,9 @@ export default function App() {
   const [showQuickActionMenu, setShowQuickActionMenu] = useState(false);
   const [showQuickAddLeadModal, setShowQuickAddLeadModal] = useState(false);
   const [showQuickCreatePOModal, setShowQuickCreatePOModal] = useState(false);
+  const [quickNewInvoice, setQuickNewInvoice] = useState(false);
+  const [showStockCheck, setShowStockCheck] = useState(false);
+  const [stockCheckQuery, setStockCheckQuery] = useState("");
   const [showQuickRequestLeaveModal, setShowQuickRequestLeaveModal] = useState(false);
 
   // Quick Action Form Fields
@@ -1100,6 +1103,8 @@ export default function App() {
             setCompany={setCompany}
             branchId={currentBranch.id}
             isDemo={!currentUser.id.startsWith("u-client-") && !currentUser.id.startsWith("u-staff-") && currentUser.companyId === "comp-1"}
+            autoOpenInvoiceBuilder={quickNewInvoice}
+            onAutoOpenHandled={() => setQuickNewInvoice(false)}
           />
         );
       case "hr":
@@ -1236,81 +1241,91 @@ export default function App() {
         </main>
       </div>
 
-      {/* Floating Quick Action Menu (one-click access to Add Lead, Create PO, Request Leave) */}
-      {currentUser.role !== UserRole.READ_ONLY && <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-2">
-        {/* Expanded Options */}
-        {showQuickActionMenu && (
-          <div className="flex flex-col items-end gap-2 mb-2 animate-fadeIn">
-            {/* Quick action: Add Lead */}
-            <div className="flex items-center gap-2">
-              <span className="bg-slate-950/90 text-[10px] text-slate-200 border border-slate-800 px-2 py-1 rounded-md font-bold shadow-lg uppercase font-mono">
-                Add Lead
-              </span>
-              <button
-                onClick={() => {
-                  setShowQuickAddLeadModal(true);
-                  setShowQuickActionMenu(false);
-                }}
-                className="h-10 w-10 rounded-full bg-orange-600 hover:bg-orange-500 text-white flex items-center justify-center shadow-lg transition-all transform hover:scale-105 cursor-pointer"
-                title="Add CRM Lead"
-              >
-                <MessageSquare className="h-5 w-5" />
-              </button>
-            </div>
+      {/* Floating Quick Action Menu */}
+      {currentUser.role !== UserRole.READ_ONLY && (
+        <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-2">
+          {showQuickActionMenu && (
+            <div className="flex flex-col items-end gap-2 mb-2 animate-fadeIn">
 
-            {/* Quick action: Create PO */}
-            <div className="flex items-center gap-2">
-              <span className="bg-slate-950/90 text-[10px] text-slate-200 border border-slate-800 px-2 py-1 rounded-md font-bold shadow-lg uppercase font-mono">
-                Create PO
-              </span>
-              <button
-                onClick={() => {
-                  setShowQuickCreatePOModal(true);
-                  setShowQuickActionMenu(false);
-                }}
-                className="h-10 w-10 rounded-full bg-indigo-600 hover:bg-indigo-500 text-white flex items-center justify-center shadow-lg transition-all transform hover:scale-105 cursor-pointer"
-                title="Create Purchase Order"
-              >
-                <Clipboard className="h-5 w-5" />
-              </button>
-            </div>
+              {/* New Invoice */}
+              <div className="flex items-center gap-2">
+                <span className="bg-slate-950/90 text-[10px] text-slate-200 border border-slate-800 px-2 py-1 rounded-md font-bold shadow-lg uppercase font-mono">New Invoice</span>
+                <button
+                  onClick={() => { setActiveView("sales-crm"); setQuickNewInvoice(true); setShowQuickActionMenu(false); }}
+                  className="h-10 w-10 rounded-full bg-emerald-600 hover:bg-emerald-500 text-white flex items-center justify-center shadow-lg transition-all hover:scale-105 cursor-pointer"
+                  title="New Invoice"
+                >
+                  <FileText className="h-5 w-5" />
+                </button>
+              </div>
 
-            {/* Quick action: Request Leave */}
-            <div className="flex items-center gap-2">
-              <span className="bg-slate-950/90 text-[10px] text-slate-200 border border-slate-800 px-2 py-1 rounded-md font-bold shadow-lg uppercase font-mono">
-                Request Leave
-              </span>
-              <button
-                onClick={() => {
-                  setShowQuickRequestLeaveModal(true);
-                  setShowQuickActionMenu(false);
-                }}
-                className="h-10 w-10 rounded-full bg-emerald-600 hover:bg-emerald-500 text-white flex items-center justify-center shadow-lg transition-all transform hover:scale-105 cursor-pointer"
-                title="Request Leave"
-              >
-                <Calendar className="h-5 w-5" />
-              </button>
+              {/* Stock Check */}
+              <div className="flex items-center gap-2">
+                <span className="bg-slate-950/90 text-[10px] text-slate-200 border border-slate-800 px-2 py-1 rounded-md font-bold shadow-lg uppercase font-mono">Stock Check</span>
+                <button
+                  onClick={() => { setShowStockCheck(true); setStockCheckQuery(""); setShowQuickActionMenu(false); }}
+                  className="h-10 w-10 rounded-full bg-indigo-600 hover:bg-indigo-500 text-white flex items-center justify-center shadow-lg transition-all hover:scale-105 cursor-pointer"
+                  title="Quick Stock Check"
+                >
+                  <Clipboard className="h-5 w-5" />
+                </button>
+              </div>
+
+            </div>
+          )}
+          <button
+            onClick={() => setShowQuickActionMenu(!showQuickActionMenu)}
+            className={`h-14 w-14 rounded-full flex items-center justify-center shadow-2xl transition-all transform hover:scale-110 active:scale-95 text-white cursor-pointer ${showQuickActionMenu ? "bg-rose-600 hover:bg-rose-500 rotate-45" : "bg-indigo-600 hover:bg-indigo-500"}`}
+            title="Quick Actions"
+          >
+            {showQuickActionMenu ? <X className="h-6 w-6" /> : <Zap className="h-6 w-6 animate-pulse" />}
+          </button>
+        </div>
+      )}
+
+      {/* Stock Check popup */}
+      {showStockCheck && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4" onClick={() => setShowStockCheck(false)}>
+          <div className="w-full max-w-md bg-slate-950 border border-slate-800 rounded-2xl shadow-2xl overflow-hidden" onClick={e => e.stopPropagation()}>
+            <div className="p-4 border-b border-slate-800 flex items-center justify-between">
+              <h3 className="text-sm font-bold text-white uppercase tracking-wider font-mono">Quick Stock Check</h3>
+              <button onClick={() => setShowStockCheck(false)} className="text-slate-400 hover:text-white cursor-pointer"><X className="h-4 w-4" /></button>
+            </div>
+            <div className="p-4">
+              <input
+                autoFocus
+                value={stockCheckQuery}
+                onChange={e => setStockCheckQuery(e.target.value)}
+                placeholder="Type product name…"
+                className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white placeholder:text-slate-500 outline-none focus:border-indigo-500"
+              />
+              <div className="mt-3 max-h-72 overflow-y-auto space-y-1">
+                {stockCheckQuery.trim() === "" ? (
+                  <p className="text-xs text-slate-500 text-center py-4">Start typing to search products…</p>
+                ) : (() => {
+                  const q = stockCheckQuery.toLowerCase();
+                  const matched = products.filter(p => p.name.toLowerCase().includes(q)).slice(0, 20);
+                  if (matched.length === 0) return <p className="text-xs text-slate-500 text-center py-4">No products found</p>;
+                  return matched.map(p => {
+                    const qty = batchStocks.filter(b => b.productId === p.id).reduce((s, b) => s + b.quantity, 0);
+                    return (
+                      <div key={p.id} className="flex items-center justify-between px-3 py-2 rounded-lg bg-slate-900 border border-slate-800">
+                        <div>
+                          <div className="text-xs font-semibold text-slate-100">{p.name}</div>
+                          <div className="text-[10px] text-slate-500">{p.description || ""}</div>
+                        </div>
+                        <span className={`text-xs font-bold font-mono px-2 py-0.5 rounded-full ${qty === 0 ? "bg-red-900/50 text-red-300" : qty < (p.minStockLevel || 5) ? "bg-amber-900/50 text-amber-300" : "bg-emerald-900/50 text-emerald-300"}`}>
+                          {qty} {p.unit || "nos"}
+                        </span>
+                      </div>
+                    );
+                  });
+                })()}
+              </div>
             </div>
           </div>
-        )}
-
-        {/* Floating Dial Button */}
-        <button
-          onClick={() => setShowQuickActionMenu(!showQuickActionMenu)}
-          className={`h-14 w-14 rounded-full flex items-center justify-center shadow-2xl transition-all transform hover:scale-110 active:scale-95 text-white cursor-pointer ${
-            showQuickActionMenu 
-              ? "bg-rose-600 hover:bg-rose-500 rotate-45" 
-              : "bg-indigo-600 hover:bg-indigo-500"
-          }`}
-          title="Quick Action Menu"
-        >
-          {showQuickActionMenu ? (
-            <X className="h-6 w-6" />
-          ) : (
-            <Zap className="h-6 w-6 animate-pulse" />
-          )}
-        </button>
-      </div>}
+        </div>
+      )}
 
       {/* MODAL: QUICK ADD LEAD */}
       {showQuickAddLeadModal && (

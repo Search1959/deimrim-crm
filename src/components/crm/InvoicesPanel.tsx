@@ -23,6 +23,8 @@ interface InvoicesPanelProps {
   setCompany?: React.Dispatch<React.SetStateAction<Company>>;
   userRole?: UserRole;
   branchId?: string;
+  autoOpenBuilder?: boolean;
+  onAutoOpenHandled?: () => void;
 }
 
 type LineItemType = "product" | "service";
@@ -49,10 +51,15 @@ const BLANK_ITEM = (type: LineItemType = "product"): LineItem => ({
 export default function InvoicesPanel({
   invoices, setInvoices, customers, products, batchStocks = [],
   serviceCatalog = [], onGenerateInvoice, companyId, company, setCompany,
-  userRole, branchId = "br-hq",
+  userRole, branchId = "br-hq", autoOpenBuilder, onAutoOpenHandled,
 }: InvoicesPanelProps) {
   const canWrite = !userRole || (userRole !== UserRole.READ_ONLY && userRole !== UserRole.EMPLOYEE);
   const [searchQuery, setSearchQuery] = useState("");
+
+  // Auto-open invoice builder when triggered from FAB
+  React.useEffect(() => {
+    if (autoOpenBuilder) { setShowGSTBuilder(true); onAutoOpenHandled?.(); }
+  }, [autoOpenBuilder]);
   const [showGSTBuilder, setShowGSTBuilder] = useState(false);
   const [showAddModal, setShowAddModal] = useState(false);
   const [viewingInvoice, setViewingInvoice] = useState<Invoice | null>(null);
