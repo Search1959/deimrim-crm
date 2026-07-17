@@ -485,8 +485,7 @@ export default function GSTInvoiceBuilder({
                 <thead>
                   <tr className="bg-slate-800/60 text-slate-400 text-[10px] uppercase tracking-wider">
                     <th className="px-2 py-2 text-left w-6">#</th>
-                    <th className="px-2 py-2 text-left w-28">Type</th>
-                    <th className="px-2 py-2 text-left min-w-[160px]">Description</th>
+                    <th className="px-2 py-2 text-left min-w-[260px]">Description</th>
                     <th className="px-2 py-2 text-left w-24">HSN/SAC</th>
                     <th className="px-2 py-2 text-right w-16">Qty</th>
                     <th className="px-2 py-2 text-left w-16">Unit</th>
@@ -507,18 +506,7 @@ export default function GSTInvoiceBuilder({
                       <tr key={item.id} className="border-t border-slate-700/30 hover:bg-slate-800/20">
                         <td className="px-2 py-1.5 text-slate-500">{idx + 1}</td>
                         <td className="px-2 py-1.5">
-                          <select
-                            value={item.itemType}
-                            onChange={e => updateItem(item.id, { itemType: e.target.value as "product" | "service", productId: "", description: "", hsnSac: "" })}
-                            className="bg-slate-800 border border-slate-700 rounded px-1.5 py-1 text-[10px] text-white w-full"
-                          >
-                            <option value="product">Product</option>
-                            <option value="service">Service</option>
-                          </select>
-                        </td>
-                        <td className="px-2 py-1.5">
-                          {item.itemType === "product" ? (
-                            <div className="space-y-1">
+                          <div className="space-y-1">
                               <ProductCombobox
                                 products={products}
                                 batchStocks={batchStocks}
@@ -539,9 +527,11 @@ export default function GSTInvoiceBuilder({
                                 className="bg-slate-800 border border-slate-700 rounded px-1.5 py-1 text-[10px] text-white w-full"
                                 placeholder="Description"
                               />
-                            </div>
-                          ) : (
-                            <div className="space-y-1">
+                          </div>
+                        </td>
+                        {false && (
+                        <td className="px-2 py-1.5">
+                          <div className="space-y-1">
                               <select
                                 value={item.productId}
                                 onChange={e => handleServicePick(item.id, e.target.value)}
@@ -557,8 +547,8 @@ export default function GSTInvoiceBuilder({
                                 placeholder="Service description"
                               />
                             </div>
-                          )}
                         </td>
+                        )}
                         <td className="px-2 py-1.5">
                           <input value={item.hsnSac} onChange={e => updateItem(item.id, { hsnSac: e.target.value })} className="bg-slate-800 border border-slate-700 rounded px-1.5 py-1 text-[10px] text-white w-full font-mono" placeholder="HSN/SAC" />
                         </td>
