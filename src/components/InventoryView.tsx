@@ -74,6 +74,7 @@ export default function InventoryView({
 
   // Excel stock import state
   const [xlsxImporting, setXlsxImporting] = useState(false);
+  const [xlsxReplaceAll, setXlsxReplaceAll] = useState(false);
   const [xlsxResult, setXlsxResult] = useState<{ updated: number; added: number; skipped: number } | null>(null);
 
   const handleXlsxImport = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -85,7 +86,8 @@ export default function InventoryView({
     try {
       const fd = new FormData();
       fd.append("file", file);
-      const res = await fetch(`/api/stock/import/${companyId}`, { method: "POST", body: fd });
+      const url = `/api/stock/import/${companyId}${xlsxReplaceAll ? "?clear=true" : ""}`;
+      const res = await fetch(url, { method: "POST", body: fd });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Import failed");
       setXlsxResult({ updated: data.updated, added: data.added, skipped: data.skipped });
@@ -526,14 +528,20 @@ DR-IOT-TEMP1,IoT Ambient Temperature Sensor,cat-3,Unit,45,95,20,200,88091100225,
               )}
 
               {canWrite && (
-              <label
-                className={`flex items-center gap-1 rounded-lg border px-3 py-2 text-xs font-bold transition-colors cursor-pointer ${xlsxImporting ? "border-indigo-700 bg-indigo-950 text-indigo-300" : "border-indigo-800 bg-indigo-950/60 hover:bg-indigo-900/60 text-indigo-300"}`}
-                title="Import stock from Excel (.xlsx) — smart upsert"
-              >
-                <input type="file" accept=".xlsx,.xls" className="hidden" onChange={handleXlsxImport} disabled={xlsxImporting} />
-                <Upload className="h-3.5 w-3.5" />
-                <span>{xlsxImporting ? "Importing…" : "Import Excel"}</span>
-              </label>
+              <div className="flex items-center gap-1.5">
+                <label
+                  className={`flex items-center gap-1 rounded-lg border px-3 py-2 text-xs font-bold transition-colors cursor-pointer ${xlsxImporting ? "border-indigo-700 bg-indigo-950 text-indigo-300" : "border-indigo-800 bg-indigo-950/60 hover:bg-indigo-900/60 text-indigo-300"}`}
+                  title="Import stock from Excel (.xlsx)"
+                >
+                  <input type="file" accept=".xlsx,.xls" className="hidden" onChange={handleXlsxImport} disabled={xlsxImporting} />
+                  <Upload className="h-3.5 w-3.5" />
+                  <span>{xlsxImporting ? "Importing…" : "Import Excel"}</span>
+                </label>
+                <label className="flex items-center gap-1 text-[10px] text-slate-400 cursor-pointer select-none" title="Replace All: clears existing products and stock before importing">
+                  <input type="checkbox" checked={xlsxReplaceAll} onChange={e => setXlsxReplaceAll(e.target.checked)} className="accent-red-500 w-3 h-3" />
+                  <span className={xlsxReplaceAll ? "text-red-400 font-bold" : ""}>Replace All</span>
+                </label>
+              </div>
               )}
               {xlsxResult && (
                 <span className="text-[10px] text-emerald-400 font-mono self-center">

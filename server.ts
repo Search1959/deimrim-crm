@@ -222,8 +222,10 @@ async function startServer() {
         );
       };
 
-      const products: any[] = await getEntity("products");
-      const batchStocks: any[] = await getEntity("batchStocks");
+      // ?clear=true wipes existing products+stocks before import (clean slate)
+      const clearFirst = req.query.clear === "true";
+      const products: any[] = clearFirst ? [] : await getEntity("products");
+      const batchStocks: any[] = clearFirst ? [] : await getEntity("batchStocks");
 
       let updated = 0, added = 0, skipped = 0;
 
