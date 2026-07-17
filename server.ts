@@ -147,12 +147,63 @@ async function startServer() {
     if (!req.file) return res.status(400).json({ error: "No file uploaded" });
 
     try {
-      // Parse workbook — merge all sheets
+      // Parse workbook — detect header row per sheet, normalise to standard fields
       const wb = XLSX.read(req.file.buffer, { type: "buffer" });
-      const allRows: any[] = [];
+
+      // Known header keywords (case-insensitive substrings)
+      const isDescCol  = (s: string) => /desc|name|product|item/i.test(s);
+      const isHsnCol   = (s: string) => /hsn/i.test(s);
+      const isRateCol  = (s: string) => /rate|price/i.test(s);
+      const isUnitCol  = (s: string) => /unit/i.test(s);
+      const isQtyCol   = (s: string) => /clos|stock|qty|quant/i.test(s);
+
+      interface NormRow { description: string; hsn: string; rate: number; unit: string; qty: number; }
+
+      const allRows: NormRow[] = [];
+
       for (const sheetName of wb.SheetNames) {
-        const rows = XLSX.utils.sheet_to_json(wb.Sheets[sheetName], { defval: "" }) as any[];
-        allRows.push(...rows);
+        const raw = XLSX.utils.sheet_to_json(wb.Sheets[sheetName], { header: 1, defval: "" }) as any[][];
+        if (raw.length < 2) continue;
+
+        // Find the header row: first row containing a description-like and qty-like keyword
+        let headerIdx = -1;
+        for (let i = 0; i < Math.min(raw.length, 10); i++) {
+          const cells = raw[i].map((c: any) => String(c));
+          if (cells.some(isDescCol) && cells.some(isQtyCol)) { headerIdx = i; break; }
+        }
+        // Fallback: if any row has HSN + qty cols
+        if (headerIdx === -1) {
+          for (let i = 0; i < Math.min(raw.length, 10); i++) {
+            const cells = raw[i].map((c: any) => String(c));
+            if (cells.some(isHsnCol) && cells.some(isQtyCol)) { headerIdx = i; break; }
+          }
+        }
+        // Last fallback: use row 0 as header and look for __EMPTY + CLOSING STOCK pattern
+        if (headerIdx === -1) {
+          const cols = raw[0].map((c: any) => String(c));
+          if (cols.some(isQtyCol)) headerIdx = 0;
+        }
+        if (headerIdx === -1) continue;
+
+        const headers = raw[headerIdx].map((c: any) => String(c).trim());
+        const descIdx  = headers.findIndex(isDescCol);
+        const hsnIdx   = headers.findIndex(isHsnCol);
+        const rateIdx  = headers.findIndex(isRateCol);
+        const unitIdx  = headers.findIndex(isUnitCol);
+        const qtyIdx   = headers.findIndex(isQtyCol);
+
+        // Also handle ISW's __EMPTY pattern: description may be in col index 1 if no desc header found
+        const fallbackDescIdx = descIdx === -1 ? 1 : descIdx;
+
+        for (let r = headerIdx + 1; r < raw.length; r++) {
+          const row = raw[r];
+          const desc = String(row[fallbackDescIdx] ?? "").trim();
+          const hsn  = hsnIdx  >= 0 ? String(row[hsnIdx]  ?? "").trim() : "";
+          const rate = rateIdx >= 0 ? parseFloat(String(row[rateIdx] ?? 0)) || 0 : 0;
+          const unit = unitIdx >= 0 ? String(row[unitIdx]  ?? "Nos").trim() || "Nos" : "Nos";
+          const qty  = qtyIdx  >= 0 ? parseFloat(String(row[qtyIdx]  ?? 0)) || 0 : 0;
+          if (desc) allRows.push({ description: desc, hsn, rate, unit, qty });
+        }
       }
 
       // Load existing products + batchStocks from tenant_data
@@ -176,15 +227,10 @@ async function startServer() {
 
       let updated = 0, added = 0, skipped = 0;
 
-      for (const row of allRows) {
-        // Normalise column names from ISW Excel (Description, HSN Code, Rate, Unit, Closing Stock)
-        const description = String(row["Description"] || row["DESCRIPTION"] || row["description"] || row["name"] || row["Name"] || "").trim();
-        const hsn = String(row["HSN Code"] || row["HSN CODE"] || row["HSN"] || row["hsn"] || "").trim();
-        const rate = parseFloat(row["Rate"] || row["RATE"] || row["rate"] || row["price"] || 0) || 0;
-        const unit = String(row["Unit"] || row["UNIT"] || row["unit"] || "Nos").trim() || "Nos";
-        const qty = parseFloat(row["Closing Stock"] || row["CLOSING STOCK"] || row["qty"] || row["Qty"] || row["QTY"] || 0) || 0;
-
+      for (const { description, hsn, rate, unit, qty } of allRows) {
+        // Skip rows that look like category/section headers (no HSN, no rate, no qty)
         if (!description) { skipped++; continue; }
+        if (!hsn && rate === 0 && qty === 0) { skipped++; continue; }
 
         // Match: HSN first, then name
         let existing = hsn
@@ -197,18 +243,13 @@ async function startServer() {
         }
 
         if (existing) {
-          // Update batchStock qty
           const bs = batchStocks.find((b: any) => b.productId === existing.id);
-          if (bs) {
-            bs.quantity = qty;
-          } else {
-            batchStocks.push({ id: `bs-${existing.id}`, productId: existing.id, batchNumber: "STOCK", quantity: qty, unit, purchasePrice: 0, expiryDate: "", location: "", createdAt: new Date().toISOString() });
-          }
+          if (bs) { bs.quantity = qty; }
+          else { batchStocks.push({ id: `bs-${existing.id}`, productId: existing.id, batchNumber: "STOCK", quantity: qty, unit, purchasePrice: 0, expiryDate: "", location: "", createdAt: new Date().toISOString() }); }
           updated++;
         } else {
-          // Create new product + batchStock
           const newId = `p-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
-          products.push({ id: newId, name: description, hsnCode: hsn, unit, sellingPrice: rate, purchasePrice: 0, category: "Imported", minStockLevel: 0, createdAt: new Date().toISOString() });
+          products.push({ id: newId, name: description, hsnCode: hsn, unit, sellingPrice: rate, purchasePrice: 0, category: "Water Treatment", minStockLevel: 0, createdAt: new Date().toISOString() });
           batchStocks.push({ id: `bs-${newId}`, productId: newId, batchNumber: "STOCK", quantity: qty, unit, purchasePrice: 0, expiryDate: "", location: "", createdAt: new Date().toISOString() });
           added++;
         }
