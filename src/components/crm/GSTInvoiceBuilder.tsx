@@ -1,5 +1,5 @@
-import React, { useState, useCallback } from "react";
-import { X, Plus, Trash2, Printer, Save, ChevronDown } from "lucide-react";
+import React, { useState, useCallback, useRef, useEffect } from "react";
+import { X, Plus, Trash2, Printer, Save, ChevronDown, Search } from "lucide-react";
 import { Company, Customer, Invoice, Product, BatchStock, ServiceCatalogItem } from "../../types";
 import { toast } from "../../utils/toast";
 
@@ -85,6 +85,83 @@ function blankLine(id: string): LineItem {
     id, itemType: "product", productId: "", description: "", hsnSac: "",
     qty: 1, unit: "Nos", rate: 0, discPct: 0, gstPct: 18,
   };
+}
+
+// ---- searchable product combobox ----
+
+interface ProductComboboxProps {
+  products: Product[];
+  batchStocks: BatchStock[];
+  value: string;
+  onChange: (productId: string) => void;
+  getAvailableQty: (id: string) => number;
+}
+
+function ProductCombobox({ products, value, onChange, getAvailableQty }: ProductComboboxProps) {
+  const selected = products.find(p => p.id === value);
+  const [query, setQuery] = useState("");
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+
+  // Close on outside click
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, []);
+
+  const filtered = query.trim()
+    ? products.filter(p => p.name.toLowerCase().includes(query.toLowerCase()))
+    : products;
+
+  const pick = (p: Product) => {
+    onChange(p.id);
+    setQuery("");
+    setOpen(false);
+  };
+
+  return (
+    <div ref={ref} className="relative">
+      <div className="flex items-center bg-slate-800 border border-slate-700 rounded px-1.5 py-1 gap-1">
+        <Search className="h-3 w-3 text-slate-500 shrink-0" />
+        <input
+          value={open ? query : (selected ? selected.name : "")}
+          onChange={e => { setQuery(e.target.value); setOpen(true); }}
+          onFocus={() => { setQuery(""); setOpen(true); }}
+          placeholder="Search product…"
+          className="bg-transparent text-[10px] text-white w-full outline-none placeholder:text-slate-500"
+        />
+        {selected && !open && (
+          <span className="text-[9px] text-slate-400 shrink-0 font-mono">
+            {getAvailableQty(selected.id)} {selected.unit || "nos"}
+          </span>
+        )}
+      </div>
+      {open && (
+        <div className="absolute z-50 top-full left-0 right-0 mt-0.5 bg-slate-900 border border-slate-700 rounded shadow-xl max-h-52 overflow-y-auto">
+          {filtered.length === 0 ? (
+            <div className="px-3 py-2 text-[10px] text-slate-500">No products found</div>
+          ) : filtered.map(p => {
+            const qty = getAvailableQty(p.id);
+            return (
+              <div
+                key={p.id}
+                onMouseDown={() => pick(p)}
+                className={`flex items-center justify-between px-3 py-1.5 cursor-pointer text-[10px] hover:bg-slate-700 ${p.id === value ? "bg-indigo-900/40 text-indigo-200" : "text-slate-200"}`}
+              >
+                <span className="truncate pr-2">{p.name}</span>
+                <span className={`shrink-0 font-mono text-[9px] ${qty === 0 ? "text-red-400" : "text-emerald-400"}`}>
+                  {qty} {p.unit || "nos"}
+                </span>
+              </div>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
 }
 
 // ---- props ----
@@ -442,17 +519,13 @@ export default function GSTInvoiceBuilder({
                         <td className="px-2 py-1.5">
                           {item.itemType === "product" ? (
                             <div className="space-y-1">
-                              <select
+                              <ProductCombobox
+                                products={products}
+                                batchStocks={batchStocks}
                                 value={item.productId}
-                                onChange={e => handleProductPick(item.id, e.target.value)}
-                                className="bg-slate-800 border border-slate-700 rounded px-1.5 py-1 text-[10px] text-white w-full"
-                              >
-                                <option value="">— Select product —</option>
-                                {products.map(p => {
-                                  const qty = getAvailableQty(p.id);
-                                  return <option key={p.id} value={p.id}>{p.name} ({qty} {p.unit || "nos"})</option>;
-                                })}
-                              </select>
+                                onChange={pid => handleProductPick(item.id, pid)}
+                                getAvailableQty={getAvailableQty}
+                              />
                               {stockWarnings[item.id] && (
                                 <div className={`text-[9px] font-semibold px-1.5 py-0.5 rounded mt-0.5 ${stockWarnings[item.id].type === "out" ? "bg-red-900/60 text-red-300" : "bg-amber-900/60 text-amber-300"}`}>
                                   {stockWarnings[item.id].type === "out"
