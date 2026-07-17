@@ -126,9 +126,13 @@ export default function InventoryView({
   const [formSellingPrice, setFormSellingPrice] = useState("0");
   const [formMinStock, setFormMinStock] = useState("10");
   const [formMaxStock, setFormMaxStock] = useState("100");
-  const [formBarcode, setFormBarcode] = useState("");
-  const [formQrCode, setFormQrCode] = useState("");
+  const [formHsn, setFormHsn] = useState("");
   const [formDescription, setFormDescription] = useState("");
+
+  // Extract HSN stored as "HSN: XXXXXX" in description
+  const extractHsn = (desc: string) => ((desc || "").match(/HSN[:\s]+(\w+)/i) || [])[1] || "";
+  const extractNotes = (desc: string) => (desc || "").replace(/HSN[:\s]+\w+\s*[|]?\s*/i, "").trim();
+  const combineDesc = (hsn: string, notes: string) => hsn && notes ? `HSN: ${hsn} | ${notes}` : hsn ? `HSN: ${hsn}` : notes;
 
   // Category and Brand Form States
   const [newCatName, setNewCatName] = useState("");
@@ -187,8 +191,7 @@ export default function InventoryView({
     setFormSellingPrice("299");
     setFormMinStock("5");
     setFormMaxStock("100");
-    setFormBarcode(String(Math.floor(880000000000 + Math.random() * 9999999999)));
-    setFormQrCode(`QR-${Math.floor(1000 + Math.random() * 9000)}`);
+    setFormHsn("");
     setFormDescription("");
     setShowAddModal(true);
   };
@@ -206,9 +209,8 @@ export default function InventoryView({
     setFormSellingPrice(String(p.sellingPrice));
     setFormMinStock(String(p.minStockLevel));
     setFormMaxStock(String(p.maxStockLevel));
-    setFormBarcode(p.barcode || "");
-    setFormQrCode(p.qrCode || "");
-    setFormDescription(p.description || "");
+    setFormHsn(extractHsn(p.description || ""));
+    setFormDescription(extractNotes(p.description || ""));
     setShowEditModal(true);
   };
 
@@ -228,9 +230,7 @@ export default function InventoryView({
       sellingPrice: parseFloat(formSellingPrice) || 0,
       minStockLevel: parseInt(formMinStock) || 0,
       maxStockLevel: parseInt(formMaxStock) || 0,
-      barcode: formBarcode,
-      qrCode: formQrCode,
-      description: formDescription,
+      description: combineDesc(formHsn, formDescription),
     };
 
     setProducts(prev => [newProductObj, ...prev]);
@@ -271,9 +271,7 @@ export default function InventoryView({
           sellingPrice: parseFloat(formSellingPrice) || 0,
           minStockLevel: parseInt(formMinStock) || 0,
           maxStockLevel: parseInt(formMaxStock) || 0,
-          barcode: formBarcode,
-          qrCode: formQrCode,
-          description: formDescription,
+          description: combineDesc(formHsn, formDescription),
         };
       }
       return p;
@@ -720,25 +718,69 @@ DR-IOT-TEMP1,IoT Ambient Temperature Sensor,cat-3,Unit,45,95,20,200,88091100225,
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {/* Specs & Barcode Generator representation */}
-            <div className="border border-slate-800 rounded-xl p-5 space-y-4 bg-slate-950/40">
-              <span className="text-xs font-bold text-slate-400 uppercase tracking-wider block font-mono">Physical Code Markers</span>
-              
-              <div className="flex flex-col items-center bg-slate-900 border border-slate-800 rounded-xl p-4 shadow-sm text-center">
-                <Barcode className="h-12 w-32 text-slate-200" />
-                <span className="text-xs font-mono font-bold text-slate-100 tracking-wider mt-2">
-                  {selectedProductDetail.barcode || "880912345001"}
-                </span>
-                <span className="text-[9px] text-slate-500 uppercase tracking-widest mt-1">Universal UPC Barcode</span>
+            {/* Product Info Panel */}
+            <div className="border border-slate-800 rounded-xl p-5 space-y-3 bg-slate-950/40">
+              <span className="text-xs font-bold text-slate-400 uppercase tracking-wider block font-mono">Product Details</span>
+
+              {/* HSN */}
+              <div className="bg-slate-900 border border-slate-800 rounded-lg p-3">
+                <div className="text-[10px] text-slate-500 uppercase font-mono mb-0.5">HSN Code</div>
+                <div className="text-sm font-bold text-indigo-300 font-mono">
+                  {extractHsn(selectedProductDetail.description || "") || "—"}
+                </div>
               </div>
 
-              <div className="flex flex-col items-center bg-slate-900 border border-slate-800 rounded-xl p-4 shadow-sm text-center">
-                <QrCode className="h-16 w-16 text-slate-200" />
-                <span className="text-[10px] font-mono text-indigo-400 tracking-wider mt-2">
-                  {selectedProductDetail.qrCode || "DR-SKU-QR"}
-                </span>
-                <span className="text-[9px] text-slate-500 uppercase tracking-widest mt-1">Mobile Warehouse QR Scan</span>
+              {/* Category */}
+              <div className="bg-slate-900 border border-slate-800 rounded-lg p-3">
+                <div className="text-[10px] text-slate-500 uppercase font-mono mb-0.5">Category</div>
+                <div className="text-sm font-semibold text-slate-100">
+                  {categories.find(c => c.id === selectedProductDetail.categoryId)?.name || "—"}
+                </div>
               </div>
+
+              {/* Prices */}
+              <div className="bg-slate-900 border border-slate-800 rounded-lg p-3 grid grid-cols-2 gap-2">
+                <div>
+                  <div className="text-[10px] text-slate-500 uppercase font-mono mb-0.5">Purchase Cost</div>
+                  <div className="text-sm font-bold text-emerald-400 font-mono">{formatINR(selectedProductDetail.purchasePrice)}</div>
+                </div>
+                <div>
+                  <div className="text-[10px] text-slate-500 uppercase font-mono mb-0.5">Selling Price</div>
+                  <div className="text-sm font-bold text-amber-400 font-mono">{formatINR(selectedProductDetail.sellingPrice)}</div>
+                </div>
+              </div>
+
+              {/* Stock thresholds */}
+              <div className="bg-slate-900 border border-slate-800 rounded-lg p-3 grid grid-cols-2 gap-2">
+                <div>
+                  <div className="text-[10px] text-slate-500 uppercase font-mono mb-0.5">Min Stock</div>
+                  <div className="text-sm font-bold text-red-400 font-mono">{selectedProductDetail.minStockLevel}</div>
+                </div>
+                <div>
+                  <div className="text-[10px] text-slate-500 uppercase font-mono mb-0.5">Max Stock</div>
+                  <div className="text-sm font-bold text-slate-200 font-mono">{selectedProductDetail.maxStockLevel}</div>
+                </div>
+              </div>
+
+              {/* Unit + SKU */}
+              <div className="bg-slate-900 border border-slate-800 rounded-lg p-3 grid grid-cols-2 gap-2">
+                <div>
+                  <div className="text-[10px] text-slate-500 uppercase font-mono mb-0.5">Unit</div>
+                  <div className="text-sm font-semibold text-slate-200">{selectedProductDetail.unit || "—"}</div>
+                </div>
+                <div>
+                  <div className="text-[10px] text-slate-500 uppercase font-mono mb-0.5">SKU</div>
+                  <div className="text-xs font-mono text-slate-400">{selectedProductDetail.sku || "—"}</div>
+                </div>
+              </div>
+
+              {/* Notes */}
+              {extractNotes(selectedProductDetail.description || "") && (
+                <div className="bg-slate-900 border border-slate-800 rounded-lg p-3">
+                  <div className="text-[10px] text-slate-500 uppercase font-mono mb-0.5">Notes</div>
+                  <div className="text-xs text-slate-300">{extractNotes(selectedProductDetail.description || "")}</div>
+                </div>
+              )}
             </div>
 
             {/* Dynamic Batches listing for this product */}
@@ -1270,36 +1312,25 @@ DR-IOT-TEMP1,IoT Ambient Temperature Sensor,cat-3,Unit,45,95,20,200,88091100225,
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1 font-mono">Barcode (UPC)</label>
+                  <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1 font-mono">HSN Code</label>
                   <input
                     type="text"
-                    value={formBarcode}
-                    onChange={(e) => setFormBarcode(e.target.value)}
-                    placeholder="Auto-generated if left empty"
+                    value={formHsn}
+                    onChange={(e) => setFormHsn(e.target.value)}
+                    placeholder="e.g. 84137010"
                     className="w-full rounded-lg border border-slate-800 bg-slate-900 p-2.5 text-sm text-white focus:outline-hidden font-mono"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1 font-mono">QR Code Marker</label>
+                  <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1 font-mono">Notes / Remarks</label>
                   <input
                     type="text"
-                    value={formQrCode}
-                    onChange={(e) => setFormQrCode(e.target.value)}
-                    placeholder="e.g. QR-DR-01"
-                    className="w-full rounded-lg border border-slate-800 bg-slate-900 p-2.5 text-sm text-white focus:outline-hidden font-mono"
+                    value={formDescription}
+                    onChange={(e) => setFormDescription(e.target.value)}
+                    placeholder="Optional notes..."
+                    className="w-full rounded-lg border border-slate-800 bg-slate-900 p-2.5 text-sm text-white focus:outline-hidden"
                   />
                 </div>
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1 font-mono">Description / Notes</label>
-                <textarea
-                  rows={3}
-                  value={formDescription}
-                  onChange={(e) => setFormDescription(e.target.value)}
-                  placeholder="Specifications, details, or tracking instructions..."
-                  className="w-full rounded-lg border border-slate-800 bg-slate-900 p-2.5 text-sm text-white focus:outline-hidden"
-                />
               </div>
 
               <div className="flex justify-end gap-3 pt-3 border-t border-slate-800">
@@ -1468,33 +1499,25 @@ DR-IOT-TEMP1,IoT Ambient Temperature Sensor,cat-3,Unit,45,95,20,200,88091100225,
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1 font-mono">Barcode (UPC)</label>
+                  <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1 font-mono">HSN Code</label>
                   <input
                     type="text"
-                    value={formBarcode}
-                    onChange={(e) => setFormBarcode(e.target.value)}
+                    value={formHsn}
+                    onChange={(e) => setFormHsn(e.target.value)}
+                    placeholder="e.g. 84137010"
                     className="w-full rounded-lg border border-slate-800 bg-slate-900 p-2.5 text-sm text-white focus:outline-hidden font-mono"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1 font-mono">QR Code Marker</label>
+                  <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1 font-mono">Notes / Remarks</label>
                   <input
                     type="text"
-                    value={formQrCode}
-                    onChange={(e) => setFormQrCode(e.target.value)}
-                    className="w-full rounded-lg border border-slate-800 bg-slate-900 p-2.5 text-sm text-white focus:outline-hidden font-mono"
+                    value={formDescription}
+                    onChange={(e) => setFormDescription(e.target.value)}
+                    placeholder="Optional notes..."
+                    className="w-full rounded-lg border border-slate-800 bg-slate-900 p-2.5 text-sm text-white focus:outline-hidden"
                   />
                 </div>
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1 font-mono">Description / Notes</label>
-                <textarea
-                  rows={3}
-                  value={formDescription}
-                  onChange={(e) => setFormDescription(e.target.value)}
-                  className="w-full rounded-lg border border-slate-800 bg-slate-900 p-2.5 text-sm text-white focus:outline-hidden"
-                />
               </div>
 
               <div className="flex justify-end gap-3 pt-3 border-t border-slate-800">
