@@ -92,13 +92,15 @@ export default function InventoryView({
       if (!res.ok) throw new Error(data.error || "Import failed");
       setXlsxResult({ updated: data.updated, added: data.added, skipped: data.skipped });
       toast.success(`Stock imported: ${data.updated} updated · ${data.added} added`);
-      // Reload products + batchStocks from server
-      const [pRes, bRes] = await Promise.all([
+      // Reload products, batchStocks and categories from server
+      const [pRes, bRes, cRes] = await Promise.all([
         fetch(`/api/data/${companyId}/products`),
         fetch(`/api/data/${companyId}/batchStocks`),
+        fetch(`/api/data/${companyId}/categories`),
       ]);
       if (pRes.ok) { const d = await pRes.json(); if (Array.isArray(d)) setProducts(d); }
       if (bRes.ok) { const d = await bRes.json(); if (Array.isArray(d)) setBatchStocks(d); }
+      if (cRes.ok) { const d = await cRes.json(); if (Array.isArray(d)) setCategories(d); }
     } catch (err: any) {
       toast.error(err.message || "Import failed");
     } finally {

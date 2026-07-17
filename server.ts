@@ -226,8 +226,20 @@ async function startServer() {
 
       // ?clear=true wipes existing products+stocks before import (clean slate)
       const clearFirst = req.query.clear === "true";
-      const products: any[] = clearFirst ? [] : await getEntity("products");
+      const products: any[]    = clearFirst ? [] : await getEntity("products");
       const batchStocks: any[] = clearFirst ? [] : await getEntity("batchStocks");
+      const categories: any[]  = await getEntity("categories");
+
+      // Helper: find or create a category by name, returns its id
+      const getOrCreateCategoryId = (name: string): string => {
+        if (!name) return "";
+        const existing = categories.find((c: any) => c.name.trim().toLowerCase() === name.trim().toLowerCase());
+        if (existing) return existing.id;
+        const newId   = `cat-imp-${Date.now()}-${Math.random().toString(36).slice(2, 5)}`;
+        const newCode = name.replace(/[^A-Z0-9]/gi, "").toUpperCase().slice(0, 6) || "IMP";
+        categories.push({ id: newId, name: name.trim(), code: newCode, description: "Imported" });
+        return newId;
+      };
 
       let updated = 0, added = 0, skipped = 0;
 
@@ -235,33 +247,28 @@ async function startServer() {
         if (!description) { skipped++; continue; }
         if (!hsn && rate === 0 && qty === 0) { skipped++; continue; }
 
-        const cat = category || "Water Treatment";
+        const catId = getOrCreateCategoryId(category || "Water Treatment");
 
-        // Match: HSN first (exact), then product name (case-insensitive)
-        let existing = hsn
-          ? products.find((p: any) => p.hsnCode && String(p.hsnCode).trim() === hsn &&
-              p.name && p.name.trim().toLowerCase() === description.toLowerCase())
-          : null;
-        if (!existing) {
-          existing = products.find((p: any) =>
-            p.name && p.name.trim().toLowerCase() === description.toLowerCase()
-          );
+        // Match: name first (most reliable for ISW data), then HSN
+        let existing = products.find((p: any) =>
+          p.name && p.name.trim().toLowerCase() === description.toLowerCase()
+        );
+        if (!existing && hsn) {
+          existing = products.find((p: any) => p.hsnCode && String(p.hsnCode).trim() === hsn);
         }
 
         if (existing) {
-          // Update unit, rate, category and hsnCode on the product too
-          existing.unit        = unit || existing.unit;
+          existing.unit         = unit || existing.unit;
           existing.sellingPrice = rate || existing.sellingPrice;
-          existing.category    = cat  || existing.category;
+          existing.category     = catId || existing.category;
           if (hsn) existing.hsnCode = hsn;
-          // Update or add batchStock
           const bs = batchStocks.find((b: any) => b.productId === existing.id);
           if (bs) { bs.quantity = qty; bs.unit = unit || bs.unit; }
           else { batchStocks.push({ id: `bs-${existing.id}`, productId: existing.id, batchNumber: "STOCK", quantity: qty, unit, purchasePrice: 0, expiryDate: "", location: "", createdAt: new Date().toISOString() }); }
           updated++;
         } else {
           const newId = `p-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
-          products.push({ id: newId, name: description, hsnCode: hsn, unit, sellingPrice: rate, purchasePrice: 0, category: cat, minStockLevel: 0, createdAt: new Date().toISOString() });
+          products.push({ id: newId, name: description, hsnCode: hsn, unit, sellingPrice: rate, purchasePrice: 0, category: catId, minStockLevel: 0, createdAt: new Date().toISOString() });
           batchStocks.push({ id: `bs-${newId}`, productId: newId, batchNumber: "STOCK", quantity: qty, unit, purchasePrice: 0, expiryDate: "", location: "", createdAt: new Date().toISOString() });
           added++;
         }
@@ -269,8 +276,9 @@ async function startServer() {
 
       await saveEntity("products", products);
       await saveEntity("batchStocks", batchStocks);
+      await saveEntity("categories", categories);
 
-      res.json({ ok: true, updated, added, skipped, total: allRows.length });
+      res.json({ ok: true, updated, added, skipped, total: allRows.length, categories: categories.length });
     } catch (err) {
       console.error("POST /api/stock/import error:", err);
       res.status(500).json({ error: String(err) });

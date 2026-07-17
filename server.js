@@ -1,39 +1,16 @@
-var __create = Object.create;
-var __defProp = Object.defineProperty;
-var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
-var __getOwnPropNames = Object.getOwnPropertyNames;
-var __getProtoOf = Object.getPrototypeOf;
-var __hasOwnProp = Object.prototype.hasOwnProperty;
-var __copyProps = (to, from, except, desc) => {
-  if (from && typeof from === "object" || typeof from === "function") {
-    for (let key of __getOwnPropNames(from))
-      if (!__hasOwnProp.call(to, key) && key !== except)
-        __defProp(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc(from, key)) || desc.enumerable });
-  }
-  return to;
-};
-var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__getProtoOf(mod)) : {}, __copyProps(
-  // If the importer is in node compatibility mode or this is not an ESM
-  // file that has been converted to a CommonJS file using a Babel-
-  // compatible transform (i.e. "__esModule" has not been set), then set
-  // "default" to the CommonJS "module.exports" for node compatibility.
-  isNodeMode || !mod || !mod.__esModule ? __defProp(target, "default", { value: mod, enumerable: true }) : target,
-  mod
-));
-
 // server.ts
-var import_express = __toESM(require("express"), 1);
-var import_path = __toESM(require("path"), 1);
-var import_vite = require("vite");
-var import_promise = __toESM(require("mysql2/promise"), 1);
-var dotenv = __toESM(require("dotenv"), 1);
-var import_multer = __toESM(require("multer"), 1);
-var XLSX = __toESM(require("xlsx"), 1);
+import express from "express";
+import path from "path";
+import { createServer as createViteServer } from "vite";
+import mysql from "mysql2/promise";
+import * as dotenv from "dotenv";
+import multer from "multer";
+import * as XLSX from "xlsx";
 dotenv.config();
 var pool = null;
 var DB_ENABLED = process.env.DB_HOST && process.env.DB_USER && process.env.DB_NAME;
 if (DB_ENABLED) {
-  pool = import_promise.default.createPool({
+  pool = mysql.createPool({
     host: process.env.DB_HOST,
     port: Number(process.env.DB_PORT || 3306),
     user: process.env.DB_USER,
@@ -77,9 +54,9 @@ async function initDB() {
   }
 }
 async function startServer() {
-  const app = (0, import_express.default)();
+  const app = express();
   const PORT = Number(process.env.PORT || 3e3);
-  app.use(import_express.default.json({ limit: "10mb" }));
+  app.use(express.json({ limit: "10mb" }));
   app.get("/api/health", async (_req, res) => {
     let dbStatus = "disabled";
     if (pool) {
@@ -124,7 +101,7 @@ async function startServer() {
       res.status(500).json({ error: "DB write failed" });
     }
   });
-  const upload = (0, import_multer.default)({ storage: import_multer.default.memoryStorage(), limits: { fileSize: 10 * 1024 * 1024 } });
+  const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 10 * 1024 * 1024 } });
   app.post("/api/stock/import/:companyId", upload.single("file"), async (req, res) => {
     if (!pool) return res.status(503).json({ error: "DB not available" });
     const { companyId } = req.params;
@@ -199,6 +176,16 @@ async function startServer() {
       const clearFirst = req.query.clear === "true";
       const products = clearFirst ? [] : await getEntity("products");
       const batchStocks = clearFirst ? [] : await getEntity("batchStocks");
+      const categories = await getEntity("categories");
+      const getOrCreateCategoryId = (name) => {
+        if (!name) return "";
+        const existing = categories.find((c) => c.name.trim().toLowerCase() === name.trim().toLowerCase());
+        if (existing) return existing.id;
+        const newId = `cat-imp-${Date.now()}-${Math.random().toString(36).slice(2, 5)}`;
+        const newCode = name.replace(/[^A-Z0-9]/gi, "").toUpperCase().slice(0, 6) || "IMP";
+        categories.push({ id: newId, name: name.trim(), code: newCode, description: "Imported" });
+        return newId;
+      };
       let updated = 0, added = 0, skipped = 0;
       for (const { description, hsn, rate, unit, qty, category } of allRows) {
         if (!description) {
@@ -209,17 +196,17 @@ async function startServer() {
           skipped++;
           continue;
         }
-        const cat = category || "Water Treatment";
-        let existing = hsn ? products.find((p) => p.hsnCode && String(p.hsnCode).trim() === hsn && p.name && p.name.trim().toLowerCase() === description.toLowerCase()) : null;
-        if (!existing) {
-          existing = products.find(
-            (p) => p.name && p.name.trim().toLowerCase() === description.toLowerCase()
-          );
+        const catId = getOrCreateCategoryId(category || "Water Treatment");
+        let existing = products.find(
+          (p) => p.name && p.name.trim().toLowerCase() === description.toLowerCase()
+        );
+        if (!existing && hsn) {
+          existing = products.find((p) => p.hsnCode && String(p.hsnCode).trim() === hsn);
         }
         if (existing) {
           existing.unit = unit || existing.unit;
           existing.sellingPrice = rate || existing.sellingPrice;
-          existing.category = cat || existing.category;
+          existing.category = catId || existing.category;
           if (hsn) existing.hsnCode = hsn;
           const bs = batchStocks.find((b) => b.productId === existing.id);
           if (bs) {
@@ -231,14 +218,15 @@ async function startServer() {
           updated++;
         } else {
           const newId = `p-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
-          products.push({ id: newId, name: description, hsnCode: hsn, unit, sellingPrice: rate, purchasePrice: 0, category: cat, minStockLevel: 0, createdAt: (/* @__PURE__ */ new Date()).toISOString() });
+          products.push({ id: newId, name: description, hsnCode: hsn, unit, sellingPrice: rate, purchasePrice: 0, category: catId, minStockLevel: 0, createdAt: (/* @__PURE__ */ new Date()).toISOString() });
           batchStocks.push({ id: `bs-${newId}`, productId: newId, batchNumber: "STOCK", quantity: qty, unit, purchasePrice: 0, expiryDate: "", location: "", createdAt: (/* @__PURE__ */ new Date()).toISOString() });
           added++;
         }
       }
       await saveEntity("products", products);
       await saveEntity("batchStocks", batchStocks);
-      res.json({ ok: true, updated, added, skipped, total: allRows.length });
+      await saveEntity("categories", categories);
+      res.json({ ok: true, updated, added, skipped, total: allRows.length, categories: categories.length });
     } catch (err) {
       console.error("POST /api/stock/import error:", err);
       res.status(500).json({ error: String(err) });
@@ -273,24 +261,24 @@ async function startServer() {
     }
   });
   app.get("/help", (_req, res) => {
-    res.sendFile(import_path.default.join(process.cwd(), "public", "help.html"));
+    res.sendFile(path.join(process.cwd(), "public", "help.html"));
   });
-  const servicesPath = import_path.default.join(process.cwd(), "services-dist");
-  app.use("/services", import_express.default.static(servicesPath));
+  const servicesPath = path.join(process.cwd(), "services-dist");
+  app.use("/services", express.static(servicesPath));
   app.get("/services/*", (_req, res) => {
-    res.sendFile(import_path.default.join(servicesPath, "index.html"));
+    res.sendFile(path.join(servicesPath, "index.html"));
   });
   if (process.env.NODE_ENV !== "production") {
-    const vite = await (0, import_vite.createServer)({
+    const vite = await createViteServer({
       server: { middlewareMode: true },
       appType: "spa"
     });
     app.use(vite.middlewares);
   } else {
-    const distPath = import_path.default.join(process.cwd(), "dist");
-    app.use(import_express.default.static(distPath));
+    const distPath = path.join(process.cwd(), "dist");
+    app.use(express.static(distPath));
     app.get("*", (_req, res) => {
-      res.sendFile(import_path.default.join(distPath, "index.html"));
+      res.sendFile(path.join(distPath, "index.html"));
     });
   }
   await initDB();
