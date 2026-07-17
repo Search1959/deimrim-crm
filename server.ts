@@ -154,10 +154,11 @@ async function startServer() {
       const isDescCol  = (s: string) => /desc|name|product|item/i.test(s);
       const isHsnCol   = (s: string) => /hsn/i.test(s);
       const isRateCol  = (s: string) => /rate|price/i.test(s);
-      const isUnitCol  = (s: string) => /unit/i.test(s);
+      const isUnitCol  = (s: string) => /^unit/i.test(s);
       const isQtyCol   = (s: string) => /clos|stock|qty|quant/i.test(s);
+      const isCatCol   = (s: string) => /categ/i.test(s);
 
-      interface NormRow { description: string; hsn: string; rate: number; unit: string; qty: number; }
+      interface NormRow { description: string; hsn: string; rate: number; unit: string; qty: number; category: string; }
 
       const allRows: NormRow[] = [];
 
@@ -191,18 +192,19 @@ async function startServer() {
         const rateIdx  = headers.findIndex(isRateCol);
         const unitIdx  = headers.findIndex(isUnitCol);
         const qtyIdx   = headers.findIndex(isQtyCol);
+        const catIdx   = headers.findIndex(isCatCol);
 
-        // Also handle ISW's __EMPTY pattern: description may be in col index 1 if no desc header found
         const fallbackDescIdx = descIdx === -1 ? 1 : descIdx;
 
         for (let r = headerIdx + 1; r < raw.length; r++) {
           const row = raw[r];
-          const desc = String(row[fallbackDescIdx] ?? "").trim();
-          const hsn  = hsnIdx  >= 0 ? String(row[hsnIdx]  ?? "").trim() : "";
-          const rate = rateIdx >= 0 ? parseFloat(String(row[rateIdx] ?? 0)) || 0 : 0;
-          const unit = unitIdx >= 0 ? String(row[unitIdx]  ?? "Nos").trim() || "Nos" : "Nos";
-          const qty  = qtyIdx  >= 0 ? parseFloat(String(row[qtyIdx]  ?? 0)) || 0 : 0;
-          if (desc) allRows.push({ description: desc, hsn, rate, unit, qty });
+          const desc     = String(row[fallbackDescIdx] ?? "").trim();
+          const hsn      = hsnIdx  >= 0 ? String(row[hsnIdx]  ?? "").trim() : "";
+          const rate     = rateIdx >= 0 ? parseFloat(String(row[rateIdx] ?? 0).replace(/,/g, "")) || 0 : 0;
+          const unit     = unitIdx >= 0 ? String(row[unitIdx]  ?? "").trim() || "Nos" : "Nos";
+          const qty      = qtyIdx  >= 0 ? parseFloat(String(row[qtyIdx]  ?? 0).replace(/,/g, "")) || 0 : 0;
+          const category = catIdx  >= 0 ? String(row[catIdx]   ?? "").trim() : "";
+          if (desc) allRows.push({ description: desc, hsn, rate, unit, qty, category });
         }
       }
 
@@ -229,14 +231,16 @@ async function startServer() {
 
       let updated = 0, added = 0, skipped = 0;
 
-      for (const { description, hsn, rate, unit, qty } of allRows) {
-        // Skip rows that look like category/section headers (no HSN, no rate, no qty)
+      for (const { description, hsn, rate, unit, qty, category } of allRows) {
         if (!description) { skipped++; continue; }
         if (!hsn && rate === 0 && qty === 0) { skipped++; continue; }
 
-        // Match: HSN first, then name
+        const cat = category || "Water Treatment";
+
+        // Match: HSN first (exact), then product name (case-insensitive)
         let existing = hsn
-          ? products.find((p: any) => p.hsnCode && String(p.hsnCode).trim() === hsn)
+          ? products.find((p: any) => p.hsnCode && String(p.hsnCode).trim() === hsn &&
+              p.name && p.name.trim().toLowerCase() === description.toLowerCase())
           : null;
         if (!existing) {
           existing = products.find((p: any) =>
@@ -245,13 +249,19 @@ async function startServer() {
         }
 
         if (existing) {
+          // Update unit, rate, category and hsnCode on the product too
+          existing.unit        = unit || existing.unit;
+          existing.sellingPrice = rate || existing.sellingPrice;
+          existing.category    = cat  || existing.category;
+          if (hsn) existing.hsnCode = hsn;
+          // Update or add batchStock
           const bs = batchStocks.find((b: any) => b.productId === existing.id);
-          if (bs) { bs.quantity = qty; }
+          if (bs) { bs.quantity = qty; bs.unit = unit || bs.unit; }
           else { batchStocks.push({ id: `bs-${existing.id}`, productId: existing.id, batchNumber: "STOCK", quantity: qty, unit, purchasePrice: 0, expiryDate: "", location: "", createdAt: new Date().toISOString() }); }
           updated++;
         } else {
           const newId = `p-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
-          products.push({ id: newId, name: description, hsnCode: hsn, unit, sellingPrice: rate, purchasePrice: 0, category: "Water Treatment", minStockLevel: 0, createdAt: new Date().toISOString() });
+          products.push({ id: newId, name: description, hsnCode: hsn, unit, sellingPrice: rate, purchasePrice: 0, category: cat, minStockLevel: 0, createdAt: new Date().toISOString() });
           batchStocks.push({ id: `bs-${newId}`, productId: newId, batchNumber: "STOCK", quantity: qty, unit, purchasePrice: 0, expiryDate: "", location: "", createdAt: new Date().toISOString() });
           added++;
         }
