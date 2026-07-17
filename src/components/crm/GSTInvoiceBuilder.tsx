@@ -166,7 +166,10 @@ export default function GSTInvoiceBuilder({
   const handleProductPick = (id: string, productId: string) => {
     const p = products.find(x => x.id === productId);
     if (p) {
-      updateItem(id, { productId, description: p.name, hsnSac: "", unit: p.unit || "Nos", rate: p.sellingPrice });
+      // Extract HSN from description field (stored as "HSN: XXXXXXXX" during import)
+      const hsnMatch = (p.description || "").match(/HSN[:\s]+(\d+)/i);
+      const autoHsn = hsnMatch ? hsnMatch[1] : "";
+      updateItem(id, { productId, description: p.name, hsnSac: autoHsn, unit: p.unit || "Nos", rate: p.sellingPrice });
       if (productId) {
         const avail = getAvailableQty(productId);
         if (avail === 0) {
@@ -445,7 +448,10 @@ export default function GSTInvoiceBuilder({
                                 className="bg-slate-800 border border-slate-700 rounded px-1.5 py-1 text-[10px] text-white w-full"
                               >
                                 <option value="">— Select product —</option>
-                                {products.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
+                                {products.map(p => {
+                                  const qty = getAvailableQty(p.id);
+                                  return <option key={p.id} value={p.id}>{p.name} ({qty} {p.unit || "nos"})</option>;
+                                })}
                               </select>
                               {stockWarnings[item.id] && (
                                 <div className={`text-[9px] font-semibold px-1.5 py-0.5 rounded mt-0.5 ${stockWarnings[item.id].type === "out" ? "bg-red-900/60 text-red-300" : "bg-amber-900/60 text-amber-300"}`}>
