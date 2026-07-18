@@ -1024,6 +1024,29 @@ Office Ergonomic Chairs,AST-CH-99,Furniture,1200,1050,12`;
             );
           })()}
 
+          {/* What XML contains */}
+          <div className="bg-slate-900/60 border border-slate-800 rounded-xl p-5">
+            <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider font-mono mb-3">What This XML File Contains</h4>
+            <div className="space-y-2">
+              {[
+                { icon: "🏢", title: "Party Ledgers", desc: "Auto-creates Customer ledgers under Sundry Debtors and Vendor ledgers under Sundry Creditors in Tally" },
+                { icon: "🧾", title: "Sales Vouchers", desc: "One Sales Voucher per OMS invoice — with party name, taxable amount, CGST and SGST split" },
+                { icon: "📦", title: "Purchase Vouchers", desc: "One Purchase Voucher per confirmed PO — with supplier name and GST input credit entry" },
+              ].map(item => (
+                <div key={item.title} className="flex items-start gap-3 p-3 rounded-lg bg-slate-800/40">
+                  <span className="text-lg">{item.icon}</span>
+                  <div>
+                    <p className="text-xs font-bold text-white">{item.title}</p>
+                    <p className="text-xs text-slate-400 mt-0.5">{item.desc}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+            <p className="text-xs text-emerald-400 font-semibold mt-3 border-t border-slate-700 pt-3">
+              ✅ Accountant downloads once a month → imports in Tally in 30 seconds → no retyping
+            </p>
+          </div>
+
           {/* How to import instructions */}
           <div className="bg-slate-900/60 border border-slate-800 rounded-xl p-5">
             <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider font-mono mb-3">How to Import in Tally</h4>
