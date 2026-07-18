@@ -44,9 +44,14 @@ function ProductCombobox({
     return () => document.removeEventListener("mousedown", handler);
   }, []);
 
-  const filtered = query.trim()
-    ? products.filter(p => p.name.toLowerCase().includes(query.toLowerCase())).slice(0, 40)
-    : products.slice(0, 40);
+  const q = query.trim().toLowerCase();
+  const filtered = q
+    ? products.filter(p =>
+        p.name.toLowerCase().includes(q) ||
+        p.sku.toLowerCase().includes(q) ||
+        (p.description || "").toLowerCase().includes(q)
+      ).slice(0, 60)
+    : products.slice(0, 60);
 
   return (
     <div ref={ref} className="relative w-full">
