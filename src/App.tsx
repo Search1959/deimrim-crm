@@ -1076,6 +1076,7 @@ export default function App() {
             setPurchaseOrders={setPurchaseOrders}
             products={products}
             warehouses={defaultWarehouses}
+            batchStocks={batchStocks}
             userRole={currentUser.role}
             companyId={currentUser.companyId}
             onReceiveGRN={handleReceiveGRN}
