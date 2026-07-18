@@ -66,6 +66,7 @@ import {
   AuditLog,
   StockMovement,
   ServiceCatalogItem,
+  VendorInvoice,
   formatINR,
   UserRole
 } from "./types";
@@ -206,6 +207,7 @@ export default function App() {
   const [batchStocks, setBatchStocks] = useState<BatchStock[]>(defaultBatchStocks);
   const [suppliers, setSuppliers] = useState<Supplier[]>(defaultSuppliers);
   const [purchaseOrders, setPurchaseOrders] = useState<PurchaseOrder[]>(defaultPurchaseOrders);
+  const [vendorBills, setVendorBills] = useState<VendorInvoice[]>([]);
   const [serviceCatalog, setServiceCatalog] = useState<ServiceCatalogItem[]>([]);
   const [leads, setLeads] = useState<Lead[]>(defaultLeads);
   const [customers, setCustomers] = useState<Customer[]>(defaultCustomers);
@@ -1074,6 +1076,8 @@ export default function App() {
             setSuppliers={setSuppliers}
             purchaseOrders={purchaseOrders}
             setPurchaseOrders={setPurchaseOrders}
+            vendorBills={vendorBills}
+            setVendorBills={setVendorBills}
             products={products}
             warehouses={defaultWarehouses}
             batchStocks={batchStocks}
@@ -1134,6 +1138,7 @@ export default function App() {
             purchaseOrders={purchaseOrders}
             customers={customers}
             suppliers={suppliers}
+            vendorBills={vendorBills}
           />
         );
       case "admin":

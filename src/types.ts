@@ -591,6 +591,16 @@ export interface EAuction {
   createdAt: string;
 }
 
+export interface BillPayment {
+  id: string;
+  billId: string;
+  amount: number;
+  date: string;
+  mode: "Cash" | "Bank Transfer" | "Cheque" | "UPI";
+  reference: string;
+  remarks: string;
+}
+
 export interface VendorInvoice {
   id: string;
   billNumber: string;
@@ -602,9 +612,12 @@ export interface VendorInvoice {
   gstType: string;
   gstRate: number;
   totalAmount: number;
+  paidAmount: number;
+  balanceAmount: number;
   dueDate: string;
   status: "Draft" | "Pending Payment" | "Partially Paid" | "Paid";
   createdAt: string;
+  payments: BillPayment[];
 }
 
 export interface VendorPayment {

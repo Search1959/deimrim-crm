@@ -1,7 +1,7 @@
 import { toast } from "../utils/toast";
 import React, { useState } from "react";
 import { ShoppingBag, Users, FileCheck, ChevronRight } from "lucide-react";
-import { Supplier, PurchaseOrder, Product, UserRole } from "../types";
+import { Supplier, PurchaseOrder, Product, UserRole, VendorInvoice } from "../types";
 
 import OrdersPanel from "./procurement/OrdersPanel";
 import VendorsPanel from "./procurement/VendorsPanel";
@@ -19,6 +19,8 @@ interface PurchaseViewProps {
   companyId: string;
   onReceiveGRN: (poId: string, warehouseId: string, items: Array<{ productId: string; qty: number; batchNumber: string; expiryDate?: string; rack?: string }>) => void;
   onMarkPOReceived: (poId: string) => void;
+  vendorBills: VendorInvoice[];
+  setVendorBills: React.Dispatch<React.SetStateAction<VendorInvoice[]>>;
 }
 
 type ActiveTab = "orders" | "vendors" | "bills";
@@ -33,6 +35,8 @@ export default function PurchaseView({
   userRole,
   companyId,
   onMarkPOReceived,
+  vendorBills,
+  setVendorBills,
 }: PurchaseViewProps) {
   const [activeTab, setActiveTab] = useState<ActiveTab>("orders");
 
@@ -88,7 +92,7 @@ export default function PurchaseView({
           />
         );
       case "bills":
-        return <VendorBillsPanel suppliers={suppliers} orders={purchaseOrders} />;
+        return <VendorBillsPanel suppliers={suppliers} orders={purchaseOrders} vendorBills={vendorBills} setVendorBills={setVendorBills} />;
       default:
         return null;
     }

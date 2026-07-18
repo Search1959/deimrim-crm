@@ -1,27 +1,13 @@
 import React, { useState } from "react";
 import { FileCheck, Plus, X, IndianRupee, CreditCard, ChevronDown, ChevronUp } from "lucide-react";
-import { Supplier, PurchaseOrder, VendorInvoice, formatINR } from "../../types";
+import { Supplier, PurchaseOrder, VendorInvoice, BillPayment, formatINR } from "../../types";
 import { toast } from "../../utils/toast";
 
 interface Props {
   suppliers: Supplier[];
   orders: PurchaseOrder[];
-}
-
-interface Payment {
-  id: string;
-  billId: string;
-  amount: number;
-  date: string;
-  mode: "Cash" | "Bank Transfer" | "Cheque" | "UPI";
-  reference: string;
-  remarks: string;
-}
-
-interface BillWithPayments extends VendorInvoice {
-  payments: Payment[];
-  paidAmount: number;
-  balanceAmount: number;
+  vendorBills: VendorInvoice[];
+  setVendorBills: React.Dispatch<React.SetStateAction<VendorInvoice[]>>;
 }
 
 const STATUS_COLORS: Record<VendorInvoice["status"], string> = {
@@ -31,8 +17,7 @@ const STATUS_COLORS: Record<VendorInvoice["status"], string> = {
   "Paid":            "bg-emerald-500/10 text-emerald-400 border-emerald-500/20",
 };
 
-export default function VendorBillsPanel({ suppliers, orders }: Props) {
-  const [bills, setBills] = useState<BillWithPayments[]>([]);
+export default function VendorBillsPanel({ suppliers, orders, vendorBills: bills, setVendorBills: setBills }: Props) {
 
   // Bill form
   const [showBillForm, setShowBillForm] = useState(false);
@@ -48,7 +33,7 @@ export default function VendorBillsPanel({ suppliers, orders }: Props) {
   const [payingBillId, setPayingBillId] = useState<string | null>(null);
   const [payAmount, setPayAmount] = useState("");
   const [payDate, setPayDate] = useState(new Date().toISOString().slice(0, 10));
-  const [payMode, setPayMode] = useState<Payment["mode"]>("Bank Transfer");
+  const [payMode, setPayMode] = useState<BillPayment["mode"]>("Bank Transfer");
   const [payRef, setPayRef] = useState("");
   const [payRemarks, setPayRemarks] = useState("");
 
@@ -79,7 +64,7 @@ export default function VendorBillsPanel({ suppliers, orders }: Props) {
     }
     const sup = suppliers.find(s => s.id === formSupplierId);
     const po = orders.find(o => o.id === formPoId);
-    const newBill: BillWithPayments = {
+    const newBill: VendorInvoice = {
       id: `vb-${Date.now()}`,
       billNumber: formBillNumber,
       poId: formPoId || undefined,
@@ -111,7 +96,7 @@ export default function VendorBillsPanel({ suppliers, orders }: Props) {
     setBills(prev => prev.map(b => {
       if (b.id !== payingBillId) return b;
       if (amt > b.balanceAmount) { toast.error(`Amount exceeds balance of ${formatINR(b.balanceAmount)}`); return b; }
-      const newPayment: Payment = {
+      const newPayment: BillPayment = {
         id: `pay-${Date.now()}`,
         billId: b.id,
         amount: amt,
@@ -375,7 +360,7 @@ export default function VendorBillsPanel({ suppliers, orders }: Props) {
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 font-mono">Payment Mode</label>
-                  <select value={payMode} onChange={e => setPayMode(e.target.value as Payment["mode"])}
+                  <select value={payMode} onChange={e => setPayMode(e.target.value as BillPayment["mode"])}
                     className="w-full rounded-lg border border-slate-800 bg-slate-900 p-2.5 text-xs text-white focus:outline-none">
                     <option>Cash</option><option>Bank Transfer</option><option>Cheque</option><option>UPI</option>
                   </select>
