@@ -44,12 +44,13 @@ function ProductCombobox({
     return () => document.removeEventListener("mousedown", handler);
   }, []);
 
+  const extractHsn = (desc: string) => ((desc || "").match(/HSN[:\s]+(\w+)/i) || [])[1] || "";
   const q = query.trim().toLowerCase();
   const filtered = q
     ? products.filter(p =>
         p.name.toLowerCase().includes(q) ||
         p.sku.toLowerCase().includes(q) ||
-        (p.description || "").toLowerCase().includes(q)
+        extractHsn(p.description || "").toLowerCase().includes(q)
       ).slice(0, 60)
     : products.slice(0, 60);
 
@@ -71,7 +72,7 @@ function ProductCombobox({
               autoFocus
               value={query}
               onChange={e => setQuery(e.target.value)}
-              placeholder="Type to search…"
+              placeholder="Search by name or HSN…"
               className="w-full bg-slate-900 border border-slate-700 rounded px-2 py-1 text-[10px] text-white outline-none"
             />
           </div>
@@ -81,13 +82,17 @@ function ProductCombobox({
             )}
             {filtered.map(p => {
               const stock = getStock(p.id, batchStocks);
+              const hsn = extractHsn(p.description || "");
               return (
                 <div
                   key={p.id}
                   onClick={() => { onChange(p.id); setOpen(false); setQuery(""); }}
-                  className={`flex items-center justify-between px-2.5 py-1.5 cursor-pointer hover:bg-slate-800 text-[10px] ${p.id === value ? "bg-indigo-900/30" : ""}`}
+                  className={`flex items-center justify-between px-2.5 py-2 cursor-pointer hover:bg-slate-800 text-[10px] ${p.id === value ? "bg-indigo-900/30" : ""}`}
                 >
-                  <span className="text-slate-100 truncate flex-1">{p.name}</span>
+                  <div className="flex-1 min-w-0">
+                    <div className="text-slate-100 truncate">{p.name}</div>
+                    {hsn && <div className="text-slate-500 font-mono text-[9px]">HSN: {hsn}</div>}
+                  </div>
                   <span className={`ml-2 font-mono font-bold shrink-0 ${stock === 0 ? "text-red-400" : "text-emerald-400"}`}>
                     {stock} {p.unit || "nos"}
                   </span>
