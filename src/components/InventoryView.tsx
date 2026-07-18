@@ -1435,14 +1435,14 @@ DR-IOT-TEMP1,IoT Ambient Temperature Sensor,cat-3,Unit,45,95,20,200,88091100225,
                   <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1 font-mono">Current Stock</label>
                   <div className="w-full rounded-lg border border-slate-700 bg-slate-800/60 p-2.5 text-sm font-mono font-bold flex items-center gap-2">
                     {(() => {
-                      const bs = batchStocks.find(b => b.productId === editingProduct?.id);
+                      const bs = batchStocks.find(b => b.productId === productToEdit?.id);
                       const qty = bs?.quantity ?? 0;
                       return (
                         <>
-                          <span className={qty === 0 ? "text-red-400" : qty < (editingProduct?.minStockLevel || 1) ? "text-amber-400" : "text-green-400"}>
+                          <span className={qty === 0 ? "text-red-400" : qty < (productToEdit?.minStockLevel || 1) ? "text-amber-400" : "text-green-400"}>
                             {qty}
                           </span>
-                          <span className="text-slate-500 font-normal">{editingProduct?.unit || "nos"}</span>
+                          <span className="text-slate-500 font-normal">{productToEdit?.unit || "nos"}</span>
                           {qty === 0 && <span className="text-xs text-red-400 font-normal ml-auto">OUT OF STOCK</span>}
                         </>
                       );
