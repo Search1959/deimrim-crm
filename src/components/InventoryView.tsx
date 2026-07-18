@@ -601,7 +601,7 @@ DR-IOT-TEMP1,IoT Ambient Temperature Sensor,cat-3,Unit,45,95,20,200,88091100225,
                 {pagedProducts.map((p) => {
                   const qty = productStockMap[p.id] || 0;
                   const category = categories.find(c => c.id === p.categoryId);
-                  const isLow = qty <= p.minStockLevel;
+                  const isLow = qty === 0;
                   const isNegative = qty < 0;
 
                   return (
@@ -771,14 +771,6 @@ DR-IOT-TEMP1,IoT Ambient Temperature Sensor,cat-3,Unit,45,95,20,200,88091100225,
 
               {/* Stock thresholds */}
               <div className="bg-slate-900 border border-slate-800 rounded-lg p-3 grid grid-cols-2 gap-2">
-                <div>
-                  <div className="text-[10px] text-slate-500 uppercase font-mono mb-0.5">Min Stock</div>
-                  <div className="text-sm font-bold text-red-400 font-mono">{selectedProductDetail.minStockLevel}</div>
-                </div>
-                <div>
-                  <div className="text-[10px] text-slate-500 uppercase font-mono mb-0.5">Max Stock</div>
-                  <div className="text-sm font-bold text-slate-200 font-mono">{selectedProductDetail.maxStockLevel}</div>
-                </div>
               </div>
 
               {/* Unit + SKU */}
@@ -1272,7 +1264,7 @@ DR-IOT-TEMP1,IoT Ambient Temperature Sensor,cat-3,Unit,45,95,20,200,88091100225,
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1 font-mono">Purchase Cost (₹)</label>
                   <input
@@ -1290,24 +1282,6 @@ DR-IOT-TEMP1,IoT Ambient Temperature Sensor,cat-3,Unit,45,95,20,200,88091100225,
                     required
                     value={formSellingPrice}
                     onChange={(e) => setFormSellingPrice(e.target.value)}
-                    className="w-full rounded-lg border border-slate-800 bg-slate-900 p-2.5 text-sm text-white focus:outline-hidden font-mono"
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1 font-mono">Min Threshold</label>
-                  <input
-                    type="number"
-                    value={formMinStock}
-                    onChange={(e) => setFormMinStock(e.target.value)}
-                    className="w-full rounded-lg border border-slate-800 bg-slate-900 p-2.5 text-sm text-white focus:outline-hidden font-mono"
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1 font-mono">Max Threshold</label>
-                  <input
-                    type="number"
-                    value={formMaxStock}
-                    onChange={(e) => setFormMaxStock(e.target.value)}
                     className="w-full rounded-lg border border-slate-800 bg-slate-900 p-2.5 text-sm text-white focus:outline-hidden font-mono"
                   />
                 </div>
@@ -1439,7 +1413,7 @@ DR-IOT-TEMP1,IoT Ambient Temperature Sensor,cat-3,Unit,45,95,20,200,88091100225,
                       const qty = bs?.quantity ?? 0;
                       return (
                         <>
-                          <span className={qty === 0 ? "text-red-400" : qty < (productToEdit?.minStockLevel || 1) ? "text-amber-400" : "text-green-400"}>
+                          <span className={qty === 0 ? "text-red-400" : "text-green-400"}>
                             {qty}
                           </span>
                           <span className="text-slate-500 font-normal">{productToEdit?.unit || "nos"}</span>
@@ -1451,7 +1425,7 @@ DR-IOT-TEMP1,IoT Ambient Temperature Sensor,cat-3,Unit,45,95,20,200,88091100225,
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1 font-mono">Purchase Cost (₹)</label>
                   <input
@@ -1469,24 +1443,6 @@ DR-IOT-TEMP1,IoT Ambient Temperature Sensor,cat-3,Unit,45,95,20,200,88091100225,
                     required
                     value={formSellingPrice}
                     onChange={(e) => setFormSellingPrice(e.target.value)}
-                    className="w-full rounded-lg border border-slate-800 bg-slate-900 p-2.5 text-sm text-white focus:outline-hidden font-mono"
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1 font-mono">Min Threshold</label>
-                  <input
-                    type="number"
-                    value={formMinStock}
-                    onChange={(e) => setFormMinStock(e.target.value)}
-                    className="w-full rounded-lg border border-slate-800 bg-slate-900 p-2.5 text-sm text-white focus:outline-hidden font-mono"
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1 font-mono">Max Threshold</label>
-                  <input
-                    type="number"
-                    value={formMaxStock}
-                    onChange={(e) => setFormMaxStock(e.target.value)}
                     className="w-full rounded-lg border border-slate-800 bg-slate-900 p-2.5 text-sm text-white focus:outline-hidden font-mono"
                   />
                 </div>
