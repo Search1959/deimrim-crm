@@ -230,6 +230,138 @@ function buildTallyXML(
 </ENVELOPE>`;
 }
 
+// ── Tally Excel export (fallback) ─────────────────────────────────────────
+async function exportTallyExcel(
+  invoices: Invoice[],
+  purchaseOrders: PurchaseOrder[],
+  customers: Customer[],
+  suppliers: Supplier[],
+  vendorBills: VendorInvoice[],
+  salesPayments: Payment[],
+  fromDate: string,
+  toDate: string,
+  includeInvoices: boolean,
+  includePOs: boolean,
+  includeParties: boolean,
+  includePayments: boolean,
+  includeReceipts: boolean,
+) {
+  const XLSX = await import("xlsx");
+  const wb = XLSX.utils.book_new();
+
+  // Sheet 1 — Party Ledgers
+  if (includeParties) {
+    const seen = new Set<string>();
+    const rows: object[] = [];
+    invoices.filter(i => i.createdAt >= fromDate && i.createdAt <= toDate + "T23:59:59").forEach(inv => {
+      const name = inv.buyerName || customers.find(c => c.id === inv.customerId)?.name || "";
+      if (name && !seen.has(name)) {
+        seen.add(name);
+        rows.push({ "Party Name": name, "Group": "Sundry Debtors", "GSTIN": inv.buyerGSTIN || "" });
+      }
+    });
+    purchaseOrders.filter(p => p.createdAt >= fromDate && p.createdAt <= toDate + "T23:59:59").forEach(po => {
+      const sup = suppliers.find(s => s.id === po.supplierId);
+      if (sup && !seen.has(sup.name)) {
+        seen.add(sup.name);
+        rows.push({ "Party Name": sup.name, "Group": "Sundry Creditors", "GSTIN": sup.taxId || "" });
+      }
+    });
+    const ws = XLSX.utils.json_to_sheet(rows.length ? rows : [{ "Party Name": "", "Group": "", "GSTIN": "" }]);
+    XLSX.utils.book_append_sheet(wb, ws, "Party Ledgers");
+  }
+
+  // Sheet 2 — Sales Invoices
+  if (includeInvoices) {
+    const rows = invoices
+      .filter(i => i.createdAt >= fromDate && i.createdAt <= toDate + "T23:59:59")
+      .map(inv => {
+        const cust = customers.find(c => c.id === inv.customerId);
+        const cgst = inv.cgst ?? inv.taxAmount / 2;
+        const sgst = inv.sgst ?? inv.taxAmount / 2;
+        return {
+          "Date": inv.createdAt.slice(0, 10),
+          "Voucher No": inv.invoiceNumber,
+          "Voucher Type": "Sales",
+          "Party Name": inv.buyerName || cust?.name || "",
+          "Ledger": "Sales @GST",
+          "Taxable Amount": inv.subtotal,
+          "CGST": cgst,
+          "SGST": sgst,
+          "Total Amount": inv.totalAmount,
+          "Narration": inv.notes || "",
+        };
+      });
+    const ws = XLSX.utils.json_to_sheet(rows.length ? rows : [{}]);
+    XLSX.utils.book_append_sheet(wb, ws, "Sales Invoices");
+  }
+
+  // Sheet 3 — Purchase Orders
+  if (includePOs) {
+    const rows = purchaseOrders
+      .filter(p => p.createdAt >= fromDate && p.createdAt <= toDate + "T23:59:59")
+      .map(po => {
+        const sup = suppliers.find(s => s.id === po.supplierId);
+        const total = po.totalAmount || 0;
+        const taxable = +(total / 1.18).toFixed(2);
+        const gst = +(total - taxable).toFixed(2);
+        return {
+          "Date": po.createdAt.slice(0, 10),
+          "Voucher No": po.poNumber,
+          "Voucher Type": "Purchase",
+          "Party Name": sup?.name || "",
+          "Ledger": "Purchase @GST",
+          "Taxable Amount": taxable,
+          "GST Input Credit": gst,
+          "Total Amount": total,
+          "Narration": po.remarks || "",
+        };
+      });
+    const ws = XLSX.utils.json_to_sheet(rows.length ? rows : [{}]);
+    XLSX.utils.book_append_sheet(wb, ws, "Purchase Orders");
+  }
+
+  // Sheet 4 — Vendor Payments
+  if (includePayments) {
+    const rows = vendorBills.flatMap(bill =>
+      bill.payments
+        .filter(p => p.date >= fromDate && p.date <= toDate)
+        .map(p => ({
+          "Date": p.date,
+          "Voucher Type": "Payment",
+          "Party (Vendor)": bill.supplierName,
+          "Bill Ref": bill.billNumber,
+          "Amount Paid": p.amount,
+          "Payment Mode": p.mode,
+          "Reference / UTR": p.reference,
+          "Narration": p.remarks,
+        }))
+    );
+    const ws = XLSX.utils.json_to_sheet(rows.length ? rows : [{}]);
+    XLSX.utils.book_append_sheet(wb, ws, "Vendor Payments");
+  }
+
+  // Sheet 5 — Customer Receipts
+  if (includeReceipts) {
+    const rows = salesPayments
+      .filter(p => p.paymentDate >= fromDate && p.paymentDate <= toDate)
+      .map(p => ({
+        "Date": p.paymentDate,
+        "Voucher Type": "Receipt",
+        "Party (Customer)": p.companyName,
+        "Invoice Ref": p.invoiceNumber,
+        "Amount Received": p.amount,
+        "Payment Mode": p.paymentMethod,
+        "Reference / UTR": p.referenceNo || "",
+        "Narration": p.notes || "",
+      }));
+    const ws = XLSX.utils.json_to_sheet(rows.length ? rows : [{}]);
+    XLSX.utils.book_append_sheet(wb, ws, "Customer Receipts");
+  }
+
+  XLSX.writeFile(wb, `OMS_Tally_Export_${fromDate}_to_${toDate}.xlsx`);
+}
+
 export default function FinanceView({
   transactions,
   setTransactions,
@@ -258,6 +390,14 @@ export default function FinanceView({
   const [tallyIncParties, setTallyIncParties] = useState(true);
   const [tallyIncPayments, setTallyIncPayments] = useState(true);
   const [tallyIncReceipts, setTallyIncReceipts] = useState(true);
+
+  const handleExcelExport = () => {
+    exportTallyExcel(
+      invoices, purchaseOrders, customers, suppliers, vendorBills, salesPayments,
+      tallyFrom, tallyTo,
+      tallyIncInvoices, tallyIncPOs, tallyIncParties, tallyIncPayments, tallyIncReceipts,
+    ).then(() => toast.success("Excel downloaded — open and enter manually in Tally"));
+  };
 
   const handleTallyExport = () => {
     const xml = buildTallyXML(
@@ -1074,14 +1214,24 @@ Office Ergonomic Chairs,AST-CH-99,Furniture,1200,1050,12`;
                   </p>
                   <p className="text-xs text-slate-500 mt-0.5">{tallyFrom} → {tallyTo}</p>
                 </div>
-                <button
-                  onClick={handleTallyExport}
-                  disabled={total === 0 && !tallyIncParties}
-                  className="flex items-center gap-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 disabled:opacity-40 disabled:cursor-not-allowed px-5 py-3 text-sm font-bold text-white transition-colors shadow-lg"
-                >
-                  <Download className="w-4 h-4" />
-                  Download XML for Tally
-                </button>
+                <div className="flex items-center gap-2 flex-wrap">
+                  <button
+                    onClick={handleTallyExport}
+                    disabled={total === 0 && !tallyIncParties}
+                    className="flex items-center gap-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 disabled:opacity-40 disabled:cursor-not-allowed px-5 py-3 text-sm font-bold text-white transition-colors shadow-lg"
+                  >
+                    <Download className="w-4 h-4" />
+                    Download XML
+                  </button>
+                  <button
+                    onClick={handleExcelExport}
+                    disabled={total === 0 && !tallyIncParties}
+                    className="flex items-center gap-2 rounded-xl bg-blue-600 hover:bg-blue-500 disabled:opacity-40 disabled:cursor-not-allowed px-5 py-3 text-sm font-bold text-white transition-colors shadow-lg"
+                  >
+                    <Download className="w-4 h-4" />
+                    Download Excel
+                  </button>
+                </div>
               </div>
             );
           })()}
