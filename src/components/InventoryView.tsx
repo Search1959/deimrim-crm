@@ -121,6 +121,7 @@ export default function InventoryView({
   const [formName, setFormName] = useState("");
   const [formCategoryId, setFormCategoryId] = useState("");
   const [formBrandId, setFormBrandId] = useState("");
+  const [formOpeningStock, setFormOpeningStock] = useState("0");
   const [formUnit, setFormUnit] = useState("Unit");
   const [formPurchasePrice, setFormPurchasePrice] = useState("0");
   const [formSellingPrice, setFormSellingPrice] = useState("0");
@@ -193,6 +194,7 @@ export default function InventoryView({
     setFormMaxStock("100");
     setFormHsn("");
     setFormDescription("");
+    setFormOpeningStock("0");
     setShowAddModal(true);
   };
 
@@ -233,10 +235,27 @@ export default function InventoryView({
       description: combineDesc(formHsn, formDescription),
     };
 
+    const openingQty = parseInt(formOpeningStock) || 0;
+
     setProducts(prev => [newProductObj, ...prev]);
+
+    // Create batchStock entry with opening quantity
+    const newBatch = {
+      id: `bs-${newProductObj.id}`,
+      productId: newProductObj.id,
+      batchNumber: "STOCK",
+      quantity: openingQty,
+      unit: formUnit,
+      purchasePrice: newProductObj.purchasePrice,
+      expiryDate: "",
+      location: "",
+      createdAt: new Date().toISOString(),
+    };
+    setBatchStocks(prev => [newBatch, ...prev]);
+
     setShowAddModal(false);
 
-    // Write audit log / simulation
+    // Write audit log
     const log: StockMovement = {
       id: `sm-new-${Date.now()}`,
       productId: newProductObj.id,
@@ -244,11 +263,11 @@ export default function InventoryView({
       type: "IN",
       source: "OPENING",
       referenceId: "SYS-ADD",
-      quantity: 0,
+      quantity: openingQty,
       unitPrice: newProductObj.purchasePrice,
       userId: currentUserId,
       timestamp: new Date().toISOString(),
-      remarks: `Product ${newProductObj.name} registered into inventory catalog.`,
+      remarks: `Product ${newProductObj.name} added with opening stock of ${openingQty} ${formUnit}.`,
     };
     setMovements(prev => [log, ...prev]);
   };
@@ -1231,32 +1250,6 @@ DR-IOT-TEMP1,IoT Ambient Temperature Sensor,cat-3,Unit,45,95,20,200,88091100225,
                   </select>
                 </div>
                 <div>
-                  <div className="flex justify-between items-center mb-1">
-                    <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider font-mono">Brand</label>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        const name = prompt("Enter new brand name:");
-                        if (!name) return;
-                        const newBrand = { id: `b-${Date.now()}`, name };
-                        setBrands(prev => [...prev, newBrand]);
-                        setFormBrandId(newBrand.id);
-                      }}
-                      className="text-[10px] text-indigo-400 hover:text-indigo-300 font-bold flex items-center gap-0.5"
-                    >
-                      <Plus className="w-3 h-3" /> Quick Add
-                    </button>
-                  </div>
-                  <select
-                    value={formBrandId}
-                    onChange={(e) => setFormBrandId(e.target.value)}
-                    className="w-full rounded-lg border border-slate-800 bg-slate-900 p-2.5 text-sm text-white focus:outline-hidden font-semibold"
-                  >
-                    {brands.length === 0 && <option value="">-- No Brands --</option>}
-                    {brands.map(b => <option key={b.id} value={b.id}>{b.name}</option>)}
-                  </select>
-                </div>
-                <div>
                   <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1 font-mono">Unit of Measure</label>
                   <input
                     type="text"
@@ -1265,6 +1258,16 @@ DR-IOT-TEMP1,IoT Ambient Temperature Sensor,cat-3,Unit,45,95,20,200,88091100225,
                     onChange={(e) => setFormUnit(e.target.value)}
                     placeholder="e.g. Unit, Box, kg"
                     className="w-full rounded-lg border border-slate-800 bg-slate-900 p-2.5 text-sm text-white focus:outline-hidden"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1 font-mono">Opening Stock</label>
+                  <input
+                    type="number"
+                    value={formOpeningStock}
+                    onChange={(e) => setFormOpeningStock(e.target.value)}
+                    placeholder="0"
+                    className="w-full rounded-lg border border-slate-800 bg-slate-900 p-2.5 text-sm text-white focus:outline-hidden font-mono"
                   />
                 </div>
               </div>
@@ -1419,32 +1422,6 @@ DR-IOT-TEMP1,IoT Ambient Temperature Sensor,cat-3,Unit,45,95,20,200,88091100225,
                   </select>
                 </div>
                 <div>
-                  <div className="flex justify-between items-center mb-1">
-                    <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider font-mono">Brand</label>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        const name = prompt("Enter new brand name:");
-                        if (!name) return;
-                        const newBrand = { id: `b-${Date.now()}`, name };
-                        setBrands(prev => [...prev, newBrand]);
-                        setFormBrandId(newBrand.id);
-                      }}
-                      className="text-[10px] text-indigo-400 hover:text-indigo-300 font-bold flex items-center gap-0.5"
-                    >
-                      <Plus className="w-3 h-3" /> Quick Add
-                    </button>
-                  </div>
-                  <select
-                    value={formBrandId}
-                    onChange={(e) => setFormBrandId(e.target.value)}
-                    className="w-full rounded-lg border border-slate-800 bg-slate-900 p-2.5 text-sm text-white focus:outline-hidden font-semibold"
-                  >
-                    {brands.length === 0 && <option value="">-- No Brands --</option>}
-                    {brands.map(b => <option key={b.id} value={b.id}>{b.name}</option>)}
-                  </select>
-                </div>
-                <div>
                   <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1 font-mono">Unit of Measure</label>
                   <input
                     type="text"
@@ -1453,6 +1430,24 @@ DR-IOT-TEMP1,IoT Ambient Temperature Sensor,cat-3,Unit,45,95,20,200,88091100225,
                     onChange={(e) => setFormUnit(e.target.value)}
                     className="w-full rounded-lg border border-slate-800 bg-slate-900 p-2.5 text-sm text-white focus:outline-hidden"
                   />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1 font-mono">Current Stock</label>
+                  <div className="w-full rounded-lg border border-slate-700 bg-slate-800/60 p-2.5 text-sm font-mono font-bold flex items-center gap-2">
+                    {(() => {
+                      const bs = batchStocks.find(b => b.productId === editingProduct?.id);
+                      const qty = bs?.quantity ?? 0;
+                      return (
+                        <>
+                          <span className={qty === 0 ? "text-red-400" : qty < (editingProduct?.minStockLevel || 1) ? "text-amber-400" : "text-green-400"}>
+                            {qty}
+                          </span>
+                          <span className="text-slate-500 font-normal">{editingProduct?.unit || "nos"}</span>
+                          {qty === 0 && <span className="text-xs text-red-400 font-normal ml-auto">OUT OF STOCK</span>}
+                        </>
+                      );
+                    })()}
+                  </div>
                 </div>
               </div>
 
