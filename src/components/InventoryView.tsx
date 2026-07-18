@@ -479,14 +479,6 @@ DR-IOT-TEMP1,IoT Ambient Temperature Sensor,cat-3,Unit,45,95,20,200,88091100225,
           </button>
 
           <button
-            onClick={() => { setActiveSubTab("warehouses"); setSelectedProductDetail(null); }}
-            className={`px-3.5 py-1.5 text-xs font-bold rounded-md transition-colors ${
-              activeSubTab === "warehouses" ? "bg-slate-800 text-indigo-400 shadow-xs" : "text-slate-400 hover:text-slate-200"
-            }`}
-          >
-            Godown & Racks
-          </button>
-          <button
             onClick={() => { setActiveSubTab("movements"); setSelectedProductDetail(null); }}
             className={`px-3.5 py-1.5 text-xs font-bold rounded-md transition-colors ${
               activeSubTab === "movements" ? "bg-slate-800 text-indigo-400 shadow-xs" : "text-slate-400 hover:text-slate-200"
