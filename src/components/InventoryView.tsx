@@ -1261,7 +1261,7 @@ DR-IOT-TEMP1,IoT Ambient Temperature Sensor,cat-3,Unit,45,95,20,200,88091100225,
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1 font-mono">Opening Stock</label>
+                  <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1 font-mono">On Hand Stock</label>
                   <input
                     type="number"
                     value={formOpeningStock}
