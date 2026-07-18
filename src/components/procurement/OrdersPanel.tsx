@@ -78,7 +78,11 @@ function ProductCombobox({
           </div>
           <div className="max-h-52 overflow-y-auto">
             {filtered.length === 0 && (
-              <div className="px-3 py-2 text-[10px] text-slate-500">No products found</div>
+              <div className="px-3 py-3 text-center">
+                <p className="text-[10px] text-slate-400 font-semibold">No products found</p>
+                <p className="text-[9px] text-slate-500 mt-1">Product not in list?</p>
+                <p className="text-[9px] text-amber-400 mt-0.5">Go to <span className="font-bold">Inventory Engine → Add Product</span> first, then come back to create the PO.</p>
+              </div>
             )}
             {filtered.map(p => {
               const stock = getStock(p.id, batchStocks);
