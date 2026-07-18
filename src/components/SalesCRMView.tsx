@@ -3,7 +3,7 @@ import {
   MessageSquare, ShieldAlert, FileText, CreditCard, Award,
   Building2, Users, AlertCircle, ClipboardCheck, Truck, Wrench, Sparkles
 } from "lucide-react";
-import { Lead, Customer, Invoice, Product, BatchStock, UserRole, ServiceCatalogItem, Company } from "../types";
+import { Lead, Customer, Invoice, Product, BatchStock, UserRole, ServiceCatalogItem, Company, Payment } from "../types";
 
 // Import modular CRM components
 import LeadsPanel from "./crm/LeadsPanel";
@@ -32,6 +32,8 @@ interface SalesCRMViewProps {
   userRole: UserRole;
   onGenerateInvoice: (invoiceId: string, customerId: string, items: Array<{ productId: string; qty: number; itemType?: "product" | "service" }>, customTotalAmount?: number) => void;
   onPaymentRecorded?: (invoiceId: string, amount: number, method: string, invoiceNumber: string, customerName: string) => void;
+  salesPayments: Payment[];
+  setSalesPayments: React.Dispatch<React.SetStateAction<Payment[]>>;
   companyId: string;
   branchId?: string;
   isDemo?: boolean;
@@ -57,6 +59,8 @@ export default function SalesCRMView({
   userRole,
   onGenerateInvoice,
   onPaymentRecorded,
+  salesPayments,
+  setSalesPayments,
   companyId,
   branchId,
   isDemo,
@@ -124,7 +128,7 @@ export default function SalesCRMView({
       case "do":
         return <DeliveryOrdersPanel customers={customers} companyId={companyId} />;
       case "payments":
-        return <PaymentsPanel invoices={invoices} setInvoices={setInvoices} customers={customers} companyId={companyId} onPaymentRecorded={onPaymentRecorded} />;
+        return <PaymentsPanel invoices={invoices} setInvoices={setInvoices} customers={customers} companyId={companyId} onPaymentRecorded={onPaymentRecorded} salesPayments={salesPayments} setSalesPayments={setSalesPayments} />;
       case "targets":
         return <TargetsPanel companyId={companyId} />;
       case "companies":

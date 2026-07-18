@@ -67,6 +67,7 @@ import {
   StockMovement,
   ServiceCatalogItem,
   VendorInvoice,
+  Payment,
   formatINR,
   UserRole
 } from "./types";
@@ -208,6 +209,7 @@ export default function App() {
   const [suppliers, setSuppliers] = useState<Supplier[]>(defaultSuppliers);
   const [purchaseOrders, setPurchaseOrders] = useState<PurchaseOrder[]>(defaultPurchaseOrders);
   const [vendorBills, setVendorBills] = useState<VendorInvoice[]>([]);
+  const [salesPayments, setSalesPayments] = useState<Payment[]>([]);
   const [serviceCatalog, setServiceCatalog] = useState<ServiceCatalogItem[]>([]);
   const [leads, setLeads] = useState<Lead[]>(defaultLeads);
   const [customers, setCustomers] = useState<Customer[]>(defaultCustomers);
@@ -668,6 +670,17 @@ export default function App() {
           : c
       ));
     }
+    const newPay: Payment = {
+      id: `pay-${Date.now()}`,
+      invoiceId,
+      invoiceNumber,
+      companyName: customerName,
+      amount,
+      paymentDate: new Date().toISOString().split("T")[0],
+      paymentMethod: method,
+      createdAt: new Date().toISOString().split("T")[0],
+    };
+    setSalesPayments(prev => [newPay, ...prev]);
   };
 
   // -------------------------------------------------------------
@@ -1103,6 +1116,8 @@ export default function App() {
             userRole={currentUser.role}
             onGenerateInvoice={handleGenerateInvoice}
             onPaymentRecorded={handlePaymentRecorded}
+            salesPayments={salesPayments}
+            setSalesPayments={setSalesPayments}
             companyId={currentUser.companyId}
             company={company}
             setCompany={setCompany}
@@ -1139,6 +1154,7 @@ export default function App() {
             customers={customers}
             suppliers={suppliers}
             vendorBills={vendorBills}
+            salesPayments={salesPayments}
           />
         );
       case "admin":

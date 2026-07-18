@@ -1,5 +1,5 @@
 import { toast } from "../../utils/toast";
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Plus, Search, CreditCard, Eye, Pencil, Trash2, X, Check } from "lucide-react";
 import { Payment, Invoice, Customer, formatINR } from "../../types";
 
@@ -9,6 +9,8 @@ interface PaymentsPanelProps {
   customers: Customer[];
   companyId: string;
   onPaymentRecorded?: (invoiceId: string, amount: number, method: string, invoiceNumber: string, customerName: string) => void;
+  salesPayments: Payment[];
+  setSalesPayments: React.Dispatch<React.SetStateAction<Payment[]>>;
 }
 
 const EMPTY_FORM = {
@@ -20,8 +22,7 @@ const EMPTY_FORM = {
   notes: "",
 };
 
-export default function PaymentsPanel({ invoices, setInvoices, customers, companyId, onPaymentRecorded }: PaymentsPanelProps) {
-  const [payments, setPayments] = useState<Payment[]>([]);
+export default function PaymentsPanel({ invoices, setInvoices, customers, companyId, onPaymentRecorded, salesPayments: payments, setSalesPayments: setPayments }: PaymentsPanelProps) {
   const [searchQuery, setSearchQuery] = useState("");
 
   // Modal modes: null | "add" | "edit" | "view"
@@ -36,26 +37,8 @@ export default function PaymentsPanel({ invoices, setInvoices, customers, compan
   const [referenceNo, setReferenceNo] = useState(EMPTY_FORM.referenceNo);
   const [notes, setNotes] = useState(EMPTY_FORM.notes);
 
-  const storageKey = `deinrim_payments_${companyId}`;
-
-  useEffect(() => {
-    const stored = localStorage.getItem(storageKey);
-    if (stored) {
-      try {
-        const parsed: Payment[] = JSON.parse(stored);
-        const cleaned = parsed.filter(p => p.id !== "pay-1");
-        if (cleaned.length !== parsed.length) localStorage.setItem(storageKey, JSON.stringify(cleaned));
-        setPayments(cleaned);
-      } catch (e) {}
-    } else {
-      setPayments([]);
-      localStorage.setItem(storageKey, JSON.stringify([]));
-    }
-  }, [companyId, invoices]);
-
   const savePayments = (updated: Payment[]) => {
     setPayments(updated);
-    localStorage.setItem(storageKey, JSON.stringify(updated));
   };
 
   const resetForm = () => {

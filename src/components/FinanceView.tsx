@@ -22,7 +22,7 @@ import {
   Download,
   Upload
 } from "lucide-react";
-import { Transaction, Asset, UserRole, formatINR, Invoice, PurchaseOrder, Customer, Supplier, VendorInvoice } from "../types";
+import { Transaction, Asset, UserRole, formatINR, Invoice, PurchaseOrder, Customer, Supplier, VendorInvoice, Payment } from "../types";
 
 interface FinanceViewProps {
   transactions: Transaction[];
@@ -36,6 +36,7 @@ interface FinanceViewProps {
   customers?: Customer[];
   suppliers?: Supplier[];
   vendorBills?: VendorInvoice[];
+  salesPayments?: Payment[];
 }
 
 // ── Tally XML generator ────────────────────────────────────────────────────
@@ -45,12 +46,14 @@ function buildTallyXML(
   customers: Customer[],
   suppliers: Supplier[],
   vendorBills: VendorInvoice[],
+  salesPayments: Payment[],
   fromDate: string,
   toDate: string,
   includeInvoices: boolean,
   includePOs: boolean,
   includeParties: boolean,
   includePayments: boolean,
+  includeReceipts: boolean,
 ): string {
   const fmt = (d: string) => d.replace(/-/g, ""); // 2025-04-01 → 20250401
 
@@ -186,7 +189,29 @@ function buildTallyXML(
       )
     : [];
 
-  const allMessages = [...partyMessages, ...salesMessages, ...purchaseMessages, ...paymentMessages].join("\n");
+  // Receipt vouchers from customer payments received
+  const receiptMessages = includeReceipts
+    ? salesPayments
+        .filter(p => p.paymentDate >= fromDate && p.paymentDate <= toDate)
+        .map(p => `
+        <TALLYMESSAGE>
+          <VOUCHER VCHTYPE="Receipt" ACTION="Create">
+            <DATE>${fmt(p.paymentDate)}</DATE>
+            <PARTYLEDGERNAME>${p.companyName}</PARTYLEDGERNAME>
+            <NARRATION>${p.notes || p.referenceNo || ""}</NARRATION>
+            <ALLLEDGERENTRIES.LIST>
+              <LEDGERNAME>${p.companyName}</LEDGERNAME>
+              <AMOUNT>${(-p.amount).toFixed(2)}</AMOUNT>
+            </ALLLEDGERENTRIES.LIST>
+            <ALLLEDGERENTRIES.LIST>
+              <LEDGERNAME>${p.paymentMethod === "Bank Transfer" ? "Bank Account" : p.paymentMethod}</LEDGERNAME>
+              <AMOUNT>${p.amount.toFixed(2)}</AMOUNT>
+            </ALLLEDGERENTRIES.LIST>
+          </VOUCHER>
+        </TALLYMESSAGE>`)
+    : [];
+
+  const allMessages = [...partyMessages, ...salesMessages, ...purchaseMessages, ...paymentMessages, ...receiptMessages].join("\n");
 
   return `<?xml version="1.0" encoding="UTF-8"?>
 <ENVELOPE>
@@ -217,6 +242,7 @@ export default function FinanceView({
   customers = [],
   suppliers = [],
   vendorBills = [],
+  salesPayments = [],
 }: FinanceViewProps) {
   const [activeSubTab, setActiveSubTab] = useState<"ledger" | "pl" | "assets" | "tally">("ledger");
   const [showAddTx, setShowAddTx] = useState(false);
@@ -231,12 +257,13 @@ export default function FinanceView({
   const [tallyIncPOs, setTallyIncPOs] = useState(true);
   const [tallyIncParties, setTallyIncParties] = useState(true);
   const [tallyIncPayments, setTallyIncPayments] = useState(true);
+  const [tallyIncReceipts, setTallyIncReceipts] = useState(true);
 
   const handleTallyExport = () => {
     const xml = buildTallyXML(
-      invoices, purchaseOrders, customers, suppliers, vendorBills,
+      invoices, purchaseOrders, customers, suppliers, vendorBills, salesPayments,
       tallyFrom, tallyTo,
-      tallyIncInvoices, tallyIncPOs, tallyIncParties, tallyIncPayments,
+      tallyIncInvoices, tallyIncPOs, tallyIncParties, tallyIncPayments, tallyIncReceipts,
     );
     const blob = new Blob([xml], { type: "application/xml" });
     const url = URL.createObjectURL(blob);
@@ -1006,6 +1033,8 @@ Office Ergonomic Chairs,AST-CH-99,Furniture,1200,1050,12`;
                 count: null },
               { key: "payments", label: "Vendor Payments", desc: "Creates Payment Vouchers in Tally (eliminates double entry)", state: tallyIncPayments, set: setTallyIncPayments,
                 count: vendorBills.flatMap(b => b.payments).filter(p => p.date >= tallyFrom && p.date <= tallyTo).length },
+              { key: "receipts", label: "Customer Receipts", desc: "Creates Receipt Vouchers in Tally when customer pays you", state: tallyIncReceipts, set: setTallyIncReceipts,
+                count: salesPayments.filter(p => p.paymentDate >= tallyFrom && p.paymentDate <= tallyTo).length },
             ].map(item => (
               <label key={item.key} className="flex items-center gap-3 cursor-pointer group p-3 rounded-lg hover:bg-slate-900 transition-colors">
                 <input
@@ -1034,7 +1063,8 @@ Office Ergonomic Chairs,AST-CH-99,Furniture,1200,1050,12`;
             const invCount = invoices.filter(i => i.createdAt >= tallyFrom && i.createdAt <= tallyTo+"T23:59:59").length;
             const poCount = purchaseOrders.filter(p => p.createdAt >= tallyFrom && p.createdAt <= tallyTo+"T23:59:59").length;
             const payCount = vendorBills.flatMap(b => b.payments).filter(p => p.date >= tallyFrom && p.date <= tallyTo).length;
-            const total = (tallyIncInvoices ? invCount : 0) + (tallyIncPOs ? poCount : 0) + (tallyIncPayments ? payCount : 0);
+            const recCount = salesPayments.filter(p => p.paymentDate >= tallyFrom && p.paymentDate <= tallyTo).length;
+            const total = (tallyIncInvoices ? invCount : 0) + (tallyIncPOs ? poCount : 0) + (tallyIncPayments ? payCount : 0) + (tallyIncReceipts ? recCount : 0);
             return (
               <div className="bg-slate-950/60 border border-emerald-800/40 rounded-xl p-5 flex items-center justify-between gap-4 flex-wrap">
                 <div>
