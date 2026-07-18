@@ -22,15 +22,160 @@ import {
   Download,
   Upload
 } from "lucide-react";
-import { Transaction, Asset, UserRole, formatINR } from "../types";
+import { Transaction, Asset, UserRole, formatINR, Invoice, PurchaseOrder, Customer, Supplier } from "../types";
 
 interface FinanceViewProps {
   transactions: Transaction[];
   setTransactions: React.Dispatch<React.SetStateAction<Transaction[]>>;
   assets: Asset[];
-  setAssets?: React.Dispatch<React.SetStateAction<Asset[]>>; // Made optional or provided
+  setAssets?: React.Dispatch<React.SetStateAction<Asset[]>>;
   userRole: UserRole;
   branchId?: string;
+  invoices?: Invoice[];
+  purchaseOrders?: PurchaseOrder[];
+  customers?: Customer[];
+  suppliers?: Supplier[];
+}
+
+// ── Tally XML generator ────────────────────────────────────────────────────
+function buildTallyXML(
+  invoices: Invoice[],
+  purchaseOrders: PurchaseOrder[],
+  customers: Customer[],
+  suppliers: Supplier[],
+  fromDate: string,
+  toDate: string,
+  includeInvoices: boolean,
+  includePOs: boolean,
+  includeParties: boolean,
+): string {
+  const fmt = (d: string) => d.replace(/-/g, ""); // 2025-04-01 → 20250401
+
+  const filteredInvoices = includeInvoices
+    ? invoices.filter(inv => inv.createdAt >= fromDate && inv.createdAt <= toDate + "T23:59:59")
+    : [];
+
+  const filteredPOs = includePOs
+    ? purchaseOrders.filter(po => po.createdAt >= fromDate && po.createdAt <= toDate + "T23:59:59")
+    : [];
+
+  // Collect party names for ledger creation
+  const partyMessages: string[] = [];
+  if (includeParties) {
+    const seen = new Set<string>();
+    filteredInvoices.forEach(inv => {
+      const name = inv.buyerName || customers.find(c => c.id === inv.customerId)?.name || "";
+      if (name && !seen.has(name)) {
+        seen.add(name);
+        partyMessages.push(`
+        <TALLYMESSAGE>
+          <LEDGER NAME="${name}" ACTION="Create">
+            <NAME>${name}</NAME>
+            <PARENT>Sundry Debtors</PARENT>
+            <TAXCLASSIFICATIONNAME/>
+            <GSTIN>${inv.buyerGSTIN || ""}</GSTIN>
+          </LEDGER>
+        </TALLYMESSAGE>`);
+      }
+    });
+    filteredPOs.forEach(po => {
+      const sup = suppliers.find(s => s.id === po.supplierId);
+      const name = sup?.name || "";
+      if (name && !seen.has(name)) {
+        seen.add(name);
+        partyMessages.push(`
+        <TALLYMESSAGE>
+          <LEDGER NAME="${name}" ACTION="Create">
+            <NAME>${name}</NAME>
+            <PARENT>Sundry Creditors</PARENT>
+            <GSTIN>${sup?.taxId || ""}</GSTIN>
+          </LEDGER>
+        </TALLYMESSAGE>`);
+      }
+    });
+  }
+
+  // Sales vouchers from invoices
+  const salesMessages = filteredInvoices.map(inv => {
+    const partyName = inv.buyerName || customers.find(c => c.id === inv.customerId)?.name || "Unknown Party";
+    const cgst = inv.cgst ?? inv.taxAmount / 2;
+    const sgst = inv.sgst ?? inv.taxAmount / 2;
+    const taxable = inv.subtotal;
+    const date = fmt(inv.createdAt.slice(0, 10));
+    return `
+        <TALLYMESSAGE>
+          <VOUCHER VCHTYPE="Sales" ACTION="Create">
+            <DATE>${date}</DATE>
+            <VOUCHERNUMBER>${inv.invoiceNumber}</VOUCHERNUMBER>
+            <PARTYLEDGERNAME>${partyName}</PARTYLEDGERNAME>
+            <NARRATION>${inv.notes || ""}</NARRATION>
+            <ALLLEDGERENTRIES.LIST>
+              <LEDGERNAME>Sales @GST</LEDGERNAME>
+              <AMOUNT>${-taxable.toFixed(2)}</AMOUNT>
+            </ALLLEDGERENTRIES.LIST>
+            <ALLLEDGERENTRIES.LIST>
+              <LEDGERNAME>CGST</LEDGERNAME>
+              <AMOUNT>${-cgst.toFixed(2)}</AMOUNT>
+            </ALLLEDGERENTRIES.LIST>
+            <ALLLEDGERENTRIES.LIST>
+              <LEDGERNAME>SGST</LEDGERNAME>
+              <AMOUNT>${-sgst.toFixed(2)}</AMOUNT>
+            </ALLLEDGERENTRIES.LIST>
+            <ALLLEDGERENTRIES.LIST>
+              <LEDGERNAME>${partyName}</LEDGERNAME>
+              <AMOUNT>${inv.totalAmount.toFixed(2)}</AMOUNT>
+            </ALLLEDGERENTRIES.LIST>
+          </VOUCHER>
+        </TALLYMESSAGE>`;
+  });
+
+  // Purchase vouchers from POs
+  const purchaseMessages = filteredPOs.map(po => {
+    const supName = suppliers.find(s => s.id === po.supplierId)?.name || "Unknown Supplier";
+    const date = fmt(po.createdAt.slice(0, 10));
+    const total = po.totalAmount || 0;
+    const taxable = +(total / 1.18).toFixed(2);
+    const gst = +(total - taxable).toFixed(2);
+    return `
+        <TALLYMESSAGE>
+          <VOUCHER VCHTYPE="Purchase" ACTION="Create">
+            <DATE>${date}</DATE>
+            <VOUCHERNUMBER>${po.poNumber}</VOUCHERNUMBER>
+            <PARTYLEDGERNAME>${supName}</PARTYLEDGERNAME>
+            <NARRATION>${po.remarks || ""}</NARRATION>
+            <ALLLEDGERENTRIES.LIST>
+              <LEDGERNAME>Purchase @GST</LEDGERNAME>
+              <AMOUNT>${taxable.toFixed(2)}</AMOUNT>
+            </ALLLEDGERENTRIES.LIST>
+            <ALLLEDGERENTRIES.LIST>
+              <LEDGERNAME>GST Input Credit</LEDGERNAME>
+              <AMOUNT>${gst.toFixed(2)}</AMOUNT>
+            </ALLLEDGERENTRIES.LIST>
+            <ALLLEDGERENTRIES.LIST>
+              <LEDGERNAME>${supName}</LEDGERNAME>
+              <AMOUNT>${-total.toFixed(2)}</AMOUNT>
+            </ALLLEDGERENTRIES.LIST>
+          </VOUCHER>
+        </TALLYMESSAGE>`;
+  });
+
+  const allMessages = [...partyMessages, ...salesMessages, ...purchaseMessages].join("\n");
+
+  return `<?xml version="1.0" encoding="UTF-8"?>
+<ENVELOPE>
+  <HEADER>
+    <TALLYREQUEST>Import Data</TALLYREQUEST>
+  </HEADER>
+  <BODY>
+    <IMPORTDATA>
+      <REQUESTDESC>
+        <REPORTNAME>All Masters</REPORTNAME>
+      </REQUESTDESC>
+      <REQUESTDATA>${allMessages}
+      </REQUESTDATA>
+    </IMPORTDATA>
+  </BODY>
+</ENVELOPE>`;
 }
 
 export default function FinanceView({
@@ -40,10 +185,39 @@ export default function FinanceView({
   setAssets,
   userRole,
   branchId = "br-hq",
+  invoices = [],
+  purchaseOrders = [],
+  customers = [],
+  suppliers = [],
 }: FinanceViewProps) {
-  const [activeSubTab, setActiveSubTab] = useState<"ledger" | "pl" | "assets">("ledger");
+  const [activeSubTab, setActiveSubTab] = useState<"ledger" | "pl" | "assets" | "tally">("ledger");
   const [showAddTx, setShowAddTx] = useState(false);
   const [showAddAsset, setShowAddAsset] = useState(false);
+
+  // Tally export state
+  const today = new Date().toISOString().slice(0, 10);
+  const firstOfMonth = today.slice(0, 7) + "-01";
+  const [tallyFrom, setTallyFrom] = useState(firstOfMonth);
+  const [tallyTo, setTallyTo] = useState(today);
+  const [tallyIncInvoices, setTallyIncInvoices] = useState(true);
+  const [tallyIncPOs, setTallyIncPOs] = useState(true);
+  const [tallyIncParties, setTallyIncParties] = useState(true);
+
+  const handleTallyExport = () => {
+    const xml = buildTallyXML(
+      invoices, purchaseOrders, customers, suppliers,
+      tallyFrom, tallyTo,
+      tallyIncInvoices, tallyIncPOs, tallyIncParties,
+    );
+    const blob = new Blob([xml], { type: "application/xml" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `OMS_Tally_Export_${tallyFrom}_to_${tallyTo}.xml`;
+    a.click();
+    URL.revokeObjectURL(url);
+    toast.success("Tally XML downloaded — import via Tally > Import > From File");
+  };
   
   // Create transaction form states
   const [newTx, setNewTx] = useState({
@@ -385,6 +559,14 @@ Office Ergonomic Chairs,AST-CH-99,Furniture,1200,1050,12`;
         >
           Asset Register
         </button>
+        <button
+          onClick={() => setActiveSubTab("tally")}
+          className={`px-4 py-1.5 text-xs font-semibold rounded-md transition-colors flex items-center gap-1.5 ${
+            activeSubTab === "tally" ? "bg-emerald-600 text-white shadow-xs" : "text-emerald-400 hover:text-emerald-300"
+          }`}
+        >
+          <Download className="w-3 h-3" /> Tally Export
+        </button>
       </div>
 
       {/* SUB-TAB: TRANSACTIONS LEDGER */}
@@ -721,6 +903,145 @@ Office Ergonomic Chairs,AST-CH-99,Furniture,1200,1050,12`;
                 {netSurplus >= 0 ? "+" : ""}{formatINR(netSurplus)}
               </strong>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* SUB-TAB: TALLY EXPORT */}
+      {activeSubTab === "tally" && (
+        <div className="space-y-6 text-left max-w-2xl mx-auto">
+          {/* Header */}
+          <div className="bg-emerald-950/40 border border-emerald-800/50 rounded-xl p-5">
+            <div className="flex items-center gap-3 mb-2">
+              <div className="w-9 h-9 rounded-lg bg-emerald-600/20 flex items-center justify-center">
+                <Download className="w-4 h-4 text-emerald-400" />
+              </div>
+              <div>
+                <h3 className="text-sm font-bold text-white font-mono">Export to Tally</h3>
+                <p className="text-xs text-slate-400">Generate XML file → Import in Tally via Gateway → Import Data → From File</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Date Range */}
+          <div className="bg-slate-950/60 border border-slate-800 rounded-xl p-5 space-y-4">
+            <h4 className="text-xs font-bold text-slate-300 uppercase tracking-wider font-mono">Select Date Range</h4>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-xs text-slate-400 font-mono mb-1">From Date</label>
+                <input
+                  type="date"
+                  value={tallyFrom}
+                  onChange={e => setTallyFrom(e.target.value)}
+                  className="w-full rounded-lg border border-slate-700 bg-slate-900 p-2.5 text-sm text-white font-mono focus:outline-none focus:border-emerald-600"
+                />
+              </div>
+              <div>
+                <label className="block text-xs text-slate-400 font-mono mb-1">To Date</label>
+                <input
+                  type="date"
+                  value={tallyTo}
+                  onChange={e => setTallyTo(e.target.value)}
+                  className="w-full rounded-lg border border-slate-700 bg-slate-900 p-2.5 text-sm text-white font-mono focus:outline-none focus:border-emerald-600"
+                />
+              </div>
+            </div>
+            {/* Quick range buttons */}
+            <div className="flex gap-2 flex-wrap">
+              {[
+                { label: "This Month", from: today.slice(0,7)+"-01", to: today },
+                { label: "Last Month", from: new Date(new Date().getFullYear(), new Date().getMonth()-1, 1).toISOString().slice(0,10), to: new Date(new Date().getFullYear(), new Date().getMonth(), 0).toISOString().slice(0,10) },
+                { label: "This Quarter", from: `${today.slice(0,4)}-${String(Math.floor((new Date().getMonth())/3)*3+1).padStart(2,"0")}-01`, to: today },
+                { label: "This FY", from: new Date().getMonth() >= 3 ? `${today.slice(0,4)}-04-01` : `${Number(today.slice(0,4))-1}-04-01`, to: today },
+              ].map(r => (
+                <button
+                  key={r.label}
+                  onClick={() => { setTallyFrom(r.from); setTallyTo(r.to); }}
+                  className="px-3 py-1 rounded-md text-xs font-semibold border border-slate-700 text-slate-300 hover:border-emerald-600 hover:text-emerald-400 transition-colors"
+                >
+                  {r.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* What to include */}
+          <div className="bg-slate-950/60 border border-slate-800 rounded-xl p-5 space-y-3">
+            <h4 className="text-xs font-bold text-slate-300 uppercase tracking-wider font-mono">Include in Export</h4>
+            {[
+              { key: "inv", label: "Sales Invoices", desc: "Creates Sales Vouchers in Tally", state: tallyIncInvoices, set: setTallyIncInvoices,
+                count: invoices.filter(i => i.createdAt >= tallyFrom && i.createdAt <= tallyTo+"T23:59:59").length },
+              { key: "po", label: "Purchase Orders", desc: "Creates Purchase Vouchers in Tally", state: tallyIncPOs, set: setTallyIncPOs,
+                count: purchaseOrders.filter(p => p.createdAt >= tallyFrom && p.createdAt <= tallyTo+"T23:59:59").length },
+              { key: "party", label: "Party Ledgers", desc: "Auto-creates Customer & Vendor ledgers in Tally", state: tallyIncParties, set: setTallyIncParties,
+                count: null },
+            ].map(item => (
+              <label key={item.key} className="flex items-center gap-3 cursor-pointer group p-3 rounded-lg hover:bg-slate-900 transition-colors">
+                <input
+                  type="checkbox"
+                  checked={item.state}
+                  onChange={e => item.set(e.target.checked)}
+                  className="w-4 h-4 accent-emerald-500 cursor-pointer"
+                />
+                <div className="flex-1">
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm font-semibold text-white">{item.label}</span>
+                    {item.count !== null && (
+                      <span className={`text-xs font-mono px-2 py-0.5 rounded-full ${item.count > 0 ? "bg-emerald-900/50 text-emerald-400" : "bg-slate-800 text-slate-500"}`}>
+                        {item.count} record{item.count !== 1 ? "s" : ""}
+                      </span>
+                    )}
+                  </div>
+                  <span className="text-xs text-slate-500">{item.desc}</span>
+                </div>
+              </label>
+            ))}
+          </div>
+
+          {/* Summary + Export button */}
+          {(() => {
+            const invCount = invoices.filter(i => i.createdAt >= tallyFrom && i.createdAt <= tallyTo+"T23:59:59").length;
+            const poCount = purchaseOrders.filter(p => p.createdAt >= tallyFrom && p.createdAt <= tallyTo+"T23:59:59").length;
+            const total = (tallyIncInvoices ? invCount : 0) + (tallyIncPOs ? poCount : 0);
+            return (
+              <div className="bg-slate-950/60 border border-emerald-800/40 rounded-xl p-5 flex items-center justify-between gap-4 flex-wrap">
+                <div>
+                  <p className="text-xs text-slate-400 font-mono mb-1">Ready to export</p>
+                  <p className="text-sm font-bold text-white">
+                    {total} voucher{total !== 1 ? "s" : ""} will be written to Tally
+                  </p>
+                  <p className="text-xs text-slate-500 mt-0.5">{tallyFrom} → {tallyTo}</p>
+                </div>
+                <button
+                  onClick={handleTallyExport}
+                  disabled={total === 0 && !tallyIncParties}
+                  className="flex items-center gap-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 disabled:opacity-40 disabled:cursor-not-allowed px-5 py-3 text-sm font-bold text-white transition-colors shadow-lg"
+                >
+                  <Download className="w-4 h-4" />
+                  Download XML for Tally
+                </button>
+              </div>
+            );
+          })()}
+
+          {/* How to import instructions */}
+          <div className="bg-slate-900/60 border border-slate-800 rounded-xl p-5">
+            <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider font-mono mb-3">How to Import in Tally</h4>
+            <ol className="space-y-2">
+              {[
+                "Open Tally Prime on your computer",
+                "Go to Gateway of Tally → Import → Data",
+                'Select "Vouchers" from the list',
+                "Click From File → browse and select the downloaded XML",
+                "Tally will import all Sales, Purchase vouchers and Party ledgers",
+                "Verify the entries under Day Book in Tally",
+              ].map((step, i) => (
+                <li key={i} className="flex items-start gap-3 text-xs text-slate-300">
+                  <span className="w-5 h-5 rounded-full bg-emerald-900/50 text-emerald-400 font-bold text-[10px] flex items-center justify-center flex-shrink-0 mt-0.5">{i+1}</span>
+                  {step}
+                </li>
+              ))}
+            </ol>
           </div>
         </div>
       )}

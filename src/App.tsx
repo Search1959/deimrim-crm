@@ -1129,6 +1129,10 @@ export default function App() {
             assets={assets}
             userRole={currentUser.role}
             branchId={currentBranch.id}
+            invoices={invoices}
+            purchaseOrders={purchaseOrders}
+            customers={customers}
+            suppliers={suppliers}
           />
         );
       case "admin":
