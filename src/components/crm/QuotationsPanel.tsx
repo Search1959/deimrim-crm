@@ -1,6 +1,6 @@
 ﻿import { toast } from "../../utils/toast";
 import React, { useState, useEffect } from "react";
-import { Plus, Search, Edit, Trash2, FileText, Check } from "lucide-react";
+import { Plus, Search, Edit, Trash2, FileText, Check, Download } from "lucide-react";
 import { Quotation, Customer, Deal, formatINR } from "../../types";
 
 interface QuotationsPanelProps {
@@ -214,6 +214,19 @@ export default function QuotationsPanel({ customers, companyId, isDemo }: Quotat
     }
   };
 
+  const handleExport = async () => {
+    const XLSX = await import("xlsx");
+    const rows = quotations.map(q => ({
+      "Quotation No": q.quotationNumber, "Date": q.createdAt, "Valid Until": q.validUntil || "",
+      "Company": q.companyName, "Contact": q.contactPerson, "GSTIN": q.gstNo || "",
+      "Total Amount": q.totalAmount, "Status": q.status, "Notes": q.notes || "",
+    }));
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(rows), "Quotations");
+    XLSX.writeFile(wb, "Quotations_Export.xlsx");
+    toast.success("Exported", `${rows.length} quotations downloaded`);
+  };
+
   const filteredQuotations = quotations.filter(q => 
     q.quotationNumber.toLowerCase().includes(searchQuery.toLowerCase()) ||
     q.companyName.toLowerCase().includes(searchQuery.toLowerCase())
@@ -235,13 +248,15 @@ export default function QuotationsPanel({ customers, companyId, isDemo }: Quotat
             className="w-full bg-slate-900 border border-slate-800 rounded-lg pl-8.5 pr-3 py-1.5 text-xs text-slate-200 focus:outline-hidden focus:border-indigo-500 font-semibold"
           />
         </div>
-        <button
-          onClick={handleOpenAdd}
-          className="flex items-center gap-1.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg px-3 py-1.5 text-xs font-bold transition-all cursor-pointer"
-        >
-          <Plus className="h-3.5 w-3.5" />
-          <span>New Quotation</span>
-        </button>
+        <div className="flex items-center gap-2">
+          <button onClick={handleExport} className="flex items-center gap-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg px-2.5 py-1.5 text-xs font-bold cursor-pointer border border-slate-700">
+            <Download className="h-3.5 w-3.5" /> Export
+          </button>
+          <button onClick={handleOpenAdd} className="flex items-center gap-1.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg px-3 py-1.5 text-xs font-bold transition-all cursor-pointer">
+            <Plus className="h-3.5 w-3.5" />
+            <span>New Quotation</span>
+          </button>
+        </div>
       </div>
 
       {/* List */}

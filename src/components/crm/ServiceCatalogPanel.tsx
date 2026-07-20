@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Plus, Trash2, Edit, Wrench, Check } from "lucide-react";
+import { Plus, Trash2, Edit, Wrench, Check, Download, Upload } from "lucide-react";
 import { ServiceCatalogItem, formatINR } from "../../types";
 import { toast } from "../../utils/toast";
 
@@ -48,6 +48,40 @@ export default function ServiceCatalogPanel({ serviceCatalog, setServiceCatalog 
     setServiceCatalog(prev => prev.filter(s => s.id !== id));
   };
 
+  const handleExport = async () => {
+    const XLSX = await import("xlsx");
+    const rows = serviceCatalog.map(s => ({
+      "Service Name": s.name, "SAC Code": s.sacCode, "Unit": s.unit,
+      "Default Rate": s.defaultRate, "Description": s.description || "",
+    }));
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(rows), "ServiceCatalog");
+    XLSX.writeFile(wb, "ServiceCatalog_Export.xlsx");
+    toast.success("Exported", `${rows.length} services downloaded`);
+  };
+
+  const handleImport = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]; if (!file) return;
+    const XLSX = await import("xlsx");
+    const ab = await file.arrayBuffer();
+    const wb = XLSX.read(ab);
+    const data: any[] = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]]);
+    const newItems: ServiceCatalogItem[] = [];
+    data.forEach((row, i) => {
+      const name = row["Service Name"] || row["name"] || ""; if (!name) return;
+      newItems.push({
+        id: `svc-imp-${Date.now()}-${i}`,
+        name, sacCode: row["SAC Code"] || row["sacCode"] || "",
+        unit: row["Unit"] || row["unit"] || "Job",
+        defaultRate: Number(row["Default Rate"] || row["defaultRate"] || 0),
+        description: row["Description"] || row["description"] || "",
+      });
+    });
+    setServiceCatalog(prev => [...newItems, ...prev]);
+    toast.success("Imported", `${newItems.length} services added`);
+    e.target.value = "";
+  };
+
   return (
     <div className="space-y-4">
       {/* Header */}
@@ -59,13 +93,18 @@ export default function ServiceCatalogPanel({ serviceCatalog, setServiceCatalog 
           </div>
           <p className="text-[11px] text-slate-400">Pre-saved services you can add to any invoice — no stock deducted, only Finance revenue posted.</p>
         </div>
-        <button
-          onClick={openAdd}
-          className="flex items-center gap-1.5 bg-violet-600 hover:bg-violet-500 text-white rounded-lg px-3 py-1.5 text-xs font-bold cursor-pointer transition-all"
-        >
-          <Plus className="h-3.5 w-3.5" />
-          Add Service
-        </button>
+        <div className="flex items-center gap-2">
+          <button onClick={handleExport} className="flex items-center gap-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg px-2.5 py-1.5 text-xs font-bold cursor-pointer border border-slate-700">
+            <Download className="h-3.5 w-3.5" /> Export
+          </button>
+          <label className="flex items-center gap-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg px-2.5 py-1.5 text-xs font-bold cursor-pointer border border-slate-700">
+            <Upload className="h-3.5 w-3.5" /> Import
+            <input type="file" accept=".xlsx,.xls" className="hidden" onChange={handleImport} />
+          </label>
+          <button onClick={openAdd} className="flex items-center gap-1.5 bg-violet-600 hover:bg-violet-500 text-white rounded-lg px-3 py-1.5 text-xs font-bold cursor-pointer transition-all">
+            <Plus className="h-3.5 w-3.5" /> Add Service
+          </button>
+        </div>
       </div>
 
       {/* Service Cards */}
