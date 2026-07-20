@@ -1,6 +1,6 @@
 ﻿import { toast } from "../../utils/toast";
 import React, { useState, useEffect } from "react";
-import { Plus, Search, Trash2, ShieldCheck, Mail, Phone, MapPin, Landmark, CreditCard, Sparkles } from "lucide-react";
+import { Plus, Search, Trash2, ShieldCheck, Mail, Phone, MapPin, Landmark, CreditCard, Sparkles, Upload, Download } from "lucide-react";
 import { Supplier } from "../../types";
 
 interface VendorsPanelProps {
@@ -32,6 +32,55 @@ export default function VendorsPanel({ suppliers, onAddSupplier, onDeleteSupplie
   const [accountNumber, setAccountNumber] = useState("");
   const [ifsc, setIfsc] = useState("");
   const [bankNameBranch, setBankNameBranch] = useState("");
+
+  const handleExport = async () => {
+    const XLSX = await import("xlsx");
+    const rows = suppliers.map(s => ({
+      "Vendor Code":    s.code,
+      "Vendor Name":    s.name,
+      "Contact Person": s.contactPerson,
+      "Email":          s.email,
+      "Phone":          s.phone,
+      "Address":        s.address,
+      "GSTIN":          s.taxId || "",
+      "Credit Days":    s.creditDays,
+    }));
+    const ws = XLSX.utils.json_to_sheet(rows);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Vendors");
+    XLSX.writeFile(wb, "Vendors_Export.xlsx");
+    toast.success("Exported", `${rows.length} vendors downloaded as Excel`);
+  };
+
+  const handleImport = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const XLSX = await import("xlsx");
+    const data = await file.arrayBuffer();
+    const wb = XLSX.read(data);
+    const ws = wb.Sheets[wb.SheetNames[0]];
+    const rows: any[] = XLSX.utils.sheet_to_json(ws);
+    let added = 0;
+    rows.forEach(row => {
+      const name = row["Vendor Name"] || row["name"] || "";
+      if (!name) return;
+      const newVendor: Omit<typeof suppliers[0], "id"> = {
+        companyId,
+        name,
+        code:          row["Vendor Code"] || row["code"] || `SUP-${Date.now()}-${added}`,
+        contactPerson: row["Contact Person"] || row["contactPerson"] || "",
+        email:         row["Email"] || row["email"] || "",
+        phone:         row["Phone"] || row["phone"] || "",
+        address:       row["Address"] || row["address"] || "",
+        taxId:         row["GSTIN"] || row["taxId"] || "",
+        creditDays:    Number(row["Credit Days"] || row["creditDays"] || 30),
+      };
+      onAddSupplier(newVendor);
+      added++;
+    });
+    toast.success("Import Complete", `${added} vendors added`);
+    e.target.value = "";
+  };
 
   const handleOpenAdd = () => {
     setName("");
@@ -99,13 +148,21 @@ export default function VendorsPanel({ suppliers, onAddSupplier, onDeleteSupplie
             className="w-full bg-slate-900 border border-slate-800 rounded-lg pl-8.5 pr-3 py-1.5 text-xs text-slate-200 focus:outline-hidden focus:border-indigo-500 font-semibold"
           />
         </div>
-        <button
-          onClick={handleOpenAdd}
-          className="flex items-center gap-1.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg px-3 py-1.5 text-xs font-bold transition-all cursor-pointer"
-        >
-          <Plus className="h-3.5 w-3.5" />
-          <span>Add New Vendor</span>
-        </button>
+        <div className="flex items-center gap-2 flex-wrap">
+          <button onClick={handleExport} className="flex items-center gap-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg px-3 py-1.5 text-xs font-bold transition-all cursor-pointer border border-slate-700">
+            <Download className="h-3.5 w-3.5" />
+            <span>Export</span>
+          </button>
+          <label className="flex items-center gap-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg px-3 py-1.5 text-xs font-bold transition-all cursor-pointer border border-slate-700">
+            <Upload className="h-3.5 w-3.5" />
+            <span>Import</span>
+            <input type="file" accept=".xlsx,.xls,.csv" className="hidden" onChange={handleImport} />
+          </label>
+          <button onClick={handleOpenAdd} className="flex items-center gap-1.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg px-3 py-1.5 text-xs font-bold transition-all cursor-pointer">
+            <Plus className="h-3.5 w-3.5" />
+            <span>Add New Vendor</span>
+          </button>
+        </div>
       </div>
 
       {/* Vendors Grid layout */}

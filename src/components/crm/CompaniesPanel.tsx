@@ -1,6 +1,7 @@
 import React, { useState } from "react";
-import { Plus, Search, Edit, Trash2, Building2 } from "lucide-react";
+import { Plus, Search, Edit, Trash2, Building2, Upload, Download } from "lucide-react";
 import { Customer } from "../../types";
+import { toast } from "../../utils/toast";
 
 interface CompaniesPanelProps {
   customers: Customer[];
@@ -19,6 +20,53 @@ export default function CompaniesPanel({ customers, setCustomers, companyId }: C
   const [phone, setPhone] = useState("");
   const [address, setAddress] = useState("");
   const [gstin, setGstin] = useState("");
+
+  const handleExport = async () => {
+    const XLSX = await import("xlsx");
+    const rows = customers.map(c => ({
+      "Client Name":  c.name,
+      "Client Code":  c.code,
+      "Email":        c.email,
+      "Phone":        c.phone,
+      "Address":      c.address,
+      "GSTIN":        c.gstin || "",
+      "Outstanding":  c.outstandingBalance,
+    }));
+    const ws = XLSX.utils.json_to_sheet(rows);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Clients");
+    XLSX.writeFile(wb, "Clients_Export.xlsx");
+    toast.success("Exported", `${rows.length} clients downloaded as Excel`);
+  };
+
+  const handleImport = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const XLSX = await import("xlsx");
+    const data = await file.arrayBuffer();
+    const wb = XLSX.read(data);
+    const rows: any[] = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]]);
+    let added = 0;
+    rows.forEach(row => {
+      const name = row["Client Name"] || row["name"] || "";
+      if (!name) return;
+      const newCustomer: Customer = {
+        id:                 `cust-${Date.now()}-${added}`,
+        companyId,
+        name,
+        code:               row["Client Code"] || row["code"] || `CUST-${Date.now().toString().slice(-4)}`,
+        email:              row["Email"] || row["email"] || "",
+        phone:              row["Phone"] || row["phone"] || "",
+        address:            row["Address"] || row["address"] || "",
+        gstin:              row["GSTIN"] || row["gstin"] || "",
+        outstandingBalance: Number(row["Outstanding"] || 0),
+      };
+      setCustomers(prev => [newCustomer, ...prev]);
+      added++;
+    });
+    toast.success("Import Complete", `${added} clients added`);
+    e.target.value = "";
+  };
 
   const handleOpenAdd = () => {
     setName("");
@@ -103,13 +151,21 @@ export default function CompaniesPanel({ customers, setCustomers, companyId }: C
             className="w-full bg-slate-900 border border-slate-800 rounded-lg pl-8.5 pr-3 py-1.5 text-xs text-slate-200 focus:outline-hidden focus:border-indigo-500 font-semibold"
           />
         </div>
-        <button
-          onClick={handleOpenAdd}
-          className="flex items-center gap-1.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg px-3 py-1.5 text-xs font-bold transition-all cursor-pointer"
-        >
-          <Plus className="h-3.5 w-3.5" />
-          <span>Add Company</span>
-        </button>
+        <div className="flex items-center gap-2 flex-wrap">
+          <button onClick={handleExport} className="flex items-center gap-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg px-3 py-1.5 text-xs font-bold transition-all cursor-pointer border border-slate-700">
+            <Download className="h-3.5 w-3.5" />
+            <span>Export</span>
+          </button>
+          <label className="flex items-center gap-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg px-3 py-1.5 text-xs font-bold transition-all cursor-pointer border border-slate-700">
+            <Upload className="h-3.5 w-3.5" />
+            <span>Import</span>
+            <input type="file" accept=".xlsx,.xls,.csv" className="hidden" onChange={handleImport} />
+          </label>
+          <button onClick={handleOpenAdd} className="flex items-center gap-1.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg px-3 py-1.5 text-xs font-bold transition-all cursor-pointer">
+            <Plus className="h-3.5 w-3.5" />
+            <span>Add Company</span>
+          </button>
+        </div>
       </div>
 
       {/* Grid */}
