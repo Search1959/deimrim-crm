@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { Plus, Search, Edit, Trash2, Users } from "lucide-react";
+import { Plus, Search, Edit, Trash2, Users, Upload, Download } from "lucide-react";
 import { Contact, Customer } from "../../types";
+import { toast } from "../../utils/toast";
 
 interface ContactsPanelProps {
   customers: Customer[];
@@ -55,6 +56,43 @@ export default function ContactsPanel({ customers, companyId }: ContactsPanelPro
   const saveContacts = (updated: Contact[]) => {
     setContacts(updated);
     localStorage.setItem(storageKey, JSON.stringify(updated));
+  };
+
+  const handleExport = async () => {
+    const XLSX = await import("xlsx");
+    const rows = contacts.map(c => ({
+      "Name": c.name, "Company": c.companyName,
+      "Email": c.email, "Phone": c.phone,
+      "Designation": c.designation || "", "Created": c.createdAt,
+    }));
+    const ws = XLSX.utils.json_to_sheet(rows);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Contacts");
+    XLSX.writeFile(wb, "Contacts_Export.xlsx");
+    toast.success("Exported", `${rows.length} contacts downloaded`);
+  };
+
+  const handleImport = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]; if (!file) return;
+    const XLSX = await import("xlsx");
+    const data: any[] = XLSX.utils.sheet_to_json(XLSX.read(await file.arrayBuffer()).Sheets[XLSX.read(await file.arrayBuffer()).SheetNames[0]]);
+    const ab = await file.arrayBuffer();
+    const parsed: any[] = XLSX.utils.sheet_to_json(XLSX.read(ab).Sheets[XLSX.read(ab).SheetNames[0]]);
+    const newContacts: Contact[] = [];
+    parsed.forEach((row, i) => {
+      const n = row["Name"] || row["name"] || ""; if (!n) return;
+      newContacts.push({
+        id: `cont-imp-${Date.now()}-${i}`,
+        name: n, companyName: row["Company"] || row["companyName"] || "",
+        email: row["Email"] || row["email"] || "",
+        phone: row["Phone"] || row["phone"] || "",
+        designation: row["Designation"] || row["designation"] || "",
+        createdAt: new Date().toISOString().slice(0, 10),
+      });
+    });
+    saveContacts([...newContacts, ...contacts]);
+    toast.success("Import Complete", `${newContacts.length} contacts added`);
+    e.target.value = "";
   };
 
   const handleOpenAdd = () => {
@@ -142,13 +180,18 @@ export default function ContactsPanel({ customers, companyId }: ContactsPanelPro
             className="w-full bg-slate-900 border border-slate-800 rounded-lg pl-8.5 pr-3 py-1.5 text-xs text-slate-200 focus:outline-hidden focus:border-indigo-500 font-semibold"
           />
         </div>
-        <button
-          onClick={handleOpenAdd}
-          className="flex items-center gap-1.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg px-3 py-1.5 text-xs font-bold transition-all cursor-pointer"
-        >
-          <Plus className="h-3.5 w-3.5" />
-          <span>Add Contact</span>
-        </button>
+        <div className="flex items-center gap-2">
+          <button onClick={handleExport} className="flex items-center gap-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg px-3 py-1.5 text-xs font-bold transition-all cursor-pointer border border-slate-700">
+            <Download className="h-3.5 w-3.5" /><span>Export</span>
+          </button>
+          <label className="flex items-center gap-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg px-3 py-1.5 text-xs font-bold transition-all cursor-pointer border border-slate-700">
+            <Upload className="h-3.5 w-3.5" /><span>Import</span>
+            <input type="file" accept=".xlsx,.xls,.csv" className="hidden" onChange={handleImport} />
+          </label>
+          <button onClick={handleOpenAdd} className="flex items-center gap-1.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg px-3 py-1.5 text-xs font-bold transition-all cursor-pointer">
+            <Plus className="h-3.5 w-3.5" /><span>Add Contact</span>
+          </button>
+        </div>
       </div>
 
       {/* Grid */}

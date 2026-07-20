@@ -302,6 +302,25 @@ ${inv.notes ? `<div style="border:1px solid #e2e8f0;border-radius:8px;padding:14
             className="flex items-center gap-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg px-3 py-1.5 text-xs font-bold cursor-pointer">
             <Share2 className="h-3.5 w-3.5" /> Export CSV
           </button>
+          <button onClick={async () => {
+            const XLSX = await import("xlsx");
+            const rows = invoices.map(inv => {
+              const cust = customers.find(c => c.id === inv.customerId);
+              return {
+                "Invoice No": inv.invoiceNumber, "Date": inv.createdAt.slice(0,10),
+                "Due Date": inv.dueDate, "Client": inv.buyerName || cust?.name || "",
+                "GSTIN": inv.buyerGSTIN || cust?.gstin || "",
+                "Subtotal": inv.subtotal, "Tax": inv.taxAmount,
+                "Total": inv.totalAmount, "Status": inv.status,
+              };
+            });
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(rows), "Invoices");
+            XLSX.writeFile(wb, "Invoices_Export.xlsx");
+            toast.success("Exported", `${rows.length} invoices downloaded`);
+          }} className="flex items-center gap-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg px-3 py-1.5 text-xs font-bold cursor-pointer">
+            <Download className="h-3.5 w-3.5" /> Export Excel
+          </button>
           {canWrite && (<button onClick={() => setShowGSTBuilder(true)}
             className="flex items-center gap-1.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg px-3 py-1.5 text-xs font-bold cursor-pointer">
             <Plus className="h-3.5 w-3.5" /> New GST Invoice

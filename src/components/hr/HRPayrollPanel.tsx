@@ -1,6 +1,6 @@
 import { toast } from "../../utils/toast";
 import React, { useState, useEffect } from "react";
-import { Wallet, Check, Printer, Eye, X, Calculator, Edit3, Search, Settings, Info } from "lucide-react";
+import { Wallet, Check, Printer, Eye, X, Calculator, Edit3, Search, Settings, Info, Download } from "lucide-react";
 import { Employee, formatINR } from "../../types";
 
 interface HRPayrollPanelProps {
@@ -231,6 +231,29 @@ export default function HRPayrollPanel({ employees, companyId, onSalaryDisbursed
               title="Configure Tax Rates (EPF / ESIC / PT / TDS)"
             >
               <Settings className="h-3.5 w-3.5" /> Tax Config
+            </button>
+            <button onClick={async () => {
+              const XLSX = await import("xlsx");
+              const rows = employees.map(emp => {
+                const adj = adjustments[emp.id] || { hra: 0, allowance: 0, bonus: 0, customDeduction: 0 };
+                const gross = emp.salary + adj.hra + adj.allowance + adj.bonus;
+                const epf = Math.round(gross * taxConfig.epfPct / 100);
+                const esic = gross <= 21000 ? Math.round(gross * taxConfig.esicPct / 100) : 0;
+                const pt = gross >= (taxConfig.ptThreshold || 10000) ? (taxConfig.ptAmount || 0) : 0;
+                const net = gross - epf - esic - pt - adj.customDeduction;
+                return {
+                  "Employee": emp.name, "Month": payslipMonth,
+                  "Basic Salary": emp.salary, "HRA": adj.hra, "Allowance": adj.allowance, "Bonus": adj.bonus,
+                  "Gross": gross, "EPF": epf, "ESIC": esic, "PT": pt, "Deductions": adj.customDeduction,
+                  "Net Salary": net, "Status": payrollStatus[emp.id] || "pending",
+                };
+              });
+              const wb = XLSX.utils.book_new();
+              XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(rows), "Salary Register");
+              XLSX.writeFile(wb, `Salary_Register_${payslipMonth.replace(" ","_")}.xlsx`);
+              toast.success("Exported", "Salary register downloaded");
+            }} className="flex items-center gap-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 px-3 py-1.5 text-xs font-bold cursor-pointer transition-all">
+              <Download className="h-3.5 w-3.5" /> Export Register
             </button>
           </div>
         </div>

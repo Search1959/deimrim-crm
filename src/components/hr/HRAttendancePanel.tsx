@@ -1,6 +1,6 @@
 ﻿import { toast } from "../../utils/toast";
 import React, { useState } from "react";
-import { Clock, UserCheck, Search, ShieldCheck } from "lucide-react";
+import { Clock, UserCheck, Search, ShieldCheck, Download } from "lucide-react";
 import { Employee, Department } from "../../types";
 
 interface HRAttendancePanelProps {
@@ -115,7 +115,28 @@ export default function HRAttendancePanel({ employees, departments }: HRAttendan
       {/* TODAY LOGS DIRECTORY */}
       <div className="lg:col-span-2 bg-slate-950/40 border border-slate-800 rounded-xl p-5 space-y-4">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-slate-800 pb-3">
-          <h3 className="font-bold text-sm text-white font-mono uppercase tracking-wider">Roster Attendance logs</h3>
+          <div className="flex items-center gap-3">
+            <h3 className="font-bold text-sm text-white font-mono uppercase tracking-wider">Roster Attendance logs</h3>
+            <button onClick={async () => {
+              const XLSX = await import("xlsx");
+              const rows = employees.map(emp => {
+                const punch = clockInState[emp.id];
+                const dept = departments.find(d => d.id === emp.departmentId);
+                return {
+                  "Employee": emp.name, "Department": dept?.name || "",
+                  "Status": punch ? punch.status : "absent",
+                  "Clock In": punch ? punch.inTime : "—",
+                  "Date": new Date().toISOString().slice(0,10),
+                };
+              });
+              const wb = XLSX.utils.book_new();
+              XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(rows), "Attendance");
+              XLSX.writeFile(wb, `Attendance_${new Date().toISOString().slice(0,10)}.xlsx`);
+              toast.success("Exported", "Attendance sheet downloaded");
+            }} className="flex items-center gap-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg px-2.5 py-1 text-xs font-bold cursor-pointer border border-slate-700">
+              <Download className="h-3 w-3" /> Export
+            </button>
+          </div>
           <div className="relative w-full sm:w-60">
             <Search className="absolute left-2.5 top-2 h-3.5 w-3.5 text-slate-500" />
             <input

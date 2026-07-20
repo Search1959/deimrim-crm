@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Plus, Search, Edit, Trash2, ArrowUpRight, Award, MessageSquare } from "lucide-react";
+import { Plus, Search, Edit, Trash2, ArrowUpRight, Award, MessageSquare, Upload, Download } from "lucide-react";
 import { Lead, Customer, formatINR, UserRole } from "../../types";
 
 interface LeadsPanelProps {
@@ -27,6 +27,49 @@ export default function LeadsPanel({ leads, setLeads, customers, companyId, user
   const [closeDate, setCloseDate] = useState("");
   const [notes, setNotes] = useState("");
   const [leadEmail, setLeadEmail] = useState("");
+
+  const handleExport = async () => {
+    const XLSX = await import("xlsx");
+    const rows = leads.map(l => ({
+      "Lead Name":    l.name,
+      "Company":      l.companyName || "",
+      "Email":        l.email,
+      "Phone":        l.phone,
+      "Status":       l.status,
+      "Source":       l.source,
+      "Assigned To":  l.assignedTo,
+      "Notes":        l.notes || "",
+      "Last Contact": l.lastContacted || "",
+    }));
+    const ws = XLSX.utils.json_to_sheet(rows);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Leads");
+    XLSX.writeFile(wb, "Leads_Export.xlsx");
+  };
+
+  const handleImport = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]; if (!file) return;
+    const XLSX = await import("xlsx");
+    const wb = XLSX.read(await file.arrayBuffer());
+    const data: any[] = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]]);
+    const newLeads: Lead[] = [];
+    data.forEach((row, i) => {
+      const name = row["Lead Name"] || row["name"] || ""; if (!name) return;
+      newLeads.push({
+        id: `lead-imp-${Date.now()}-${i}`, companyId,
+        name, companyName: row["Company"] || row["companyName"] || "",
+        email: row["Email"] || row["email"] || "contact@example.com",
+        phone: row["Phone"] || row["phone"] || "",
+        status: (row["Status"] || "New") as Lead["status"],
+        source: row["Source"] || "Import",
+        assignedTo: row["Assigned To"] || "",
+        notes: row["Notes"] || "",
+        lastContacted: row["Last Contact"] || new Date().toISOString().slice(0, 10),
+      });
+    });
+    setLeads(prev => [...newLeads, ...prev]);
+    e.target.value = "";
+  };
 
   const handleOpenAdd = () => {
     setTitle("");
@@ -164,12 +207,15 @@ export default function LeadsPanel({ leads, setLeads, customers, companyId, user
           />
         </div>
         <div className="flex flex-wrap items-center gap-2">
-          {canWrite && (<button
-            onClick={handleOpenAdd}
-            className="flex items-center gap-1.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg px-3 py-1.5 text-xs font-bold transition-all cursor-pointer"
-          >
-            <Plus className="h-3.5 w-3.5" />
-            <span>Add Lead</span>
+          <button onClick={handleExport} className="flex items-center gap-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg px-3 py-1.5 text-xs font-bold transition-all cursor-pointer border border-slate-700">
+            <Download className="h-3.5 w-3.5" /><span>Export</span>
+          </button>
+          {canWrite && (<label className="flex items-center gap-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg px-3 py-1.5 text-xs font-bold transition-all cursor-pointer border border-slate-700">
+            <Upload className="h-3.5 w-3.5" /><span>Import</span>
+            <input type="file" accept=".xlsx,.xls,.csv" className="hidden" onChange={handleImport} />
+          </label>)}
+          {canWrite && (<button onClick={handleOpenAdd} className="flex items-center gap-1.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg px-3 py-1.5 text-xs font-bold transition-all cursor-pointer">
+            <Plus className="h-3.5 w-3.5" /><span>Add Lead</span>
           </button>)}
         </div>
       </div>
