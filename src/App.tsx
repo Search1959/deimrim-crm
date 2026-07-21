@@ -335,21 +335,21 @@ export default function App() {
     setProducts([]); setBatchStocks([]); setSuppliers([]); setPurchaseOrders([]);
     setLeads([]); setCustomers([]); setInvoices([]); setEmployees([]); setLeaveRequests([]);
     setTransactions([]); setDocuments([]); setNotifications([]); setAuditLogs([]);
-    setAssets([]); setStockMovements([]); setServiceCatalog([]);
+    setAssets([]); setStockMovements([]); setServiceCatalog([]); setVendorBills([]);
     (async () => {
       // Load all 19 entities from MySQL in parallel (one round-trip each via Promise.all)
       const [
         apiCompany, apiBranches, apiProducts, apiCategories, apiBrands,
         apiBatchStocks, apiSuppliers, apiPOs, apiLeads, apiCustomers,
         apiInvoices, apiEmployees, apiLeaves, apiTransactions, apiDocs,
-        apiNotifications, apiAudit, apiAssets, apiMovements,
+        apiNotifications, apiAudit, apiAssets, apiMovements, apiVendorBills,
       ] = await Promise.all([
         loadAllEntities(companyId).then(d => d)
       ]).then(([d]) => [
         d.company, d.branches, d.products, d.categories, d.brands,
         d.batchStocks, d.suppliers, d.purchaseOrders, d.leads, d.customers,
         d.invoices, d.employees, d.leaveRequests, d.transactions, d.documents,
-        d.notifications, d.auditLogs, d.assets, d.stockMovements,
+        d.notifications, d.auditLogs, d.assets, d.stockMovements, d.vendorBills,
       ]);
 
       // Build blank tenant defaults for new companies (isDemo defined above)
@@ -413,8 +413,9 @@ export default function App() {
         details: `Tenant workspace launched: ${(resolvedCompany as any).name}.`,
         timestamp: new Date().toISOString(), ipAddress: "127.0.0.1",
       }]);
-      const resolvedAssets    = pick(apiAssets,    "assets",        []);
-      const resolvedMovements = pick(apiMovements, "stockMovements",[]);
+      const resolvedAssets      = pick(apiAssets,      "assets",        []);
+      const resolvedMovements   = pick(apiMovements,   "stockMovements",[]);
+      const resolvedVendorBills = pick(apiVendorBills, "vendorBills",   []);
 
       // Apply branch migration (Mumbai → Kolkata)
       const migratedBranches = (resolvedBranches as any[]).map((br: any) =>
@@ -444,6 +445,7 @@ export default function App() {
       setAuditLogs(resolvedAudit as any);
       setAssets(resolvedAssets as any);
       setStockMovements(resolvedMovements as any);
+      setVendorBills(resolvedVendorBills as any);
       tenantLoading.current = false;
       setServiceCatalog(isDemo ? [
         { id: "svc-1", name: "Consulting / Advisory", sacCode: "998311", unit: "Hour", defaultRate: 2500, description: "Professional consulting and advisory services" },
@@ -481,6 +483,7 @@ export default function App() {
     localStorage.setItem(`deinrim_auditLogs_${cid}`,      JSON.stringify(auditLogs));
     localStorage.setItem(`deinrim_assets_${cid}`,         JSON.stringify(assets));
     localStorage.setItem(`deinrim_stockMovements_${cid}`, JSON.stringify(stockMovements));
+    localStorage.setItem(`deinrim_vendorBills_${cid}`,    JSON.stringify(vendorBills));
 
     // Debounced write to MySQL API (fire-and-forget, no blocking UI)
     if (saveTimer.current) clearTimeout(saveTimer.current);
@@ -502,12 +505,13 @@ export default function App() {
       saveEntity(cid, "auditLogs",      auditLogs);
       saveEntity(cid, "assets",         assets);
       saveEntity(cid, "stockMovements", stockMovements);
+      saveEntity(cid, "vendorBills",    vendorBills);
     }, 1500);
   }, [
     isLoggedIn, currentUser.companyId,
     company, branches, products, batchStocks, suppliers, purchaseOrders,
     leads, customers, invoices, employees, leaveRequests, transactions,
-    documents, notifications, auditLogs, assets, stockMovements,
+    documents, notifications, auditLogs, assets, stockMovements, vendorBills,
   ]);
 
   useEffect(() => { persistTenant(); }, [persistTenant]);
