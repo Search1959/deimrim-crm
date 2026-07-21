@@ -12,6 +12,7 @@ interface OrdersPanelProps {
   setPurchaseOrders: React.Dispatch<React.SetStateAction<PurchaseOrder[]>>;
   onMarkPOReceived: (poId: string) => void;
   batchStocks?: BatchStock[];
+  setBatchStocks: React.Dispatch<React.SetStateAction<BatchStock[]>>;
   companyId: string;
 }
 
@@ -195,6 +196,7 @@ export default function OrdersPanel({
   setPurchaseOrders,
   onMarkPOReceived,
   batchStocks = [],
+  setBatchStocks,
   companyId,
 }: OrdersPanelProps) {
   const [searchQuery, setSearchQuery] = useState("");
@@ -356,18 +358,45 @@ export default function OrdersPanel({
         ? Math.round((igst / subtotalCalc) * 100)
         : 18;
 
-      // ── Populate form ──────────────────────────────────────────────────
-      setVendorId(supplierId);
-      setLineItems(importedLines.length > 0 ? importedLines : [{ productId: "", quantity: 1, unitPrice: 0 }]);
-      setSupplierInvoiceNo(invoiceNo);
-      setSupplierInvoiceDate(invDate);
-      setGstPct(detectedGST);
-      setNotes(`Imported from: ${file.name}`);
-      setShowAddModal(true);
+      if (importedLines.length === 0) {
+        toast.error("No items found", "Check column headers in the Excel file.");
+        return;
+      }
+
+      // ── Auto-create PO directly ────────────────────────────────────────
+      const subtotalCalcd = importedLines.reduce((s, i) => s + i.quantity * i.unitPrice, 0);
+      const gstAmt = subtotalCalcd * (detectedGST / 100);
+      const total = subtotalCalcd + gstAmt;
+
+      const newPO: PurchaseOrder = {
+        id: `po-${Date.now()}`,
+        poNumber: `PO-${new Date().getFullYear()}-${String(purchaseOrders.length + 1).padStart(4, "0")}`,
+        supplierId,
+        branchId: "br-hq",
+        items: importedLines.map(i => ({ productId: i.productId, quantity: i.quantity, unitPrice: i.unitPrice, receivedQuantity: i.quantity })),
+        totalAmount: total,
+        status: "completed",
+        paymentStatus: "unpaid",
+        supplierInvoiceNo: invoiceNo || undefined,
+        supplierInvoiceDate: invDate || undefined,
+        remarks: `Imported from: ${file.name}`,
+        createdAt: new Date().toISOString(),
+      };
+      setPurchaseOrders(prev => [...prev, newPO]);
+
+      // ── Add stock to inventory immediately ────────────────────────────
+      const newStocks: BatchStock[] = importedLines.map((i, idx) => ({
+        id: `bs-imp-${Date.now()}-${idx}`,
+        productId: i.productId,
+        warehouseId: "wh-main",
+        batchNumber: `BATCH-${invoiceNo || Date.now()}`,
+        quantity: i.quantity,
+      }));
+      setBatchStocks(prev => [...prev, ...newStocks]);
 
       toast.success(
-        `✅ ${importedLines.length} items imported`,
-        `${createdProducts.length} new products added to Inventory · GST ${detectedGST}%`
+        `PO created — ${importedLines.length} items`,
+        `${createdProducts.length} new products · stock added to Inventory · GST ${detectedGST}%`
       );
     } catch (err) {
       toast.error("Import Failed", "Could not parse the Excel file. Check format.");

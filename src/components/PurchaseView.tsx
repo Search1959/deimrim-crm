@@ -16,6 +16,7 @@ interface PurchaseViewProps {
   setProducts: React.Dispatch<React.SetStateAction<Product[]>>;
   warehouses: any[];
   batchStocks?: any[];
+  setBatchStocks: React.Dispatch<React.SetStateAction<any[]>>;
   userRole: UserRole;
   companyId: string;
   onReceiveGRN: (poId: string, warehouseId: string, items: Array<{ productId: string; qty: number; batchNumber: string; expiryDate?: string; rack?: string }>) => void;
@@ -34,6 +35,7 @@ export default function PurchaseView({
   products,
   setProducts,
   batchStocks = [],
+  setBatchStocks,
   userRole,
   companyId,
   onMarkPOReceived,
@@ -84,6 +86,7 @@ export default function PurchaseView({
             setPurchaseOrders={setPurchaseOrders}
             onMarkPOReceived={onMarkPOReceived}
             batchStocks={batchStocks}
+            setBatchStocks={setBatchStocks}
             companyId={companyId}
           />
         );
