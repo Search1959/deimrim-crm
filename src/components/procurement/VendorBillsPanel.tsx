@@ -274,7 +274,8 @@ export default function VendorBillsPanel({
         toast.error("No items found", "Check column headers in the Excel file."); return;
       }
 
-      // Add stock to inventory
+      // Replace stock — remove existing entries for these products first, then add fresh
+      const importedProductIds = new Set(importedLines.map(i => i.productId));
       const newStocks: BatchStock[] = importedLines.map((i, idx) => ({
         id: `bs-imp-${Date.now()}-${idx}`,
         productId: i.productId,
@@ -282,7 +283,7 @@ export default function VendorBillsPanel({
         batchNumber: `BATCH-${invoiceNo || Date.now()}`,
         quantity: i.quantity,
       }));
-      setBatchStocks(prev => [...prev, ...newStocks]);
+      setBatchStocks(prev => [...prev.filter(b => !importedProductIds.has(b.productId)), ...newStocks]);
 
       // Create Vendor Bill directly
       const sup = suppliers.find(s => s.id === supplierId) || createdProducts.length > 0 ? { name: supplierName } : null;
