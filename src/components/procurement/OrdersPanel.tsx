@@ -492,15 +492,6 @@ export default function OrdersPanel({
           <Plus className="h-3.5 w-3.5" />
           <span>Create Purchase Order</span>
         </button>
-        <button
-          onClick={() => fileInputRef.current?.click()}
-          disabled={importing}
-          className="flex items-center gap-1.5 bg-emerald-700 hover:bg-emerald-600 disabled:opacity-50 text-white rounded-lg px-3 py-1.5 text-xs font-bold transition-all cursor-pointer"
-        >
-          <Upload className="h-3.5 w-3.5" />
-          <span>{importing ? "Importing…" : "Import Excel"}</span>
-        </button>
-        <input ref={fileInputRef} type="file" accept=".xlsx,.xls" onChange={handleImportXLSX} className="hidden" />
       </div>
 
       {/* Status filters */}

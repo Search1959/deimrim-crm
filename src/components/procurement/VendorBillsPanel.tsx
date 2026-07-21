@@ -1,13 +1,19 @@
-import React, { useState } from "react";
-import { FileCheck, Plus, X, IndianRupee, CreditCard, ChevronDown, ChevronUp } from "lucide-react";
-import { Supplier, PurchaseOrder, VendorInvoice, BillPayment, formatINR } from "../../types";
+import React, { useState, useRef } from "react";
+import { FileCheck, Plus, X, IndianRupee, CreditCard, ChevronDown, ChevronUp, Upload, Printer } from "lucide-react";
+import { Supplier, PurchaseOrder, VendorInvoice, BillPayment, Product, BatchStock, formatINR } from "../../types";
 import { toast } from "../../utils/toast";
 
 interface Props {
   suppliers: Supplier[];
+  setSuppliers: React.Dispatch<React.SetStateAction<Supplier[]>>;
   orders: PurchaseOrder[];
   vendorBills: VendorInvoice[];
   setVendorBills: React.Dispatch<React.SetStateAction<VendorInvoice[]>>;
+  products: Product[];
+  setProducts: React.Dispatch<React.SetStateAction<Product[]>>;
+  setBatchStocks: React.Dispatch<React.SetStateAction<BatchStock[]>>;
+  companyId: string;
+  companyName?: string;
 }
 
 const STATUS_COLORS: Record<VendorInvoice["status"], string> = {
@@ -17,9 +23,97 @@ const STATUS_COLORS: Record<VendorInvoice["status"], string> = {
   "Paid":            "bg-emerald-500/10 text-emerald-400 border-emerald-500/20",
 };
 
-export default function VendorBillsPanel({ suppliers, orders, vendorBills: bills, setVendorBills: setBills }: Props) {
+function makeSKU(desc: string): string {
+  let s = desc
+    .replace(/^LEO PUMPS?\s+/i, "LEO-")
+    .replace(/^CENTRIFUGAL PUMP\s+/i, "CENT-")
+    .replace(/\s*[-–\s]+\s*/g, "-")
+    .replace(/[^A-Z0-9\-]/gi, "")
+    .toUpperCase()
+    .replace(/-+/g, "-")
+    .replace(/^-|-$/g, "");
+  return s.slice(0, 25);
+}
 
-  // Bill form
+function printBill(bill: VendorInvoice, companyName: string) {
+  const items = bill.items || [];
+  const rows = items.map((it, i) => `
+    <tr>
+      <td style="padding:6px 8px;border:1px solid #ccc;text-align:center">${i + 1}</td>
+      <td style="padding:6px 8px;border:1px solid #ccc">${it.description}</td>
+      <td style="padding:6px 8px;border:1px solid #ccc;text-align:center">${it.hsn || ""}</td>
+      <td style="padding:6px 8px;border:1px solid #ccc;text-align:center">${it.quantity}</td>
+      <td style="padding:6px 8px;border:1px solid #ccc;text-align:center">${it.unit}</td>
+      <td style="padding:6px 8px;border:1px solid #ccc;text-align:right">₹${it.rate.toLocaleString("en-IN", { minimumFractionDigits: 2 })}</td>
+      <td style="padding:6px 8px;border:1px solid #ccc;text-align:right">₹${it.amount.toLocaleString("en-IN", { minimumFractionDigits: 2 })}</td>
+    </tr>`).join("");
+
+  const gstAmt = bill.totalAmount - bill.amountBeforeGst;
+
+  const html = `<!DOCTYPE html><html><head><title>Purchase Bill – ${bill.billNumber}</title>
+  <style>
+    body { font-family: Arial, sans-serif; font-size: 12px; color: #111; margin: 0; padding: 20px; }
+    h1 { margin: 0; font-size: 18px; } h2 { margin: 0; font-size: 13px; font-weight: normal; }
+    table { border-collapse: collapse; width: 100%; }
+    th { background: #f0f0f0; padding: 6px 8px; border: 1px solid #ccc; text-align: left; font-size: 11px; }
+    .total-row td { font-weight: bold; background: #f9f9f9; }
+    @media print { button { display: none; } }
+  </style></head><body>
+  <div style="text-align:center;border-bottom:2px solid #333;padding-bottom:10px;margin-bottom:14px">
+    <h1>${companyName}</h1>
+    <h2>PURCHASE INVOICE</h2>
+  </div>
+  <div style="display:flex;justify-content:space-between;margin-bottom:14px">
+    <div>
+      <strong>Supplier:</strong> ${bill.supplierName}<br/>
+      <strong>Bill No.:</strong> ${bill.billNumber}
+    </div>
+    <div style="text-align:right">
+      <strong>Invoice Date:</strong> ${bill.invoiceDate || "—"}<br/>
+      <strong>Due Date:</strong> ${bill.dueDate}
+    </div>
+  </div>
+  ${items.length > 0 ? `
+  <table>
+    <thead><tr>
+      <th style="width:40px">Sl.</th>
+      <th>Description</th>
+      <th style="width:80px">HSN</th>
+      <th style="width:60px">Qty</th>
+      <th style="width:50px">Unit</th>
+      <th style="width:100px;text-align:right">Rate</th>
+      <th style="width:110px;text-align:right">Amount</th>
+    </tr></thead>
+    <tbody>${rows}</tbody>
+    <tfoot>
+      <tr class="total-row">
+        <td colspan="6" style="padding:6px 8px;border:1px solid #ccc;text-align:right">Sub Total</td>
+        <td style="padding:6px 8px;border:1px solid #ccc;text-align:right">₹${bill.amountBeforeGst.toLocaleString("en-IN",{minimumFractionDigits:2})}</td>
+      </tr>
+      <tr>
+        <td colspan="6" style="padding:6px 8px;border:1px solid #ccc;text-align:right">GST (${bill.gstRate}%)</td>
+        <td style="padding:6px 8px;border:1px solid #ccc;text-align:right">₹${gstAmt.toLocaleString("en-IN",{minimumFractionDigits:2})}</td>
+      </tr>
+      <tr class="total-row">
+        <td colspan="6" style="padding:8px;border:1px solid #ccc;text-align:right;font-size:13px">GRAND TOTAL</td>
+        <td style="padding:8px;border:1px solid #ccc;text-align:right;font-size:13px">₹${bill.totalAmount.toLocaleString("en-IN",{minimumFractionDigits:2})}</td>
+      </tr>
+    </tfoot>
+  </table>` : `<p>No line items recorded.</p>`}
+  <div style="margin-top:30px;text-align:right">
+    <button onclick="window.print()" style="padding:8px 20px;background:#333;color:#fff;border:none;cursor:pointer;font-size:12px">🖨 Print</button>
+  </div>
+  </body></html>`;
+
+  const w = window.open("", "_blank", "width=900,height=700");
+  if (w) { w.document.write(html); w.document.close(); }
+}
+
+export default function VendorBillsPanel({
+  suppliers, setSuppliers, orders, vendorBills: bills, setVendorBills: setBills,
+  products, setProducts, setBatchStocks, companyId, companyName = "DEINRIM",
+}: Props) {
+
   const [showBillForm, setShowBillForm] = useState(false);
   const [formSupplierId, setFormSupplierId] = useState("");
   const [formBillNumber, setFormBillNumber] = useState("");
@@ -29,23 +123,21 @@ export default function VendorBillsPanel({ suppliers, orders, vendorBills: bills
   const [formDueDate, setFormDueDate] = useState("");
   const [formStatus, setFormStatus] = useState<VendorInvoice["status"]>("Pending Payment");
 
-  // Payment form
   const [payingBillId, setPayingBillId] = useState<string | null>(null);
   const [payAmount, setPayAmount] = useState("");
   const [payDate, setPayDate] = useState(new Date().toISOString().slice(0, 10));
   const [payMode, setPayMode] = useState<BillPayment["mode"]>("Bank Transfer");
   const [payRef, setPayRef] = useState("");
   const [payRemarks, setPayRemarks] = useState("");
-
-  // Expanded payment history
   const [expandedBillId, setExpandedBillId] = useState<string | null>(null);
+  const [importing, setImporting] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const resetBillForm = () => {
     setFormSupplierId(""); setFormBillNumber(""); setFormPoId("");
     setFormAmount(""); setFormGstRate("18"); setFormDueDate("");
     setFormStatus("Pending Payment");
   };
-
   const resetPayForm = () => {
     setPayAmount(""); setPayDate(new Date().toISOString().slice(0, 10));
     setPayMode("Bank Transfer"); setPayRef(""); setPayRemarks("");
@@ -56,11 +148,180 @@ export default function VendorBillsPanel({ suppliers, orders, vendorBills: bills
   const gstRate = parseFloat(formGstRate) || 0;
   const totalAmount = +(amountBeforeGst + amountBeforeGst * gstRate / 100).toFixed(2);
 
+  // ── Excel Import ────────────────────────────────────────────────────────────
+  const handleImportXLSX = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setImporting(true);
+    try {
+      const XLSX = await import("xlsx");
+      const buffer = await file.arrayBuffer();
+      const wb = XLSX.read(buffer, { type: "array" });
+      const ws = wb.Sheets[wb.SheetNames[0]];
+      const rows = XLSX.utils.sheet_to_json<any[]>(ws, { header: 1, defval: "" });
+
+      let descCol = 1, hsnCol = -1, qtyCol = 10, rateCol = 11, unitCol = 12;
+      for (const row of rows) {
+        const lower = (row as any[]).map((c: any) => String(c).toLowerCase().trim());
+        const descIdx = lower.findIndex((c: string) => c.includes("description"));
+        if (descIdx >= 0) {
+          descCol = descIdx;
+          const hsnIdx = lower.findIndex((c: string) => c === "hsn" || c.includes("hsn code"));
+          if (hsnIdx >= 0) hsnCol = hsnIdx;
+          const qtyIdx = lower.findIndex((c: string) => c === "quantity" || c === "qty");
+          if (qtyIdx >= 0) qtyCol = qtyIdx;
+          const rateIdx = lower.findIndex((c: string) => c === "rate" || c.includes("unit price"));
+          if (rateIdx >= 0) rateCol = rateIdx;
+          const unitIdx = lower.findIndex((c: string) => c === "per" || c === "unit");
+          if (unitIdx >= 0) unitCol = unitIdx;
+          break;
+        }
+      }
+
+      let invoiceNo = "", invDate = "", supplierName = "";
+      for (let i = 0; i < rows.length; i++) {
+        const row = rows[i] as any[];
+        for (let j = 0; j < row.length; j++) {
+          const cell = String(row[j]).toLowerCase().trim();
+          if (cell.includes("invoice no") && !cell.includes("supplier") && !invoiceNo) {
+            const val = String(rows[i + 1]?.[j] ?? "").trim().split(/\s+/)[0];
+            if (val) invoiceNo = val;
+          }
+          if ((cell === "dated" || cell === "date" || cell.includes("invoice date")) && !invDate) {
+            const val = String(rows[i + 1]?.[j] ?? "").trim();
+            if (val) invDate = val;
+          }
+        }
+        const firstCell = String(row[0]).toLowerCase();
+        if (firstCell.includes("supplier") && firstCell.includes("bill")) {
+          supplierName = String(rows[i + 1]?.[0] ?? "").trim();
+        }
+      }
+
+      let supplierId = "";
+      const matchKey = supplierName.slice(0, 10).toLowerCase();
+      const existing = suppliers.find(s => s.name.toLowerCase().includes(matchKey));
+      if (existing) {
+        supplierId = existing.id;
+      } else if (supplierName) {
+        const newSup: Supplier = {
+          id: `sup-${Date.now()}`,
+          companyId,
+          name: supplierName,
+          code: `SUP-IMP-${String(suppliers.length + 1).padStart(3, "0")}`,
+          contactPerson: "", email: "", phone: "", address: "", creditDays: 30,
+        };
+        setSuppliers(prev => [...prev, newSup]);
+        supplierId = newSup.id;
+        toast.success("Vendor Auto-Created", supplierName);
+      }
+
+      const importedLines: Array<{ productId: string; quantity: number; unitPrice: number }> = [];
+      const billItems: NonNullable<VendorInvoice["items"]> = [];
+      const createdProducts: Product[] = [];
+
+      for (const row of rows) {
+        const slNo = (row as any[])[0];
+        if (typeof slNo !== "number" || slNo <= 0) continue;
+
+        const rawDesc = String((row as any[])[descCol] ?? "").trim();
+        const desc = rawDesc.replace(/^[*#\s]+|[*#\s]+$/g, "").replace(/\s+/g, " ").trim();
+        const qty  = Number((row as any[])[qtyCol])  || 0;
+        const rate = Number((row as any[])[rateCol]) || 0;
+        const unit = String((row as any[])[unitCol] ?? "NOS").trim() || "NOS";
+        const hsn  = hsnCol >= 0 ? String((row as any[])[hsnCol] ?? "").trim() : "";
+
+        if (!desc || qty <= 0 || rate <= 0) continue;
+
+        const sku = makeSKU(desc);
+        const allProducts = [...products, ...createdProducts];
+        let prod = allProducts.find(p =>
+          p.name.toLowerCase() === desc.toLowerCase() || p.sku.toLowerCase() === sku.toLowerCase()
+        );
+        if (!prod) {
+          prod = {
+            id: `prod-imp-${Date.now()}-${importedLines.length}`,
+            sku, name: desc,
+            categoryId: "", brandId: "", unit,
+            purchasePrice: rate,
+            sellingPrice: Math.round(rate * 1.2),
+            minStockLevel: 5, maxStockLevel: 500,
+            description: `Imported · Invoice ${invoiceNo || file.name}`,
+          };
+          createdProducts.push(prod);
+        }
+        importedLines.push({ productId: prod.id, quantity: qty, unitPrice: rate });
+        billItems.push({ description: desc, hsn, unit, quantity: qty, rate, amount: +(qty * rate).toFixed(2) });
+      }
+
+      if (createdProducts.length > 0) setProducts(prev => [...prev, ...createdProducts]);
+
+      const subtotalCalc = importedLines.reduce((s, i) => s + i.quantity * i.unitPrice, 0);
+      let igst = 0;
+      for (const row of rows) {
+        const rowText = (row as any[]).map((c: any) => String(c)).join(" ").toUpperCase();
+        if (rowText.includes("GST") && !rowText.includes("GSTIN")) {
+          const amounts = (row as any[]).map((c: any) => Number(c)).filter(n => n > 1000);
+          if (amounts.length > 0) igst = Math.max(...amounts);
+        }
+      }
+      const detectedGST = subtotalCalc > 0 && igst > 0 ? Math.round((igst / subtotalCalc) * 100) : 18;
+      const gstAmt = subtotalCalc * (detectedGST / 100);
+      const grandTotal = +(subtotalCalc + gstAmt).toFixed(2);
+
+      if (importedLines.length === 0) {
+        toast.error("No items found", "Check column headers in the Excel file."); return;
+      }
+
+      // Add stock to inventory
+      const newStocks: BatchStock[] = importedLines.map((i, idx) => ({
+        id: `bs-imp-${Date.now()}-${idx}`,
+        productId: i.productId,
+        warehouseId: "wh-main",
+        batchNumber: `BATCH-${invoiceNo || Date.now()}`,
+        quantity: i.quantity,
+      }));
+      setBatchStocks(prev => [...prev, ...newStocks]);
+
+      // Create Vendor Bill directly
+      const sup = suppliers.find(s => s.id === supplierId) || createdProducts.length > 0 ? { name: supplierName } : null;
+      const newBill: VendorInvoice = {
+        id: `vb-${Date.now()}`,
+        billNumber: invoiceNo || `BILL-IMP-${Date.now()}`,
+        supplierId,
+        supplierName: suppliers.find(s => s.id === supplierId)?.name || supplierName,
+        invoiceDate: invDate || undefined,
+        amountBeforeGst: +subtotalCalc.toFixed(2),
+        gstType: "IGST",
+        gstRate: detectedGST,
+        totalAmount: grandTotal,
+        paidAmount: 0,
+        balanceAmount: grandTotal,
+        dueDate: new Date(Date.now() + 30 * 86400000).toISOString().slice(0, 10),
+        status: "Pending Payment",
+        createdAt: new Date().toISOString(),
+        payments: [],
+        items: billItems,
+      };
+      setBills(prev => [newBill, ...prev]);
+
+      toast.success(
+        `Bill created — ${billItems.length} items`,
+        `${createdProducts.length} new products · stock added to Inventory · GST ${detectedGST}%`
+      );
+    } catch (err) {
+      toast.error("Import Failed", "Could not parse the Excel file. Check format.");
+      console.error(err);
+    } finally {
+      setImporting(false);
+      if (fileInputRef.current) fileInputRef.current.value = "";
+    }
+  };
+
   const handleCreateBill = (e: React.FormEvent) => {
     e.preventDefault();
     if (!formSupplierId || !formBillNumber || !formAmount) {
-      toast.error("Supplier, Bill Number and Amount are required");
-      return;
+      toast.error("Supplier, Bill Number and Amount are required"); return;
     }
     const sup = suppliers.find(s => s.id === formSupplierId);
     const po = orders.find(o => o.id === formPoId);
@@ -92,25 +353,18 @@ export default function VendorBillsPanel({ suppliers, orders, vendorBills: bills
     e.preventDefault();
     const amt = parseFloat(payAmount) || 0;
     if (!amt || !payingBillId) { toast.error("Enter a valid payment amount"); return; }
-
     setBills(prev => prev.map(b => {
       if (b.id !== payingBillId) return b;
       if (amt > b.balanceAmount) { toast.error(`Amount exceeds balance of ${formatINR(b.balanceAmount)}`); return b; }
       const newPayment: BillPayment = {
-        id: `pay-${Date.now()}`,
-        billId: b.id,
-        amount: amt,
-        date: payDate,
-        mode: payMode,
-        reference: payRef,
-        remarks: payRemarks,
+        id: `pay-${Date.now()}`, billId: b.id, amount: amt,
+        date: payDate, mode: payMode, reference: payRef, remarks: payRemarks,
       };
       const newPaid = +(b.paidAmount + amt).toFixed(2);
       const newBalance = +(b.totalAmount - newPaid).toFixed(2);
       const newStatus: VendorInvoice["status"] = newBalance <= 0 ? "Paid" : "Partially Paid";
       return { ...b, payments: [...b.payments, newPayment], paidAmount: newPaid, balanceAmount: newBalance, status: newStatus };
     }));
-
     toast.success("Payment Recorded", `${formatINR(amt)} via ${payMode}`);
     setPayingBillId(null);
     resetPayForm();
@@ -132,12 +386,23 @@ export default function VendorBillsPanel({ suppliers, orders, vendorBills: bills
             <p className="text-[10px] text-slate-400 mt-0.5">Record supplier bills and track payments</p>
           </div>
         </div>
-        <button
-          onClick={() => { setShowBillForm(true); resetBillForm(); }}
-          className="flex items-center gap-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 px-3 py-2 text-xs font-bold text-white transition-colors cursor-pointer"
-        >
-          <Plus className="h-3.5 w-3.5" /> Record Bill
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => fileInputRef.current?.click()}
+            disabled={importing}
+            className="flex items-center gap-1.5 rounded-lg bg-emerald-700 hover:bg-emerald-600 disabled:opacity-50 px-3 py-2 text-xs font-bold text-white transition-colors cursor-pointer"
+          >
+            <Upload className="h-3.5 w-3.5" />
+            {importing ? "Importing…" : "Import Excel"}
+          </button>
+          <input ref={fileInputRef} type="file" accept=".xlsx,.xls" onChange={handleImportXLSX} className="hidden" />
+          <button
+            onClick={() => { setShowBillForm(true); resetBillForm(); }}
+            className="flex items-center gap-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 px-3 py-2 text-xs font-bold text-white transition-colors cursor-pointer"
+          >
+            <Plus className="h-3.5 w-3.5" /> Record Bill
+          </button>
+        </div>
       </div>
 
       {/* Summary cards */}
@@ -161,7 +426,7 @@ export default function VendorBillsPanel({ suppliers, orders, vendorBills: bills
             <tr>
               <th className="px-4 py-3 text-left">Bill No.</th>
               <th className="px-4 py-3 text-left">Vendor</th>
-              <th className="px-4 py-3 text-left">PO Ref</th>
+              <th className="px-4 py-3 text-left">Invoice Date</th>
               <th className="px-4 py-3 text-left">Due Date</th>
               <th className="px-4 py-3 text-right">Bill Amount</th>
               <th className="px-4 py-3 text-right">Paid</th>
@@ -174,7 +439,7 @@ export default function VendorBillsPanel({ suppliers, orders, vendorBills: bills
             {bills.length === 0 ? (
               <tr>
                 <td colSpan={9} className="px-5 py-10 text-center text-slate-500">
-                  No bills recorded yet. Click <span className="text-indigo-400 font-semibold">Record Bill</span> to add one.
+                  No bills recorded yet. Click <span className="text-emerald-400 font-semibold">Import Excel</span> or <span className="text-indigo-400 font-semibold">Record Bill</span> to add one.
                 </td>
               </tr>
             ) : bills.map(b => (
@@ -182,7 +447,7 @@ export default function VendorBillsPanel({ suppliers, orders, vendorBills: bills
                 <tr className="hover:bg-slate-900/40 transition-colors">
                   <td className="px-4 py-3 font-bold text-indigo-400 font-mono">{b.billNumber}</td>
                   <td className="px-4 py-3 font-semibold text-slate-100">{b.supplierName}</td>
-                  <td className="px-4 py-3 text-slate-400 font-mono">{b.poNumber || "—"}</td>
+                  <td className="px-4 py-3 font-mono text-slate-400">{b.invoiceDate || "—"}</td>
                   <td className="px-4 py-3 font-mono text-slate-400">{b.dueDate}</td>
                   <td className="px-4 py-3 text-right font-bold font-mono text-slate-200">{formatINR(b.totalAmount)}</td>
                   <td className="px-4 py-3 text-right font-mono text-emerald-400">{formatINR(b.paidAmount)}</td>
@@ -196,6 +461,13 @@ export default function VendorBillsPanel({ suppliers, orders, vendorBills: bills
                   </td>
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-1.5">
+                      <button
+                        onClick={() => printBill(b, companyName)}
+                        title="Print Invoice"
+                        className="flex items-center gap-1 px-2 py-1 rounded-md bg-slate-800 hover:bg-slate-700 text-slate-300 text-[10px] font-bold transition-colors cursor-pointer"
+                      >
+                        <Printer className="w-3 h-3" />
+                      </button>
                       {b.status !== "Paid" && (
                         <button
                           onClick={() => { setPayingBillId(b.id); resetPayForm(); setPayAmount(String(b.balanceAmount)); }}
@@ -217,7 +489,6 @@ export default function VendorBillsPanel({ suppliers, orders, vendorBills: bills
                   </td>
                 </tr>
 
-                {/* Payment history row */}
                 {expandedBillId === b.id && b.payments.length > 0 && (
                   <tr>
                     <td colSpan={9} className="bg-slate-900/60 px-6 py-3">
@@ -329,8 +600,6 @@ export default function VendorBillsPanel({ suppliers, orders, vendorBills: bills
               </div>
               <button onClick={() => setPayingBillId(null)} className="text-slate-400 hover:text-white cursor-pointer"><X className="w-4 h-4" /></button>
             </div>
-
-            {/* Balance summary */}
             <div className="grid grid-cols-3 gap-2 mb-4">
               {[
                 { label: "Bill Total", value: formatINR(payingBill.totalAmount), color: "text-slate-200" },
@@ -343,7 +612,6 @@ export default function VendorBillsPanel({ suppliers, orders, vendorBills: bills
                 </div>
               ))}
             </div>
-
             <form onSubmit={handleRecordPayment} className="space-y-3">
               <div className="grid grid-cols-2 gap-3">
                 <div>

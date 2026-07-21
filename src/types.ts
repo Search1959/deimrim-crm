@@ -610,6 +610,7 @@ export interface VendorInvoice {
   poNumber?: string;
   supplierId: string;
   supplierName: string;
+  invoiceDate?: string;
   amountBeforeGst: number;
   gstType: string;
   gstRate: number;
@@ -620,6 +621,14 @@ export interface VendorInvoice {
   status: "Draft" | "Pending Payment" | "Partially Paid" | "Paid";
   createdAt: string;
   payments: BillPayment[];
+  items?: Array<{
+    description: string;
+    hsn?: string;
+    unit: string;
+    quantity: number;
+    rate: number;
+    amount: number;
+  }>;
 }
 
 export interface VendorPayment {

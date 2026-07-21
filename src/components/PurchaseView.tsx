@@ -100,7 +100,17 @@ export default function PurchaseView({
           />
         );
       case "bills":
-        return <VendorBillsPanel suppliers={suppliers} orders={purchaseOrders} vendorBills={vendorBills} setVendorBills={setVendorBills} />;
+        return <VendorBillsPanel
+          suppliers={suppliers}
+          setSuppliers={setSuppliers}
+          orders={purchaseOrders}
+          vendorBills={vendorBills}
+          setVendorBills={setVendorBills}
+          products={products}
+          setProducts={setProducts}
+          setBatchStocks={setBatchStocks}
+          companyId={companyId}
+        />;
       default:
         return null;
     }
