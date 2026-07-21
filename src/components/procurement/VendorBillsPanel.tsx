@@ -1,5 +1,5 @@
 import React, { useState, useRef } from "react";
-import { FileCheck, Plus, X, IndianRupee, CreditCard, ChevronDown, ChevronUp, Upload, Printer } from "lucide-react";
+import { FileCheck, Plus, X, IndianRupee, CreditCard, ChevronDown, ChevronUp, Upload, Printer, Eye } from "lucide-react";
 import { Supplier, PurchaseOrder, VendorInvoice, BillPayment, Product, BatchStock, formatINR } from "../../types";
 import { toast } from "../../utils/toast";
 
@@ -132,6 +132,7 @@ export default function VendorBillsPanel({
   const [expandedBillId, setExpandedBillId] = useState<string | null>(null);
   const [importing, setImporting] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [viewingBill, setViewingBill] = useState<VendorInvoice | null>(null);
 
   const resetBillForm = () => {
     setFormSupplierId(""); setFormBillNumber(""); setFormPoId("");
@@ -462,6 +463,13 @@ export default function VendorBillsPanel({
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-1.5">
                       <button
+                        onClick={() => setViewingBill(b)}
+                        title="View Bill"
+                        className="flex items-center gap-1 px-2 py-1 rounded-md bg-indigo-500/10 hover:bg-indigo-500/20 text-indigo-400 text-[10px] font-bold transition-colors cursor-pointer"
+                      >
+                        <Eye className="w-3 h-3" />
+                      </button>
+                      <button
                         onClick={() => printBill(b, companyName)}
                         title="Print Invoice"
                         className="flex items-center gap-1 px-2 py-1 rounded-md bg-slate-800 hover:bg-slate-700 text-slate-300 text-[10px] font-bold transition-colors cursor-pointer"
@@ -512,6 +520,113 @@ export default function VendorBillsPanel({
           </tbody>
         </table>
       </div>
+
+      {/* View Bill Modal */}
+      {viewingBill && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4 overflow-y-auto">
+          <div className="w-full max-w-4xl rounded-2xl border border-slate-700 bg-slate-950 shadow-2xl my-8">
+            {/* Modal header */}
+            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-800">
+              <div className="flex items-center gap-3">
+                <FileCheck className="h-5 w-5 text-indigo-400" />
+                <div>
+                  <h3 className="text-sm font-bold text-white font-mono">Purchase Bill — {viewingBill.billNumber}</h3>
+                  <p className="text-[10px] text-slate-400 mt-0.5">{viewingBill.supplierName}</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => printBill(viewingBill, companyName)}
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-bold cursor-pointer"
+                >
+                  <Printer className="w-3.5 h-3.5" /> Print
+                </button>
+                <button onClick={() => setViewingBill(null)} className="text-slate-400 hover:text-white cursor-pointer">
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+            </div>
+
+            {/* Bill info */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 px-6 py-4 border-b border-slate-800">
+              {[
+                { label: "Supplier", value: viewingBill.supplierName },
+                { label: "Invoice No.", value: viewingBill.billNumber },
+                { label: "Invoice Date", value: viewingBill.invoiceDate || "—" },
+                { label: "Due Date", value: viewingBill.dueDate },
+              ].map(f => (
+                <div key={f.label}>
+                  <p className="text-[10px] text-slate-500 uppercase font-mono font-bold mb-0.5">{f.label}</p>
+                  <p className="text-xs text-white font-semibold">{f.value}</p>
+                </div>
+              ))}
+            </div>
+
+            {/* Line items table */}
+            <div className="px-6 py-4 overflow-x-auto">
+              <p className="text-[10px] text-slate-400 uppercase font-mono font-bold mb-3">Line Items</p>
+              {viewingBill.items && viewingBill.items.length > 0 ? (
+                <table className="min-w-full text-xs border-collapse">
+                  <thead>
+                    <tr className="bg-slate-900 text-slate-400 uppercase font-mono text-[10px]">
+                      <th className="px-3 py-2 border border-slate-800 text-center w-10">Sl.</th>
+                      <th className="px-3 py-2 border border-slate-800 text-left">Description</th>
+                      <th className="px-3 py-2 border border-slate-800 text-center w-24">HSN</th>
+                      <th className="px-3 py-2 border border-slate-800 text-center w-16">Qty</th>
+                      <th className="px-3 py-2 border border-slate-800 text-center w-16">Unit</th>
+                      <th className="px-3 py-2 border border-slate-800 text-right w-28">Rate (₹)</th>
+                      <th className="px-3 py-2 border border-slate-800 text-right w-32">Amount (₹)</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {viewingBill.items.map((it, i) => (
+                      <tr key={i} className="border-b border-slate-800 hover:bg-slate-900/40">
+                        <td className="px-3 py-2 border border-slate-800 text-center text-slate-400">{i + 1}</td>
+                        <td className="px-3 py-2 border border-slate-800 text-slate-200">{it.description}</td>
+                        <td className="px-3 py-2 border border-slate-800 text-center text-slate-400 font-mono">{it.hsn || "—"}</td>
+                        <td className="px-3 py-2 border border-slate-800 text-center font-bold text-white">{it.quantity}</td>
+                        <td className="px-3 py-2 border border-slate-800 text-center text-slate-400">{it.unit}</td>
+                        <td className="px-3 py-2 border border-slate-800 text-right font-mono text-slate-300">{it.rate.toLocaleString("en-IN", { minimumFractionDigits: 2 })}</td>
+                        <td className="px-3 py-2 border border-slate-800 text-right font-bold font-mono text-white">{it.amount.toLocaleString("en-IN", { minimumFractionDigits: 2 })}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                  <tfoot>
+                    <tr className="bg-slate-900/60">
+                      <td colSpan={6} className="px-3 py-2 border border-slate-800 text-right text-slate-400 font-bold">Sub Total</td>
+                      <td className="px-3 py-2 border border-slate-800 text-right font-bold font-mono text-slate-200">{viewingBill.amountBeforeGst.toLocaleString("en-IN", { minimumFractionDigits: 2 })}</td>
+                    </tr>
+                    <tr>
+                      <td colSpan={6} className="px-3 py-2 border border-slate-800 text-right text-slate-400">{viewingBill.gstType} @ {viewingBill.gstRate}%</td>
+                      <td className="px-3 py-2 border border-slate-800 text-right font-mono text-amber-400">{(viewingBill.totalAmount - viewingBill.amountBeforeGst).toLocaleString("en-IN", { minimumFractionDigits: 2 })}</td>
+                    </tr>
+                    <tr className="bg-indigo-950/40">
+                      <td colSpan={6} className="px-3 py-2.5 border border-slate-700 text-right font-bold text-white text-sm">Grand Total</td>
+                      <td className="px-3 py-2.5 border border-slate-700 text-right font-bold font-mono text-indigo-300 text-sm">{formatINR(viewingBill.totalAmount)}</td>
+                    </tr>
+                  </tfoot>
+                </table>
+              ) : (
+                <p className="text-slate-500 text-xs">No line items — this bill was created manually.</p>
+              )}
+            </div>
+
+            {/* Payment summary */}
+            <div className="grid grid-cols-3 gap-4 px-6 py-4 border-t border-slate-800">
+              {[
+                { label: "Bill Total", value: formatINR(viewingBill.totalAmount), color: "text-slate-200" },
+                { label: "Paid", value: formatINR(viewingBill.paidAmount), color: "text-emerald-400" },
+                { label: "Balance", value: formatINR(viewingBill.balanceAmount), color: viewingBill.balanceAmount > 0 ? "text-red-400" : "text-slate-500" },
+              ].map(f => (
+                <div key={f.label} className="bg-slate-900 rounded-lg p-3 text-center">
+                  <p className="text-[10px] text-slate-500 uppercase font-mono mb-1">{f.label}</p>
+                  <p className={`text-sm font-bold font-mono ${f.color}`}>{f.value}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Record Bill Modal */}
       {showBillForm && (
