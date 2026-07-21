@@ -27,6 +27,7 @@ interface SalesCRMViewProps {
   setInvoices: React.Dispatch<React.SetStateAction<Invoice[]>>;
   products: Product[];
   batchStocks: BatchStock[];
+  setBatchStocks: React.Dispatch<React.SetStateAction<BatchStock[]>>;
   serviceCatalog: ServiceCatalogItem[];
   setServiceCatalog: React.Dispatch<React.SetStateAction<ServiceCatalogItem[]>>;
   userRole: UserRole;
@@ -54,6 +55,7 @@ export default function SalesCRMView({
   setInvoices,
   products,
   batchStocks,
+  setBatchStocks,
   serviceCatalog,
   setServiceCatalog,
   userRole,
@@ -112,8 +114,10 @@ export default function SalesCRMView({
             invoices={invoices}
             setInvoices={setInvoices}
             customers={customers}
+            setCustomers={setCustomers}
             products={products}
             batchStocks={batchStocks}
+            setBatchStocks={setBatchStocks}
             serviceCatalog={serviceCatalog}
             onGenerateInvoice={onGenerateInvoice}
             companyId={companyId}

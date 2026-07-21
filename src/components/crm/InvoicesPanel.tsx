@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { Plus, Search, Eye, Trash2, Download, Share2, Edit, Package, Wrench } from "lucide-react";
+import React, { useState, useRef } from "react";
+import { Plus, Search, Eye, Trash2, Download, Share2, Edit, Package, Wrench, Upload } from "lucide-react";
 import { Invoice, Customer, Product, BatchStock, ServiceCatalogItem, Company, formatINR, UserRole } from "../../types";
 import { toast } from "../../utils/toast";
 import { exportInvoicesCSV } from "../../utils/exportCSV";
@@ -9,6 +9,8 @@ interface InvoicesPanelProps {
   invoices: Invoice[];
   setInvoices: React.Dispatch<React.SetStateAction<Invoice[]>>;
   customers: Customer[];
+  setCustomers?: React.Dispatch<React.SetStateAction<Customer[]>>;
+  setBatchStocks?: React.Dispatch<React.SetStateAction<BatchStock[]>>;
   products: Product[];
   batchStocks?: BatchStock[];
   serviceCatalog?: ServiceCatalogItem[];
@@ -49,8 +51,8 @@ const BLANK_ITEM = (type: LineItemType = "product"): LineItem => ({
 });
 
 export default function InvoicesPanel({
-  invoices, setInvoices, customers, products, batchStocks = [],
-  serviceCatalog = [], onGenerateInvoice, companyId, company, setCompany,
+  invoices, setInvoices, customers, setCustomers, products, batchStocks = [],
+  setBatchStocks, serviceCatalog = [], onGenerateInvoice, companyId, company, setCompany,
   userRole, branchId = "br-hq", autoOpenBuilder, onAutoOpenHandled,
 }: InvoicesPanelProps) {
   const canWrite = !userRole || (userRole !== UserRole.READ_ONLY && userRole !== UserRole.EMPLOYEE);
@@ -78,6 +80,206 @@ export default function InvoicesPanel({
     setCustomerId(""); setInvoiceDate(new Date().toISOString().split("T")[0]);
     setDueDate(""); setGstPct("18"); setLineItems([BLANK_ITEM("product")]);
     setNotes(""); setTerms("");
+  };
+
+  const [importing, setImporting] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleImportXLSX = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setImporting(true);
+    try {
+      const XLSX = await import("xlsx");
+      const buffer = await file.arrayBuffer();
+      const wb = XLSX.read(buffer, { type: "array" });
+      const ws = wb.Sheets[wb.SheetNames[0]];
+      const rows = XLSX.utils.sheet_to_json<any[]>(ws, { header: 1, defval: "" });
+
+      // Extract header metadata
+      let invoiceNo = "", invoiceDate = "", eWayBillNo = "", challanNo = "";
+      let buyerName = "", buyerAddr = "", buyerGSTIN = "", buyerState = "";
+      let sellerName = "";
+
+      for (let i = 0; i < Math.min(rows.length, 22); i++) {
+        const row = rows[i] as any[];
+        const flat = row.map(c => String(c).trim());
+        if (flat[0] && i === 2) sellerName = flat[0];
+        if (flat.includes("Invoice No.") || flat.includes("Invoice No")) {
+          const idx = flat.findIndex(c => c.includes("Invoice No"));
+          if (rows[i+1]?.[idx]) invoiceNo = String(rows[i+1][idx]).trim();
+        }
+        if (flat.includes("e-Way Bill No.") || flat.includes("e-Way Bill No")) {
+          const idx = flat.findIndex(c => c.includes("e-Way Bill"));
+          if (rows[i+1]?.[idx]) eWayBillNo = String(rows[i+1][idx]).trim();
+        }
+        if (flat.includes("Dated")) {
+          const idx = flat.findIndex(c => c === "Dated");
+          if (rows[i+1]?.[idx]) {
+            const d = String(rows[i+1][idx]).trim();
+            invoiceDate = d;
+          }
+        }
+        if (flat[1] === "Delivery Note" || (flat.includes("Delivery Note"))) {
+          const idx = flat.findIndex(c => c === "Delivery Note");
+          if (rows[i+1]?.[idx]) challanNo = String(rows[i+1][idx]).trim();
+        }
+        if (flat[0] === "Buyer (Bill to)" || flat[0] === "Consignee (Ship to)") {
+          buyerName = String(rows[i+1]?.[0] ?? "").trim();
+          buyerAddr = String(rows[i+2]?.[0] ?? "").trim();
+          // GSTIN row: col 0 = "GSTIN/UIN:", col 3 = value
+          const gRow = rows[i+3] as any[];
+          if (gRow) buyerGSTIN = String(gRow[3] ?? "").trim();
+          const stRow = rows[i+4] as any[];
+          if (stRow) buyerState = String(stRow[3] ?? "").trim();
+        }
+      }
+
+      // Find column positions from header row
+      let descCol = 1, hsnCol = 7, gstCol = 8, qtyCol = 9, rateCol = 10, unitCol = 11, amtCol = 13;
+      for (const row of rows) {
+        const lower = (row as any[]).map((c: any) => String(c).toLowerCase().trim());
+        if (lower[0] === "sl" || lower[0] === "sl no" || lower[0] === "sl.") {
+          const descIdx = lower.findIndex(c => c.includes("description") || c.includes("goods"));
+          if (descIdx >= 0) descCol = descIdx;
+          const hsnIdx = lower.findIndex(c => c.includes("hsn") || c.includes("sac"));
+          if (hsnIdx >= 0) hsnCol = hsnIdx;
+          const gstIdx = lower.findIndex(c => c.includes("gst") && c.includes("rate"));
+          if (gstIdx >= 0) gstCol = gstIdx;
+          const qtyIdx = lower.findIndex(c => c === "quantity" || c === "qty");
+          if (qtyIdx >= 0) qtyCol = qtyIdx;
+          const rateIdx = lower.findIndex(c => c === "rate");
+          if (rateIdx >= 0) rateCol = rateIdx;
+          const unitIdx = lower.findIndex(c => c === "per" || c === "unit");
+          if (unitIdx >= 0) unitCol = unitIdx;
+          const amtIdx = lower.findIndex(c => c === "amount");
+          if (amtIdx >= 0) amtCol = amtIdx;
+          break;
+        }
+      }
+
+      // Parse line items
+      const lineItemsImport: Invoice["items"] = [];
+      let deliveryCharges = 0;
+      let subtotal = 0;
+      let gstPctDetected = 18;
+
+      for (const row of rows) {
+        const slNo = (row as any[])[0];
+        if (typeof slNo === "number" && slNo > 0) {
+          const rawDesc = String((row as any[])[descCol] ?? "").trim();
+          const desc = rawDesc.replace(/^[*#\s]+|[*#\s]+$/g, "").replace(/\s+/g, " ").trim();
+          const hsn  = String((row as any[])[hsnCol] ?? "").trim();
+          const gstR = Number((row as any[])[gstCol]) || 18;
+          const qty  = Number((row as any[])[qtyCol]) || 0;
+          const rate = Number((row as any[])[rateCol]) || 0;
+          const unit = String((row as any[])[unitCol] ?? "Nos").trim() || "Nos";
+          const amt  = Number((row as any[])[amtCol]) || qty * rate;
+          if (!desc || qty <= 0 || rate <= 0) continue;
+          gstPctDetected = gstR;
+          lineItemsImport.push({ itemType: "product", productId: "", description: desc, hsn, unit, quantity: qty, unitPrice: rate });
+          subtotal += amt;
+        }
+        // Delivery charges row
+        const r = row as any[];
+        const rowText = r.map((c: any) => String(c)).join(" ").toLowerCase();
+        if (rowText.includes("delivery") && rowText.includes("charge")) {
+          deliveryCharges = Number(r[amtCol]) || 0;
+        }
+      }
+
+      if (lineItemsImport.length === 0) { toast.error("No items found in Excel"); return; }
+
+      // Match products and deduct stock
+      const stockDeductions: Array<{ productId: string; qty: number }> = [];
+      const finalItems = lineItemsImport.map(item => {
+        const prod = products.find(p =>
+          p.name.toLowerCase() === (item.description || "").toLowerCase() ||
+          p.name.toLowerCase().includes((item.description || "").slice(0, 15).toLowerCase())
+        );
+        if (prod) {
+          stockDeductions.push({ productId: prod.id, qty: item.quantity });
+          return { ...item, productId: prod.id };
+        }
+        return item;
+      });
+
+      // Deduct stock
+      if (setBatchStocks && stockDeductions.length > 0) {
+        setBatchStocks(prev => {
+          const copy = [...prev];
+          stockDeductions.forEach(({ productId, qty }) => {
+            let remaining = qty;
+            for (const b of copy) {
+              if (b.productId !== productId || remaining <= 0) continue;
+              const deduct = Math.min(b.quantity, remaining);
+              b.quantity -= deduct;
+              remaining -= deduct;
+            }
+          });
+          return copy.filter(b => b.quantity > 0);
+        });
+      }
+
+      // Auto-create customer if not found
+      let custId = customers.find(c =>
+        c.name.toLowerCase().includes(buyerName.slice(0, 10).toLowerCase())
+      )?.id || "";
+
+      if (!custId && buyerName && setCustomers) {
+        const newCust: Customer = {
+          id: `cust-imp-${Date.now()}`,
+          companyId,
+          name: buyerName,
+          code: `CUST-${String(customers.length + 1).padStart(3, "0")}`,
+          email: "", phone: "",
+          address: buyerAddr,
+          outstandingBalance: 0,
+          gstin: buyerGSTIN,
+        };
+        setCustomers(prev => [...prev, newCust]);
+        custId = newCust.id;
+        toast.success("Customer Auto-Created", buyerName);
+      }
+
+      const gstAmt = (subtotal + deliveryCharges) * (gstPctDetected / 100);
+      const grandTotal = subtotal + deliveryCharges + gstAmt;
+
+      const newInvoice: Invoice = {
+        id: `inv-${Date.now()}`,
+        invoiceNumber: invoiceNo || `INV-IMP-${Date.now()}`,
+        customerId: custId,
+        branchId,
+        items: finalItems,
+        subtotal: subtotal + deliveryCharges,
+        taxAmount: gstAmt,
+        cgst: gstAmt / 2,
+        sgst: gstAmt / 2,
+        totalAmount: grandTotal,
+        status: "unpaid",
+        createdAt: invoiceDate || new Date().toISOString().slice(0, 10),
+        dueDate: new Date(Date.now() + 30 * 86400000).toISOString().slice(0, 10),
+        buyerName,
+        buyerGSTIN,
+        billingAddress: buyerAddr,
+        buyerState,
+        eWayBillNo: eWayBillNo || undefined,
+        challanNo: challanNo || undefined,
+        deliveryCharges: deliveryCharges || undefined,
+        notes: `Imported from: ${file.name}`,
+      };
+      setInvoices(prev => [newInvoice, ...prev]);
+      toast.success(
+        `Invoice imported — ${finalItems.length} items`,
+        `${stockDeductions.length} products deducted from inventory`
+      );
+    } catch (err) {
+      toast.error("Import Failed", "Could not parse the Excel file.");
+      console.error(err);
+    } finally {
+      setImporting(false);
+      if (fileInputRef.current) fileInputRef.current.value = "";
+    }
   };
 
   const handleOpenAdd = () => { resetForm(); setEditingInvoice(null); setShowAddModal(true); };
@@ -321,10 +523,23 @@ ${inv.notes ? `<div style="border:1px solid #e2e8f0;border-radius:8px;padding:14
           }} className="flex items-center gap-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg px-3 py-1.5 text-xs font-bold cursor-pointer">
             <Download className="h-3.5 w-3.5" /> Export Excel
           </button>
-          {canWrite && (<button onClick={() => setShowGSTBuilder(true)}
-            className="flex items-center gap-1.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg px-3 py-1.5 text-xs font-bold cursor-pointer">
-            <Plus className="h-3.5 w-3.5" /> New GST Invoice
-          </button>)}
+          {canWrite && (
+            <>
+              <button
+                onClick={() => fileInputRef.current?.click()}
+                disabled={importing}
+                className="flex items-center gap-1.5 bg-emerald-700 hover:bg-emerald-600 disabled:opacity-50 text-white rounded-lg px-3 py-1.5 text-xs font-bold cursor-pointer"
+              >
+                <Upload className="h-3.5 w-3.5" />
+                {importing ? "Importing…" : "Import Excel"}
+              </button>
+              <input ref={fileInputRef} type="file" accept=".xlsx,.xls" onChange={handleImportXLSX} className="hidden" />
+              <button onClick={() => setShowGSTBuilder(true)}
+                className="flex items-center gap-1.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg px-3 py-1.5 text-xs font-bold cursor-pointer">
+                <Plus className="h-3.5 w-3.5" /> New GST Invoice
+              </button>
+            </>
+          )}
         </div>
       </div>
 

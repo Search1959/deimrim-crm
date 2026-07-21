@@ -312,6 +312,9 @@ export interface Invoice {
   buyerState?: string;
   buyerPhone?: string;
   buyerEmail?: string;
+  eWayBillNo?: string;
+  challanNo?: string;
+  deliveryCharges?: number;
 }
 
 // ==========================================

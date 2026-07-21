@@ -1121,6 +1121,7 @@ export default function App() {
             setInvoices={setInvoices}
             products={products}
             batchStocks={batchStocks}
+            setBatchStocks={setBatchStocks}
             serviceCatalog={serviceCatalog}
             setServiceCatalog={setServiceCatalog}
             userRole={currentUser.role}
