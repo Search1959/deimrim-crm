@@ -54,7 +54,7 @@ export const TENANT_ENTITIES = [
   "leads", "customers", "invoices",
   "employees", "leaveRequests",
   "transactions", "documents", "notifications", "auditLogs",
-  "assets", "stockMovements",
+  "assets", "stockMovements", "vendorBills",
 ] as const;
 
 export type EntityName = typeof TENANT_ENTITIES[number];

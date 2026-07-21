@@ -415,8 +415,11 @@ export default function App() {
       }]);
       const resolvedAssets      = pick(apiAssets,      "assets",        []);
       const resolvedMovements   = pick(apiMovements,   "stockMovements",[]);
-      // vendorBills: always read from localStorage (not in MySQL schema yet)
-      const resolvedVendorBills = apiVendorBills ?? lsGet("vendorBills") ?? [];
+      // vendorBills: prefer localStorage (MySQL may not have table yet); API overrides only if non-empty
+      const lsVendorBills = lsGet("vendorBills");
+      const resolvedVendorBills = (Array.isArray(apiVendorBills) && (apiVendorBills as any[]).length > 0)
+        ? apiVendorBills
+        : (lsVendorBills ?? []);
 
       // Apply branch migration (Mumbai → Kolkata)
       const migratedBranches = (resolvedBranches as any[]).map((br: any) =>
