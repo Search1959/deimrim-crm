@@ -131,6 +131,7 @@ export default function VendorBillsPanel({
   const [payRemarks, setPayRemarks] = useState("");
   const [expandedBillId, setExpandedBillId] = useState<string | null>(null);
   const [importing, setImporting] = useState(false);
+  const [skipStock, setSkipStock] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [viewingBill, setViewingBill] = useState<VendorInvoice | null>(null);
 
@@ -274,16 +275,20 @@ export default function VendorBillsPanel({
         toast.error("No items found", "Check column headers in the Excel file."); return;
       }
 
-      // Replace stock — remove existing entries for these products first, then add fresh
-      const importedProductIds = new Set(importedLines.map(i => i.productId));
-      const newStocks: BatchStock[] = importedLines.map((i, idx) => ({
-        id: `bs-imp-${Date.now()}-${idx}`,
-        productId: i.productId,
-        warehouseId: "wh-main",
-        batchNumber: `BATCH-${invoiceNo || Date.now()}`,
-        quantity: i.quantity,
-      }));
-      setBatchStocks(prev => [...prev.filter(b => !importedProductIds.has(b.productId)), ...newStocks]);
+      // Add stock only if not skipped
+      let stockWasAdded = false;
+      if (!skipStock) {
+        const importedProductIds = new Set(importedLines.map(i => i.productId));
+        const newStocks: BatchStock[] = importedLines.map((i, idx) => ({
+          id: `bs-imp-${Date.now()}-${idx}`,
+          productId: i.productId,
+          warehouseId: "wh-main",
+          batchNumber: `BATCH-${invoiceNo || Date.now()}`,
+          quantity: i.quantity,
+        }));
+        setBatchStocks(prev => [...prev.filter(b => !importedProductIds.has(b.productId)), ...newStocks]);
+        stockWasAdded = true;
+      }
 
       // Create Vendor Bill directly
       const sup = suppliers.find(s => s.id === supplierId) || createdProducts.length > 0 ? { name: supplierName } : null;
@@ -304,12 +309,15 @@ export default function VendorBillsPanel({
         createdAt: new Date().toISOString(),
         payments: [],
         items: billItems,
+        stockAdded: stockWasAdded,
       };
       setBills(prev => [newBill, ...prev]);
 
       toast.success(
         `Bill created — ${billItems.length} items`,
-        `${createdProducts.length} new products · stock added to Inventory · GST ${detectedGST}%`
+        stockWasAdded
+          ? `${createdProducts.length} new products · stock added to Inventory · GST ${detectedGST}%`
+          : `Stock NOT added — click "Add to Stock" on the bill when ready`
       );
     } catch (err) {
       toast.error("Import Failed", "Could not parse the Excel file. Check format.");
@@ -318,6 +326,22 @@ export default function VendorBillsPanel({
       setImporting(false);
       if (fileInputRef.current) fileInputRef.current.value = "";
     }
+  };
+
+  const handleAddStock = (bill: VendorInvoice) => {
+    if (!bill.items || bill.items.length === 0) { toast.error("No line items on this bill"); return; }
+    const allProducts = products;
+    const batchNum = `BATCH-${bill.billNumber}`;
+    const newStocks: BatchStock[] = bill.items.map((it, idx) => {
+      const prod = allProducts.find(p => p.name.toLowerCase() === it.description.toLowerCase());
+      if (!prod) return null;
+      return { id: `bs-man-${Date.now()}-${idx}`, productId: prod.id, warehouseId: "wh-main", batchNumber: batchNum, quantity: it.quantity };
+    }).filter(Boolean) as BatchStock[];
+    if (newStocks.length === 0) { toast.error("No matching products found in inventory"); return; }
+    const addedIds = new Set(newStocks.map(s => s.productId));
+    setBatchStocks(prev => [...prev.filter(b => !addedIds.has(b.productId)), ...newStocks]);
+    setBills(prev => prev.map(b => b.id === bill.id ? { ...b, stockAdded: true } : b));
+    toast.success(`Stock added — ${newStocks.length} products updated`);
   };
 
   const handleCreateBill = (e: React.FormEvent) => {
@@ -388,7 +412,16 @@ export default function VendorBillsPanel({
             <p className="text-[10px] text-slate-400 mt-0.5">Record supplier bills and track payments</p>
           </div>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-3">
+          <label className="flex items-center gap-1.5 cursor-pointer select-none">
+            <input
+              type="checkbox"
+              checked={skipStock}
+              onChange={e => setSkipStock(e.target.checked)}
+              className="accent-emerald-500 w-3.5 h-3.5"
+            />
+            <span className="text-[10px] text-slate-400 font-mono font-bold">Bill only (skip stock)</span>
+          </label>
           <button
             onClick={() => fileInputRef.current?.click()}
             disabled={importing}
@@ -463,6 +496,18 @@ export default function VendorBillsPanel({
                   </td>
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-1.5">
+                      {!b.stockAdded && b.items && b.items.length > 0 && (
+                        <button
+                          onClick={() => handleAddStock(b)}
+                          title="Add to Stock"
+                          className="flex items-center gap-1 px-2 py-1 rounded-md bg-emerald-700/20 hover:bg-emerald-700/40 text-emerald-400 text-[10px] font-bold transition-colors cursor-pointer"
+                        >
+                          + Stock
+                        </button>
+                      )}
+                      {b.stockAdded && (
+                        <span className="px-2 py-1 text-[9px] font-bold text-emerald-600 font-mono">✓ Stocked</span>
+                      )}
                       <button
                         onClick={() => setViewingBill(b)}
                         title="View Bill"

@@ -629,6 +629,7 @@ export interface VendorInvoice {
     rate: number;
     amount: number;
   }>;
+  stockAdded?: boolean;
 }
 
 export interface VendorPayment {
