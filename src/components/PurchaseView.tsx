@@ -13,6 +13,7 @@ interface PurchaseViewProps {
   purchaseOrders: PurchaseOrder[];
   setPurchaseOrders: React.Dispatch<React.SetStateAction<PurchaseOrder[]>>;
   products: Product[];
+  setProducts: React.Dispatch<React.SetStateAction<Product[]>>;
   warehouses: any[];
   batchStocks?: any[];
   userRole: UserRole;
@@ -31,6 +32,7 @@ export default function PurchaseView({
   purchaseOrders,
   setPurchaseOrders,
   products,
+  setProducts,
   batchStocks = [],
   userRole,
   companyId,
@@ -75,11 +77,14 @@ export default function PurchaseView({
         return (
           <OrdersPanel
             suppliers={suppliers}
+            setSuppliers={setSuppliers}
             products={products}
+            setProducts={setProducts}
             purchaseOrders={purchaseOrders}
             setPurchaseOrders={setPurchaseOrders}
             onMarkPOReceived={onMarkPOReceived}
             batchStocks={batchStocks}
+            companyId={companyId}
           />
         );
       case "vendors":

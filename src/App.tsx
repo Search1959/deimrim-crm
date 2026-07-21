@@ -1092,6 +1092,7 @@ export default function App() {
             vendorBills={vendorBills}
             setVendorBills={setVendorBills}
             products={products}
+            setProducts={setProducts}
             warehouses={defaultWarehouses}
             batchStocks={batchStocks}
             userRole={currentUser.role}

@@ -203,6 +203,8 @@ export interface PurchaseOrder {
   paymentStatus: "unpaid" | "partially_paid" | "paid";
   deliveryDate?: string;
   remarks?: string;
+  supplierInvoiceNo?: string;
+  supplierInvoiceDate?: string;
   createdAt: string;
 }
 

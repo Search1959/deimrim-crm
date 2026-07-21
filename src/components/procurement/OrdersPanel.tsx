@@ -1,15 +1,31 @@
 import { toast } from "../../utils/toast";
 import React, { useState, useRef, useEffect } from "react";
-import { Plus, Search, Trash2, Check, ShoppingBag, Eye, PackageCheck, X } from "lucide-react";
+import { Plus, Search, Trash2, Check, ShoppingBag, Eye, PackageCheck, X, Upload } from "lucide-react";
 import { PurchaseOrder, Supplier, Product, BatchStock, formatINR } from "../../types";
 
 interface OrdersPanelProps {
   suppliers: Supplier[];
+  setSuppliers: React.Dispatch<React.SetStateAction<Supplier[]>>;
   products: Product[];
+  setProducts: React.Dispatch<React.SetStateAction<Product[]>>;
   purchaseOrders: PurchaseOrder[];
   setPurchaseOrders: React.Dispatch<React.SetStateAction<PurchaseOrder[]>>;
   onMarkPOReceived: (poId: string) => void;
   batchStocks?: BatchStock[];
+  companyId: string;
+}
+
+// ── SKU generator from product description ─────────────────────────────────
+function makeSKU(desc: string): string {
+  let s = desc
+    .replace(/^LEO PUMPS?\s+/i, "LEO-")
+    .replace(/^CENTRIFUGAL PUMP\s+/i, "CENT-")
+    .replace(/\s*[-–\s]+\s*/g, "-")
+    .replace(/[^A-Z0-9\-]/gi, "")
+    .toUpperCase()
+    .replace(/-+/g, "-")
+    .replace(/^-|-$/g, "");
+  return s.slice(0, 25);
 }
 
 interface LineItem {
@@ -172,16 +188,21 @@ function VendorCombobox({ suppliers, value, onChange }: { suppliers: Supplier[];
 
 export default function OrdersPanel({
   suppliers,
+  setSuppliers,
   products,
+  setProducts,
   purchaseOrders,
   setPurchaseOrders,
   onMarkPOReceived,
   batchStocks = [],
+  companyId,
 }: OrdersPanelProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("All");
   const [showAddModal, setShowAddModal] = useState(false);
   const [selectedOrderView, setSelectedOrderView] = useState<PurchaseOrder | null>(null);
+  const [importing, setImporting] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Form state
   const [vendorId, setVendorId] = useState("");
@@ -189,6 +210,8 @@ export default function OrdersPanel({
   const [deliveryDate, setDeliveryDate] = useState("");
   const [notes, setNotes] = useState("");
   const [gstPct, setGstPct] = useState(18);
+  const [supplierInvoiceNo, setSupplierInvoiceNo] = useState("");
+  const [supplierInvoiceDate, setSupplierInvoiceDate] = useState("");
 
   const resetForm = () => {
     setVendorId("");
@@ -196,6 +219,163 @@ export default function OrdersPanel({
     setDeliveryDate("");
     setNotes("");
     setGstPct(18);
+    setSupplierInvoiceNo("");
+    setSupplierInvoiceDate("");
+  };
+
+  // ── Excel Import ───────────────────────────────────────────────────────────
+  const handleImportXLSX = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setImporting(true);
+    try {
+      const XLSX = await import("xlsx");
+      const buffer = await file.arrayBuffer();
+      const wb = XLSX.read(buffer, { type: "array" });
+      const ws = wb.Sheets[wb.SheetNames[0]];
+      const rows = XLSX.utils.sheet_to_json<any[]>(ws, { header: 1, defval: "" });
+
+      // ── Find column positions from header row ──────────────────────────
+      let descCol = 1, qtyCol = 10, rateCol = 11, unitCol = 12;
+      for (const row of rows) {
+        const lower = (row as any[]).map((c: any) => String(c).toLowerCase().trim());
+        const descIdx = lower.findIndex((c: string) => c.includes("description"));
+        if (descIdx >= 0) {
+          descCol = descIdx;
+          const qtyIdx = lower.findIndex((c: string) => c === "quantity" || c === "qty");
+          if (qtyIdx >= 0) qtyCol = qtyIdx;
+          const rateIdx = lower.findIndex((c: string) => c === "rate" || c.includes("unit price"));
+          if (rateIdx >= 0) rateCol = rateIdx;
+          const unitIdx = lower.findIndex((c: string) => c === "per" || c === "unit");
+          if (unitIdx >= 0) unitCol = unitIdx;
+          break;
+        }
+      }
+
+      // ── Extract invoice header metadata ────────────────────────────────
+      let invoiceNo = "";
+      let invDate = "";
+      let supplierName = "";
+
+      for (let i = 0; i < rows.length; i++) {
+        const row = rows[i] as any[];
+        for (let j = 0; j < row.length; j++) {
+          const cell = String(row[j]).toLowerCase().trim();
+          if (cell.includes("invoice no") && !cell.includes("supplier") && !invoiceNo) {
+            const val = String(rows[i + 1]?.[j] ?? "").trim().split(/\s+/)[0];
+            if (val) invoiceNo = val;
+          }
+          if ((cell === "dated" || cell === "date" || cell.includes("invoice date")) && !invDate) {
+            const val = String(rows[i + 1]?.[j] ?? "").trim();
+            if (val) invDate = val;
+          }
+        }
+        const firstCell = String(row[0]).toLowerCase();
+        if (firstCell.includes("supplier") && firstCell.includes("bill")) {
+          supplierName = String(rows[i + 1]?.[0] ?? "").trim();
+        }
+      }
+
+      // ── Find or auto-create supplier ───────────────────────────────────
+      let supplierId = "";
+      const matchKey = supplierName.slice(0, 10).toLowerCase();
+      const existing = suppliers.find(s => s.name.toLowerCase().includes(matchKey));
+      if (existing) {
+        supplierId = existing.id;
+      } else if (supplierName) {
+        const newSup: Supplier = {
+          id: `sup-${Date.now()}`,
+          companyId,
+          name: supplierName,
+          code: `SUP-IMP-${String(suppliers.length + 1).padStart(3, "0")}`,
+          contactPerson: "", email: "", phone: "", address: "", creditDays: 30,
+        };
+        setSuppliers(prev => [...prev, newSup]);
+        supplierId = newSup.id;
+        toast.success("Vendor Auto-Created", supplierName);
+      }
+
+      // ── Parse line items ───────────────────────────────────────────────
+      const importedLines: LineItem[] = [];
+      const createdProducts: Product[] = [];
+
+      for (const row of rows) {
+        const slNo = (row as any[])[0];
+        if (typeof slNo !== "number" || slNo <= 0) continue;
+
+        const rawDesc = String((row as any[])[descCol] ?? "").trim();
+        const desc = rawDesc.replace(/^[*#\s]+|[*#\s]+$/g, "").replace(/\s+/g, " ").trim();
+        const qty  = Number((row as any[])[qtyCol])  || 0;
+        const rate = Number((row as any[])[rateCol]) || 0;
+        const unit = String((row as any[])[unitCol] ?? "NOS").trim() || "NOS";
+
+        if (!desc || qty <= 0 || rate <= 0) continue;
+
+        const sku = makeSKU(desc);
+        const allProducts = [...products, ...createdProducts];
+        let prod = allProducts.find(p =>
+          p.name.toLowerCase() === desc.toLowerCase() ||
+          p.sku.toLowerCase() === sku.toLowerCase()
+        );
+
+        if (!prod) {
+          prod = {
+            id: `prod-imp-${Date.now()}-${importedLines.length}`,
+            sku,
+            name: desc,
+            categoryId: "",
+            brandId: "",
+            unit,
+            purchasePrice: rate,
+            sellingPrice: Math.round(rate * 1.2),
+            minStockLevel: 5,
+            maxStockLevel: 500,
+            description: `Imported · Invoice ${invoiceNo || file.name}`,
+          };
+          createdProducts.push(prod);
+        }
+
+        importedLines.push({ productId: prod.id, quantity: qty, unitPrice: rate });
+      }
+
+      if (createdProducts.length > 0) {
+        setProducts(prev => [...prev, ...createdProducts]);
+      }
+
+      // ── Detect GST % from totals section ──────────────────────────────
+      const subtotalCalc = importedLines.reduce((s, i) => s + i.quantity * i.unitPrice, 0);
+      let igst = 0;
+      for (const row of rows) {
+        const rowText = (row as any[]).map((c: any) => String(c)).join(" ").toUpperCase();
+        if (rowText.includes("GST") && !rowText.includes("GSTIN")) {
+          const amounts = (row as any[]).map((c: any) => Number(c)).filter(n => n > 1000);
+          if (amounts.length > 0) igst = Math.max(...amounts);
+        }
+      }
+      const detectedGST = subtotalCalc > 0 && igst > 0
+        ? Math.round((igst / subtotalCalc) * 100)
+        : 18;
+
+      // ── Populate form ──────────────────────────────────────────────────
+      setVendorId(supplierId);
+      setLineItems(importedLines.length > 0 ? importedLines : [{ productId: "", quantity: 1, unitPrice: 0 }]);
+      setSupplierInvoiceNo(invoiceNo);
+      setSupplierInvoiceDate(invDate);
+      setGstPct(detectedGST);
+      setNotes(`Imported from: ${file.name}`);
+      setShowAddModal(true);
+
+      toast.success(
+        `✅ ${importedLines.length} items imported`,
+        `${createdProducts.length} new products added to Inventory · GST ${detectedGST}%`
+      );
+    } catch (err) {
+      toast.error("Import Failed", "Could not parse the Excel file. Check format.");
+      console.error(err);
+    } finally {
+      setImporting(false);
+      if (fileInputRef.current) fileInputRef.current.value = "";
+    }
   };
 
   const handleOpenAdd = () => { resetForm(); setShowAddModal(true); };
@@ -235,6 +415,8 @@ export default function OrdersPanel({
       paymentStatus: "unpaid",
       deliveryDate: deliveryDate || undefined,
       remarks: notes || undefined,
+      supplierInvoiceNo: supplierInvoiceNo || undefined,
+      supplierInvoiceDate: supplierInvoiceDate || undefined,
       createdAt: new Date().toISOString(),
     };
     setPurchaseOrders(prev => [newPO, ...prev]);
@@ -281,6 +463,15 @@ export default function OrdersPanel({
           <Plus className="h-3.5 w-3.5" />
           <span>Create Purchase Order</span>
         </button>
+        <button
+          onClick={() => fileInputRef.current?.click()}
+          disabled={importing}
+          className="flex items-center gap-1.5 bg-emerald-700 hover:bg-emerald-600 disabled:opacity-50 text-white rounded-lg px-3 py-1.5 text-xs font-bold transition-all cursor-pointer"
+        >
+          <Upload className="h-3.5 w-3.5" />
+          <span>{importing ? "Importing…" : "Import Excel"}</span>
+        </button>
+        <input ref={fileInputRef} type="file" accept=".xlsx,.xls" onChange={handleImportXLSX} className="hidden" />
       </div>
 
       {/* Status filters */}
@@ -531,6 +722,29 @@ export default function OrdersPanel({
                       Grand Total: <span className="font-bold">{formatINR(grandTotal)}</span>
                     </div>
                   </div>
+                </div>
+              </div>
+
+              {/* Supplier Invoice Reference */}
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 font-mono">Supplier Invoice No.</label>
+                  <input
+                    type="text"
+                    placeholder="e.g. INV-2024-001"
+                    value={supplierInvoiceNo}
+                    onChange={e => setSupplierInvoiceNo(e.target.value)}
+                    className="w-full bg-slate-900 border border-slate-800 rounded-lg p-2 text-xs text-white focus:outline-none focus:border-indigo-500 font-mono"
+                  />
+                </div>
+                <div>
+                  <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 font-mono">Supplier Invoice Date</label>
+                  <input
+                    type="date"
+                    value={supplierInvoiceDate}
+                    onChange={e => setSupplierInvoiceDate(e.target.value)}
+                    className="w-full bg-slate-900 border border-slate-800 rounded-lg p-2 text-xs text-white focus:outline-none focus:border-indigo-500 font-mono"
+                  />
                 </div>
               </div>
 
