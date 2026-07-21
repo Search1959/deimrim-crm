@@ -415,7 +415,8 @@ export default function App() {
       }]);
       const resolvedAssets      = pick(apiAssets,      "assets",        []);
       const resolvedMovements   = pick(apiMovements,   "stockMovements",[]);
-      const resolvedVendorBills = pick(apiVendorBills, "vendorBills",   []);
+      // vendorBills: always read from localStorage (not in MySQL schema yet)
+      const resolvedVendorBills = apiVendorBills ?? lsGet("vendorBills") ?? [];
 
       // Apply branch migration (Mumbai → Kolkata)
       const migratedBranches = (resolvedBranches as any[]).map((br: any) =>
