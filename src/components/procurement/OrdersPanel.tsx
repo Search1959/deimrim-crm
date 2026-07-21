@@ -459,8 +459,14 @@ export default function OrdersPanel({
   };
 
   const handleDelete = (id: string) => {
-    if (!confirm("Delete this Purchase Order?")) return;
-    setPurchaseOrders(prev => prev.filter(po => po.id !== id));
+    if (!confirm("Delete this Purchase Order? Stock added by this PO will also be removed.")) return;
+    const po = purchaseOrders.find(p => p.id === id);
+    if (po) {
+      const productIds = new Set(po.items.map(i => i.productId));
+      setBatchStocks(prev => prev.filter(b => !productIds.has(b.productId)));
+    }
+    setPurchaseOrders(prev => prev.filter(p => p.id !== id));
+    toast.success("PO deleted", "Stock removed from inventory");
   };
 
   const filtered = purchaseOrders.filter(po => {
