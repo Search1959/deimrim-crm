@@ -219,6 +219,18 @@ export default function GSTInvoiceBuilder({
   const [terms, setTerms] = useState(company.defaultTerms || "1. Payment due within 30 days.\n2. Goods once sold will not be taken back.\n3. Interest @18% p.a. will be charged on overdue payments.\n4. Subject to local jurisdiction.");
   const [note, setNote] = useState("");
 
+  // e-Way Bill / Transport
+  const [eWayBillNo, setEWayBillNo] = useState("");
+  const [transportMode, setTransportMode] = useState<"Road"|"Rail"|"Air"|"Ship">("Road");
+  const [vehicleNumber, setVehicleNumber] = useState("");
+  const [transportDistance, setTransportDistance] = useState("");
+  const [transporterName, setTransporterName] = useState("");
+  const [transporterId, setTransporterId] = useState("");
+  const [transportDocNo, setTransportDocNo] = useState("");
+  const [transportDocDate, setTransportDocDate] = useState("");
+  const [ewbValidFrom, setEwbValidFrom] = useState("");
+  const [ewbValidUntil, setEwbValidUntil] = useState("");
+
   // Stock warnings: keyed by line item id
   const [stockWarnings, setStockWarnings] = useState<Record<string, { type: "out" | "low"; available: number }>>({});
 
@@ -345,6 +357,16 @@ export default function GSTInvoiceBuilder({
       buyerState,
       buyerPhone,
       buyerEmail,
+      eWayBillNo: eWayBillNo || undefined,
+      transportMode: transportMode || undefined,
+      vehicleNumber: vehicleNumber || undefined,
+      transportDistance: transportDistance ? Number(transportDistance) : undefined,
+      transporterName: transporterName || undefined,
+      transporterId: transporterId || undefined,
+      transportDocNo: transportDocNo || undefined,
+      transportDocDate: transportDocDate || undefined,
+      ewbValidFrom: ewbValidFrom || undefined,
+      ewbValidUntil: ewbValidUntil || undefined,
     };
     onSave(invoice);
     toast.success(`Invoice ${invoiceNumber} saved.`);
@@ -614,6 +636,55 @@ export default function GSTInvoiceBuilder({
                   <span>Grand Total</span><span>₹{grandTotal.toFixed(2)}</span>
                 </div>
                 <p className="text-[10px] text-slate-400 italic">{amountInWords(grandTotal)}</p>
+              </div>
+            </div>
+          </div>
+
+          {/* e-Way Bill / Transport Details */}
+          <div className="bg-amber-500/5 border border-amber-500/30 rounded-xl p-4 space-y-3">
+            <p className="text-[10px] font-bold text-amber-400 uppercase tracking-widest">e-Way Bill — Transport Details</p>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+              <div>
+                <label className={inLabel}>e-Way Bill No</label>
+                <input value={eWayBillNo} onChange={e => setEWayBillNo(e.target.value)} className={inClass} placeholder="12-digit EWB No" />
+              </div>
+              <div>
+                <label className={inLabel}>Transport Mode</label>
+                <select value={transportMode} onChange={e => setTransportMode(e.target.value as "Road"|"Rail"|"Air"|"Ship")} className={inClass}>
+                  <option>Road</option><option>Rail</option><option>Air</option><option>Ship</option>
+                </select>
+              </div>
+              <div>
+                <label className={inLabel}>Vehicle Number</label>
+                <input value={vehicleNumber} onChange={e => setVehicleNumber(e.target.value.toUpperCase())} className={inClass} placeholder="WB12AB1234" />
+              </div>
+              <div>
+                <label className={inLabel}>Distance (KM)</label>
+                <input type="number" value={transportDistance} onChange={e => setTransportDistance(e.target.value)} className={inClass} placeholder="e.g. 250" />
+              </div>
+              <div>
+                <label className={inLabel}>Transporter Name</label>
+                <input value={transporterName} onChange={e => setTransporterName(e.target.value)} className={inClass} placeholder="Transporter company name" />
+              </div>
+              <div>
+                <label className={inLabel}>Transporter GSTIN</label>
+                <input value={transporterId} onChange={e => setTransporterId(e.target.value)} className={`${inClass} font-mono`} placeholder="15-digit GSTIN" />
+              </div>
+              <div>
+                <label className={inLabel}>LR / Doc No</label>
+                <input value={transportDocNo} onChange={e => setTransportDocNo(e.target.value)} className={inClass} placeholder="LR/RR/Airway Bill No" />
+              </div>
+              <div>
+                <label className={inLabel}>Doc Date</label>
+                <input type="date" value={transportDocDate} onChange={e => setTransportDocDate(e.target.value)} className={inClass} />
+              </div>
+              <div>
+                <label className={inLabel}>Valid From</label>
+                <input type="date" value={ewbValidFrom} onChange={e => setEwbValidFrom(e.target.value)} className={inClass} />
+              </div>
+              <div>
+                <label className={inLabel}>Valid Until</label>
+                <input type="date" value={ewbValidUntil} onChange={e => setEwbValidUntil(e.target.value)} className={inClass} />
               </div>
             </div>
           </div>
