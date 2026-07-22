@@ -269,6 +269,114 @@ async function startServer() {
       res.status(500).json({ error: "DB write failed" });
     }
   });
+  app.post("/api/einvoice/generate", express.json(), async (req, res) => {
+    const { invoice, company } = req.body;
+    const gspUrl = company.gspApiUrl?.replace(/\/$/, "");
+    if (!gspUrl) {
+      return res.status(400).json({ error: "GSP API URL not configured in Company Settings." });
+    }
+    if (!company.gspClientId || !company.gspClientSecret) {
+      return res.status(400).json({ error: "GSP Client ID / Secret not configured in Company Settings." });
+    }
+    try {
+      const authRes = await fetch(`${gspUrl}/auth/api/authenticate`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          UserName: company.gspUsername || "",
+          Password: company.gspPassword || "",
+          AppKey: company.gspClientSecret,
+          ForceRefreshAccessToken: false
+        })
+      });
+      if (!authRes.ok) {
+        const errText = await authRes.text();
+        return res.status(502).json({ error: `GSP auth failed: ${errText}` });
+      }
+      const authData = await authRes.json();
+      if (!authData.AuthToken) {
+        return res.status(502).json({ error: `GSP auth error: ${JSON.stringify(authData)}` });
+      }
+      const authToken = authData.AuthToken;
+      const inv = invoice;
+      const gstnPayload = {
+        Version: "1.1",
+        TranDtls: { TaxSch: "GST", SupTyp: "B2B", RegRev: "N", EcmGstin: null, IgstOnIntra: "N" },
+        DocDtls: {
+          Typ: "INV",
+          No: inv.invoiceNumber || "",
+          Dt: (inv.createdAt || "").slice(0, 10).split("-").reverse().join("/")
+        },
+        SellerDtls: {
+          Gstin: company.gstin || "",
+          LglNm: company.name || "",
+          Addr1: company.address || "",
+          Loc: company.state || "",
+          Pin: 7e5,
+          Stcd: "19"
+        },
+        BuyerDtls: {
+          Gstin: inv.buyerGSTIN || "URP",
+          LglNm: inv.buyerName || "",
+          Addr1: inv.billingAddress || "",
+          Loc: inv.buyerState || "",
+          Pin: 7e5,
+          Stcd: "19",
+          Pos: "19"
+        },
+        ValDtls: {
+          AssVal: inv.subtotal || 0,
+          CgstVal: inv.cgst || 0,
+          SgstVal: inv.sgst || 0,
+          IgstVal: 0,
+          TotInvVal: inv.totalAmount || 0
+        },
+        ItemList: (inv.items || []).map((item, idx) => ({
+          SlNo: String(idx + 1),
+          PrdDesc: item.description || "",
+          IsServc: "N",
+          HsnCd: item.hsn || "00000000",
+          Qty: item.quantity || 1,
+          Unit: item.unit || "NOS",
+          UnitPrice: item.unitPrice || 0,
+          TotAmt: (item.quantity || 1) * (item.unitPrice || 0),
+          AssAmt: (item.quantity || 1) * (item.unitPrice || 0),
+          GstRt: item.gstPct || 18,
+          CgstAmt: (item.quantity || 1) * (item.unitPrice || 0) * ((item.gstPct || 18) / 200),
+          SgstAmt: (item.quantity || 1) * (item.unitPrice || 0) * ((item.gstPct || 18) / 200),
+          IgstAmt: 0,
+          TotItemVal: (item.quantity || 1) * (item.unitPrice || 0) * (1 + (item.gstPct || 18) / 100)
+        }))
+      };
+      const irnRes = await fetch(`${gspUrl}/eicore/v1.03/Invoice`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "user_name": company.gspUsername || "",
+          "authtoken": authToken,
+          "Gstin": company.gstin || ""
+        },
+        body: JSON.stringify(gstnPayload)
+      });
+      const irnData = await irnRes.json();
+      if (!irnRes.ok || !irnData.Irn) {
+        return res.status(502).json({
+          error: `IRN generation failed: ${JSON.stringify(irnData.ErrorDetails || irnData)}`
+        });
+      }
+      return res.json({
+        irn: irnData.Irn,
+        ackNo: irnData.AckNo || "",
+        ackDate: irnData.AckDt || "",
+        qrCode: irnData.SignedQRCode || "",
+        ewbNo: irnData.EwbNo || ""
+      });
+    } catch (err) {
+      const message = err instanceof Error ? err.message : String(err);
+      console.error("e-Invoice GSP error:", message);
+      return res.status(500).json({ error: `GSP connection error: ${message}` });
+    }
+  });
   app.get("/help", (_req, res) => {
     res.sendFile(path.join(process.cwd(), "public", "help.html"));
   });

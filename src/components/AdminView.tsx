@@ -150,6 +150,7 @@ export default function AdminView({
   const [clientPassword, setClientPassword] = useState("client123");
   const [clientCompanyName, setClientCompanyName] = useState("");
   const [clientCompanyCode, setClientCompanyCode] = useState("");
+  const [clientExistingCompId, setClientExistingCompId] = useState("");
   const [successMsg, setSuccessMsg] = useState("");
 
   // Company Admin Staff Registration States
@@ -204,7 +205,7 @@ export default function AdminView({
     }
 
     const cleanCode = clientCompanyCode.toLowerCase().trim().replace(/[^a-z0-9]/g, "");
-    const newCompanyId = "comp-" + cleanCode;
+    const newCompanyId = clientExistingCompId.trim() || ("comp-" + cleanCode);
     const newBranchId = "br-" + cleanCode + "-hq";
 
     // Create the new User
@@ -767,6 +768,18 @@ export default function AdminView({
                       value={clientCompanyCode}
                       onChange={(e) => setClientCompanyCode(e.target.value)}
                       className="w-full bg-slate-900 border border-slate-800 rounded-lg px-3 py-2 text-xs text-white placeholder-slate-500 focus:outline-hidden focus:border-indigo-500 font-mono font-bold uppercase"
+                    />
+                  </div>
+
+                  {/* Existing Company ID (optional) */}
+                  <div className="space-y-1.5 col-span-2">
+                    <label className="text-xs font-semibold text-amber-400 font-mono">Existing Company ID <span className="text-slate-500 font-normal">(leave blank for new company — fill to reconnect to existing data)</span></label>
+                    <input
+                      type="text"
+                      placeholder="e.g. comp-1  (only if reconnecting to existing data)"
+                      value={clientExistingCompId}
+                      onChange={(e) => setClientExistingCompId(e.target.value)}
+                      className="w-full bg-amber-500/5 border border-amber-500/30 rounded-lg px-3 py-2 text-xs text-amber-200 placeholder-slate-500 focus:outline-hidden focus:border-amber-400 font-mono"
                     />
                   </div>
 

@@ -287,7 +287,7 @@ export default function App() {
   useEffect(() => {
     localStorage.setItem("deinrim_users", JSON.stringify(users));
     if (usersSaveTimer.current) clearTimeout(usersSaveTimer.current);
-    usersSaveTimer.current = setTimeout(() => saveUsers(users), 1500);
+    usersSaveTimer.current = setTimeout(() => saveUsers(users), 300);
   }, [users]);
 
   // B. Switch and boot specific Tenant State when user logs in / changes company
