@@ -321,6 +321,16 @@ export interface Invoice {
   eWayBillNo?: string;
   challanNo?: string;
   deliveryCharges?: number;
+  // e-Way Bill transport details
+  transportMode?: "Road" | "Rail" | "Air" | "Ship";
+  vehicleNumber?: string;
+  transporterName?: string;
+  transporterId?: string;
+  transportDistance?: number;
+  transportDocNo?: string;
+  transportDocDate?: string;
+  ewbValidFrom?: string;
+  ewbValidUntil?: string;
   // e-Invoice (GSP/IRP) fields
   irnNumber?: string;
   irnAckDate?: string;

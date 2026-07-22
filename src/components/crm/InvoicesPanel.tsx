@@ -861,7 +861,7 @@ ${inv.notes ? `<div style="border:1px solid #e2e8f0;border-radius:8px;padding:14
       {/* View Modal */}
       {viewingInvoice && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-          <div className="w-full max-w-lg rounded-xl border border-slate-800 bg-slate-950 p-6 shadow-2xl space-y-4">
+          <div className="w-full max-w-2xl rounded-xl border border-slate-800 bg-slate-950 p-6 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto">
             <div className="border-b border-slate-800 pb-2 flex items-center justify-between">
               <span className="font-mono text-xs font-bold text-indigo-400">{viewingInvoice.invoiceNumber}</span>
               <button onClick={() => setViewingInvoice(null)} className="text-slate-400 hover:text-white font-bold text-lg">×</button>
@@ -916,6 +916,81 @@ ${inv.notes ? `<div style="border:1px solid #e2e8f0;border-radius:8px;padding:14
               <div className="border-t border-slate-800 pt-2 text-right">
                 <span className="text-slate-500 block text-[10px]">Total Amount</span>
                 <strong className="text-base text-emerald-400 font-mono">{formatINR(viewingInvoice.totalAmount)}</strong>
+              </div>
+
+              {/* e-Way Bill Transport Details */}
+              <div className="border border-amber-500/30 bg-amber-500/5 rounded-lg p-3 space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-[10px] font-bold text-amber-400 uppercase tracking-wider">e-Way Bill — Transport Details</span>
+                  {viewingInvoice.eWayBillNo && (
+                    <span className="font-mono text-[10px] text-amber-300 font-bold">EWB: {viewingInvoice.eWayBillNo}</span>
+                  )}
+                </div>
+                <div className="grid grid-cols-2 gap-2">
+                  <div>
+                    <label className="block text-[9px] font-bold text-slate-500 uppercase mb-1">e-Way Bill No</label>
+                    <input type="text" defaultValue={viewingInvoice.eWayBillNo || ""}
+                      onBlur={e => setInvoices(prev => prev.map(i => i.id === viewingInvoice.id ? { ...i, eWayBillNo: e.target.value } : i))}
+                      className="w-full bg-slate-900 border border-slate-700 rounded px-2 py-1 text-xs text-white font-mono focus:outline-none focus:border-amber-500" placeholder="12-digit EWB No" />
+                  </div>
+                  <div>
+                    <label className="block text-[9px] font-bold text-slate-500 uppercase mb-1">Transport Mode</label>
+                    <select defaultValue={viewingInvoice.transportMode || "Road"}
+                      onBlur={e => setInvoices(prev => prev.map(i => i.id === viewingInvoice.id ? { ...i, transportMode: e.target.value as "Road"|"Rail"|"Air"|"Ship" } : i))}
+                      className="w-full bg-slate-900 border border-slate-700 rounded px-2 py-1 text-xs text-white focus:outline-none focus:border-amber-500">
+                      <option>Road</option><option>Rail</option><option>Air</option><option>Ship</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-[9px] font-bold text-slate-500 uppercase mb-1">Vehicle Number</label>
+                    <input type="text" defaultValue={viewingInvoice.vehicleNumber || ""}
+                      onBlur={e => setInvoices(prev => prev.map(i => i.id === viewingInvoice.id ? { ...i, vehicleNumber: e.target.value } : i))}
+                      className="w-full bg-slate-900 border border-slate-700 rounded px-2 py-1 text-xs text-white font-mono uppercase focus:outline-none focus:border-amber-500" placeholder="WB12AB1234" />
+                  </div>
+                  <div>
+                    <label className="block text-[9px] font-bold text-slate-500 uppercase mb-1">Distance (KM)</label>
+                    <input type="number" defaultValue={viewingInvoice.transportDistance || ""}
+                      onBlur={e => setInvoices(prev => prev.map(i => i.id === viewingInvoice.id ? { ...i, transportDistance: Number(e.target.value) } : i))}
+                      className="w-full bg-slate-900 border border-slate-700 rounded px-2 py-1 text-xs text-white focus:outline-none focus:border-amber-500" placeholder="e.g. 250" />
+                  </div>
+                  <div>
+                    <label className="block text-[9px] font-bold text-slate-500 uppercase mb-1">Transporter Name</label>
+                    <input type="text" defaultValue={viewingInvoice.transporterName || ""}
+                      onBlur={e => setInvoices(prev => prev.map(i => i.id === viewingInvoice.id ? { ...i, transporterName: e.target.value } : i))}
+                      className="w-full bg-slate-900 border border-slate-700 rounded px-2 py-1 text-xs text-white focus:outline-none focus:border-amber-500" placeholder="Transporter company name" />
+                  </div>
+                  <div>
+                    <label className="block text-[9px] font-bold text-slate-500 uppercase mb-1">Transporter GSTIN</label>
+                    <input type="text" defaultValue={viewingInvoice.transporterId || ""}
+                      onBlur={e => setInvoices(prev => prev.map(i => i.id === viewingInvoice.id ? { ...i, transporterId: e.target.value } : i))}
+                      className="w-full bg-slate-900 border border-slate-700 rounded px-2 py-1 text-xs text-white font-mono focus:outline-none focus:border-amber-500" placeholder="15-digit GSTIN" />
+                  </div>
+                  <div>
+                    <label className="block text-[9px] font-bold text-slate-500 uppercase mb-1">LR / Doc No</label>
+                    <input type="text" defaultValue={viewingInvoice.transportDocNo || ""}
+                      onBlur={e => setInvoices(prev => prev.map(i => i.id === viewingInvoice.id ? { ...i, transportDocNo: e.target.value } : i))}
+                      className="w-full bg-slate-900 border border-slate-700 rounded px-2 py-1 text-xs text-white font-mono focus:outline-none focus:border-amber-500" placeholder="LR/RR/Airway Bill No" />
+                  </div>
+                  <div>
+                    <label className="block text-[9px] font-bold text-slate-500 uppercase mb-1">Doc Date</label>
+                    <input type="date" defaultValue={viewingInvoice.transportDocDate || ""}
+                      onBlur={e => setInvoices(prev => prev.map(i => i.id === viewingInvoice.id ? { ...i, transportDocDate: e.target.value } : i))}
+                      className="w-full bg-slate-900 border border-slate-700 rounded px-2 py-1 text-xs text-white focus:outline-none focus:border-amber-500" />
+                  </div>
+                  <div>
+                    <label className="block text-[9px] font-bold text-slate-500 uppercase mb-1">Valid From</label>
+                    <input type="date" defaultValue={viewingInvoice.ewbValidFrom || ""}
+                      onBlur={e => setInvoices(prev => prev.map(i => i.id === viewingInvoice.id ? { ...i, ewbValidFrom: e.target.value } : i))}
+                      className="w-full bg-slate-900 border border-slate-700 rounded px-2 py-1 text-xs text-white focus:outline-none focus:border-amber-500" />
+                  </div>
+                  <div>
+                    <label className="block text-[9px] font-bold text-slate-500 uppercase mb-1">Valid Until</label>
+                    <input type="date" defaultValue={viewingInvoice.ewbValidUntil || ""}
+                      onBlur={e => setInvoices(prev => prev.map(i => i.id === viewingInvoice.id ? { ...i, ewbValidUntil: e.target.value } : i))}
+                      className="w-full bg-slate-900 border border-slate-700 rounded px-2 py-1 text-xs text-white focus:outline-none focus:border-amber-500" />
+                  </div>
+                </div>
+                <p className="text-[9px] text-slate-600">Fields save automatically on tab/click away. Transport details print on invoice PDF.</p>
               </div>
             </div>
             <div className="flex justify-end gap-2 pt-2 border-t border-slate-800">
