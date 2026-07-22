@@ -578,16 +578,51 @@ export default function FinanceView({
     }
   };
 
+  // Derive ledger rows from invoices and vendor bills (read-only, not stored in transactions)
+  type LedgerRow = (Transaction & { _source?: "invoice" | "bill" });
+  const invoiceLedgerRows: LedgerRow[] = invoices.map(inv => ({
+    id: `inv-${inv.id}`,
+    type: "INCOME" as const,
+    category: "Sales Invoice",
+    amount: inv.totalAmount,
+    date: inv.createdAt.slice(0, 10),
+    referenceId: inv.invoiceNumber,
+    paymentMethod: "BANK" as const,
+    description: `${inv.invoiceNumber} — ${inv.buyerName || customers.find(c => c.id === inv.customerId)?.name || "Customer"}`,
+    branchId: inv.branchId || branchId,
+    _source: "invoice",
+  }));
+
+  const billLedgerRows: LedgerRow[] = vendorBills.map(bill => ({
+    id: `bill-${bill.id}`,
+    type: "EXPENSE" as const,
+    category: "Vendor Bill",
+    amount: bill.totalAmount,
+    date: (bill.invoiceDate || bill.createdAt || "").slice(0, 10),
+    referenceId: bill.billNumber,
+    paymentMethod: "BANK" as const,
+    description: `${bill.billNumber} — ${bill.supplierName}`,
+    branchId,
+    _source: "bill",
+  }));
+
+  // Combined ledger: manual transactions + auto-derived invoice/bill rows, sorted newest first
+  const combinedLedger: LedgerRow[] = [
+    ...transactions.map(t => ({ ...t, _source: undefined as LedgerRow["_source"] })),
+    ...invoiceLedgerRows,
+    ...billLedgerRows,
+  ].sort((a, b) => (b.date || "").localeCompare(a.date || ""));
+
   // Compute stats
-  const totalIncome = transactions.filter(t => t.type === "INCOME").reduce((s, t) => s + t.amount, 0);
-  const totalExpense = transactions.filter(t => t.type === "EXPENSE").reduce((s, t) => s + t.amount, 0);
+  const totalIncome = combinedLedger.filter(t => t.type === "INCOME").reduce((s, t) => s + t.amount, 0);
+  const totalExpense = combinedLedger.filter(t => t.type === "EXPENSE").reduce((s, t) => s + t.amount, 0);
   const netSurplus = totalIncome - totalExpense;
 
-  const cashAccountSum = transactions
+  const cashAccountSum = combinedLedger
     .filter(t => t.paymentMethod === "CASH" || t.paymentMethod === "UPI")
     .reduce((sum, t) => sum + (t.type === "INCOME" ? t.amount : -t.amount), 0);
 
-  const bankAccountSum = transactions
+  const bankAccountSum = combinedLedger
     .filter(t => t.paymentMethod === "BANK" || t.paymentMethod === "CHEQUE")
     .reduce((sum, t) => sum + (t.type === "INCOME" ? t.amount : -t.amount), 0);
 
@@ -980,12 +1015,22 @@ Office Ergonomic Chairs,AST-CH-99,Furniture,1200,1050,12`;
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-850 text-slate-300">
-                  {transactions.map(t => {
+                  {combinedLedger.map(t => {
                     const isIncome = t.type === "INCOME";
+                    const isAuto = t._source === "invoice" || t._source === "bill";
                     return (
                       <tr key={t.id} className="hover:bg-slate-900/40 transition-colors">
                         <td className="px-5 py-4 font-mono text-xs text-slate-400">{t.date}</td>
-                        <td className="px-5 py-4 text-xs font-bold text-slate-200 uppercase tracking-wide">{t.category}</td>
+                        <td className="px-5 py-4 text-xs font-bold text-slate-200 uppercase tracking-wide">
+                          {t.category}
+                          {isAuto && (
+                            <span className={`ml-1.5 px-1.5 py-0.5 rounded text-[9px] font-bold uppercase ${
+                              t._source === "invoice" ? "bg-indigo-500/20 text-indigo-300" : "bg-amber-500/20 text-amber-300"
+                            }`}>
+                              {t._source === "invoice" ? "Sale" : "Purchase"}
+                            </span>
+                          )}
+                        </td>
                         <td className="px-5 py-4 text-xs font-medium text-slate-400">{t.description}</td>
                         <td className="px-5 py-4 font-mono text-xs font-semibold text-slate-500">{t.paymentMethod}</td>
                         <td className="px-5 py-4">
@@ -1000,22 +1045,26 @@ Office Ergonomic Chairs,AST-CH-99,Furniture,1200,1050,12`;
                           {isIncome ? "+" : "-"}{formatINR(t.amount)}
                         </td>
                         <td className="px-5 py-4 text-right">
-                          <div className="flex items-center justify-end gap-1.5">
-                            <button
-                              onClick={() => setTxToEdit(t)}
-                              className="rounded p-1 bg-slate-800 hover:bg-slate-700 text-slate-300 transition-colors"
-                              title="Edit Entry"
-                            >
-                              <Edit className="h-3.5 w-3.5" />
-                            </button>
-                            <button
-                              onClick={() => handleDeleteTx(t.id)}
-                              className="rounded p-1 bg-red-500/10 hover:bg-red-500/20 text-red-400 transition-colors"
-                              title="Delete/Void Entry"
-                            >
-                              <Trash2 className="h-3.5 w-3.5" />
-                            </button>
-                          </div>
+                          {isAuto ? (
+                            <span className="text-[10px] text-slate-600 italic">auto</span>
+                          ) : (
+                            <div className="flex items-center justify-end gap-1.5">
+                              <button
+                                onClick={() => setTxToEdit(t)}
+                                className="rounded p-1 bg-slate-800 hover:bg-slate-700 text-slate-300 transition-colors"
+                                title="Edit Entry"
+                              >
+                                <Edit className="h-3.5 w-3.5" />
+                              </button>
+                              <button
+                                onClick={() => handleDeleteTx(t.id)}
+                                className="rounded p-1 bg-red-500/10 hover:bg-red-500/20 text-red-400 transition-colors"
+                                title="Delete/Void Entry"
+                              >
+                                <Trash2 className="h-3.5 w-3.5" />
+                              </button>
+                            </div>
+                          )}
                         </td>
                       </tr>
                     );
@@ -1044,7 +1093,7 @@ Office Ergonomic Chairs,AST-CH-99,Furniture,1200,1050,12`;
                 <span className="font-mono text-emerald-400">+{formatINR(totalIncome)}</span>
               </div>
               <div className="mt-2 pl-4 space-y-1.5 text-xs text-slate-400">
-                {transactions.filter(t => t.type === "INCOME").map(t => (
+                {combinedLedger.filter(t => t.type === "INCOME").map(t => (
                   <div key={t.id} className="flex justify-between items-center">
                     <span>{t.description} ({t.category})</span>
                     <span className="font-mono text-slate-300">{formatINR(t.amount)}</span>
@@ -1058,11 +1107,11 @@ Office Ergonomic Chairs,AST-CH-99,Furniture,1200,1050,12`;
               <div className="flex items-center justify-between text-sm font-bold text-white">
                 <span className="uppercase tracking-wider font-mono">B. Cost of Goods Sold (COGS)</span>
                 <span className="font-mono text-rose-400">
-                  -{formatINR(transactions.filter(t => t.category.includes("COGS")).reduce((sum, t) => sum + t.amount, 0))}
+                  -{formatINR(combinedLedger.filter(t => t.category.includes("COGS") || t._source === "bill").reduce((sum, t) => sum + t.amount, 0))}
                 </span>
               </div>
               <div className="mt-2 pl-4 space-y-1.5 text-xs text-slate-400">
-                {transactions.filter(t => t.category.includes("COGS")).map(t => (
+                {combinedLedger.filter(t => t.category.includes("COGS") || t._source === "bill").map(t => (
                   <div key={t.id} className="flex justify-between items-center">
                     <span>{t.description}</span>
                     <span className="font-mono text-slate-300">-{formatINR(t.amount)}</span>
@@ -1076,11 +1125,11 @@ Office Ergonomic Chairs,AST-CH-99,Furniture,1200,1050,12`;
               <div className="flex items-center justify-between text-sm font-bold text-white">
                 <span className="uppercase tracking-wider font-mono">C. Operating Overheads (Expenses)</span>
                 <span className="font-mono text-rose-400">
-                  -{formatINR(transactions.filter(t => t.type === "EXPENSE" && !t.category.includes("COGS")).reduce((sum, t) => sum + t.amount, 0))}
+                  -{formatINR(combinedLedger.filter(t => t.type === "EXPENSE" && !t.category.includes("COGS") && t._source !== "bill").reduce((sum, t) => sum + t.amount, 0))}
                 </span>
               </div>
               <div className="mt-2 pl-4 space-y-1.5 text-xs text-slate-400">
-                {transactions.filter(t => t.type === "EXPENSE" && !t.category.includes("COGS")).map(t => (
+                {combinedLedger.filter(t => t.type === "EXPENSE" && !t.category.includes("COGS") && t._source !== "bill").map(t => (
                   <div key={t.id} className="flex justify-between items-center">
                     <span>{t.category} - {t.description}</span>
                     <span className="font-mono text-slate-300">-{formatINR(t.amount)}</span>
