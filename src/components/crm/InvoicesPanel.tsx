@@ -824,11 +824,24 @@ ${inv.notes ? `<div style="border:1px solid #e2e8f0;border-radius:8px;padding:14
             </div>
             <div className="space-y-3 text-xs">
               <div className="grid grid-cols-2 gap-2 text-slate-400">
-                <div>Customer: <span className="text-white font-semibold">{customers.find(c => c.id === viewingInvoice.customerId)?.name ?? "—"}</span></div>
+                <div>Customer: <span className="text-white font-semibold">{viewingInvoice.buyerName || customers.find(c => c.id === viewingInvoice.customerId)?.name || "—"}</span></div>
                 <div>Status: <span className="text-indigo-400 font-semibold uppercase">{viewingInvoice.status}</span></div>
-                <div>Date: <span className="text-white font-semibold">{viewingInvoice.createdAt}</span></div>
+                <div>Date: <span className="text-white font-semibold">{viewingInvoice.createdAt?.slice(0, 10)}</span></div>
                 <div>Due: <span className="text-white font-semibold">{viewingInvoice.dueDate}</span></div>
+                {viewingInvoice.buyerGSTIN && <div className="col-span-2">Buyer GSTIN: <span className="text-white font-mono font-semibold">{viewingInvoice.buyerGSTIN}</span></div>}
+                {viewingInvoice.eWayBillNo && (
+                  <div className="col-span-2 bg-amber-500/10 border border-amber-500/20 rounded px-2 py-1">
+                    e-Way Bill No: <span className="text-amber-300 font-mono font-bold">{viewingInvoice.eWayBillNo}</span>
+                  </div>
+                )}
+                {viewingInvoice.challanNo && (
+                  <div className="col-span-2">Challan No: <span className="text-white font-mono font-semibold">{viewingInvoice.challanNo}</span></div>
+                )}
+                {viewingInvoice.deliveryCharges ? <div className="col-span-2">Delivery Charges: <span className="text-white font-semibold">{formatINR(viewingInvoice.deliveryCharges)}</span></div> : null}
               </div>
+              {viewingInvoice.billingAddress && (
+                <div className="text-slate-500 text-[10px] border-t border-slate-800 pt-2">{viewingInvoice.billingAddress}</div>
+              )}
               <div className="border-t border-slate-800 pt-2 text-right">
                 <span className="text-slate-500 block text-[10px]">Total Amount</span>
                 <strong className="text-base text-emerald-400 font-mono">{formatINR(viewingInvoice.totalAmount)}</strong>
