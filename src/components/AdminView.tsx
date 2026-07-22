@@ -471,6 +471,51 @@ export default function AdminView({
               </div>
             </div>
 
+            {/* e-Invoice GSP Settings */}
+            <div className="border-t border-slate-800 pt-4 space-y-3">
+              <h4 className="text-xs font-bold text-violet-400 uppercase tracking-wider font-mono">e-Invoice GSP Settings</h4>
+              <p className="text-[10px] text-slate-500">Required for generating IRN from your GSP (ClearTax, Masters India, IRIS, etc.)</p>
+              <div className="grid grid-cols-1 gap-3">
+                <div>
+                  <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1 font-mono">GSP API Base URL</label>
+                  <input type="text" value={company.gspApiUrl || ""}
+                    onChange={(e) => setCompany(prev => ({ ...prev, gspApiUrl: e.target.value }))}
+                    placeholder="https://gsp.example.com"
+                    className="w-full rounded-lg border border-slate-800 bg-slate-900 p-2.5 text-sm text-white font-mono focus:outline-hidden" />
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1 font-mono">Client ID</label>
+                    <input type="text" value={company.gspClientId || ""}
+                      onChange={(e) => setCompany(prev => ({ ...prev, gspClientId: e.target.value }))}
+                      placeholder="GSP Client ID"
+                      className="w-full rounded-lg border border-slate-800 bg-slate-900 p-2.5 text-sm text-white font-mono focus:outline-hidden" />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1 font-mono">Client Secret</label>
+                    <input type="password" value={company.gspClientSecret || ""}
+                      onChange={(e) => setCompany(prev => ({ ...prev, gspClientSecret: e.target.value }))}
+                      placeholder="GSP Client Secret"
+                      className="w-full rounded-lg border border-slate-800 bg-slate-900 p-2.5 text-sm text-white font-mono focus:outline-hidden" />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1 font-mono">GSP Username</label>
+                    <input type="text" value={company.gspUsername || ""}
+                      onChange={(e) => setCompany(prev => ({ ...prev, gspUsername: e.target.value }))}
+                      placeholder="GSP portal username"
+                      className="w-full rounded-lg border border-slate-800 bg-slate-900 p-2.5 text-sm text-white font-mono focus:outline-hidden" />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1 font-mono">GSP Password</label>
+                    <input type="password" value={company.gspPassword || ""}
+                      onChange={(e) => setCompany(prev => ({ ...prev, gspPassword: e.target.value }))}
+                      placeholder="GSP portal password"
+                      className="w-full rounded-lg border border-slate-800 bg-slate-900 p-2.5 text-sm text-white font-mono focus:outline-hidden" />
+                  </div>
+                </div>
+              </div>
+            </div>
+
             <div className="text-right border-t border-slate-800 pt-4">
               <button type="submit"
                 className="inline-flex items-center gap-1.5 rounded-lg bg-indigo-600 px-4 py-2 text-xs font-bold text-white hover:bg-indigo-500 transition-colors">

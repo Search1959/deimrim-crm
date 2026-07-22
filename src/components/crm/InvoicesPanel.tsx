@@ -84,6 +84,40 @@ export default function InvoicesPanel({
 
   const [importing, setImporting] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [generatingIRN, setGeneratingIRN] = useState<string | null>(null); // invoice id being processed
+
+  const handleGenerateEInvoice = async (inv: Invoice) => {
+    if (!company) { alert("Company profile not loaded."); return; }
+    if (!company.gspApiUrl) { alert("GSP API URL not set. Go to Company Settings → e-Invoice GSP Settings."); return; }
+    if (inv.irnNumber) { if (!confirm("IRN already exists for this invoice. Regenerate?")) return; }
+    setGeneratingIRN(inv.id);
+    try {
+      const res = await fetch("/api/einvoice/generate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ invoice: inv, company }),
+      });
+      const data = await res.json() as { irn?: string; ackNo?: string; ackDate?: string; qrCode?: string; ewbNo?: string; error?: string };
+      if (!res.ok || data.error) { alert(`e-Invoice Error: ${data.error}`); return; }
+      setInvoices(prev => prev.map(i => i.id === inv.id ? {
+        ...i,
+        irnNumber: data.irn,
+        irnAckNo: data.ackNo,
+        irnAckDate: data.ackDate,
+        qrCode: data.qrCode,
+        eInvoiceStatus: "generated" as const,
+        eWayBillNo: data.ewbNo || i.eWayBillNo,
+      } : i));
+      if (viewingInvoice?.id === inv.id) {
+        setViewingInvoice(prev => prev ? { ...prev, irnNumber: data.irn, irnAckNo: data.ackNo, irnAckDate: data.ackDate, qrCode: data.qrCode, eInvoiceStatus: "generated" } : prev);
+      }
+      toast.success("e-Invoice Generated", `IRN: ${data.irn?.slice(0, 20)}…`);
+    } catch (err) {
+      alert(`Network error: ${err}`);
+    } finally {
+      setGeneratingIRN(null);
+    }
+  };
 
   const handleImportXLSX = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -590,6 +624,16 @@ ${inv.notes ? `<div style="border:1px solid #e2e8f0;border-radius:8px;padding:14
                       <button onClick={() => setViewingInvoice(inv)} className="p-1 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded cursor-pointer"><Eye className="h-3.5 w-3.5" /></button>
                       {canWrite && (<button onClick={() => handleOpenEdit(inv)} className="p-1 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded cursor-pointer"><Edit className="h-3.5 w-3.5" /></button>)}
                       <button onClick={() => downloadInvoicePDF(inv)} className="p-1 bg-indigo-600/20 hover:bg-indigo-600/40 text-indigo-400 border border-indigo-500/10 rounded cursor-pointer"><Download className="h-3.5 w-3.5" /></button>
+                      {canWrite && (
+                        <button
+                          onClick={() => handleGenerateEInvoice(inv)}
+                          disabled={generatingIRN === inv.id}
+                          title={inv.irnNumber ? `IRN: ${inv.irnNumber}` : "Generate e-Invoice (IRN)"}
+                          className={`p-1 rounded cursor-pointer text-[10px] font-bold px-2 transition-colors ${inv.eInvoiceStatus === "generated" ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30" : "bg-violet-500/20 hover:bg-violet-500/30 text-violet-300 border border-violet-500/30"}`}
+                        >
+                          {generatingIRN === inv.id ? "…" : inv.eInvoiceStatus === "generated" ? "✓ IRN" : "e-Inv"}
+                        </button>
+                      )}
                       {canWrite && (<button onClick={() => handleDelete(inv.id)} className="p-1 bg-red-500/10 hover:bg-red-500/20 text-red-400 rounded cursor-pointer"><Trash2 className="h-3.5 w-3.5" /></button>)}
                     </div>
                   </td>
@@ -839,6 +883,33 @@ ${inv.notes ? `<div style="border:1px solid #e2e8f0;border-radius:8px;padding:14
                 )}
                 {viewingInvoice.deliveryCharges ? <div className="col-span-2">Delivery Charges: <span className="text-white font-semibold">{formatINR(viewingInvoice.deliveryCharges)}</span></div> : null}
               </div>
+              {/* e-Invoice IRN block */}
+              {viewingInvoice.irnNumber && (
+                <div className="border border-emerald-500/30 bg-emerald-500/5 rounded-lg p-3 space-y-1.5">
+                  <div className="flex items-center gap-2 text-emerald-400 font-bold text-[10px] uppercase tracking-wider">
+                    <span>✓ e-Invoice Generated</span>
+                    {viewingInvoice.irnAckDate && <span className="text-slate-500 font-normal">Ack: {viewingInvoice.irnAckDate}</span>}
+                  </div>
+                  <div className="font-mono text-[10px] text-emerald-300 break-all">{viewingInvoice.irnNumber}</div>
+                  {viewingInvoice.irnAckNo && <div className="text-[10px] text-slate-400">Ack No: <span className="text-white font-mono">{viewingInvoice.irnAckNo}</span></div>}
+                  {viewingInvoice.qrCode && (
+                    <div className="mt-2">
+                      <div className="text-[9px] text-slate-500 mb-1">Signed QR Code (paste into invoice print)</div>
+                      <textarea readOnly value={viewingInvoice.qrCode} rows={2}
+                        className="w-full bg-slate-900 border border-slate-700 rounded text-[9px] font-mono text-slate-400 p-1 resize-none" />
+                    </div>
+                  )}
+                </div>
+              )}
+              {!viewingInvoice.irnNumber && company?.gspApiUrl && (
+                <button
+                  onClick={() => handleGenerateEInvoice(viewingInvoice)}
+                  disabled={generatingIRN === viewingInvoice.id}
+                  className="w-full py-2 rounded-lg bg-violet-600 hover:bg-violet-500 text-white text-xs font-bold cursor-pointer transition-colors"
+                >
+                  {generatingIRN === viewingInvoice.id ? "Generating IRN…" : "Generate e-Invoice (IRN)"}
+                </button>
+              )}
               {viewingInvoice.billingAddress && (
                 <div className="text-slate-500 text-[10px] border-t border-slate-800 pt-2">{viewingInvoice.billingAddress}</div>
               )}

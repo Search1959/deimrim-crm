@@ -53,6 +53,12 @@ export interface Company {
   bankAccountType?: string;
   bankUPI?: string;
   defaultTerms?: string;
+  // e-Invoice GSP settings
+  gspApiUrl?: string;
+  gspClientId?: string;
+  gspClientSecret?: string;
+  gspUsername?: string;
+  gspPassword?: string;
 }
 
 export interface Branch {
@@ -315,6 +321,12 @@ export interface Invoice {
   eWayBillNo?: string;
   challanNo?: string;
   deliveryCharges?: number;
+  // e-Invoice (GSP/IRP) fields
+  irnNumber?: string;
+  irnAckDate?: string;
+  irnAckNo?: string;
+  qrCode?: string;
+  eInvoiceStatus?: "pending" | "generated" | "cancelled";
 }
 
 // ==========================================
