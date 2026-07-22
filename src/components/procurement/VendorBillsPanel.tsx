@@ -764,7 +764,27 @@ export default function VendorBillsPanel({
                   </div>
                   <div>
                     <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 font-mono">Link to PO (Optional)</label>
-                    <select value={formPoId} onChange={e => setFormPoId(e.target.value)}
+                    <select value={formPoId} onChange={e => {
+                      const poId = e.target.value;
+                      setFormPoId(poId);
+                      if (poId && useLineItems) {
+                        const po = orders.find(o => o.id === poId);
+                        if (po?.items?.length) {
+                          setFormLines(po.items.map(item => {
+                            const prod = products.find(p => p.id === item.productId || p.name === item.productName);
+                            return {
+                              id: Date.now().toString() + Math.random(),
+                              description: item.productName || prod?.name || "",
+                              hsn: prod?.hsn || "",
+                              qty: String(item.quantity || 1),
+                              unit: item.unit || prod?.unit || "Nos",
+                              rate: String(item.unitPrice || item.rate || ""),
+                              gstPct: String(prod?.gstRate || "18"),
+                            };
+                          }));
+                        }
+                      }
+                    }}
                       className="w-full rounded-lg border border-slate-800 bg-slate-900 p-2.5 text-xs text-white focus:outline-none font-mono">
                       <option value="">-- No PO Link --</option>
                       {supplierPOs.map(po => <option key={po.id} value={po.id}>{po.poNumber}</option>)}
@@ -850,8 +870,26 @@ export default function VendorBillsPanel({
                             <tr key={line.id} className="border-t border-slate-800">
                               <td className="px-2 py-1.5 text-slate-500 text-center">{idx + 1}</td>
                               <td className="px-2 py-1.5">
-                                <input value={line.description} onChange={e => setFormLines(prev => prev.map((l, i) => i === idx ? { ...l, description: e.target.value } : l))}
-                                  className="w-full bg-slate-800 rounded px-2 py-1 text-white focus:outline-none focus:ring-1 focus:ring-indigo-500" placeholder="Product / service description" />
+                                <select value={line.description} onChange={e => {
+                                  const val = e.target.value;
+                                  const prod = products.find(p => p.name === val);
+                                  setFormLines(prev => prev.map((l, i) => i === idx ? {
+                                    ...l,
+                                    description: val,
+                                    hsn: prod?.hsn || l.hsn,
+                                    unit: prod?.unit || l.unit,
+                                    rate: prod ? String(prod.sellingPrice ?? prod.costPrice ?? l.rate) : l.rate,
+                                    gstPct: prod?.gstRate ? String(prod.gstRate) : l.gstPct,
+                                  } : l));
+                                }} className="w-full bg-slate-800 rounded px-2 py-1 text-white focus:outline-none focus:ring-1 focus:ring-indigo-500 text-xs">
+                                  <option value="">-- Select product --</option>
+                                  {products.map(p => <option key={p.id} value={p.name}>{p.name}</option>)}
+                                  <option value={line.description && !products.find(p => p.name === line.description) ? line.description : "__manual__"}>✏ Manual entry</option>
+                                </select>
+                                {(line.description === "__manual__" || (line.description && !products.find(p => p.name === line.description))) && (
+                                  <input value={line.description === "__manual__" ? "" : line.description} onChange={e => setFormLines(prev => prev.map((l, i) => i === idx ? { ...l, description: e.target.value } : l))}
+                                    className="w-full bg-slate-700 rounded px-2 py-1 text-white focus:outline-none focus:ring-1 focus:ring-indigo-500 text-xs mt-1" placeholder="Type description..." autoFocus />
+                                )}
                               </td>
                               <td className="px-2 py-1.5">
                                 <input value={line.hsn} onChange={e => setFormLines(prev => prev.map((l, i) => i === idx ? { ...l, hsn: e.target.value } : l))}
