@@ -122,6 +122,18 @@ export default function VendorBillsPanel({
   const [formGstRate, setFormGstRate] = useState("18");
   const [formDueDate, setFormDueDate] = useState("");
   const [formStatus, setFormStatus] = useState<VendorInvoice["status"]>("Pending Payment");
+  // Extended purchase bill form fields
+  const [formInvoiceDate, setFormInvoiceDate] = useState(new Date().toISOString().slice(0, 10));
+  const [formSupplierGSTIN, setFormSupplierGSTIN] = useState("");
+  const [formChallanNo, setFormChallanNo] = useState("");
+  const [formEWayBillNo, setFormEWayBillNo] = useState("");
+  const [formVehicleNo, setFormVehicleNo] = useState("");
+  const [formTransportMode, setFormTransportMode] = useState("Road");
+  const [formNarration, setFormNarration] = useState("");
+  type BillLineItem = { id: string; description: string; hsn: string; qty: string; unit: string; rate: string; gstPct: string; };
+  const blankLine = (): BillLineItem => ({ id: Date.now().toString(), description: "", hsn: "", qty: "1", unit: "Nos", rate: "", gstPct: "18" });
+  const [formLines, setFormLines] = useState<BillLineItem[]>([blankLine()]);
+  const [useLineItems, setUseLineItems] = useState(true);
 
   const [payingBillId, setPayingBillId] = useState<string | null>(null);
   const [payAmount, setPayAmount] = useState("");
@@ -139,6 +151,10 @@ export default function VendorBillsPanel({
     setFormSupplierId(""); setFormBillNumber(""); setFormPoId("");
     setFormAmount(""); setFormGstRate("18"); setFormDueDate("");
     setFormStatus("Pending Payment");
+    setFormInvoiceDate(new Date().toISOString().slice(0, 10));
+    setFormSupplierGSTIN(""); setFormChallanNo(""); setFormEWayBillNo("");
+    setFormVehicleNo(""); setFormTransportMode("Road"); setFormNarration("");
+    setFormLines([blankLine()]); setUseLineItems(true);
   };
   const resetPayForm = () => {
     setPayAmount(""); setPayDate(new Date().toISOString().slice(0, 10));
@@ -290,7 +306,7 @@ export default function VendorBillsPanel({
         stockWasAdded = true;
       }
 
-      // Create Vendor Bill directly
+      // Create Purchase Bill directly
       const sup = suppliers.find(s => s.id === supplierId) || createdProducts.length > 0 ? { name: supplierName } : null;
       const newBill: VendorInvoice = {
         id: `vb-${Date.now()}`,
@@ -346,11 +362,34 @@ export default function VendorBillsPanel({
 
   const handleCreateBill = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formSupplierId || !formBillNumber || !formAmount) {
-      toast.error("Supplier, Bill Number and Amount are required"); return;
+    if (!formSupplierId || !formBillNumber) {
+      toast.error("Supplier and Bill Number are required"); return;
     }
     const sup = suppliers.find(s => s.id === formSupplierId);
     const po = orders.find(o => o.id === formPoId);
+
+    let computedSubtotal = 0;
+    let computedGST = 0;
+    let billItems: VendorInvoice["items"] = undefined;
+
+    if (useLineItems && formLines.some(l => l.description && l.rate)) {
+      const validLines = formLines.filter(l => l.description && l.rate);
+      billItems = validLines.map(l => {
+        const qty = parseFloat(l.qty) || 1;
+        const rate = parseFloat(l.rate) || 0;
+        const amt = +(qty * rate).toFixed(2);
+        const gst = parseFloat(l.gstPct) || 0;
+        computedSubtotal += amt;
+        computedGST += +(amt * gst / 100).toFixed(2);
+        return { description: l.description, hsn: l.hsn, unit: l.unit, quantity: qty, rate, amount: amt };
+      });
+    } else {
+      computedSubtotal = parseFloat(formAmount) || 0;
+      computedGST = +(computedSubtotal * (parseFloat(formGstRate) || 0) / 100).toFixed(2);
+    }
+
+    const finalTotal = +(computedSubtotal + computedGST).toFixed(2);
+
     const newBill: VendorInvoice = {
       id: `vb-${Date.now()}`,
       billNumber: formBillNumber,
@@ -358,19 +397,21 @@ export default function VendorBillsPanel({
       poNumber: po?.poNumber,
       supplierId: formSupplierId,
       supplierName: sup?.name || "",
-      amountBeforeGst,
+      invoiceDate: formInvoiceDate,
+      amountBeforeGst: computedSubtotal,
       gstType: "GST",
-      gstRate,
-      totalAmount,
+      gstRate: useLineItems ? 0 : (parseFloat(formGstRate) || 0),
+      totalAmount: finalTotal,
       dueDate: formDueDate || new Date(Date.now() + 30 * 86400000).toISOString().slice(0, 10),
       status: formStatus,
       createdAt: new Date().toISOString(),
       payments: [],
       paidAmount: 0,
-      balanceAmount: totalAmount,
+      balanceAmount: finalTotal,
+      items: billItems,
     };
     setBills(prev => [newBill, ...prev]);
-    toast.success("Bill Recorded", `${formatINR(totalAmount)} bill from ${sup?.name}`);
+    toast.success("Purchase Bill Recorded", `${formatINR(finalTotal)} bill from ${sup?.name}`);
     setShowBillForm(false);
     resetBillForm();
   };
@@ -408,7 +449,7 @@ export default function VendorBillsPanel({
         <div className="flex items-center gap-2">
           <FileCheck className="h-4 w-4 text-indigo-400" />
           <div>
-            <h3 className="text-sm font-bold text-white font-mono">Vendor Bills & Payments</h3>
+            <h3 className="text-sm font-bold text-white font-mono">Purchase Bills & Payments</h3>
             <p className="text-[10px] text-slate-400 mt-0.5">Record supplier bills and track payments</p>
           </div>
         </div>
@@ -677,73 +718,217 @@ export default function VendorBillsPanel({
       {/* Record Bill Modal */}
       {showBillForm && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-          <div className="w-full max-w-lg rounded-2xl border border-slate-800 bg-slate-950 p-6 shadow-2xl">
-            <div className="flex items-center justify-between border-b border-slate-800 pb-3 mb-4">
-              <h3 className="text-sm font-bold text-white font-mono">Record Vendor Bill</h3>
+          <div className="w-full max-w-4xl rounded-2xl border border-slate-800 bg-slate-950 shadow-2xl max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between border-b border-slate-800 px-6 py-4 sticky top-0 bg-slate-950 z-10">
+              <h3 className="text-sm font-bold text-white font-mono">Record Purchase Bill</h3>
               <button onClick={() => setShowBillForm(false)} className="text-slate-400 hover:text-white cursor-pointer"><X className="w-4 h-4" /></button>
             </div>
-            <form onSubmit={handleCreateBill} className="space-y-4">
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 font-mono">Supplier *</label>
-                  <select required value={formSupplierId} onChange={e => { setFormSupplierId(e.target.value); setFormPoId(""); }}
-                    className="w-full rounded-lg border border-slate-800 bg-slate-900 p-2.5 text-xs text-white focus:outline-none focus:border-indigo-500">
-                    <option value="">-- Select Supplier --</option>
-                    {suppliers.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 font-mono">Bill Number *</label>
-                  <input required value={formBillNumber} onChange={e => setFormBillNumber(e.target.value)}
-                    placeholder="e.g. INV/2025/001"
-                    className="w-full rounded-lg border border-slate-800 bg-slate-900 p-2.5 text-xs text-white focus:outline-none focus:border-indigo-500 font-mono" />
-                </div>
-              </div>
+            <form onSubmit={handleCreateBill} className="p-6 space-y-5">
+
+              {/* Section 1: Supplier & Bill Info */}
               <div>
-                <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 font-mono">Link to Purchase Order (Optional)</label>
-                <select value={formPoId} onChange={e => { setFormPoId(e.target.value); const po = orders.find(o => o.id === e.target.value); if (po) setFormAmount(String(po.totalAmount || "")); }}
-                  className="w-full rounded-lg border border-slate-800 bg-slate-900 p-2.5 text-xs text-white focus:outline-none font-mono">
-                  <option value="">-- No PO Link --</option>
-                  {supplierPOs.map(po => <option key={po.id} value={po.id}>{po.poNumber} — {formatINR(po.totalAmount)}</option>)}
-                </select>
+                <p className="text-[10px] font-bold text-indigo-400 uppercase tracking-widest font-mono mb-3">Supplier & Bill Details</p>
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                  <div className="md:col-span-2">
+                    <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 font-mono">Supplier *</label>
+                    <select required value={formSupplierId} onChange={e => { setFormSupplierId(e.target.value); setFormPoId(""); const sup = suppliers.find(s => s.id === e.target.value); if (sup) setFormSupplierGSTIN(sup.taxId || ""); }}
+                      className="w-full rounded-lg border border-slate-800 bg-slate-900 p-2.5 text-xs text-white focus:outline-none focus:border-indigo-500">
+                      <option value="">-- Select Supplier --</option>
+                      {suppliers.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 font-mono">Supplier GSTIN</label>
+                    <input value={formSupplierGSTIN} onChange={e => setFormSupplierGSTIN(e.target.value)} placeholder="15-digit GSTIN"
+                      className="w-full rounded-lg border border-slate-800 bg-slate-900 p-2.5 text-xs text-white font-mono focus:outline-none focus:border-indigo-500" />
+                  </div>
+                  <div>
+                    <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 font-mono">Bill / Invoice No *</label>
+                    <input required value={formBillNumber} onChange={e => setFormBillNumber(e.target.value)} placeholder="e.g. INV/2025/001"
+                      className="w-full rounded-lg border border-slate-800 bg-slate-900 p-2.5 text-xs text-white font-mono focus:outline-none focus:border-indigo-500" />
+                  </div>
+                  <div>
+                    <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 font-mono">Invoice Date</label>
+                    <input type="date" value={formInvoiceDate} onChange={e => setFormInvoiceDate(e.target.value)}
+                      className="w-full rounded-lg border border-slate-800 bg-slate-900 p-2.5 text-xs text-white font-mono focus:outline-none" />
+                  </div>
+                  <div>
+                    <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 font-mono">Due Date</label>
+                    <input type="date" value={formDueDate} onChange={e => setFormDueDate(e.target.value)}
+                      className="w-full rounded-lg border border-slate-800 bg-slate-900 p-2.5 text-xs text-white font-mono focus:outline-none" />
+                  </div>
+                  <div>
+                    <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 font-mono">Challan No</label>
+                    <input value={formChallanNo} onChange={e => setFormChallanNo(e.target.value)} placeholder="Challan / DC No"
+                      className="w-full rounded-lg border border-slate-800 bg-slate-900 p-2.5 text-xs text-white font-mono focus:outline-none" />
+                  </div>
+                  <div>
+                    <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 font-mono">Link to PO (Optional)</label>
+                    <select value={formPoId} onChange={e => setFormPoId(e.target.value)}
+                      className="w-full rounded-lg border border-slate-800 bg-slate-900 p-2.5 text-xs text-white focus:outline-none font-mono">
+                      <option value="">-- No PO Link --</option>
+                      {supplierPOs.map(po => <option key={po.id} value={po.id}>{po.poNumber}</option>)}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 font-mono">Status</label>
+                    <select value={formStatus} onChange={e => setFormStatus(e.target.value as VendorInvoice["status"])}
+                      className="w-full rounded-lg border border-slate-800 bg-slate-900 p-2.5 text-xs text-white focus:outline-none">
+                      <option>Draft</option><option>Pending Payment</option><option>Partially Paid</option><option>Paid</option>
+                    </select>
+                  </div>
+                </div>
               </div>
-              <div className="grid grid-cols-3 gap-3">
-                <div>
-                  <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 font-mono">Amount Before GST *</label>
-                  <input required type="number" value={formAmount} onChange={e => setFormAmount(e.target.value)} placeholder="0"
-                    className="w-full rounded-lg border border-slate-800 bg-slate-900 p-2.5 text-xs text-white focus:outline-none focus:border-indigo-500 font-mono" />
-                </div>
-                <div>
-                  <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 font-mono">GST %</label>
-                  <select value={formGstRate} onChange={e => setFormGstRate(e.target.value)}
-                    className="w-full rounded-lg border border-slate-800 bg-slate-900 p-2.5 text-xs text-white focus:outline-none">
-                    {["0","5","12","18","28"].map(r => <option key={r} value={r}>{r}%</option>)}
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 font-mono">Total</label>
-                  <div className="w-full rounded-lg border border-slate-700 bg-slate-800/60 p-2.5 text-xs font-bold font-mono text-emerald-400">{formatINR(totalAmount)}</div>
-                </div>
-              </div>
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 font-mono">Due Date</label>
-                  <input type="date" value={formDueDate} onChange={e => setFormDueDate(e.target.value)}
-                    className="w-full rounded-lg border border-slate-800 bg-slate-900 p-2.5 text-xs text-white focus:outline-none font-mono" />
-                </div>
-                <div>
-                  <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 font-mono">Status</label>
-                  <select value={formStatus} onChange={e => setFormStatus(e.target.value as VendorInvoice["status"])}
-                    className="w-full rounded-lg border border-slate-800 bg-slate-900 p-2.5 text-xs text-white focus:outline-none">
-                    <option>Draft</option><option>Pending Payment</option><option>Partially Paid</option><option>Paid</option>
-                  </select>
+
+              {/* Section 2: e-Way Bill / Transport */}
+              <div>
+                <p className="text-[10px] font-bold text-amber-400 uppercase tracking-widest font-mono mb-3">e-Way Bill / Transport</p>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                  <div>
+                    <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 font-mono">e-Way Bill No</label>
+                    <input value={formEWayBillNo} onChange={e => setFormEWayBillNo(e.target.value)} placeholder="12-digit EWB"
+                      className="w-full rounded-lg border border-slate-800 bg-slate-900 p-2.5 text-xs text-white font-mono focus:outline-none focus:border-amber-500" />
+                  </div>
+                  <div>
+                    <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 font-mono">Transport Mode</label>
+                    <select value={formTransportMode} onChange={e => setFormTransportMode(e.target.value)}
+                      className="w-full rounded-lg border border-slate-800 bg-slate-900 p-2.5 text-xs text-white focus:outline-none">
+                      <option>Road</option><option>Rail</option><option>Air</option><option>Ship</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 font-mono">Vehicle Number</label>
+                    <input value={formVehicleNo} onChange={e => setFormVehicleNo(e.target.value.toUpperCase())} placeholder="WB12AB1234"
+                      className="w-full rounded-lg border border-slate-800 bg-slate-900 p-2.5 text-xs text-white font-mono uppercase focus:outline-none" />
+                  </div>
+                  <div>
+                    <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 font-mono">Narration</label>
+                    <input value={formNarration} onChange={e => setFormNarration(e.target.value)} placeholder="Optional remarks"
+                      className="w-full rounded-lg border border-slate-800 bg-slate-900 p-2.5 text-xs text-white focus:outline-none" />
+                  </div>
                 </div>
               </div>
-              <div className="flex justify-end gap-3 pt-2 border-t border-slate-800">
+
+              {/* Section 3: Line Items */}
+              <div>
+                <div className="flex items-center justify-between mb-3">
+                  <p className="text-[10px] font-bold text-emerald-400 uppercase tracking-widest font-mono">Line Items</p>
+                  <div className="flex items-center gap-3">
+                    <label className="flex items-center gap-1.5 text-[10px] text-slate-400 cursor-pointer">
+                      <input type="checkbox" checked={useLineItems} onChange={e => setUseLineItems(e.target.checked)} className="accent-emerald-500" />
+                      Use line items
+                    </label>
+                    {useLineItems && (
+                      <button type="button" onClick={() => setFormLines(prev => [...prev, blankLine()])}
+                        className="text-[10px] text-indigo-400 hover:text-indigo-300 font-bold cursor-pointer">+ Add Row</button>
+                    )}
+                  </div>
+                </div>
+
+                {useLineItems ? (
+                  <div className="overflow-x-auto rounded-lg border border-slate-800">
+                    <table className="min-w-full text-xs">
+                      <thead className="bg-slate-900 text-slate-400 uppercase font-mono text-[10px]">
+                        <tr>
+                          <th className="px-2 py-2 text-left w-8">#</th>
+                          <th className="px-2 py-2 text-left min-w-[180px]">Description *</th>
+                          <th className="px-2 py-2 text-center w-24">HSN</th>
+                          <th className="px-2 py-2 text-center w-16">Qty</th>
+                          <th className="px-2 py-2 text-center w-16">Unit</th>
+                          <th className="px-2 py-2 text-right w-24">Rate (₹)</th>
+                          <th className="px-2 py-2 text-center w-16">GST%</th>
+                          <th className="px-2 py-2 text-right w-24">Amount (₹)</th>
+                          <th className="px-2 py-2 w-8"></th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {formLines.map((line, idx) => {
+                          const qty = parseFloat(line.qty) || 0;
+                          const rate = parseFloat(line.rate) || 0;
+                          const amt = +(qty * rate).toFixed(2);
+                          return (
+                            <tr key={line.id} className="border-t border-slate-800">
+                              <td className="px-2 py-1.5 text-slate-500 text-center">{idx + 1}</td>
+                              <td className="px-2 py-1.5">
+                                <input value={line.description} onChange={e => setFormLines(prev => prev.map((l, i) => i === idx ? { ...l, description: e.target.value } : l))}
+                                  className="w-full bg-slate-800 rounded px-2 py-1 text-white focus:outline-none focus:ring-1 focus:ring-indigo-500" placeholder="Product / service description" />
+                              </td>
+                              <td className="px-2 py-1.5">
+                                <input value={line.hsn} onChange={e => setFormLines(prev => prev.map((l, i) => i === idx ? { ...l, hsn: e.target.value } : l))}
+                                  className="w-full bg-slate-800 rounded px-2 py-1 text-white font-mono focus:outline-none focus:ring-1 focus:ring-indigo-500" placeholder="HSN" />
+                              </td>
+                              <td className="px-2 py-1.5">
+                                <input type="number" value={line.qty} onChange={e => setFormLines(prev => prev.map((l, i) => i === idx ? { ...l, qty: e.target.value } : l))}
+                                  className="w-full bg-slate-800 rounded px-2 py-1 text-white text-center font-mono focus:outline-none focus:ring-1 focus:ring-indigo-500" />
+                              </td>
+                              <td className="px-2 py-1.5">
+                                <select value={line.unit} onChange={e => setFormLines(prev => prev.map((l, i) => i === idx ? { ...l, unit: e.target.value } : l))}
+                                  className="w-full bg-slate-800 rounded px-1 py-1 text-white focus:outline-none">
+                                  {["Nos","Pcs","Set","Kg","Ltr","Mtr","Box","Bag","Pair"].map(u => <option key={u}>{u}</option>)}
+                                </select>
+                              </td>
+                              <td className="px-2 py-1.5">
+                                <input type="number" value={line.rate} onChange={e => setFormLines(prev => prev.map((l, i) => i === idx ? { ...l, rate: e.target.value } : l))}
+                                  className="w-full bg-slate-800 rounded px-2 py-1 text-white text-right font-mono focus:outline-none focus:ring-1 focus:ring-indigo-500" placeholder="0.00" />
+                              </td>
+                              <td className="px-2 py-1.5">
+                                <select value={line.gstPct} onChange={e => setFormLines(prev => prev.map((l, i) => i === idx ? { ...l, gstPct: e.target.value } : l))}
+                                  className="w-full bg-slate-800 rounded px-1 py-1 text-white focus:outline-none">
+                                  {["0","5","12","18","28"].map(r => <option key={r} value={r}>{r}%</option>)}
+                                </select>
+                              </td>
+                              <td className="px-2 py-1.5 text-right font-mono font-bold text-emerald-400">{amt > 0 ? amt.toLocaleString("en-IN", { minimumFractionDigits: 2 }) : "—"}</td>
+                              <td className="px-2 py-1.5">
+                                {formLines.length > 1 && (
+                                  <button type="button" onClick={() => setFormLines(prev => prev.filter((_, i) => i !== idx))} className="text-red-400 hover:text-red-300 cursor-pointer"><X className="w-3.5 h-3.5" /></button>
+                                )}
+                              </td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                      <tfoot className="bg-slate-900/60 text-xs font-mono">
+                        {(() => {
+                          const validLines = formLines.filter(l => l.description && l.rate);
+                          const subtotal = validLines.reduce((s, l) => s + (parseFloat(l.qty)||0)*(parseFloat(l.rate)||0), 0);
+                          const gstTotal = validLines.reduce((s, l) => s + (parseFloat(l.qty)||0)*(parseFloat(l.rate)||0)*(parseFloat(l.gstPct)||0)/100, 0);
+                          const grand = subtotal + gstTotal;
+                          return (<>
+                            <tr><td colSpan={7} className="px-3 py-1.5 text-right text-slate-400 border-t border-slate-700">Taxable Amount</td><td colSpan={2} className="px-3 py-1.5 text-right text-slate-200 border-t border-slate-700">{subtotal.toLocaleString("en-IN",{minimumFractionDigits:2})}</td></tr>
+                            <tr><td colSpan={7} className="px-3 py-1.5 text-right text-slate-400">GST</td><td colSpan={2} className="px-3 py-1.5 text-right text-amber-400">{gstTotal.toLocaleString("en-IN",{minimumFractionDigits:2})}</td></tr>
+                            <tr><td colSpan={7} className="px-3 py-2 text-right font-bold text-white">Grand Total</td><td colSpan={2} className="px-3 py-2 text-right font-bold text-emerald-400 text-sm">{formatINR(grand)}</td></tr>
+                          </>);
+                        })()}
+                      </tfoot>
+                    </table>
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-3 gap-3">
+                    <div>
+                      <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 font-mono">Taxable Amount *</label>
+                      <input required type="number" value={formAmount} onChange={e => setFormAmount(e.target.value)} placeholder="0"
+                        className="w-full rounded-lg border border-slate-800 bg-slate-900 p-2.5 text-xs text-white font-mono focus:outline-none focus:border-indigo-500" />
+                    </div>
+                    <div>
+                      <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 font-mono">GST %</label>
+                      <select value={formGstRate} onChange={e => setFormGstRate(e.target.value)}
+                        className="w-full rounded-lg border border-slate-800 bg-slate-900 p-2.5 text-xs text-white focus:outline-none">
+                        {["0","5","12","18","28"].map(r => <option key={r} value={r}>{r}%</option>)}
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 font-mono">Total</label>
+                      <div className="w-full rounded-lg border border-slate-700 bg-slate-800/60 p-2.5 text-xs font-bold font-mono text-emerald-400">{formatINR(totalAmount)}</div>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              <div className="flex justify-end gap-3 pt-3 border-t border-slate-800">
                 <button type="button" onClick={() => setShowBillForm(false)}
                   className="rounded-lg border border-slate-700 bg-slate-900 px-4 py-2 text-xs font-bold text-slate-300 cursor-pointer">Cancel</button>
                 <button type="submit"
-                  className="rounded-lg bg-indigo-600 hover:bg-indigo-500 px-4 py-2 text-xs font-bold text-white transition-colors cursor-pointer">Save Bill</button>
+                  className="rounded-lg bg-indigo-600 hover:bg-indigo-500 px-5 py-2 text-xs font-bold text-white transition-colors cursor-pointer">Save Purchase Bill</button>
               </div>
             </form>
           </div>
