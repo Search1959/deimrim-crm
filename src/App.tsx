@@ -74,6 +74,7 @@ import {
 
 export default function App() {
   const [collapsed, setCollapsed] = useState(false);
+  const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
   const [activeView, setActiveView] = useState("dashboard");
   
   // Login Session state
@@ -1234,12 +1235,14 @@ export default function App() {
         activeView={activeView}
         setActiveView={(view) => {
           setActiveView(view);
-          setGlobalSearchQuery(""); // Auto-clear search query on tab change
+          setGlobalSearchQuery("");
         }}
         collapsed={collapsed}
         setCollapsed={setCollapsed}
         userRole={currentUser.role}
         company={company}
+        mobileOpen={mobileSidebarOpen}
+        setMobileOpen={setMobileSidebarOpen}
       />
 
       {/* Main Panel Workspace */}
@@ -1270,10 +1273,11 @@ export default function App() {
             ));
             setCurrentUser(prev => ({ ...prev, email: newEmail, password: newPassword }));
           }}
+          onOpenMobileMenu={() => setMobileSidebarOpen(true)}
         />
 
-        {/* Dynamic workspace context panel */}
-        <main className="flex-1 overflow-hidden flex flex-col bg-slate-900">
+        {/* Dynamic workspace context panel — add bottom padding on mobile for tab bar */}
+        <main className="flex-1 overflow-hidden flex flex-col bg-slate-900 pb-16 md:pb-0">
           {renderView()}
         </main>
       </div>

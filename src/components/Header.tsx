@@ -8,18 +8,16 @@ import {
   Search,
   Bell,
   Building2,
-  Users,
-  User as UserIcon,
   Sparkles,
   Check,
   X,
   AlertTriangle,
   Info,
   CheckCircle,
-  HelpCircle,
   LogOut,
   KeyRound,
-  ChevronDown
+  ChevronDown,
+  Menu,
 } from "lucide-react";
 import { User, UserRole, Branch, AppNotification } from "../types";
 
@@ -37,6 +35,7 @@ interface HeaderProps {
   onNavigate: (view: string) => void;
   onLogout: () => void;
   onUpdateCredentials: (userId: string, newEmail: string, newPassword: string) => void;
+  onOpenMobileMenu?: () => void;
 }
 
 export default function Header({
@@ -53,6 +52,7 @@ export default function Header({
   onNavigate,
   onLogout,
   onUpdateCredentials,
+  onOpenMobileMenu,
 }: HeaderProps) {
   const [showRoleMenu, setShowRoleMenu] = useState(false);
   const [showBranchMenu, setShowBranchMenu] = useState(false);
@@ -74,9 +74,14 @@ export default function Header({
   };
 
   return (
-    <header className="sticky top-0 z-40 flex h-16 w-full items-center justify-between border-b border-slate-800 bg-slate-950/90 backdrop-blur-md px-6 shadow-xs">
+    <header className="sticky top-0 z-40 flex h-14 md:h-16 w-full items-center justify-between border-b border-slate-800 bg-slate-950/90 backdrop-blur-md px-3 md:px-6 shadow-xs gap-2">
+      {/* Hamburger — mobile only */}
+      <button onClick={onOpenMobileMenu} className="md:hidden flex items-center justify-center h-9 w-9 rounded-lg border border-slate-800 bg-slate-900 text-slate-400 shrink-0">
+        <Menu className="h-5 w-5" />
+      </button>
+
       {/* Search Bar */}
-      <div className="relative w-full max-w-md">
+      <div className="relative flex-1 max-w-md">
         <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
           <Search className="h-4 w-4 text-slate-500" />
         </div>
@@ -98,9 +103,9 @@ export default function Header({
       </div>
 
       {/* Right Controls */}
-      <div className="flex items-center gap-4">
-        {/* Branch Selector */}
-        <div className="relative">
+      <div className="flex items-center gap-2 md:gap-4 shrink-0">
+        {/* Branch Selector — hidden on small mobile */}
+        <div className="relative hidden sm:block">
           <button
             onClick={() => {
               setShowBranchMenu(!showBranchMenu);
@@ -143,11 +148,11 @@ export default function Header({
           )}
         </div>
 
-        {/* Dynamic User Switcher (Interactive Sandbox Feature for Admins/Demo only) */}
-        {(currentUser.role === UserRole.SYSTEM_ADMIN || 
-          currentUser.role === UserRole.COMPANY_ADMIN || 
+        {/* Dynamic User Switcher — hidden on mobile */}
+        {(currentUser.role === UserRole.SYSTEM_ADMIN ||
+          currentUser.role === UserRole.COMPANY_ADMIN ||
           currentUser.role === UserRole.READ_ONLY) && (
-          <div className="relative">
+          <div className="relative hidden md:block">
             <button
               onClick={() => {
                 setShowRoleMenu(!showRoleMenu);
