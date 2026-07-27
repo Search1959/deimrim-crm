@@ -329,6 +329,78 @@ async function startServer() {
     }
   });
 
+  // ── Bill Scanner (Claude Vision OCR) ──────────────────────────────────
+  // POST /api/scan-bill  multipart: field "image" = JPG/PNG/PDF image
+  app.post("/api/scan-bill", upload.single("image"), async (req, res) => {
+    const ANTHROPIC_KEY = process.env.ANTHROPIC_API_KEY;
+    if (!ANTHROPIC_KEY) return res.status(400).json({ error: "ANTHROPIC_API_KEY not configured in environment" });
+    if (!req.file) return res.status(400).json({ error: "No image uploaded" });
+
+    const base64 = req.file.buffer.toString("base64");
+    const mediaType = (req.file.mimetype || "image/jpeg") as "image/jpeg" | "image/png" | "image/webp" | "image/gif";
+
+    try {
+      const response = await fetch("https://api.anthropic.com/v1/messages", {
+        method: "POST",
+        headers: {
+          "x-api-key": ANTHROPIC_KEY,
+          "anthropic-version": "2023-06-01",
+          "content-type": "application/json",
+        },
+        body: JSON.stringify({
+          model: "claude-sonnet-4-6",
+          max_tokens: 1024,
+          messages: [{
+            role: "user",
+            content: [
+              {
+                type: "image",
+                source: { type: "base64", media_type: mediaType, data: base64 },
+              },
+              {
+                type: "text",
+                text: `Extract purchase bill / tax invoice data from this image and return ONLY valid JSON with this exact structure (no markdown, no explanation):
+{
+  "supplierName": "",
+  "supplierGSTIN": "",
+  "billNumber": "",
+  "invoiceDate": "YYYY-MM-DD",
+  "dueDate": "YYYY-MM-DD or empty",
+  "challanNo": "",
+  "eWayBillNo": "",
+  "vehicleNo": "",
+  "transportMode": "Road",
+  "items": [
+    {
+      "description": "",
+      "hsn": "",
+      "qty": 1,
+      "unit": "Nos",
+      "rate": 0,
+      "gstPct": 18
+    }
+  ],
+  "narration": ""
+}
+Rules: invoiceDate must be YYYY-MM-DD format or empty string. qty and rate are numbers. gstPct is 0/5/12/18/28. If a field is not visible, use empty string or 0. Return only the JSON object.`,
+              },
+            ],
+          }],
+        }),
+      });
+
+      const data = await response.json() as { content?: Array<{ type: string; text: string }> };
+      const text = data.content?.[0]?.type === "text" ? data.content[0].text.trim() : "";
+      // Strip markdown code fences if Claude wraps the JSON
+      const jsonText = text.replace(/^```[a-z]*\n?/i, "").replace(/\n?```$/i, "").trim();
+      const parsed = JSON.parse(jsonText);
+      return res.json({ success: true, bill: parsed });
+    } catch (err) {
+      console.error("scan-bill error:", err);
+      return res.status(500).json({ error: "Failed to extract bill data from image" });
+    }
+  });
+
   // ── e-Invoice GSP Proxy ────────────────────────────────────────────────
   // POST /api/einvoice/generate  — authenticate with GSP, then generate IRN
   app.post("/api/einvoice/generate", express.json(), async (req, res) => {

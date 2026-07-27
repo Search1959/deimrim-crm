@@ -134,6 +134,50 @@ export default function VendorBillsPanel({
   const blankLine = (): BillLineItem => ({ id: Date.now().toString(), description: "", hsn: "", qty: "1", unit: "Nos", rate: "", gstPct: "18" });
   const [formLines, setFormLines] = useState<BillLineItem[]>([blankLine()]);
   const [useLineItems, setUseLineItems] = useState(true);
+  const [scanning, setScanning] = useState(false);
+  const scanInputRef = useRef<HTMLInputElement>(null);
+
+  const handleScanBill = async (file: File) => {
+    setScanning(true);
+    try {
+      const fd = new FormData();
+      fd.append("image", file);
+      const res = await fetch("/api/scan-bill", { method: "POST", body: fd });
+      const data = await res.json();
+      if (!res.ok || !data.bill) { toast.error(data.error || "Could not read bill"); return; }
+      const b = data.bill;
+      if (b.supplierName) {
+        const matched = suppliers.find(s => s.name.toLowerCase().includes(b.supplierName.toLowerCase()));
+        if (matched) { setFormSupplierId(matched.id); setFormSupplierGSTIN(matched.taxId || b.supplierGSTIN || ""); }
+        else setFormSupplierGSTIN(b.supplierGSTIN || "");
+      }
+      if (b.billNumber) setFormBillNumber(b.billNumber);
+      if (b.invoiceDate) setFormInvoiceDate(b.invoiceDate);
+      if (b.dueDate) setFormDueDate(b.dueDate);
+      if (b.challanNo) setFormChallanNo(b.challanNo);
+      if (b.eWayBillNo) setFormEWayBillNo(b.eWayBillNo);
+      if (b.vehicleNo) setFormVehicleNo(b.vehicleNo.toUpperCase());
+      if (b.transportMode) setFormTransportMode(b.transportMode);
+      if (b.narration) setFormNarration(b.narration);
+      if (b.items?.length) {
+        setUseLineItems(true);
+        setFormLines(b.items.map((item: { description?: string; hsn?: string; qty?: number; unit?: string; rate?: number; gstPct?: number }) => ({
+          id: Date.now().toString() + Math.random(),
+          description: item.description || "",
+          hsn: item.hsn || "",
+          qty: String(item.qty ?? 1),
+          unit: item.unit || "Nos",
+          rate: String(item.rate ?? ""),
+          gstPct: String(item.gstPct ?? 18),
+        })));
+      }
+      toast.success("Bill scanned — please review and save");
+    } catch {
+      toast.error("Scan failed — try a clearer photo");
+    } finally {
+      setScanning(false);
+    }
+  };
 
   const [payingBillId, setPayingBillId] = useState<string | null>(null);
   const [payAmount, setPayAmount] = useState("");
@@ -721,7 +765,15 @@ export default function VendorBillsPanel({
           <div className="w-full max-w-4xl rounded-2xl border border-slate-800 bg-slate-950 shadow-2xl max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between border-b border-slate-800 px-6 py-4 sticky top-0 bg-slate-950 z-10">
               <h3 className="text-sm font-bold text-white font-mono">Record Purchase Bill</h3>
-              <button onClick={() => setShowBillForm(false)} className="text-slate-400 hover:text-white cursor-pointer"><X className="w-4 h-4" /></button>
+              <div className="flex items-center gap-2">
+                <input ref={scanInputRef} type="file" accept="image/*,application/pdf" capture="environment" className="hidden"
+                  onChange={e => { const f = e.target.files?.[0]; if (f) handleScanBill(f); e.target.value = ""; }} />
+                <button type="button" onClick={() => scanInputRef.current?.click()} disabled={scanning}
+                  className="flex items-center gap-1.5 rounded-lg bg-violet-600 hover:bg-violet-500 disabled:opacity-50 px-3 py-1.5 text-[10px] font-bold text-white transition-colors cursor-pointer">
+                  {scanning ? "⏳ Scanning…" : "📷 Scan Bill"}
+                </button>
+                <button onClick={() => setShowBillForm(false)} className="text-slate-400 hover:text-white cursor-pointer"><X className="w-4 h-4" /></button>
+              </div>
             </div>
             <form onSubmit={handleCreateBill} className="p-6 space-y-5">
 
