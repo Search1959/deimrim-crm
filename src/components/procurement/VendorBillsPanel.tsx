@@ -516,6 +516,15 @@ export default function VendorBillsPanel({
             {importing ? "Importing…" : "Import Excel"}
           </button>
           <input ref={fileInputRef} type="file" accept=".xlsx,.xls" onChange={handleImportXLSX} className="hidden" />
+          <input ref={scanInputRef} type="file" accept="image/*,application/pdf" capture="environment" className="hidden"
+            onChange={e => { const f = e.target.files?.[0]; if (f) { resetBillForm(); setShowBillForm(true); handleScanBill(f); } e.target.value = ""; }} />
+          <button
+            onClick={() => scanInputRef.current?.click()}
+            disabled={scanning}
+            className="flex items-center gap-1.5 rounded-lg bg-violet-600 hover:bg-violet-500 disabled:opacity-50 px-3 py-2 text-xs font-bold text-white transition-colors cursor-pointer"
+          >
+            📷 {scanning ? "Scanning…" : "Scan Bill"}
+          </button>
           <button
             onClick={() => { setShowBillForm(true); resetBillForm(); }}
             className="flex items-center gap-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 px-3 py-2 text-xs font-bold text-white transition-colors cursor-pointer"
