@@ -135,7 +135,48 @@ export default function VendorBillsPanel({
   const [formLines, setFormLines] = useState<BillLineItem[]>([blankLine()]);
   const [useLineItems, setUseLineItems] = useState(true);
   const [scanning, setScanning] = useState(false);
+  const [showScanMenu, setShowScanMenu] = useState(false);
+  const [showCamera, setShowCamera] = useState(false);
+  const [cameraFacing, setCameraFacing] = useState<"environment" | "user">("environment");
   const scanInputRef = useRef<HTMLInputElement>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const streamRef = useRef<MediaStream | null>(null);
+
+  const stopCamera = () => {
+    streamRef.current?.getTracks().forEach(t => t.stop());
+    streamRef.current = null;
+  };
+
+  const startCamera = async (facing: "environment" | "user") => {
+    stopCamera();
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: facing }, audio: false });
+      streamRef.current = stream;
+      if (videoRef.current) { videoRef.current.srcObject = stream; videoRef.current.play(); }
+    } catch {
+      toast.error("Camera access denied — please allow camera permission");
+      setShowCamera(false);
+    }
+  };
+
+  const captureFromCamera = () => {
+    if (!videoRef.current || !canvasRef.current) return;
+    const v = videoRef.current;
+    const c = canvasRef.current;
+    c.width = v.videoWidth;
+    c.height = v.videoHeight;
+    c.getContext("2d")?.drawImage(v, 0, 0);
+    c.toBlob(blob => {
+      if (!blob) return;
+      stopCamera();
+      setShowCamera(false);
+      const file = new File([blob], "scan.jpg", { type: "image/jpeg" });
+      resetBillForm();
+      setShowBillForm(true);
+      handleScanBill(file);
+    }, "image/jpeg", 0.92);
+  };
 
   const handleScanBill = async (file: File) => {
     setScanning(true);
@@ -516,15 +557,33 @@ export default function VendorBillsPanel({
             {importing ? "Importing…" : "Import Excel"}
           </button>
           <input ref={fileInputRef} type="file" accept=".xlsx,.xls" onChange={handleImportXLSX} className="hidden" />
-          <input ref={scanInputRef} type="file" accept="image/*,application/pdf" capture="environment" className="hidden"
+          <input ref={scanInputRef} type="file" accept="image/*,application/pdf" className="hidden"
             onChange={e => { const f = e.target.files?.[0]; if (f) { resetBillForm(); setShowBillForm(true); handleScanBill(f); } e.target.value = ""; }} />
-          <button
-            onClick={() => scanInputRef.current?.click()}
-            disabled={scanning}
-            className="flex items-center gap-1.5 rounded-lg bg-violet-600 hover:bg-violet-500 disabled:opacity-50 px-3 py-2 text-xs font-bold text-white transition-colors cursor-pointer"
-          >
-            📷 {scanning ? "Scanning…" : "Scan Bill"}
-          </button>
+          <div className="relative">
+            <button
+              onClick={() => setShowScanMenu(v => !v)}
+              disabled={scanning}
+              className="flex items-center gap-1.5 rounded-lg bg-violet-600 hover:bg-violet-500 disabled:opacity-50 px-3 py-2 text-xs font-bold text-white transition-colors cursor-pointer"
+            >
+              📷 {scanning ? "Scanning…" : "Scan Bill"}
+            </button>
+            {showScanMenu && (
+              <div className="absolute right-0 top-full mt-1 z-50 w-52 rounded-xl border border-slate-700 bg-slate-900 shadow-2xl overflow-hidden">
+                <button onClick={() => { setShowScanMenu(false); setCameraFacing("environment"); setShowCamera(true); setTimeout(() => startCamera("environment"), 100); }}
+                  className="w-full flex items-center gap-2 px-4 py-3 text-xs text-white hover:bg-slate-800 cursor-pointer text-left">
+                  📷 <span><span className="font-bold">Camera</span><br/><span className="text-slate-400">Webcam / mobile rear cam</span></span>
+                </button>
+                <button onClick={() => { setShowScanMenu(false); setCameraFacing("user"); setShowCamera(true); setTimeout(() => startCamera("user"), 100); }}
+                  className="w-full flex items-center gap-2 px-4 py-3 text-xs text-white hover:bg-slate-800 cursor-pointer text-left border-t border-slate-800">
+                  🤳 <span><span className="font-bold">Front Camera</span><br/><span className="text-slate-400">Selfie cam / front-facing</span></span>
+                </button>
+                <button onClick={() => { setShowScanMenu(false); scanInputRef.current?.click(); }}
+                  className="w-full flex items-center gap-2 px-4 py-3 text-xs text-white hover:bg-slate-800 cursor-pointer text-left border-t border-slate-800">
+                  📁 <span><span className="font-bold">Upload File</span><br/><span className="text-slate-400">Photo, scan or PDF</span></span>
+                </button>
+              </div>
+            )}
+          </div>
           <button
             onClick={() => { setShowBillForm(true); resetBillForm(); }}
             className="flex items-center gap-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 px-3 py-2 text-xs font-bold text-white transition-colors cursor-pointer"
@@ -763,6 +822,38 @@ export default function VendorBillsPanel({
                   <p className={`text-sm font-bold font-mono ${f.color}`}>{f.value}</p>
                 </div>
               ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Camera Capture Modal */}
+      {showCamera && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+          <div className="w-full max-w-lg rounded-2xl border border-slate-700 bg-slate-950 shadow-2xl overflow-hidden">
+            <div className="flex items-center justify-between px-5 py-3 border-b border-slate-800">
+              <h3 className="text-sm font-bold text-white font-mono">📷 Scan Purchase Bill</h3>
+              <div className="flex items-center gap-2">
+                <button onClick={() => { setCameraFacing(f => { const next = f === "environment" ? "user" : "environment"; startCamera(next); return next; }); }}
+                  className="text-[10px] text-slate-400 hover:text-white border border-slate-700 rounded px-2 py-1 cursor-pointer">🔄 Flip</button>
+                <button onClick={() => { stopCamera(); setShowCamera(false); }} className="text-slate-400 hover:text-white cursor-pointer">✕</button>
+              </div>
+            </div>
+            <div className="relative bg-black">
+              <video ref={videoRef} autoPlay playsInline muted className="w-full max-h-72 object-cover" />
+              <canvas ref={canvasRef} className="hidden" />
+              {/* aim guide overlay */}
+              <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                <div className="border-2 border-violet-400/60 rounded-lg w-4/5 h-4/5" style={{ boxShadow: "0 0 0 9999px rgba(0,0,0,0.35)" }} />
+              </div>
+            </div>
+            <div className="px-5 py-4 flex flex-col items-center gap-3">
+              <p className="text-[10px] text-slate-400 font-mono text-center">Hold bill flat inside the frame, ensure good lighting</p>
+              <button onClick={captureFromCamera}
+                className="w-16 h-16 rounded-full bg-violet-600 hover:bg-violet-500 active:scale-95 transition-all flex items-center justify-center text-2xl shadow-lg cursor-pointer">
+                📷
+              </button>
+              <p className="text-[10px] text-slate-500">Tap the button to capture</p>
             </div>
           </div>
         </div>
