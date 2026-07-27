@@ -841,13 +841,31 @@ export default function VendorBillsPanel({
             <div className="flex items-center justify-between border-b border-slate-800 px-6 py-4 sticky top-0 bg-slate-950 z-10">
               <h3 className="text-sm font-bold text-white font-mono">Record Purchase Bill</h3>
               <div className="flex items-center gap-2">
-                <input ref={scanInputRef} type="file" accept="image/*,application/pdf" capture="environment" className="hidden"
+                <input ref={scanInputRef} type="file" accept="image/*,application/pdf" className="hidden"
                   onChange={e => { const f = e.target.files?.[0]; if (f) handleScanBill(f); e.target.value = ""; }} />
-                <button type="button" onClick={() => scanInputRef.current?.click()} disabled={scanning}
-                  className="flex items-center gap-1.5 rounded-lg bg-violet-600 hover:bg-violet-500 disabled:opacity-50 px-3 py-1.5 text-[10px] font-bold text-white transition-colors cursor-pointer">
-                  {scanning ? "⏳ Scanning…" : "📷 Scan Bill"}
-                </button>
-                <button onClick={() => setShowBillForm(false)} className="text-slate-400 hover:text-white cursor-pointer"><X className="w-4 h-4" /></button>
+                <div className="relative">
+                  <button type="button" onClick={() => setShowScanMenu(v => !v)} disabled={scanning}
+                    className="flex items-center gap-1.5 rounded-lg bg-violet-600 hover:bg-violet-500 disabled:opacity-50 px-3 py-1.5 text-[10px] font-bold text-white transition-colors cursor-pointer">
+                    {scanning ? "⏳ Scanning…" : "📷 Scan Bill ▾"}
+                  </button>
+                  {showScanMenu && (
+                    <div className="absolute right-0 top-full mt-1 z-50 w-52 rounded-xl border border-slate-700 bg-slate-900 shadow-2xl overflow-hidden">
+                      <button type="button" onClick={() => { setShowScanMenu(false); setCameraFacing("environment"); setShowCamera(true); setTimeout(() => startCamera("environment"), 100); }}
+                        className="w-full flex items-center gap-2 px-4 py-3 text-xs text-white hover:bg-slate-800 cursor-pointer text-left">
+                        📷 <span><span className="font-bold">Rear Camera</span><br/><span className="text-slate-400">Mobile rear / desktop webcam</span></span>
+                      </button>
+                      <button type="button" onClick={() => { setShowScanMenu(false); setCameraFacing("user"); setShowCamera(true); setTimeout(() => startCamera("user"), 100); }}
+                        className="w-full flex items-center gap-2 px-4 py-3 text-xs text-white hover:bg-slate-800 cursor-pointer text-left border-t border-slate-800">
+                        🤳 <span><span className="font-bold">Front Camera</span><br/><span className="text-slate-400">Selfie / front-facing cam</span></span>
+                      </button>
+                      <button type="button" onClick={() => { setShowScanMenu(false); scanInputRef.current?.click(); }}
+                        className="w-full flex items-center gap-2 px-4 py-3 text-xs text-white hover:bg-slate-800 cursor-pointer text-left border-t border-slate-800">
+                        📁 <span><span className="font-bold">Upload File</span><br/><span className="text-slate-400">Photo, scan or PDF</span></span>
+                      </button>
+                    </div>
+                  )}
+                </div>
+                <button type="button" onClick={() => setShowBillForm(false)} className="text-slate-400 hover:text-white cursor-pointer"><X className="w-4 h-4" /></button>
               </div>
             </div>
             <form onSubmit={handleCreateBill} className="p-6 space-y-5">
