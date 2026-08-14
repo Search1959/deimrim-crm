@@ -86,8 +86,9 @@ async function initDB() {
     await conn.execute(`
       INSERT IGNORE INTO users (id, email, password, name, role, company_id, branch_id)
       VALUES
-        ('u-apex',  'apex7tech@gmail.com', 'Search@1959', 'Apex Tech Admin', 'System Admin',   'comp-1', 'br-hq'),
-        ('u-demo',  'demo@deinrim.in',     'demo123....', 'Demo User',       'Read Only',       'comp-1', 'br-hq')
+        ('u-apex',   'apex7tech@gmail.com',    'Search@1959', 'Apex Tech Admin', 'System Admin',   'comp-1', 'br-hq'),
+        ('u-demo',   'demo@deinrim.in',         'demo123....', 'Demo User',       'Read Only',       'comp-1', 'br-hq'),
+        ('u-iswind', 'iswind.mail@gmail.com',   'isw@123',     'Iswind Client',   'Company Admin',   'comp-1', 'br-hq')
     `);
 
     console.log("✅ Database tables ready");
