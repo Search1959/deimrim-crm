@@ -19,6 +19,8 @@ import AdminView from "./components/AdminView";
 import DocumentView from "./components/DocumentView";
 import GSTView from "./components/GSTView";
 import HomePage from "./components/HomePage";
+import MobileLogin from "./components/MobileLogin";
+import MobileAppShell from "./components/MobileAppShell";
 import ToastContainer from "./components/ToastContainer";
 
 // Seed states imports
@@ -73,6 +75,13 @@ import {
 } from "./types";
 
 export default function App() {
+  const [isMobile, setIsMobile] = useState(() => window.innerWidth < 768);
+  useEffect(() => {
+    const handler = () => setIsMobile(window.innerWidth < 768);
+    window.addEventListener("resize", handler);
+    return () => window.removeEventListener("resize", handler);
+  }, []);
+
   const [collapsed, setCollapsed] = useState(false);
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
   const [activeView, setActiveView] = useState("dashboard");
@@ -1213,18 +1222,50 @@ export default function App() {
     }
   };
 
+  const handleLogin = (user: User) => {
+    setCurrentUser(user);
+    setIsLoggedIn(true);
+    setActiveView(getDefaultViewForRole(user.role));
+  };
+
   if (!isLoggedIn) {
+    if (isMobile) {
+      return (
+        <>
+          <MobileLogin onLogin={handleLogin} usersList={users} />
+          <ToastContainer />
+        </>
+      );
+    }
     return (
-      <HomePage 
-        onLogin={(user) => { 
-          setCurrentUser(user); 
-          setIsLoggedIn(true); 
-          const landingView = getDefaultViewForRole(user.role);
-          setActiveView(landingView);
-        }} 
-        usersList={users} 
-        setUsers={setUsers} 
+      <HomePage
+        onLogin={handleLogin}
+        usersList={users}
+        setUsers={setUsers}
       />
+    );
+  }
+
+  // ── Mobile app shell ────────────────────────────────────────────────────
+  if (isMobile) {
+    return (
+      <>
+        <MobileAppShell
+          currentUser={currentUser}
+          activeView={activeView}
+          setActiveView={(view) => { setActiveView(view); setGlobalSearchQuery(""); }}
+          notifications={notifications}
+          setNotifications={setNotifications}
+          onLogout={() => { setIsLoggedIn(false); setActiveView("dashboard"); }}
+          company={company}
+          currentBranch={currentBranch}
+        >
+          <main className="min-h-full bg-slate-900 text-slate-100 font-sans antialiased">
+            {renderView()}
+          </main>
+        </MobileAppShell>
+        <ToastContainer />
+      </>
     );
   }
 
