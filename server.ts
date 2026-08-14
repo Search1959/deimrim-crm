@@ -430,6 +430,44 @@ async function startServer() {
     }
   });
 
+  // ── Quick account restore via browser URL (GET) ───────────────────────
+  // Visit: /api/restore?email=x@x.com&password=pass&name=Name&companyId=comp-1
+  app.get("/api/restore", async (req, res) => {
+    if (!pool) return res.send("❌ Database not available");
+    const { email, password, name, role, companyId, branchId } = req.query as Record<string, string>;
+    if (!email || !password) return res.send("❌ Missing email or password in URL");
+    try {
+      const id = "u-" + email.replace(/[^a-z0-9]/gi, "").toLowerCase().slice(0, 20);
+      await pool.execute(
+        `INSERT INTO users (id, email, password, name, role, company_id, branch_id, status)
+         VALUES (?, ?, ?, ?, ?, ?, ?, 'active')
+         ON DUPLICATE KEY UPDATE
+           password   = VALUES(password),
+           name       = VALUES(name),
+           role       = VALUES(role),
+           company_id = VALUES(company_id),
+           status     = 'active'`,
+        [id, email.toLowerCase().trim(), password,
+         name || email.split("@")[0],
+         role || "Company Admin",
+         companyId || "comp-1",
+         branchId || "br-hq"]
+      );
+      res.send(`
+        <html><body style="font-family:sans-serif;padding:40px;background:#0f172a;color:#fff">
+        <h2 style="color:#4ade80">✅ Account Restored!</h2>
+        <p><b>Email:</b> ${email}</p>
+        <p><b>Company Data:</b> ${companyId || "comp-1"} (all existing data safe)</p>
+        <p style="color:#94a3b8">Account saved to database. Client can now login.</p>
+        <a href="/" style="display:inline-block;margin-top:20px;background:#4f46e5;color:#fff;padding:10px 24px;border-radius:8px;text-decoration:none">Go to Login</a>
+        </body></html>
+      `);
+    } catch (err) {
+      console.error("restore error:", err);
+      res.send("❌ Error: " + String(err));
+    }
+  });
+
   // ── Ensure a user exists (upsert into users table) ───────────────────
   // POST /api/users/ensure  body: { email, password, name, role, companyId }
   app.post("/api/users/ensure", express.json(), async (req, res) => {
