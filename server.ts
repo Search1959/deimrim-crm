@@ -86,9 +86,14 @@ async function initDB() {
     await conn.execute(`
       INSERT IGNORE INTO users (id, email, password, name, role, company_id, branch_id)
       VALUES
-        ('u-apex',   'apex7tech@gmail.com',    'Search@1959', 'Apex Tech Admin', 'System Admin',   'comp-1', 'br-hq'),
-        ('u-demo',   'demo@deinrim.in',         'demo123....', 'Demo User',       'Read Only',       'comp-1', 'br-hq'),
-        ('u-iswind', 'iswind.mail@gmail.com',   'isw@123',     'Iswind Client',   'Company Admin',   'comp-1', 'br-hq')
+        ('u-apex',   'apex7tech@gmail.com',    'Search@1959', 'Apex Tech Admin', 'System Administrator', 'comp-1', 'br-hq'),
+        ('u-demo',   'demo@deinrim.in',         'demo123....', 'Demo User',       'Read Only',            'comp-1', 'br-hq'),
+        ('u-iswind', 'iswind.mail@gmail.com',   'isw@123',     'Iswind Client',   'Company Admin',        'comp-1', 'br-hq')
+    `);
+
+    // Fix any existing rows that have the old incorrect role string
+    await conn.execute(`
+      UPDATE users SET role = 'System Administrator' WHERE email = 'apex7tech@gmail.com' AND role = 'System Admin'
     `);
 
     console.log("✅ Database tables ready");
@@ -330,8 +335,8 @@ async function startServer() {
 
     // Hardcoded built-in fallbacks (always work even if DB is down)
     const BUILTIN: Record<string, { id: string; name: string; role: string; companyId: string }> = {
-      "apex7tech@gmail.com:Search@1959": { id: "u-apex", name: "Apex Tech Admin", role: "System Admin", companyId: "comp-1" },
-      "demo@deinrim.in:demo123....":     { id: "u-demo", name: "Demo User",       role: "Read Only",    companyId: "comp-1" },
+      "apex7tech@gmail.com:Search@1959": { id: "u-apex", name: "Apex Tech Admin", role: "System Administrator", companyId: "comp-1" },
+      "demo@deinrim.in:demo123....":     { id: "u-demo", name: "Demo User",       role: "Read Only",             companyId: "comp-1" },
     };
     const builtinKey = `${email.toLowerCase().trim()}:${password}`;
     if (BUILTIN[builtinKey]) {
