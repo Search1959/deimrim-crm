@@ -379,6 +379,42 @@ async function startServer() {
     }
   });
 
+  // POST /api/register — self-service tenant registration
+  app.post("/api/register", express.json(), async (req, res) => {
+    const { companyName, email, password } = req.body as { companyName: string; email: string; password: string };
+    if (!companyName || !email || !password) return res.status(400).json({ error: "companyName, email and password required" });
+    if (!pool) return res.status(503).json({ error: "Database not available" });
+
+    try {
+      // Check email not already taken
+      const [existing] = await pool.execute("SELECT id FROM users WHERE email = ? LIMIT 1", [email.trim().toLowerCase()]) as [mysql.RowDataPacket[], mysql.FieldPacket[]];
+      if (existing.length > 0) return res.status(409).json({ error: "An account with this email already exists. Please log in." });
+
+      const companyId = `comp-${Date.now()}`;
+      const branchId  = `br-${Date.now()}`;
+      const userId    = `u-${Date.now()}`;
+      const name      = companyName.trim().split(" ").slice(0, 2).join(" ") + " Admin";
+
+      await pool.execute(
+        `INSERT INTO users (id, name, email, password, role, company_id, branch_id, status, created_at)
+         VALUES (?, ?, ?, ?, 'Company Administrator', ?, ?, 'active', NOW())`,
+        [userId, name, email.trim().toLowerCase(), password, companyId, branchId]
+      );
+
+      return res.json({
+        ok: true,
+        user: {
+          id: userId, name, email: email.trim().toLowerCase(),
+          role: "Company Administrator", companyId, branchId,
+          departmentId: null, status: "active", password,
+        },
+      });
+    } catch (err) {
+      console.error("POST /api/register error:", err);
+      return res.status(500).json({ error: "Registration failed. Please try again." });
+    }
+  });
+
   // GET /api/users — return all users from `users` table
   app.get("/api/users", async (_req, res) => {
     if (!pool) return res.json(null);
