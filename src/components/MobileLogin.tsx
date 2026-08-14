@@ -21,15 +21,40 @@ export default function MobileLogin({ onLogin, usersList }: Props) {
     e.preventDefault();
     setError("");
     setLoading(true);
-    await new Promise(r => setTimeout(r, 600)); // brief loading feel
-    const user = usersList.find(
-      u => u.email.toLowerCase() === email.trim().toLowerCase() && u.password === password
-    );
-    if (user) {
-      onLogin(user);
-    } else {
-      setError("Invalid email or password");
+    await new Promise(r => setTimeout(r, 500));
+
+    const cleanEmail = email.trim().toLowerCase();
+    const matchedUsers = usersList.filter(u => u.email.toLowerCase() === cleanEmail);
+
+    if (matchedUsers.length === 0) {
+      setError("Email not recognised. Check credentials.");
+      setLoading(false);
+      return;
     }
+
+    // Hardcoded admin
+    if (cleanEmail === "apex7tech@gmail.com" && (password === "Search@1959" || password === "Search@1959...")) {
+      const found = matchedUsers[0];
+      if (found) { onLogin(found); return; }
+    }
+    // Demo
+    if (cleanEmail === "demo@deinrim.in" && password === "demo123....") {
+      const found = matchedUsers[0];
+      if (found) { onLogin(found); return; }
+    }
+
+    // Client / staff accounts
+    const exactMatch = matchedUsers.find(u => u.password && u.password === password);
+    if (exactMatch) { onLogin(exactMatch); setLoading(false); return; }
+
+    // Standard mock password
+    if (password === "deinrim123" || password === "password" || password === "") {
+      const standard = matchedUsers.find(u => !u.password);
+      if (standard) { onLogin(standard); setLoading(false); return; }
+    }
+
+    const hasCustom = matchedUsers.find(u => u.password);
+    setError(hasCustom ? "Incorrect password." : "Invalid password. Try 'deinrim123' for standard accounts.");
     setLoading(false);
   };
 
