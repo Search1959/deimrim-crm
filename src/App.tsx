@@ -1222,10 +1222,27 @@ export default function App() {
     }
   };
 
+  // Normalise legacy role strings → canonical UserRole enum values
+  const normaliseRole = (raw: string): UserRole => {
+    const r = (raw || "").trim();
+    if (r === "System Admin"    || r === "system_admin")    return UserRole.SYSTEM_ADMIN;
+    if (r === "Company Admin"   || r === "company_admin")   return UserRole.COMPANY_ADMIN;
+    if (r === "Read Only"       || r === "read_only" || r === "ReadOnly") return UserRole.READ_ONLY;
+    if (r === "Sales Manager"   || r === "sales_manager")   return UserRole.SALES_MANAGER;
+    if (r === "CRM Executive"   || r === "crm_executive")   return UserRole.CRM_EXECUTIVE;
+    if (r === "HR Manager"      || r === "hr_manager")      return UserRole.HR_MANAGER;
+    if (r === "Finance Manager" || r === "finance_manager") return UserRole.FINANCE_MANAGER;
+    if (r === "Inventory Manager"||r==="inventory_manager") return UserRole.INVENTORY_MANAGER;
+    if (r === "Purchase Manager"||r==="purchase_manager")   return UserRole.PURCHASE_MANAGER;
+    if (r === "Employee"        || r === "employee")        return UserRole.EMPLOYEE;
+    return r as UserRole; // already canonical or unknown
+  };
+
   const handleLogin = (user: User) => {
-    setCurrentUser(user);
+    const normalisedUser = { ...user, role: normaliseRole(user.role) };
+    setCurrentUser(normalisedUser);
     setIsLoggedIn(true);
-    setActiveView(getDefaultViewForRole(user.role));
+    setActiveView(getDefaultViewForRole(normalisedUser.role));
   };
 
   if (!isLoggedIn) {

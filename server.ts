@@ -340,10 +340,25 @@ async function startServer() {
     const { email, password } = req.body as { email: string; password: string };
     if (!email || !password) return res.status(400).json({ error: "email and password required" });
 
+    // Normalise legacy/incorrect role strings → canonical TypeScript UserRole enum values
+    const normaliseRole = (raw: string): string => {
+      const r = (raw || "").trim();
+      if (r === "System Admin"   || r === "system_admin")   return "System Administrator";
+      if (r === "Company Admin"  || r === "company_admin")  return "Company Administrator";
+      if (r === "Read Only"      || r === "read_only"  || r === "ReadOnly") return "Read Only User";
+      if (r === "Sales Manager"  || r === "sales_manager")  return "Sales Manager";
+      if (r === "CRM Executive"  || r === "crm_executive")  return "CRM Executive";
+      if (r === "HR Manager"     || r === "hr_manager")     return "HR Manager";
+      if (r === "Finance Manager"|| r === "finance_manager")return "Finance Manager";
+      if (r === "Inventory Manager"||r==="inventory_manager")return "Inventory Manager";
+      if (r === "Purchase Manager"||r==="purchase_manager") return "Purchase Manager";
+      return r; // already correct or unknown
+    };
+
     // Hardcoded built-in fallbacks (always work even if DB is down)
     const BUILTIN: Record<string, { id: string; name: string; role: string; companyId: string }> = {
       "apex7tech@gmail.com:Search@1959": { id: "u-apex", name: "Apex Tech Admin", role: "System Administrator", companyId: "comp-1" },
-      "demo@deinrim.in:demo123....":     { id: "u-demo", name: "Demo User",       role: "Read Only",             companyId: "comp-1" },
+      "demo@deinrim.in:demo123....":     { id: "u-demo", name: "Demo User",       role: "Read Only User",        companyId: "comp-1" },
     };
     const builtinKey = `${email.toLowerCase().trim()}:${password}`;
     if (BUILTIN[builtinKey]) {
@@ -368,7 +383,8 @@ async function startServer() {
         ok: true,
         user: {
           id: u.id, name: u.name, email: u.email,
-          role: u.role, companyId: u.company_id,
+          role: normaliseRole(u.role),   // ← always canonical enum string
+          companyId: u.company_id,
           branchId: u.branch_id, status: u.status,
           password: u.password, ...extra,
         },
