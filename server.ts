@@ -86,14 +86,21 @@ async function initDB() {
     await conn.execute(`
       INSERT IGNORE INTO users (id, email, password, name, role, company_id, branch_id)
       VALUES
-        ('u-apex',   'apex7tech@gmail.com',    'Search@1959', 'Apex Tech Admin', 'System Administrator', 'comp-1', 'br-hq'),
-        ('u-demo',   'demo@deinrim.in',         'demo123....', 'Demo User',       'Read Only',            'comp-1', 'br-hq'),
-        ('u-iswind', 'iswind.mail@gmail.com',   'isw@123',     'Iswind Client',   'Company Admin',        'comp-1', 'br-hq')
+        ('u-apex',   'apex7tech@gmail.com',    'Search@1959', 'Apex Tech Admin', 'System Administrator', 'comp-1',      'br-hq'),
+        ('u-demo',   'demo@deinrim.in',         'demo123....', 'Demo User',       'Read Only',            'comp-1',      'br-hq'),
+        ('u-iswind', 'iswind.mail@gmail.com',   'isw@123',     'Iswind Client',   'Company Admin',        'comp-iswind', 'br-iswind-hq')
     `);
 
-    // Fix any existing rows that have the old incorrect role string
+    // Fix role string mismatch
     await conn.execute(`
       UPDATE users SET role = 'System Administrator' WHERE email = 'apex7tech@gmail.com' AND role = 'System Admin'
+    `);
+
+    // Move iswind off comp-1 (shared/demo) onto their own isolated company
+    await conn.execute(`
+      UPDATE users
+      SET company_id = 'comp-iswind', branch_id = 'br-iswind-hq'
+      WHERE email = 'iswind.mail@gmail.com' AND company_id = 'comp-1'
     `);
 
     console.log("✅ Database tables ready");
@@ -433,6 +440,47 @@ async function startServer() {
     } catch (err) {
       console.error("PUT /api/users error:", err);
       res.status(500).json({ error: "DB write failed" });
+    }
+  });
+
+  // ── Tenant data inspector (browser-visitable) ──────────────────────────
+  // Visit: /api/tenant-check?companyId=comp-iswind
+  app.get("/api/tenant-check", async (req, res) => {
+    if (!pool) return res.send("❌ Database not available");
+    const { companyId } = req.query as Record<string, string>;
+    if (!companyId) return res.send("❌ Missing companyId param");
+    try {
+      const [rows] = await pool.execute(
+        "SELECT entity_type, LENGTH(data) as bytes, JSON_LENGTH(data) as records FROM tenant_data WHERE company_id = ?",
+        [companyId]
+      ) as any;
+      const [userRows] = await pool.execute(
+        "SELECT id, name, email, role, company_id, status FROM users WHERE company_id = ?",
+        [companyId]
+      ) as any;
+      const html = `
+        <html><body style="font-family:monospace;padding:40px;background:#0a0e1a;color:#e2e8f0">
+        <h2 style="color:#f59e0b">🗄 Tenant Data Check — ${companyId}</h2>
+        <h3 style="color:#94a3b8;margin-top:24px">👤 Users (${userRows.length})</h3>
+        ${userRows.length === 0 ? '<p style="color:#ef4444">No users found for this companyId</p>' :
+          '<table border=1 cellpadding=8 style="border-collapse:collapse;border-color:#1e2d45">' +
+          '<tr style="color:#f59e0b"><th>ID</th><th>Name</th><th>Email</th><th>Role</th><th>Status</th></tr>' +
+          userRows.map((u: any) => `<tr><td>${u.id}</td><td>${u.name}</td><td>${u.email}</td><td>${u.role}</td><td>${u.status}</td></tr>`).join('') +
+          '</table>'
+        }
+        <h3 style="color:#94a3b8;margin-top:24px">📦 Stored Data Entities (${rows.length})</h3>
+        ${rows.length === 0 ? '<p style="color:#4ade80">✅ Zero data — clean empty workspace</p>' :
+          '<table border=1 cellpadding=8 style="border-collapse:collapse;border-color:#1e2d45">' +
+          '<tr style="color:#f59e0b"><th>Entity Type</th><th>Records</th><th>Size (bytes)</th></tr>' +
+          rows.map((r: any) => `<tr><td>${r.entity_type}</td><td>${r.records ?? '?'}</td><td>${r.bytes}</td></tr>`).join('') +
+          '</table>'
+        }
+        <br><a href="/" style="background:#4f46e5;color:#fff;padding:10px 20px;border-radius:8px;text-decoration:none">Go to Login</a>
+        </body></html>
+      `;
+      res.send(html);
+    } catch (err) {
+      res.send("❌ Error: " + String(err));
     }
   });
 
