@@ -209,22 +209,26 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
 
     const cleanEmail = email.trim().toLowerCase();
 
-    // Check pre-configured System Admin account
+    // Check pre-configured System Admin account — fallback to built-in if not in DB
     if (cleanEmail === "apex7tech@gmail.com" && (password === "Search@1959" || password === "Search@1959...")) {
-      const found = usersList.find(u => u.email === "apex7tech@gmail.com" && u.role === UserRole.SYSTEM_ADMIN);
-      if (found) {
-        onLogin(found);
-        return;
-      }
+      const found = usersList.find(u => u.email.toLowerCase() === "apex7tech@gmail.com") ?? {
+        id: "u-apex", name: "Apex Tech Admin", email: "apex7tech@gmail.com",
+        role: UserRole.SYSTEM_ADMIN, companyId: "comp-1", branchId: "br-hq",
+        departmentId: "dept-it", status: "active" as const, password: "Search@1959",
+      };
+      onLogin(found);
+      return;
     }
 
-    // Check pre-configured Demo account
+    // Check pre-configured Demo account — fallback to built-in if not in DB
     if (cleanEmail === "demo@deinrim.in" && password === "demo123....") {
-      const found = usersList.find(u => u.email === "demo@deinrim.in" && u.role === UserRole.READ_ONLY);
-      if (found) {
-        onLogin(found);
-        return;
-      }
+      const found = usersList.find(u => u.email.toLowerCase() === "demo@deinrim.in") ?? {
+        id: "u-demo", name: "Demo User", email: "demo@deinrim.in",
+        role: UserRole.READ_ONLY, companyId: "comp-1", branchId: "br-hq",
+        status: "active" as const, password: "demo123....",
+      };
+      onLogin(found);
+      return;
     }
 
     // Check any other mock or custom client users

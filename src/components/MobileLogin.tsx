@@ -32,15 +32,23 @@ export default function MobileLogin({ onLogin, usersList }: Props) {
       return;
     }
 
-    // Hardcoded admin
+    // Hardcoded admin — fallback object if not in DB
     if (cleanEmail === "apex7tech@gmail.com" && (password === "Search@1959" || password === "Search@1959...")) {
-      const found = matchedUsers[0];
-      if (found) { onLogin(found); return; }
+      const found = usersList.find(u => u.email.toLowerCase() === "apex7tech@gmail.com") ?? {
+        id: "u-apex", name: "Apex Tech Admin", email: "apex7tech@gmail.com",
+        role: "System Admin" as User["role"], companyId: "comp-1", branchId: "br-hq",
+        status: "active" as const, password: "Search@1959",
+      } as User;
+      onLogin(found); setLoading(false); return;
     }
-    // Demo
+    // Demo — fallback object if not in DB
     if (cleanEmail === "demo@deinrim.in" && password === "demo123....") {
-      const found = matchedUsers[0];
-      if (found) { onLogin(found); return; }
+      const found = usersList.find(u => u.email.toLowerCase() === "demo@deinrim.in") ?? {
+        id: "u-demo", name: "Demo User", email: "demo@deinrim.in",
+        role: "Read Only" as User["role"], companyId: "comp-1", branchId: "br-hq",
+        status: "active" as const, password: "demo123....",
+      } as User;
+      onLogin(found); setLoading(false); return;
     }
 
     // Client / staff accounts

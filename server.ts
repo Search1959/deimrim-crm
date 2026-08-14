@@ -329,6 +329,56 @@ async function startServer() {
     }
   });
 
+  // ── Emergency: ensure a user exists in global_users JSON ─────────────
+  // POST /api/users/ensure  body: { email, password, name, role, companyId }
+  app.post("/api/users/ensure", express.json(), async (req, res) => {
+    if (!pool) return res.status(503).json({ error: "DB not available" });
+    try {
+      const { email, password, name, role, companyId, branchId } = req.body as {
+        email: string; password: string; name: string;
+        role: string; companyId: string; branchId?: string;
+      };
+      if (!email || !password) return res.status(400).json({ error: "email and password required" });
+
+      // Load current users JSON
+      const [rows] = await pool.execute("SELECT data FROM global_users LIMIT 1") as [mysql.RowDataPacket[], mysql.FieldPacket[]];
+      let users: Record<string, unknown>[] = [];
+      if (rows.length > 0) {
+        try { users = JSON.parse(rows[0].data); } catch {}
+      }
+
+      // Check if already exists
+      const exists = users.find((u: Record<string, unknown>) =>
+        typeof u.email === "string" && u.email.toLowerCase() === email.toLowerCase()
+      );
+      if (exists) {
+        // Update password if different
+        (exists as Record<string, unknown>).password = password;
+      } else {
+        users.push({
+          id: "u-" + email.replace(/[^a-z0-9]/gi, "").toLowerCase().slice(0, 12),
+          name: name || email.split("@")[0],
+          email,
+          password,
+          role: role || "Company Admin",
+          companyId: companyId || "comp-1",
+          branchId: branchId || "br-hq",
+          status: "active",
+        });
+      }
+
+      await pool.execute(
+        `INSERT INTO global_users (id, data) VALUES ('__global__', ?)
+         ON DUPLICATE KEY UPDATE data = VALUES(data), updated_at = NOW()`,
+        [JSON.stringify(users)]
+      );
+      res.json({ ok: true, action: exists ? "updated" : "created", total: users.length });
+    } catch (err) {
+      console.error("ensure-user error:", err);
+      res.status(500).json({ error: "DB write failed" });
+    }
+  });
+
   // ── Bill Scanner (Claude Vision OCR) ──────────────────────────────────
   // POST /api/scan-bill  multipart: field "image" = JPG/PNG/PDF image
   app.post("/api/scan-bill", upload.single("image"), async (req, res) => {
