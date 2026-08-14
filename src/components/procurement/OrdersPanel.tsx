@@ -642,10 +642,10 @@ export default function OrdersPanel({
 
       {/* Create PO Modal */}
       {showAddModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 overflow-y-auto">
+        <div className="fixed inset-0 z-50 flex items-start md:items-center justify-center bg-black/60 backdrop-blur-sm p-2 md:p-4 overflow-y-auto">
           <form
             onSubmit={handleCreatePO}
-            className="w-full max-w-lg rounded-xl border border-slate-800 bg-slate-950 p-5 shadow-2xl space-y-4 my-8"
+            className="w-full max-w-lg rounded-xl border border-slate-800 bg-slate-950 p-4 md:p-5 shadow-2xl space-y-4 my-2 md:my-8"
           >
             <div className="border-b border-slate-800 pb-2 flex items-center justify-between">
               <div className="flex items-center gap-1.5 text-indigo-400">
@@ -667,7 +667,59 @@ export default function OrdersPanel({
 
               {/* Line Items */}
               <div className="border border-slate-800 rounded-lg overflow-visible bg-slate-900/60">
-                <table className="min-w-full text-[10px]">
+                {/* Mobile: stacked cards */}
+                <div className="md:hidden divide-y divide-slate-800/60">
+                  {lineItems.map((item, idx) => (
+                    <div key={idx} className="p-2.5 space-y-2">
+                      <div className="flex items-center justify-between gap-1">
+                        <span className="text-[9px] font-bold text-slate-400 uppercase font-mono tracking-wider">Item {idx + 1}</span>
+                        {lineItems.length > 1 && (
+                          <button
+                            type="button"
+                            onClick={() => setLineItems(prev => prev.filter((_, i) => i !== idx))}
+                            className="text-red-400 hover:text-red-300"
+                          >
+                            <X className="h-3.5 w-3.5" />
+                          </button>
+                        )}
+                      </div>
+                      <div>
+                        <label className="block text-[9px] text-slate-500 mb-0.5 font-mono">Product</label>
+                        <ProductCombobox
+                          products={products}
+                          batchStocks={batchStocks}
+                          value={item.productId}
+                          onChange={id => handleProductPick(idx, id)}
+                        />
+                      </div>
+                      <div className="grid grid-cols-2 gap-2">
+                        <div>
+                          <label className="block text-[9px] text-slate-500 mb-0.5 font-mono">Qty</label>
+                          <input
+                            type="number" min={1} required
+                            value={item.quantity}
+                            onChange={e => handleLineChange(idx, "quantity", Number(e.target.value))}
+                            className="w-full text-center bg-slate-950 border border-slate-800 rounded p-1.5 text-xs text-white font-mono"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-[9px] text-slate-500 mb-0.5 font-mono">Unit Price ₹</label>
+                          <input
+                            type="number" min={0} required
+                            value={item.unitPrice}
+                            onChange={e => handleLineChange(idx, "unitPrice", Number(e.target.value))}
+                            className="w-full text-right bg-slate-950 border border-slate-800 rounded p-1.5 text-xs text-white font-mono"
+                          />
+                        </div>
+                      </div>
+                      <div className="text-right text-[10px] font-mono font-bold text-indigo-300">
+                        Total: {formatINR(item.quantity * item.unitPrice)}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                {/* Desktop: table */}
+                <table className="hidden md:table min-w-full text-[10px]">
                   <thead className="bg-slate-950 text-slate-400 font-mono font-bold uppercase tracking-wider border-b border-slate-800">
                     <tr>
                       <th className="px-2 py-1.5 text-left">Product (Stock)</th>

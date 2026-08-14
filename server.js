@@ -48,6 +48,36 @@ async function initDB() {
                                   ON UPDATE CURRENT_TIMESTAMP
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
     `);
+    await conn.execute(`
+      CREATE TABLE IF NOT EXISTS users (
+        id           VARCHAR(100) PRIMARY KEY,
+        email        VARCHAR(255) NOT NULL UNIQUE,
+        password     VARCHAR(255) NOT NULL,
+        name         VARCHAR(255) NOT NULL DEFAULT '',
+        role         VARCHAR(100) NOT NULL DEFAULT 'Company Admin',
+        company_id   VARCHAR(100) NOT NULL DEFAULT 'comp-1',
+        branch_id    VARCHAR(100) NOT NULL DEFAULT 'br-hq',
+        status       VARCHAR(50)  NOT NULL DEFAULT 'active',
+        extra_json   LONGTEXT,
+        created_at   TIMESTAMP    DEFAULT CURRENT_TIMESTAMP,
+        updated_at   TIMESTAMP    DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+    `);
+    await conn.execute(`
+      INSERT IGNORE INTO users (id, email, password, name, role, company_id, branch_id)
+      VALUES
+        ('u-apex',   'apex7tech@gmail.com',    'Search@1959', 'Apex Tech Admin', 'System Administrator', 'comp-1',      'br-hq'),
+        ('u-demo',   'demo@deinrim.in',         'demo123....', 'Demo User',       'Read Only',            'comp-1',      'br-hq'),
+        ('u-iswind', 'iswind.mail@gmail.com',   'isw@123',     'Iswind Client',   'Company Admin',        'comp-iswind', 'br-iswind-hq')
+    `);
+    await conn.execute(`
+      UPDATE users SET role = 'System Administrator' WHERE email = 'apex7tech@gmail.com' AND role = 'System Admin'
+    `);
+    await conn.execute(`
+      UPDATE users
+      SET company_id = 'comp-iswind', branch_id = 'br-iswind-hq'
+      WHERE email = 'iswind.mail@gmail.com' AND company_id = 'comp-1'
+    `);
     console.log("\u2705 Database tables ready");
   } finally {
     conn.release();
@@ -241,32 +271,273 @@ async function startServer() {
       res.status(500).json({ error: String(err) });
     }
   });
+  app.post("/api/login", express.json(), async (req, res) => {
+    const { email, password } = req.body;
+    if (!email || !password) return res.status(400).json({ error: "email and password required" });
+    const BUILTIN = {
+      "apex7tech@gmail.com:Search@1959": { id: "u-apex", name: "Apex Tech Admin", role: "System Administrator", companyId: "comp-1" },
+      "demo@deinrim.in:demo123....": { id: "u-demo", name: "Demo User", role: "Read Only", companyId: "comp-1" }
+    };
+    const builtinKey = `${email.toLowerCase().trim()}:${password}`;
+    if (BUILTIN[builtinKey]) {
+      return res.json({ ok: true, user: { ...BUILTIN[builtinKey], email: email.toLowerCase().trim(), branchId: "br-hq", status: "active" } });
+    }
+    if (!pool) return res.status(503).json({ error: "Database not available" });
+    try {
+      const [rows] = await pool.execute(
+        "SELECT * FROM users WHERE email = ? AND password = ? AND status = 'active' LIMIT 1",
+        [email.trim().toLowerCase(), password]
+      );
+      if (rows.length === 0) return res.status(401).json({ error: "Invalid email or password" });
+      const u = rows[0];
+      let extra = {};
+      try {
+        if (u.extra_json) extra = JSON.parse(u.extra_json);
+      } catch {
+      }
+      return res.json({
+        ok: true,
+        user: {
+          id: u.id,
+          name: u.name,
+          email: u.email,
+          role: u.role,
+          companyId: u.company_id,
+          branchId: u.branch_id,
+          status: u.status,
+          password: u.password,
+          ...extra
+        }
+      });
+    } catch (err) {
+      console.error("POST /api/login error:", err);
+      return res.status(500).json({ error: "Login failed" });
+    }
+  });
   app.get("/api/users", async (_req, res) => {
     if (!pool) return res.json(null);
     try {
-      const [rows] = await pool.execute(
-        "SELECT data FROM global_users LIMIT 1"
-      );
-      if (rows.length === 0) return res.json(null);
-      res.json(JSON.parse(rows[0].data));
+      const [rows] = await pool.execute("SELECT * FROM users WHERE status = 'active' ORDER BY created_at ASC");
+      const users = rows.map((u) => {
+        let extra = {};
+        try {
+          if (u.extra_json) extra = JSON.parse(u.extra_json);
+        } catch {
+        }
+        return { id: u.id, name: u.name, email: u.email, role: u.role, companyId: u.company_id, branchId: u.branch_id, status: u.status, password: u.password, ...extra };
+      });
+      res.json(users.length > 0 ? users : null);
     } catch (err) {
       console.error("GET /api/users error:", err);
       res.status(500).json({ error: "DB read failed" });
     }
   });
-  app.put("/api/users", async (req, res) => {
+  app.put("/api/users", express.json(), async (req, res) => {
     if (!pool) return res.json({ ok: true, persisted: false });
     try {
+      const users = Array.isArray(req.body) ? req.body : [];
+      for (const u of users) {
+        if (!u.email) continue;
+        const extra = Object.fromEntries(
+          Object.entries(u).filter(([k]) => !["id", "name", "email", "password", "role", "companyId", "branchId", "status"].includes(k))
+        );
+        await pool.execute(
+          `INSERT INTO users (id, email, password, name, role, company_id, branch_id, status, extra_json)
+           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+           ON DUPLICATE KEY UPDATE
+             password   = VALUES(password),
+             name       = VALUES(name),
+             role       = VALUES(role),
+             company_id = VALUES(company_id),
+             branch_id  = VALUES(branch_id),
+             status     = VALUES(status),
+             extra_json = VALUES(extra_json)`,
+          [
+            u.id || "u-" + u.email.replace(/[^a-z0-9]/gi, "").slice(0, 12),
+            u.email.toLowerCase().trim(),
+            u.password || "",
+            u.name || u.email,
+            u.role || "Company Admin",
+            u.companyId || "comp-1",
+            u.branchId || "br-hq",
+            u.status || "active",
+            Object.keys(extra).length ? JSON.stringify(extra) : null
+          ]
+        );
+      }
       const serialized = JSON.stringify(req.body);
       await pool.execute(
-        `INSERT INTO global_users (id, data) VALUES ('__global__', ?)
-         ON DUPLICATE KEY UPDATE data = VALUES(data), updated_at = NOW()`,
+        `INSERT INTO global_users (id, data) VALUES ('__global__', ?) ON DUPLICATE KEY UPDATE data = VALUES(data), updated_at = NOW()`,
         [serialized]
       );
       res.json({ ok: true });
     } catch (err) {
       console.error("PUT /api/users error:", err);
       res.status(500).json({ error: "DB write failed" });
+    }
+  });
+  app.get("/api/tenant-check", async (req, res) => {
+    if (!pool) return res.send("\u274C Database not available");
+    const { companyId } = req.query;
+    if (!companyId) return res.send("\u274C Missing companyId param");
+    try {
+      const [rows] = await pool.execute(
+        "SELECT entity_type, LENGTH(data) as bytes, JSON_LENGTH(data) as records FROM tenant_data WHERE company_id = ?",
+        [companyId]
+      );
+      const [userRows] = await pool.execute(
+        "SELECT id, name, email, role, company_id, status FROM users WHERE company_id = ?",
+        [companyId]
+      );
+      const html = `
+        <html><body style="font-family:monospace;padding:40px;background:#0a0e1a;color:#e2e8f0">
+        <h2 style="color:#f59e0b">\u{1F5C4} Tenant Data Check \u2014 ${companyId}</h2>
+        <h3 style="color:#94a3b8;margin-top:24px">\u{1F464} Users (${userRows.length})</h3>
+        ${userRows.length === 0 ? '<p style="color:#ef4444">No users found for this companyId</p>' : '<table border=1 cellpadding=8 style="border-collapse:collapse;border-color:#1e2d45"><tr style="color:#f59e0b"><th>ID</th><th>Name</th><th>Email</th><th>Role</th><th>Status</th></tr>' + userRows.map((u) => `<tr><td>${u.id}</td><td>${u.name}</td><td>${u.email}</td><td>${u.role}</td><td>${u.status}</td></tr>`).join("") + "</table>"}
+        <h3 style="color:#94a3b8;margin-top:24px">\u{1F4E6} Stored Data Entities (${rows.length})</h3>
+        ${rows.length === 0 ? '<p style="color:#4ade80">\u2705 Zero data \u2014 clean empty workspace</p>' : '<table border=1 cellpadding=8 style="border-collapse:collapse;border-color:#1e2d45"><tr style="color:#f59e0b"><th>Entity Type</th><th>Records</th><th>Size (bytes)</th></tr>' + rows.map((r) => `<tr><td>${r.entity_type}</td><td>${r.records ?? "?"}</td><td>${r.bytes}</td></tr>`).join("") + "</table>"}
+        <br><a href="/" style="background:#4f46e5;color:#fff;padding:10px 20px;border-radius:8px;text-decoration:none">Go to Login</a>
+        </body></html>
+      `;
+      res.send(html);
+    } catch (err) {
+      res.send("\u274C Error: " + String(err));
+    }
+  });
+  app.get("/api/restore", async (req, res) => {
+    if (!pool) return res.send("\u274C Database not available");
+    const { email, password, name, role, companyId, branchId } = req.query;
+    if (!email || !password) return res.send("\u274C Missing email or password in URL");
+    try {
+      const id = "u-" + email.replace(/[^a-z0-9]/gi, "").toLowerCase().slice(0, 20);
+      await pool.execute(
+        `INSERT INTO users (id, email, password, name, role, company_id, branch_id, status)
+         VALUES (?, ?, ?, ?, ?, ?, ?, 'active')
+         ON DUPLICATE KEY UPDATE
+           password   = VALUES(password),
+           name       = VALUES(name),
+           role       = VALUES(role),
+           company_id = VALUES(company_id),
+           status     = 'active'`,
+        [
+          id,
+          email.toLowerCase().trim(),
+          password,
+          name || email.split("@")[0],
+          role || "Company Admin",
+          companyId || "comp-1",
+          branchId || "br-hq"
+        ]
+      );
+      res.send(`
+        <html><body style="font-family:sans-serif;padding:40px;background:#0f172a;color:#fff">
+        <h2 style="color:#4ade80">\u2705 Account Restored!</h2>
+        <p><b>Email:</b> ${email}</p>
+        <p><b>Company Data:</b> ${companyId || "comp-1"} (all existing data safe)</p>
+        <p style="color:#94a3b8">Account saved to database. Client can now login.</p>
+        <a href="/" style="display:inline-block;margin-top:20px;background:#4f46e5;color:#fff;padding:10px 24px;border-radius:8px;text-decoration:none">Go to Login</a>
+        </body></html>
+      `);
+    } catch (err) {
+      console.error("restore error:", err);
+      res.send("\u274C Error: " + String(err));
+    }
+  });
+  app.post("/api/users/ensure", express.json(), async (req, res) => {
+    if (!pool) return res.status(503).json({ error: "DB not available" });
+    try {
+      const { email, password, name, role, companyId, branchId } = req.body;
+      if (!email || !password) return res.status(400).json({ error: "email and password required" });
+      const id = "u-" + email.replace(/[^a-z0-9]/gi, "").toLowerCase().slice(0, 20);
+      await pool.execute(
+        `INSERT INTO users (id, email, password, name, role, company_id, branch_id, status)
+         VALUES (?, ?, ?, ?, ?, ?, ?, 'active')
+         ON DUPLICATE KEY UPDATE
+           password   = VALUES(password),
+           name       = VALUES(name),
+           role       = VALUES(role),
+           company_id = VALUES(company_id),
+           branch_id  = VALUES(branch_id),
+           status     = 'active'`,
+        [
+          id,
+          email.toLowerCase().trim(),
+          password,
+          name || email.split("@")[0],
+          role || "Company Admin",
+          companyId || "comp-1",
+          branchId || "br-hq"
+        ]
+      );
+      res.json({ ok: true, message: `Account ${email} saved to database` });
+    } catch (err) {
+      console.error("ensure-user error:", err);
+      res.status(500).json({ error: "DB write failed" });
+    }
+  });
+  app.post("/api/scan-bill", upload.single("image"), async (req, res) => {
+    const ANTHROPIC_KEY = process.env.ANTHROPIC_API_KEY;
+    if (!ANTHROPIC_KEY) return res.status(400).json({ error: "ANTHROPIC_API_KEY not configured in environment" });
+    if (!req.file) return res.status(400).json({ error: "No image uploaded" });
+    const base64 = req.file.buffer.toString("base64");
+    const mediaType = req.file.mimetype || "image/jpeg";
+    try {
+      const response = await fetch("https://api.anthropic.com/v1/messages", {
+        method: "POST",
+        headers: {
+          "x-api-key": ANTHROPIC_KEY,
+          "anthropic-version": "2023-06-01",
+          "content-type": "application/json"
+        },
+        body: JSON.stringify({
+          model: "claude-sonnet-4-6",
+          max_tokens: 1024,
+          messages: [{
+            role: "user",
+            content: [
+              {
+                type: "image",
+                source: { type: "base64", media_type: mediaType, data: base64 }
+              },
+              {
+                type: "text",
+                text: `Extract purchase bill / tax invoice data from this image and return ONLY valid JSON with this exact structure (no markdown, no explanation):
+{
+  "supplierName": "",
+  "supplierGSTIN": "",
+  "billNumber": "",
+  "invoiceDate": "YYYY-MM-DD",
+  "dueDate": "YYYY-MM-DD or empty",
+  "challanNo": "",
+  "eWayBillNo": "",
+  "vehicleNo": "",
+  "transportMode": "Road",
+  "items": [
+    {
+      "description": "",
+      "hsn": "",
+      "qty": 1,
+      "unit": "Nos",
+      "rate": 0,
+      "gstPct": 18
+    }
+  ],
+  "narration": ""
+}
+Rules: invoiceDate must be YYYY-MM-DD format or empty string. qty and rate are numbers. gstPct is 0/5/12/18/28. If a field is not visible, use empty string or 0. Return only the JSON object.`
+              }
+            ]
+          }]
+        })
+      });
+      const data = await response.json();
+      const text = data.content?.[0]?.type === "text" ? data.content[0].text.trim() : "";
+      const jsonText = text.replace(/^```[a-z]*\n?/i, "").replace(/\n?```$/i, "").trim();
+      const parsed = JSON.parse(jsonText);
+      return res.json({ success: true, bill: parsed });
+    } catch (err) {
+      console.error("scan-bill error:", err);
+      return res.status(500).json({ error: "Failed to extract bill data from image" });
     }
   });
   app.post("/api/einvoice/generate", express.json(), async (req, res) => {
@@ -379,11 +650,6 @@ async function startServer() {
   });
   app.get("/help", (_req, res) => {
     res.sendFile(path.join(process.cwd(), "public", "help.html"));
-  });
-  const servicesPath = path.join(process.cwd(), "services-dist");
-  app.use("/services", express.static(servicesPath));
-  app.get("/services/*", (_req, res) => {
-    res.sendFile(path.join(servicesPath, "index.html"));
   });
   if (process.env.NODE_ENV !== "production") {
     const vite = await createViteServer({

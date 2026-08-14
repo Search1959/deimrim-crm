@@ -230,10 +230,10 @@ export default function VendorsPanel({ suppliers, onAddSupplier, onDeleteSupplie
 
       {/* Add New Vendor Modal matching Image 8 */}
       {showAddModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 overflow-y-auto">
-          <form 
+        <div className="fixed inset-0 z-50 flex items-start md:items-center justify-center bg-black/60 backdrop-blur-xs p-2 md:p-4 overflow-y-auto">
+          <form
             onSubmit={handleCreateVendor}
-            className="w-full max-w-md rounded-xl border border-slate-800 bg-slate-950 p-5 shadow-2xl text-left space-y-4 my-8 animate-scaleUp"
+            className="w-full max-w-md rounded-xl border border-slate-800 bg-slate-950 p-4 md:p-5 shadow-2xl text-left space-y-4 my-2 md:my-8 animate-scaleUp"
           >
             <div className="border-b border-slate-800 pb-2 flex items-center justify-between">
               <div className="flex items-center gap-1.5 text-indigo-400">
@@ -252,7 +252,7 @@ export default function VendorsPanel({ suppliers, onAddSupplier, onDeleteSupplie
             </div>
 
             <div className="space-y-3 text-xs max-h-[70vh] overflow-y-auto pr-1">
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
                   <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 font-mono">Legal Vendor Name *</label>
                   <input
@@ -277,7 +277,7 @@ export default function VendorsPanel({ suppliers, onAddSupplier, onDeleteSupplie
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
                   <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 font-mono">Primary Contact Email *</label>
                   <input
@@ -302,7 +302,7 @@ export default function VendorsPanel({ suppliers, onAddSupplier, onDeleteSupplie
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
                   <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 font-mono">Phone Number</label>
                   <input
@@ -340,7 +340,7 @@ export default function VendorsPanel({ suppliers, onAddSupplier, onDeleteSupplie
               {/* Compliance Segment */}
               <div className="border-t border-slate-800/80 pt-2">
                 <span className="block text-[10px] font-bold text-indigo-400 uppercase tracking-widest font-mono mb-2">Compliance Verification</span>
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div>
                     <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 font-mono">GSTIN / Tax ID</label>
                     <input
@@ -367,7 +367,7 @@ export default function VendorsPanel({ suppliers, onAddSupplier, onDeleteSupplie
               {/* Bank Transfers */}
               <div className="border-t border-slate-800/80 pt-2">
                 <span className="block text-[10px] font-bold text-indigo-400 uppercase tracking-widest font-mono mb-2">Bank Remittance Accounts</span>
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div>
                     <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 font-mono">Account Holder Name</label>
                     <input
@@ -389,7 +389,7 @@ export default function VendorsPanel({ suppliers, onAddSupplier, onDeleteSupplie
                     />
                   </div>
                 </div>
-                <div className="grid grid-cols-2 gap-3 mt-2">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-2">
                   <div>
                     <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 font-mono">IFSC Code</label>
                     <input

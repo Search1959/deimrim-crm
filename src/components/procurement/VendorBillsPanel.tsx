@@ -697,8 +697,8 @@ export default function VendorBillsPanel({
 
       {/* View Bill Modal */}
       {viewingBill && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4 overflow-y-auto">
-          <div className="w-full max-w-4xl rounded-2xl border border-slate-700 bg-slate-950 shadow-2xl my-8">
+        <div className="fixed inset-0 z-50 flex items-start md:items-center justify-center bg-black/70 backdrop-blur-sm p-2 md:p-4 overflow-y-auto">
+          <div className="w-full max-w-4xl rounded-2xl border border-slate-700 bg-slate-950 shadow-2xl my-2 md:my-8">
             {/* Modal header */}
             <div className="flex items-center justify-between px-6 py-4 border-b border-slate-800">
               <div className="flex items-center gap-3">
