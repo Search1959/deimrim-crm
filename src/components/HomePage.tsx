@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   Building2,
   ShieldAlert,
@@ -99,6 +99,120 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
 
   // Dashboard mockup tabs
   const [activeScreenshotTab, setActiveScreenshotTab] = useState<"admin" | "crm" | "inventory" | "hr" | "purchases">("admin");
+
+  // Hero slideshow
+  const heroSlides = [
+    {
+      id: "admin",
+      label: "🛡️ Admin Control Room",
+      accent: "sky",
+      tag: "SYSTEM ADMIN",
+      title: "Root Configuration & Tenant Management",
+      kpis: [
+        { label: "Active Tenants", val: "14", sub: "Companies", color: "text-white" },
+        { label: "SSL Routing",    val: "100%", sub: "Active",  color: "text-emerald-400" },
+        { label: "DB Schemas",     val: "14",   sub: "Isolated",color: "text-sky-400" },
+        { label: "API Webhooks",   val: "2",    sub: "Active",  color: "text-violet-400" },
+      ],
+      rows: [
+        ["🏢 Apex Distribution Group",  "erp.apexdist.com",        "Active"],
+        ["🏥 Bengal Healthcare",         "portal.wbhealthcare.in",  "Active"],
+        ["🏬 Kolkata Retail Corp",       "default.deinrim360.in",   "Pending"],
+      ],
+    },
+    {
+      id: "crm",
+      label: "📈 CRM Pipeline",
+      accent: "sky",
+      tag: "CRM & SALES",
+      title: "Lead Pipeline & Customer Revenue Tracker",
+      kpis: [
+        { label: "Pipeline Value",  val: "₹18.4L", sub: "Total",   color: "text-white" },
+        { label: "Qualified Leads", val: "32",      sub: "Contacts",color: "text-sky-400" },
+        { label: "Proposals Out",   val: "12",      sub: "Active",  color: "text-amber-400" },
+        { label: "Closed-Won",      val: "15",      sub: "Deals",   color: "text-emerald-400" },
+      ],
+      rows: [
+        ["Kolkata Medical Inc.",  "QUALIFIED", "₹4,20,000"],
+        ["Bengal Steel Spares",   "PROPOSAL",  "₹2,80,000"],
+        ["Starlight Edu Trust",   "PROSPECT",  "₹1,10,000"],
+      ],
+    },
+    {
+      id: "inventory",
+      label: "📦 Inventory Ledger",
+      accent: "sky",
+      tag: "INVENTORY",
+      title: "Batch Stocks, Rack Codes & FIFO Depletion",
+      kpis: [
+        { label: "Warehouses",   val: "4",       sub: "Yards",   color: "text-white" },
+        { label: "Product SKUs", val: "140",     sub: "Items",   color: "text-sky-400" },
+        { label: "Low Stock",    val: "2",       sub: "Alerts",  color: "text-red-400" },
+        { label: "Batch Value",  val: "₹8.2L",  sub: "On Hand", color: "text-emerald-400" },
+      ],
+      rows: [
+        ["Industrial Steel Coils",  "#ST-2026-09A  Rack A-2", "420 Units  ✅"],
+        ["Copper Tubes 15mm",       "#CU-2026-11C  Rack B-12","12 Units   ⚠️"],
+        ["High Tensile Bolts (100)","#BT-2026-04B  Rack D-4", "1,500 Pks ✅"],
+      ],
+    },
+    {
+      id: "hr",
+      label: "👥 HR Workspace",
+      accent: "sky",
+      tag: "HR & ATTENDANCE",
+      title: "Staff Rostering, Clock-In & Leave Approvals",
+      kpis: [
+        { label: "Total Staff",   val: "48",  sub: "Employees", color: "text-white" },
+        { label: "Present Today", val: "92%", sub: "Clocked-In",color: "text-emerald-400" },
+        { label: "On Leave",      val: "3",   sub: "Approved",  color: "text-sky-400" },
+        { label: "Open Positions",val: "2",   sub: "Pending",   color: "text-amber-400" },
+      ],
+      rows: [
+        ["Amit Sen (ID #002)",     "HR Administrator",   "CLOCKED IN 09:12"],
+        ["Priyanka Roy (ID #014)", "Procurement Lead",   "CLOCKED IN 09:40"],
+        ["Rahul Das (ID #005)",    "Sales Executive",    "ANNUAL LEAVE 2D"],
+      ],
+    },
+    {
+      id: "finance",
+      label: "💰 Finance Ledger",
+      accent: "sky",
+      tag: "FINANCE & P&L",
+      title: "Live Profit & Loss, AP/AR & Cash Flow",
+      kpis: [
+        { label: "Gross Revenue",  val: "₹24.6L", sub: "This Month", color: "text-emerald-400" },
+        { label: "COGS",           val: "₹14.2L", sub: "Auto-posted", color: "text-red-400" },
+        { label: "Net Profit",     val: "₹10.4L", sub: "Live",        color: "text-white" },
+        { label: "Pending AP",     val: "₹3.8L",  sub: "Payable",     color: "text-amber-400" },
+      ],
+      rows: [
+        ["Sales Invoice #INV-2026-047", "Revenue",    "+₹1,40,000"],
+        ["GRN #GRN-2026-038",           "COGS",       "-₹82,000"],
+        ["Payroll – July 2026",         "Operating",  "-₹3,20,000"],
+      ],
+    },
+  ];
+  const [heroSlide, setHeroSlide] = useState(0);
+  const [heroAnim, setHeroAnim] = useState(true);
+  const slideTimer = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  const goToSlide = (idx: number) => {
+    setHeroAnim(false);
+    setTimeout(() => { setHeroSlide(idx); setHeroAnim(true); }, 150);
+  };
+
+  useEffect(() => {
+    slideTimer.current = setInterval(() => {
+      setHeroSlide(prev => {
+        const next = (prev + 1) % heroSlides.length;
+        setHeroAnim(false);
+        setTimeout(() => setHeroAnim(true), 150);
+        return next;
+      });
+    }, 3500);
+    return () => { if (slideTimer.current) clearInterval(slideTimer.current); };
+  }, []);
 
   const openModal = (tab: "login" | "register" | "admin-demo" = "login") => {
     setModalTab(tab);
@@ -296,33 +410,129 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
       </header>
 
       {/* ── HERO ──────────────────────────────────────────────────────────── */}
-      <section className="w-full max-w-6xl mx-auto px-4 md:px-8 pt-16 pb-12 text-center space-y-6">
-        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold bg-sky-500/10 text-sky-400 border border-sky-500/20 font-mono tracking-wide uppercase">
-          <Sparkles className="h-3 w-3" /> Enterprise Business Operating System
-        </div>
-        <h2 className="text-4xl md:text-5xl font-extrabold text-white tracking-tight leading-tight">
-          One Platform to Run<br />
-          <span className="text-sky-400">Your Entire Organization</span>
-        </h2>
-        <p className="text-slate-400 text-sm md:text-base leading-relaxed max-w-2xl mx-auto">
-          CRM · Inventory · Purchase · HR · Finance · GST — all linked under one secure, multi-tenant workspace. Built and supported from Kolkata by M/s Deinrim Solutionss (P) Ltd.
-        </p>
-        <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
-          <button onClick={() => openModal("register")} className="px-6 py-3 bg-sky-500 hover:bg-sky-400 text-white font-bold text-xs rounded-xl transition-all shadow-lg shadow-sky-500/20 flex items-center gap-1.5 cursor-pointer">
-            <UserPlus className="h-3.5 w-3.5" /> Create Free Account
-          </button>
-          <button onClick={() => openModal("admin-demo")} className="px-6 py-3 bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 font-bold text-xs rounded-xl transition-all flex items-center gap-1.5 cursor-pointer">
-            <Zap className="h-3.5 w-3.5 text-sky-400" /> Try Live Demo
-          </button>
-          <a href="https://wa.me/919836130393?text=I'm%20interested%20in%20a%20DEINRIM%20360%20demo" target="_blank" rel="noreferrer" className="px-6 py-3 bg-emerald-600/10 hover:bg-emerald-600/20 text-emerald-400 border border-emerald-500/30 font-bold text-xs rounded-xl transition-all flex items-center gap-1.5">
-            💬 WhatsApp Demo <ExternalLink className="h-3 w-3" />
-          </a>
-        </div>
-        <div className="flex flex-wrap items-center justify-center gap-4 pt-2 text-[10px] font-mono text-slate-500 font-bold uppercase">
-          <span className="flex items-center gap-1"><Check className="h-3.5 w-3.5 text-emerald-500" /> SSL Secure</span>
-          <span className="flex items-center gap-1"><Check className="h-3.5 w-3.5 text-sky-500" /> Cloud Hosted</span>
-          <span className="flex items-center gap-1"><Check className="h-3.5 w-3.5 text-violet-400" /> Mobile Ready</span>
-          <span className="flex items-center gap-1"><Check className="h-3.5 w-3.5 text-amber-400" /> Zero Demo Data for Your Account</span>
+      <section className="w-full max-w-7xl mx-auto px-4 md:px-8 pt-14 pb-10">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-14 items-center">
+
+          {/* LEFT — copy */}
+          <div className="space-y-6 text-left">
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold bg-sky-500/10 text-sky-400 border border-sky-500/20 font-mono tracking-wide uppercase">
+              <Sparkles className="h-3 w-3" /> Enterprise Business Operating System
+            </div>
+            <h2 className="text-4xl md:text-5xl font-extrabold text-white tracking-tight leading-[1.1]">
+              One Platform to Run<br />
+              <span className="text-sky-400">Your Entire Organization</span>
+            </h2>
+            <p className="text-slate-400 text-sm md:text-base leading-relaxed max-w-lg">
+              CRM · Inventory · Purchase · HR · Finance · GST — all linked under one secure, multi-tenant workspace. Built and supported from Kolkata by M/s Deinrim Solutionss (P) Ltd.
+            </p>
+            <div className="flex flex-wrap items-center gap-3">
+              <button onClick={() => openModal("register")} className="px-6 py-3 bg-sky-500 hover:bg-sky-400 text-white font-bold text-xs rounded-xl transition-all shadow-lg shadow-sky-500/20 flex items-center gap-1.5 cursor-pointer">
+                <UserPlus className="h-3.5 w-3.5" /> Create Free Account
+              </button>
+              <button onClick={() => openModal("admin-demo")} className="px-6 py-3 bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 font-bold text-xs rounded-xl transition-all flex items-center gap-1.5 cursor-pointer">
+                <Zap className="h-3.5 w-3.5 text-sky-400" /> Try Live Demo
+              </button>
+              <a href="https://wa.me/919836130393?text=I'm%20interested%20in%20a%20DEINRIM%20360%20demo" target="_blank" rel="noreferrer" className="px-6 py-3 bg-emerald-600/10 hover:bg-emerald-600/20 text-emerald-400 border border-emerald-500/30 font-bold text-xs rounded-xl transition-all flex items-center gap-1.5">
+                💬 WhatsApp <ExternalLink className="h-3 w-3" />
+              </a>
+            </div>
+            <div className="flex flex-wrap items-center gap-4 pt-1 text-[10px] font-mono text-slate-500 font-bold uppercase">
+              <span className="flex items-center gap-1"><Check className="h-3.5 w-3.5 text-emerald-500" /> SSL Secure</span>
+              <span className="flex items-center gap-1"><Check className="h-3.5 w-3.5 text-sky-500" /> Cloud Hosted</span>
+              <span className="flex items-center gap-1"><Check className="h-3.5 w-3.5 text-violet-400" /> Mobile Ready</span>
+              <span className="flex items-center gap-1"><Check className="h-3.5 w-3.5 text-amber-400" /> Zero Demo Data</span>
+            </div>
+          </div>
+
+          {/* RIGHT — dashboard slideshow */}
+          <div className="relative">
+            {/* glow behind card */}
+            <div className="absolute -inset-4 bg-sky-500/5 rounded-3xl blur-2xl pointer-events-none" />
+
+            {/* slide card */}
+            <div
+              className="relative rounded-2xl border border-slate-700/80 bg-[#0d1829] overflow-hidden shadow-2xl shadow-sky-900/20"
+              style={{ transition: "opacity 0.15s ease", opacity: heroAnim ? 1 : 0 }}
+            >
+              {/* top bar */}
+              <div className="flex items-center justify-between px-4 py-2.5 bg-slate-900/80 border-b border-slate-800">
+                <div className="flex items-center gap-1.5">
+                  <span className="h-2.5 w-2.5 rounded-full bg-red-500/70"></span>
+                  <span className="h-2.5 w-2.5 rounded-full bg-amber-500/70"></span>
+                  <span className="h-2.5 w-2.5 rounded-full bg-emerald-500/70"></span>
+                </div>
+                <span className="text-[10px] font-mono font-bold text-slate-500 tracking-widest uppercase">deinrim360.in</span>
+                <span className="text-[9px] bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-2 py-0.5 rounded-full font-mono font-bold">LIVE</span>
+              </div>
+
+              {/* module label strip */}
+              <div className="flex gap-1 px-3 py-2 bg-slate-950/60 border-b border-slate-800/60 overflow-x-auto">
+                {heroSlides.map((s, i) => (
+                  <button
+                    key={s.id}
+                    onClick={() => { if (slideTimer.current) clearInterval(slideTimer.current); goToSlide(i); }}
+                    className={`shrink-0 px-2.5 py-1 rounded text-[9px] font-bold font-mono transition-all cursor-pointer ${i === heroSlide ? "bg-sky-600 text-white" : "text-slate-500 hover:text-slate-300"}`}
+                  >
+                    {s.label}
+                  </button>
+                ))}
+              </div>
+
+              {/* slide body */}
+              <div className="p-4 space-y-3 min-h-[280px]">
+                {/* header */}
+                <div className="flex items-center justify-between">
+                  <div>
+                    <span className="text-[9px] text-sky-400 font-mono font-bold tracking-widest uppercase">{heroSlides[heroSlide].tag}</span>
+                    <h4 className="text-sm font-extrabold text-white mt-0.5 leading-tight">{heroSlides[heroSlide].title}</h4>
+                  </div>
+                  <span className="text-[9px] bg-sky-500/10 text-sky-400 border border-sky-500/20 px-2 py-0.5 rounded-full font-mono font-bold shrink-0">MODULE ACTIVE</span>
+                </div>
+
+                {/* KPI row */}
+                <div className="grid grid-cols-4 gap-2">
+                  {heroSlides[heroSlide].kpis.map((kpi, i) => (
+                    <div key={i} className="bg-slate-900/70 rounded-lg p-2 border border-slate-800/60 text-center">
+                      <div className={`text-base font-black ${kpi.color} leading-none`}>{kpi.val}</div>
+                      <div className="text-[8px] text-slate-500 font-mono mt-0.5 leading-tight">{kpi.label}</div>
+                      <div className="text-[8px] text-slate-600 font-mono">{kpi.sub}</div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* data rows */}
+                <div className="space-y-1.5">
+                  <div className="text-[8px] text-slate-600 font-mono font-bold uppercase tracking-wider">Recent Entries</div>
+                  {heroSlides[heroSlide].rows.map((row, i) => (
+                    <div key={i} className="flex items-center justify-between bg-slate-900/50 rounded-lg px-3 py-2 border border-slate-800/50">
+                      <span className="text-[10px] font-bold text-slate-200 truncate max-w-[45%]">{row[0]}</span>
+                      <span className="text-[9px] text-slate-500 font-mono truncate mx-1">{row[1]}</span>
+                      <span className="text-[9px] text-sky-400 font-mono font-bold shrink-0">{row[2]}</span>
+                    </div>
+                  ))}
+                </div>
+
+                {/* progress bar + slide counter */}
+                <div className="pt-1 space-y-1.5">
+                  <div className="flex gap-1">
+                    {heroSlides.map((_, i) => (
+                      <div key={i} className={`h-0.5 flex-1 rounded-full transition-all duration-300 ${i === heroSlide ? "bg-sky-500" : "bg-slate-800"}`} />
+                    ))}
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-[8px] text-slate-600 font-mono">Auto-cycling dashboard views</span>
+                    <span className="text-[8px] text-slate-600 font-mono">{heroSlide + 1} / {heroSlides.length}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* floating badge bottom-right */}
+            <div className="absolute -bottom-3 -right-3 bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 shadow-xl flex items-center gap-2">
+              <div className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse"></div>
+              <span className="text-[10px] font-mono font-bold text-slate-300">Live on deinrim360.in</span>
+            </div>
+          </div>
         </div>
       </section>
 
