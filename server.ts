@@ -55,7 +55,7 @@ async function initDB() {
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
     `);
 
-    // Global users table (not tenant-scoped)
+    // Global users table (not tenant-scoped) — JSON blob store
     await conn.execute(`
       CREATE TABLE IF NOT EXISTS global_users (
         id           VARCHAR(50)  PRIMARY KEY,
@@ -63,6 +63,31 @@ async function initDB() {
         updated_at   TIMESTAMP    DEFAULT CURRENT_TIMESTAMP
                                   ON UPDATE CURRENT_TIMESTAMP
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+    `);
+
+    // Individual users table — one row per user, reliable login
+    await conn.execute(`
+      CREATE TABLE IF NOT EXISTS users (
+        id           VARCHAR(100) PRIMARY KEY,
+        email        VARCHAR(255) NOT NULL UNIQUE,
+        password     VARCHAR(255) NOT NULL,
+        name         VARCHAR(255) NOT NULL DEFAULT '',
+        role         VARCHAR(100) NOT NULL DEFAULT 'Company Admin',
+        company_id   VARCHAR(100) NOT NULL DEFAULT 'comp-1',
+        branch_id    VARCHAR(100) NOT NULL DEFAULT 'br-hq',
+        status       VARCHAR(50)  NOT NULL DEFAULT 'active',
+        extra_json   LONGTEXT,
+        created_at   TIMESTAMP    DEFAULT CURRENT_TIMESTAMP,
+        updated_at   TIMESTAMP    DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+    `);
+
+    // Seed built-in accounts if not present
+    await conn.execute(`
+      INSERT IGNORE INTO users (id, email, password, name, role, company_id, branch_id)
+      VALUES
+        ('u-apex',  'apex7tech@gmail.com', 'Search@1959', 'Apex Tech Admin', 'System Admin',   'comp-1', 'br-hq'),
+        ('u-demo',  'demo@deinrim.in',     'demo123....', 'Demo User',       'Read Only',       'comp-1', 'br-hq')
     `);
 
     console.log("✅ Database tables ready");
@@ -296,30 +321,106 @@ async function startServer() {
   });
 
   // ── GLOBAL USERS API ───────────────────────────────────────────────────
-  // GET  /api/users           → return full users array
-  // PUT  /api/users           → save full users array
 
+  // POST /api/login  — server-side login, queries users table directly
+  app.post("/api/login", express.json(), async (req, res) => {
+    const { email, password } = req.body as { email: string; password: string };
+    if (!email || !password) return res.status(400).json({ error: "email and password required" });
+
+    // Hardcoded built-in fallbacks (always work even if DB is down)
+    const BUILTIN: Record<string, { id: string; name: string; role: string; companyId: string }> = {
+      "apex7tech@gmail.com:Search@1959": { id: "u-apex", name: "Apex Tech Admin", role: "System Admin", companyId: "comp-1" },
+      "demo@deinrim.in:demo123....":     { id: "u-demo", name: "Demo User",       role: "Read Only",    companyId: "comp-1" },
+    };
+    const builtinKey = `${email.toLowerCase().trim()}:${password}`;
+    if (BUILTIN[builtinKey]) {
+      return res.json({ ok: true, user: { ...BUILTIN[builtinKey], email: email.toLowerCase().trim(), branchId: "br-hq", status: "active" } });
+    }
+
+    if (!pool) return res.status(503).json({ error: "Database not available" });
+
+    try {
+      const [rows] = await pool.execute(
+        "SELECT * FROM users WHERE email = ? AND password = ? AND status = 'active' LIMIT 1",
+        [email.trim().toLowerCase(), password]
+      ) as [mysql.RowDataPacket[], mysql.FieldPacket[]];
+
+      if (rows.length === 0) return res.status(401).json({ error: "Invalid email or password" });
+
+      const u = rows[0];
+      let extra: Record<string, unknown> = {};
+      try { if (u.extra_json) extra = JSON.parse(u.extra_json); } catch {}
+
+      return res.json({
+        ok: true,
+        user: {
+          id: u.id, name: u.name, email: u.email,
+          role: u.role, companyId: u.company_id,
+          branchId: u.branch_id, status: u.status,
+          password: u.password, ...extra,
+        },
+      });
+    } catch (err) {
+      console.error("POST /api/login error:", err);
+      return res.status(500).json({ error: "Login failed" });
+    }
+  });
+
+  // GET /api/users — return all users from `users` table
   app.get("/api/users", async (_req, res) => {
     if (!pool) return res.json(null);
     try {
-      const [rows] = await pool.execute(
-        "SELECT data FROM global_users LIMIT 1"
-      ) as [mysql.RowDataPacket[], mysql.FieldPacket[]];
-      if (rows.length === 0) return res.json(null);
-      res.json(JSON.parse(rows[0].data));
+      const [rows] = await pool.execute("SELECT * FROM users WHERE status = 'active' ORDER BY created_at ASC") as [mysql.RowDataPacket[], mysql.FieldPacket[]];
+      const users = rows.map(u => {
+        let extra: Record<string, unknown> = {};
+        try { if (u.extra_json) extra = JSON.parse(u.extra_json); } catch {}
+        return { id: u.id, name: u.name, email: u.email, role: u.role, companyId: u.company_id, branchId: u.branch_id, status: u.status, password: u.password, ...extra };
+      });
+      res.json(users.length > 0 ? users : null);
     } catch (err) {
       console.error("GET /api/users error:", err);
       res.status(500).json({ error: "DB read failed" });
     }
   });
 
-  app.put("/api/users", async (req, res) => {
+  // PUT /api/users — sync full users array into `users` table (upsert each)
+  app.put("/api/users", express.json(), async (req, res) => {
     if (!pool) return res.json({ ok: true, persisted: false });
     try {
+      const users = Array.isArray(req.body) ? req.body : [];
+      for (const u of users) {
+        if (!u.email) continue;
+        const extra = Object.fromEntries(
+          Object.entries(u).filter(([k]) => !["id","name","email","password","role","companyId","branchId","status"].includes(k))
+        );
+        await pool.execute(
+          `INSERT INTO users (id, email, password, name, role, company_id, branch_id, status, extra_json)
+           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+           ON DUPLICATE KEY UPDATE
+             password   = VALUES(password),
+             name       = VALUES(name),
+             role       = VALUES(role),
+             company_id = VALUES(company_id),
+             branch_id  = VALUES(branch_id),
+             status     = VALUES(status),
+             extra_json = VALUES(extra_json)`,
+          [
+            u.id || ("u-" + u.email.replace(/[^a-z0-9]/gi,"").slice(0,12)),
+            u.email.toLowerCase().trim(),
+            u.password || "",
+            u.name || u.email,
+            u.role || "Company Admin",
+            u.companyId || "comp-1",
+            u.branchId || "br-hq",
+            u.status || "active",
+            Object.keys(extra).length ? JSON.stringify(extra) : null,
+          ]
+        );
+      }
+      // Also keep the legacy JSON blob in sync
       const serialized = JSON.stringify(req.body);
       await pool.execute(
-        `INSERT INTO global_users (id, data) VALUES ('__global__', ?)
-         ON DUPLICATE KEY UPDATE data = VALUES(data), updated_at = NOW()`,
+        `INSERT INTO global_users (id, data) VALUES ('__global__', ?) ON DUPLICATE KEY UPDATE data = VALUES(data), updated_at = NOW()`,
         [serialized]
       );
       res.json({ ok: true });
@@ -329,50 +430,32 @@ async function startServer() {
     }
   });
 
-  // ── Emergency: ensure a user exists in global_users JSON ─────────────
+  // ── Ensure a user exists (upsert into users table) ───────────────────
   // POST /api/users/ensure  body: { email, password, name, role, companyId }
   app.post("/api/users/ensure", express.json(), async (req, res) => {
     if (!pool) return res.status(503).json({ error: "DB not available" });
     try {
       const { email, password, name, role, companyId, branchId } = req.body as {
-        email: string; password: string; name: string;
-        role: string; companyId: string; branchId?: string;
+        email: string; password: string; name?: string;
+        role?: string; companyId?: string; branchId?: string;
       };
       if (!email || !password) return res.status(400).json({ error: "email and password required" });
 
-      // Load current users JSON
-      const [rows] = await pool.execute("SELECT data FROM global_users LIMIT 1") as [mysql.RowDataPacket[], mysql.FieldPacket[]];
-      let users: Record<string, unknown>[] = [];
-      if (rows.length > 0) {
-        try { users = JSON.parse(rows[0].data); } catch {}
-      }
-
-      // Check if already exists
-      const exists = users.find((u: Record<string, unknown>) =>
-        typeof u.email === "string" && u.email.toLowerCase() === email.toLowerCase()
-      );
-      if (exists) {
-        // Update password if different
-        (exists as Record<string, unknown>).password = password;
-      } else {
-        users.push({
-          id: "u-" + email.replace(/[^a-z0-9]/gi, "").toLowerCase().slice(0, 12),
-          name: name || email.split("@")[0],
-          email,
-          password,
-          role: role || "Company Admin",
-          companyId: companyId || "comp-1",
-          branchId: branchId || "br-hq",
-          status: "active",
-        });
-      }
-
+      const id = "u-" + email.replace(/[^a-z0-9]/gi, "").toLowerCase().slice(0, 20);
       await pool.execute(
-        `INSERT INTO global_users (id, data) VALUES ('__global__', ?)
-         ON DUPLICATE KEY UPDATE data = VALUES(data), updated_at = NOW()`,
-        [JSON.stringify(users)]
+        `INSERT INTO users (id, email, password, name, role, company_id, branch_id, status)
+         VALUES (?, ?, ?, ?, ?, ?, ?, 'active')
+         ON DUPLICATE KEY UPDATE
+           password   = VALUES(password),
+           name       = VALUES(name),
+           role       = VALUES(role),
+           company_id = VALUES(company_id),
+           branch_id  = VALUES(branch_id),
+           status     = 'active'`,
+        [id, email.toLowerCase().trim(), password, name || email.split("@")[0],
+         role || "Company Admin", companyId || "comp-1", branchId || "br-hq"]
       );
-      res.json({ ok: true, action: exists ? "updated" : "created", total: users.length });
+      res.json({ ok: true, message: `Account ${email} saved to database` });
     } catch (err) {
       console.error("ensure-user error:", err);
       res.status(500).json({ error: "DB write failed" });

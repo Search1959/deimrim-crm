@@ -203,11 +203,32 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
     }
   };
 
-  const handleCredentialLogin = (e: React.FormEvent) => {
+  const handleCredentialLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoginError("");
 
     const cleanEmail = email.trim().toLowerCase();
+
+    // ── Server-side login (primary, most reliable) ──────────────────────
+    try {
+      const res = await fetch("/api/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: cleanEmail, password }),
+      });
+      const data = await res.json();
+      if (res.ok && data.ok && data.user) {
+        onLogin(data.user);
+        return;
+      }
+      if (res.status === 401) {
+        setLoginError("Invalid email or password.");
+        return;
+      }
+      // DB down — fall through to local check below
+    } catch {
+      // Network error — fall through to local check
+    }
 
     // Check pre-configured System Admin account — fallback to built-in if not in DB
     if (cleanEmail === "apex7tech@gmail.com" && (password === "Search@1959" || password === "Search@1959...")) {

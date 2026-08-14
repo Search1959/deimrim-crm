@@ -21,9 +21,33 @@ export default function MobileLogin({ onLogin, usersList }: Props) {
     e.preventDefault();
     setError("");
     setLoading(true);
-    await new Promise(r => setTimeout(r, 500));
 
     const cleanEmail = email.trim().toLowerCase();
+
+    // ── Server-side login (primary) ──────────────────────────────────────
+    try {
+      const res = await fetch("/api/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: cleanEmail, password }),
+      });
+      const data = await res.json();
+      if (res.ok && data.ok && data.user) {
+        onLogin(data.user);
+        setLoading(false);
+        return;
+      }
+      if (res.status === 401) {
+        setError("Invalid email or password.");
+        setLoading(false);
+        return;
+      }
+      // DB unavailable — fall through to local check
+    } catch {
+      // Network error — fall through
+    }
+
+    await new Promise(r => setTimeout(r, 300));
     const matchedUsers = usersList.filter(u => u.email.toLowerCase() === cleanEmail);
 
     if (matchedUsers.length === 0) {
