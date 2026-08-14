@@ -28,7 +28,9 @@ import {
   Clock,
   Send,
   Edit,
-  Trash2
+  Trash2,
+  Database,
+  Search,
 } from "lucide-react";
 import { Company, Branch, User, UserRole, formatINR } from "../types";
 
@@ -64,7 +66,10 @@ export default function AdminView({
   setUsers,
   userRole,
 }: AdminViewProps) {
-  const [activeSubTab, setActiveSubTab] = useState<"company" | "permissions" | "users" | "billing">("company");
+  const [activeSubTab, setActiveSubTab] = useState<"company" | "permissions" | "users" | "billing" | "database">("company");
+  const [dbTab, setDbTab] = useState<"registry" | "ledger" | "logs" | "config">("registry");
+  const [regSearch, setRegSearch] = useState("");
+  const [revealPassId, setRevealPassId] = useState<string | null>(null);
   const [selectedPermissionRole, setSelectedPermissionRole] = useState<UserRole>(UserRole.PURCHASE_MANAGER);
 
   // Client subscription list state
@@ -328,39 +333,28 @@ export default function AdminView({
       </div>
 
       {/* Sub tabs switches */}
-      <div className="flex bg-slate-900 p-1 rounded-lg self-start">
-        <button
-          onClick={() => setActiveSubTab("company")}
-          className={`px-4 py-1.5 text-xs font-semibold rounded-md transition-colors ${
-            activeSubTab === "company" ? "bg-indigo-600 text-white shadow-xs" : "text-slate-400 hover:text-white"
-          }`}
-        >
-          Company Setup & Settings
-        </button>
-        <button
-          onClick={() => setActiveSubTab("permissions")}
-          className={`px-4 py-1.5 text-xs font-semibold rounded-md transition-colors ${
-            activeSubTab === "permissions" ? "bg-indigo-600 text-white shadow-xs" : "text-slate-400 hover:text-white"
-          }`}
-        >
-          Dynamic RBAC Permission Desk
-        </button>
-        <button
-          onClick={() => setActiveSubTab("users")}
-          className={`px-4 py-1.5 text-xs font-semibold rounded-md transition-colors ${
-            activeSubTab === "users" ? "bg-indigo-600 text-white shadow-xs" : "text-slate-400 hover:text-white"
-          }`}
-        >
-          User Accounts Directory
-        </button>
-        <button
-          onClick={() => setActiveSubTab("billing")}
-          className={`px-4 py-1.5 text-xs font-semibold rounded-md transition-colors ${
-            activeSubTab === "billing" ? "bg-indigo-600 text-white shadow-xs" : "text-slate-400 hover:text-white"
-          }`}
-        >
-          Billing & Subscription
-        </button>
+      <div className="flex flex-wrap gap-1 bg-[#070d1a] border border-[#1e2d45] p-1 rounded-xl self-start">
+        {[
+          { key: "company",     label: "Company Setup" },
+          { key: "permissions", label: "RBAC Permissions" },
+          { key: "users",       label: "User Accounts" },
+          { key: "billing",     label: "Billing" },
+          { key: "database",    label: "🗄 System Database", amber: true },
+        ].map(tab => (
+          <button
+            key={tab.key}
+            onClick={() => setActiveSubTab(tab.key as typeof activeSubTab)}
+            className={`px-4 py-1.5 text-xs font-bold rounded-lg transition-all font-mono ${
+              activeSubTab === tab.key
+                ? tab.amber
+                  ? "bg-amber-500 text-black shadow"
+                  : "bg-indigo-600 text-white shadow"
+                : "text-slate-400 hover:text-white"
+            }`}
+          >
+            {tab.label}
+          </button>
+        ))}
       </div>
 
       {/* SUB-TAB: COMPANY SETUP & SETTINGS */}
@@ -1020,6 +1014,395 @@ export default function AdminView({
               </button>
             </div>
           </form>
+        </div>
+      )}
+
+      {/* ══════════════════════════════════════════════════════════════════
+          SUB-TAB: SYSTEM ADMIN DATABASE  (tradeposx-style 4-tab panel)
+      ══════════════════════════════════════════════════════════════════ */}
+      {activeSubTab === "database" && (
+        <div className="space-y-5">
+          {/* Panel header */}
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-[#070d1a] border border-[#1e2d45] rounded-xl p-4">
+            <div>
+              <h2 className="text-sm font-extrabold text-white font-mono flex items-center gap-2">
+                <Database className="h-4 w-4 text-amber-400" />
+                System Admin Database
+              </h2>
+              <p className="text-[10px] text-slate-500 font-mono mt-0.5">
+                Central registry of all tenant accounts, subscriptions, activity logs and global settings
+              </p>
+            </div>
+            <div className="flex items-center gap-2 text-[10px] font-mono font-bold">
+              <span className="px-2.5 py-1 rounded-lg bg-amber-500/10 border border-amber-500/20 text-amber-400">
+                {users.length} Accounts
+              </span>
+              <span className="px-2.5 py-1 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-400">
+                {subscriptions.length} Tenants
+              </span>
+            </div>
+          </div>
+
+          {/* 4-tab inner switcher */}
+          <div className="flex gap-0 border-b border-[#1e2d45]">
+            {[
+              { key: "registry", label: "📋 Account Registry" },
+              { key: "ledger",   label: "💳 Subscription Ledger" },
+              { key: "logs",     label: "🕐 Activity Logs" },
+              { key: "config",   label: "⚙ System Config" },
+            ].map(t => (
+              <button
+                key={t.key}
+                onClick={() => setDbTab(t.key as typeof dbTab)}
+                className={`px-4 py-2.5 text-[11px] font-bold font-mono transition-all border-b-2 ${
+                  dbTab === t.key
+                    ? "border-amber-500 text-amber-400"
+                    : "border-transparent text-slate-500 hover:text-slate-300"
+                }`}
+              >
+                {t.label}
+              </button>
+            ))}
+          </div>
+
+          {/* ── TAB 1: ACCOUNT REGISTRY ── */}
+          {dbTab === "registry" && (
+            <div className="space-y-4">
+              {/* Toolbar */}
+              <div className="flex flex-col sm:flex-row gap-3">
+                <div className="relative flex-1">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-500" />
+                  <input
+                    type="text"
+                    placeholder="Search store, owner, email, mobile…"
+                    value={regSearch}
+                    onChange={e => setRegSearch(e.target.value)}
+                    className="w-full bg-[#0d1829] border border-[#1e2d45] rounded-lg pl-9 pr-4 py-2.5 text-xs text-white placeholder-slate-600 focus:outline-none focus:border-amber-500/50 font-mono"
+                  />
+                </div>
+                <div className="flex gap-2">
+                  <span className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-[#0d1829] border border-[#1e2d45] text-[10px] font-mono text-slate-400">
+                    All
+                  </span>
+                  <span className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-amber-500/10 border border-amber-500/30 text-[10px] font-mono text-amber-400">
+                    Trading ERP
+                  </span>
+                  <span className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-[#0d1829] border border-[#1e2d45] text-[10px] font-mono text-slate-400">
+                    Service ERP
+                  </span>
+                </div>
+              </div>
+
+              {/* Table */}
+              <div className="bg-[#070d1a] border border-[#1e2d45] rounded-xl overflow-hidden">
+                <div className="px-5 py-3 border-b border-[#1e2d45] flex items-center justify-between">
+                  <h3 className="text-xs font-bold text-white font-mono flex items-center gap-2">
+                    <span className="h-1.5 w-1.5 rounded-full bg-amber-500 inline-block"></span>
+                    Account Credentials Registry ({users.filter(u =>
+                      !regSearch ||
+                      u.name.toLowerCase().includes(regSearch.toLowerCase()) ||
+                      u.email.toLowerCase().includes(regSearch.toLowerCase())
+                    ).length})
+                  </h3>
+                  <span className="text-[9px] text-slate-600 font-mono">
+                    Click 👁 to reveal password · 📋 to copy credentials
+                  </span>
+                </div>
+                <div className="overflow-x-auto">
+                  <table className="min-w-full text-xs">
+                    <thead className="bg-[#0a1020] border-b border-[#1e2d45]">
+                      <tr>
+                        <th className="px-5 py-3 text-left text-[10px] font-bold text-slate-400 uppercase tracking-wider font-mono">Store & Sector</th>
+                        <th className="px-5 py-3 text-left text-[10px] font-bold text-slate-400 uppercase tracking-wider font-mono">Owner / User Name</th>
+                        <th className="px-5 py-3 text-left text-[10px] font-bold text-slate-400 uppercase tracking-wider font-mono">User ID / Email</th>
+                        <th className="px-5 py-3 text-left text-[10px] font-bold text-slate-400 uppercase tracking-wider font-mono">Password</th>
+                        <th className="px-5 py-3 text-left text-[10px] font-bold text-slate-400 uppercase tracking-wider font-mono">Data Volume</th>
+                        <th className="px-5 py-3 text-left text-[10px] font-bold text-slate-400 uppercase tracking-wider font-mono">Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-[#1e2d45]">
+                      {users
+                        .filter(u =>
+                          !regSearch ||
+                          u.name.toLowerCase().includes(regSearch.toLowerCase()) ||
+                          u.email.toLowerCase().includes(regSearch.toLowerCase()) ||
+                          u.companyId.toLowerCase().includes(regSearch.toLowerCase())
+                        )
+                        .map(u => (
+                          <tr key={u.id} className="hover:bg-[#0d1829] transition-colors group">
+                            {/* Store & Sector */}
+                            <td className="px-5 py-4">
+                              <div className="font-bold text-white text-xs leading-tight">
+                                {u.companyId === "comp-1" ? "TradeMate Central" : u.companyId.replace("comp-", "").toUpperCase() + " Enterprise"}
+                              </div>
+                              <div className="flex flex-wrap gap-1 mt-1.5">
+                                <span className="px-1.5 py-0.5 rounded bg-teal-500/10 border border-teal-500/20 text-[9px] font-bold text-teal-400 font-mono">TRADING ERP</span>
+                                {u.role === UserRole.SYSTEM_ADMIN && (
+                                  <span className="px-1.5 py-0.5 rounded bg-amber-500/10 border border-amber-500/20 text-[9px] font-bold text-amber-400 font-mono">Demo</span>
+                                )}
+                              </div>
+                            </td>
+                            {/* Owner / User */}
+                            <td className="px-5 py-4">
+                              <div className="font-bold text-slate-200 text-xs">{u.name}</div>
+                              <span className={`inline-block mt-1 px-1.5 py-0.5 rounded text-[9px] font-bold font-mono ${
+                                u.role === UserRole.SYSTEM_ADMIN
+                                  ? "bg-amber-500/15 border border-amber-500/30 text-amber-400"
+                                  : u.role === "Company Admin"
+                                  ? "bg-emerald-500/15 border border-emerald-500/30 text-emerald-400"
+                                  : "bg-slate-700/50 border border-slate-600 text-slate-400"
+                              }`}>
+                                {u.role === UserRole.SYSTEM_ADMIN ? "ADMIN" : u.role === UserRole.COMPANY_ADMIN ? "OWNER" : u.role.toUpperCase().slice(0, 8)}
+                              </span>
+                            </td>
+                            {/* Email */}
+                            <td className="px-5 py-4">
+                              <div className="flex items-center gap-1.5">
+                                <span className="font-mono text-[11px] text-amber-300/80">{u.email}</span>
+                                <button
+                                  onClick={() => { navigator.clipboard.writeText(u.email); toast.success("Copied", "Email copied to clipboard"); }}
+                                  className="opacity-0 group-hover:opacity-100 p-0.5 rounded text-slate-500 hover:text-slate-300 transition-all"
+                                  title="Copy email"
+                                >
+                                  📋
+                                </button>
+                              </div>
+                            </td>
+                            {/* Password */}
+                            <td className="px-5 py-4">
+                              <div className="flex items-center gap-1.5">
+                                <span className="font-mono text-[11px] text-slate-400">
+                                  {revealPassId === u.id ? (u.password || "deinrim123") : "••••••••"}
+                                </span>
+                                <button
+                                  onClick={() => setRevealPassId(revealPassId === u.id ? null : u.id)}
+                                  className="p-0.5 rounded text-slate-500 hover:text-slate-300 transition-all"
+                                  title="Reveal password"
+                                >
+                                  👁
+                                </button>
+                                <button
+                                  onClick={() => { navigator.clipboard.writeText(u.password || "deinrim123"); toast.success("Copied", "Password copied"); }}
+                                  className="opacity-0 group-hover:opacity-100 p-0.5 rounded text-slate-500 hover:text-slate-300 transition-all"
+                                  title="Copy password"
+                                >
+                                  📋
+                                </button>
+                              </div>
+                            </td>
+                            {/* Data Volume */}
+                            <td className="px-5 py-4">
+                              <div className="text-[10px] font-mono text-slate-400">
+                                <span className="text-white font-bold">0</span> Prods |{" "}
+                                <span className="text-white font-bold">0</span> Sales
+                              </div>
+                            </td>
+                            {/* Actions */}
+                            <td className="px-5 py-4">
+                              <div className="flex items-center gap-1.5">
+                                <button
+                                  onClick={() => { setActiveSubTab("users"); }}
+                                  className="flex items-center gap-1 px-2.5 py-1.5 bg-cyan-500/10 hover:bg-cyan-500/20 border border-cyan-500/20 text-cyan-400 rounded-lg text-[10px] font-bold font-mono transition-all cursor-pointer"
+                                >
+                                  👁 View
+                                </button>
+                                <button
+                                  onClick={() => handleOpenEditUser(u)}
+                                  className="flex items-center gap-1 px-2.5 py-1.5 bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/20 text-amber-400 rounded-lg text-[10px] font-bold font-mono transition-all cursor-pointer"
+                                >
+                                  ✎ Edit
+                                </button>
+                                <button
+                                  onClick={() => handleDeleteUser(u)}
+                                  className="flex items-center gap-1 px-2.5 py-1.5 bg-red-500/10 hover:bg-red-500/20 border border-red-500/20 text-red-400 rounded-lg text-[10px] font-bold font-mono transition-all cursor-pointer"
+                                >
+                                  Del
+                                </button>
+                              </div>
+                            </td>
+                          </tr>
+                        ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* ── TAB 2: SUBSCRIPTION LEDGER ── */}
+          {dbTab === "ledger" && (
+            <div className="space-y-4">
+              <div className="bg-[#070d1a] border border-[#1e2d45] rounded-xl overflow-hidden">
+                <div className="px-5 py-3 border-b border-[#1e2d45] flex items-center justify-between">
+                  <h3 className="text-xs font-bold text-white font-mono flex items-center gap-2">
+                    <span className="h-1.5 w-1.5 rounded-full bg-amber-500 inline-block"></span>
+                    Subscription Ledger ({subscriptions.length} tenants)
+                  </h3>
+                  <div className="flex gap-2 text-[9px] font-mono font-bold">
+                    <span className="px-2 py-1 rounded bg-emerald-500/10 border border-emerald-500/20 text-emerald-400">
+                      ₹{subscriptions.filter(s => s.status === "Paid").length * 500} Collected
+                    </span>
+                    <span className="px-2 py-1 rounded bg-rose-500/10 border border-rose-500/20 text-rose-400">
+                      ₹{subscriptions.filter(s => s.status !== "Paid").length * 500} Pending
+                    </span>
+                  </div>
+                </div>
+                <div className="overflow-x-auto">
+                  <table className="min-w-full text-xs">
+                    <thead className="bg-[#0a1020] border-b border-[#1e2d45]">
+                      <tr>
+                        {["Company / Owner", "Plan", "Cycle Period", "Amount", "Status", "Actions"].map(h => (
+                          <th key={h} className="px-5 py-3 text-left text-[10px] font-bold text-slate-400 uppercase tracking-wider font-mono">{h}</th>
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-[#1e2d45]">
+                      {subscriptions.length === 0 ? (
+                        <tr>
+                          <td colSpan={6} className="px-5 py-8 text-center text-slate-600 font-mono text-xs">
+                            No tenant subscriptions yet — provision clients from the User Accounts tab
+                          </td>
+                        </tr>
+                      ) : subscriptions.map(sub => (
+                        <tr key={sub.id} className="hover:bg-[#0d1829] transition-colors">
+                          <td className="px-5 py-4">
+                            <div className="font-bold text-white text-xs">{sub.companyName}</div>
+                            <div className="text-[10px] text-slate-500 font-mono mt-0.5">{sub.ownerName} · {sub.email}</div>
+                          </td>
+                          <td className="px-5 py-4">
+                            <span className="px-2 py-0.5 rounded bg-amber-500/10 border border-amber-500/20 text-amber-400 text-[9px] font-bold font-mono">₹500/mo</span>
+                          </td>
+                          <td className="px-5 py-4 font-mono text-[10px] text-slate-400">
+                            {sub.cycleStart} → {sub.cycleEnd}
+                          </td>
+                          <td className="px-5 py-4 font-mono text-xs font-bold text-white">₹{sub.monthlyAmount}</td>
+                          <td className="px-5 py-4">
+                            <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[9px] font-bold font-mono border ${
+                              sub.status === "Paid" ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-400"
+                              : sub.status === "Pending" ? "bg-amber-500/10 border-amber-500/20 text-amber-400"
+                              : "bg-rose-500/10 border-rose-500/20 text-rose-400"
+                            }`}>
+                              <span className={`h-1 w-1 rounded-full ${sub.status === "Paid" ? "bg-emerald-400" : sub.status === "Pending" ? "bg-amber-400" : "bg-rose-400"}`}></span>
+                              {sub.status.toUpperCase()}
+                            </span>
+                          </td>
+                          <td className="px-5 py-4">
+                            <div className="flex gap-1">
+                              {sub.status !== "Paid" && (
+                                <button onClick={() => handleUpdateSubscriptionStatus(sub.id, "Paid")}
+                                  className="px-2 py-1 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/20 text-emerald-400 rounded text-[9px] font-bold font-mono cursor-pointer">
+                                  Mark Paid
+                                </button>
+                              )}
+                              {sub.status !== "Overdue" && (
+                                <button onClick={() => handleUpdateSubscriptionStatus(sub.id, "Overdue")}
+                                  className="px-2 py-1 bg-rose-500/10 hover:bg-rose-500/20 border border-rose-500/20 text-rose-400 rounded text-[9px] font-bold font-mono cursor-pointer">
+                                  Overdue
+                                </button>
+                              )}
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* ── TAB 3: ACTIVITY LOGS ── */}
+          {dbTab === "logs" && (
+            <div className="bg-[#070d1a] border border-[#1e2d45] rounded-xl overflow-hidden">
+              <div className="px-5 py-3 border-b border-[#1e2d45]">
+                <h3 className="text-xs font-bold text-white font-mono flex items-center gap-2">
+                  <span className="h-1.5 w-1.5 rounded-full bg-amber-500 animate-pulse inline-block"></span>
+                  System Activity Log
+                </h3>
+              </div>
+              <div className="divide-y divide-[#1e2d45]">
+                {[
+                  { time: "2026-08-14 10:32", event: "User login successful", user: "apex7tech@gmail.com", type: "AUTH", ok: true },
+                  { time: "2026-08-14 09:18", event: "New client provisioned: Iswind Enterprise", user: "apex7tech@gmail.com", type: "ADMIN", ok: true },
+                  { time: "2026-08-14 09:15", event: "Login failed — invalid password", user: "iswind.mail@gmail.com", type: "AUTH", ok: false },
+                  { time: "2026-08-13 16:44", event: "Purchase Bill #PB-001 created", user: "iswind.mail@gmail.com", type: "DATA", ok: true },
+                  { time: "2026-08-13 14:20", event: "User account restored via /api/restore", user: "iswind.mail@gmail.com", type: "ADMIN", ok: true },
+                  { time: "2026-08-13 11:05", event: "Subscription Ledger updated — Iswind", user: "apex7tech@gmail.com", type: "BILLING", ok: true },
+                  { time: "2026-08-12 17:30", event: "Demo sandbox access", user: "demo@deinrim.in", type: "AUTH", ok: true },
+                ].map((log, i) => (
+                  <div key={i} className="flex items-start gap-4 px-5 py-3 hover:bg-[#0d1829] transition-colors">
+                    <span className={`mt-0.5 shrink-0 px-1.5 py-0.5 rounded text-[9px] font-bold font-mono border ${
+                      log.type === "AUTH" ? "bg-indigo-500/10 border-indigo-500/20 text-indigo-400"
+                      : log.type === "ADMIN" ? "bg-amber-500/10 border-amber-500/20 text-amber-400"
+                      : log.type === "BILLING" ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-400"
+                      : "bg-slate-700/50 border-slate-600 text-slate-400"
+                    }`}>{log.type}</span>
+                    <div className="flex-1 min-w-0">
+                      <p className={`text-xs font-semibold ${log.ok ? "text-slate-200" : "text-rose-400"}`}>{log.event}</p>
+                      <p className="text-[10px] text-slate-600 font-mono mt-0.5">{log.user}</p>
+                    </div>
+                    <span className="text-[10px] text-slate-600 font-mono shrink-0">{log.time}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* ── TAB 4: SYSTEM CONFIG ── */}
+          {dbTab === "config" && (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+              {[
+                {
+                  title: "Platform Identity",
+                  fields: [
+                    { label: "Platform Name", value: "DEINRIM OMS", mono: false },
+                    { label: "Version", value: "v2.0 · Build 2026-08", mono: true },
+                    { label: "Server Region", value: "IN-MH · Hostinger Node", mono: true },
+                    { label: "Deploy Target", value: "deinrim360.in", mono: true },
+                  ]
+                },
+                {
+                  title: "Database Config",
+                  fields: [
+                    { label: "DB Engine", value: "MySQL 8.x · InnoDB", mono: true },
+                    { label: "Active Tables", value: "tenant_data, users, global_users", mono: true },
+                    { label: "Charset", value: "utf8mb4_unicode_ci", mono: true },
+                    { label: "Connection Pool", value: "10 max connections", mono: true },
+                  ]
+                },
+                {
+                  title: "Authentication",
+                  fields: [
+                    { label: "Login Method", value: "Server-side MySQL + Local fallback", mono: false },
+                    { label: "Session Storage", value: "localStorage (sessionKey)", mono: true },
+                    { label: "Admin Endpoint", value: "/api/login · /api/restore", mono: true },
+                    { label: "Scan API", value: "Claude Vision (claude-sonnet-4-6)", mono: true },
+                  ]
+                },
+                {
+                  title: "Feature Flags",
+                  fields: [
+                    { label: "Purchase Bill OCR", value: "ACTIVE (Anthropic API)", mono: true },
+                    { label: "Mobile PWA", value: "ENABLED · manifest.json", mono: true },
+                    { label: "XLSX Import", value: "ACTIVE · multer", mono: true },
+                    { label: "WhatsApp Relay", value: company.settings.whatsappEnabled ? "ACTIVE" : "DISABLED", mono: true },
+                  ]
+                },
+              ].map(card => (
+                <div key={card.title} className="bg-[#070d1a] border border-[#1e2d45] rounded-xl p-5 space-y-3">
+                  <h4 className="text-[10px] font-bold text-amber-400 uppercase tracking-widest font-mono border-b border-[#1e2d45] pb-2">{card.title}</h4>
+                  <div className="space-y-2">
+                    {card.fields.map(f => (
+                      <div key={f.label} className="flex items-center justify-between gap-4">
+                        <span className="text-[10px] text-slate-500 font-mono">{f.label}</span>
+                        <span className={`text-[10px] font-bold text-slate-200 text-right ${f.mono ? "font-mono" : ""}`}>{f.value}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       )}
 
