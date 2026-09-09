@@ -69,13 +69,13 @@ async function initDB() {
       VALUES
         ('u-apex',   'apex7tech@gmail.com',    'Search@1959', 'Apex Tech Admin', 'System Administrator',  'comp-1',      'br-hq'),
         ('u-demo',   'demo@deinrim.in',         'demo123....', 'Demo User',       'Read Only User',        'comp-1',      'br-hq'),
-        ('u-iswind', 'iswind.mail@gmail.com',   'isw@123',     'Iswind Client',   'Company Administrator', 'comp-iswind', 'br-iswind-hq')
+        ('u-iswind', 'iswind.mail@gmail.com',   'isw@123',     'Iswind Client',   'Company Admin', 'comp-iswind', 'br-iswind-hq')
     `);
     await conn.execute(`
       UPDATE users SET role = 'System Administrator'   WHERE role IN ('System Admin','system_admin','SystemAdmin')
     `);
     await conn.execute(`
-      UPDATE users SET role = 'Company Administrator'  WHERE role IN ('Company Admin','company_admin','CompanyAdmin')
+      UPDATE users SET role = 'Company Admin' WHERE role IN ('Company Administrator','company_admin','CompanyAdmin')
     `);
     await conn.execute(`
       UPDATE users SET role = 'Read Only User'         WHERE role IN ('Read Only','read_only','ReadOnly')
@@ -97,7 +97,7 @@ async function initDB() {
     `);
     try {
       await conn.execute(`
-        ALTER TABLE users MODIFY COLUMN role VARCHAR(100) NOT NULL DEFAULT 'Company Administrator'
+        ALTER TABLE users MODIFY COLUMN role VARCHAR(100) NOT NULL DEFAULT 'Company Admin'
       `);
     } catch (alterErr) {
       console.warn("\u26A0\uFE0F  ALTER TABLE users (role default) skipped:", alterErr.message);
@@ -306,7 +306,7 @@ async function startServer() {
     const normaliseRole2 = (raw) => {
       const r = (raw || "").trim();
       if (r === "System Admin" || r === "system_admin") return "System Administrator";
-      if (r === "Company Admin" || r === "company_admin") return "Company Administrator";
+      if (r === "Company Administrator" || r === "company_admin" || r === "CompanyAdmin") return "Company Admin";
       if (r === "Read Only" || r === "read_only" || r === "ReadOnly") return "Read Only User";
       if (r === "Sales Manager" || r === "sales_manager") return "Sales Manager";
       if (r === "CRM Executive" || r === "crm_executive") return "CRM Executive";
@@ -370,7 +370,7 @@ async function startServer() {
       const name = companyName.trim().split(" ").slice(0, 2).join(" ") + " Admin";
       await pool.execute(
         `INSERT INTO users (id, name, email, password, role, company_id, branch_id, status, created_at)
-         VALUES (?, ?, ?, ?, 'Company Administrator', ?, ?, 'active', NOW())`,
+         VALUES (?, ?, ?, ?, 'Company Admin', ?, ?, 'active', NOW())`,
         [userId, name, email.trim().toLowerCase(), password, companyId, branchId]
       );
       return res.json({
@@ -379,7 +379,7 @@ async function startServer() {
           id: userId,
           name,
           email: email.trim().toLowerCase(),
-          role: "Company Administrator",
+          role: "Company Admin",
           companyId,
           branchId,
           departmentId: null,
@@ -435,7 +435,7 @@ async function startServer() {
             u.email.toLowerCase().trim(),
             u.password || "",
             u.name || u.email,
-            normaliseRole(u.role || "Company Administrator"),
+            normaliseRole(u.role || "Company Admin"),
             u.companyId || "comp-1",
             u.branchId || "br-hq",
             u.status || "active",

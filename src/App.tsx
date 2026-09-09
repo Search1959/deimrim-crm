@@ -181,7 +181,7 @@ export default function App() {
     const r = (role as string).trim();
     // Accept canonical enum values AND all legacy strings (belt-and-suspenders)
     const isAdmin = r === UserRole.SYSTEM_ADMIN || r === "System Admin" || r === "system_admin";
-    const isCompanyAdmin = r === UserRole.COMPANY_ADMIN || r === "Company Admin" || r === "company_admin";
+    const isCompanyAdmin = r === UserRole.COMPANY_ADMIN || r === "Company Administrator" || r === "company_admin" || r === "CompanyAdmin";
     const isReadOnly = r === UserRole.READ_ONLY || r === "Read Only" || r === "read_only" || r === "ReadOnly";
     if (isAdmin || isCompanyAdmin) return true;
     if (isReadOnly) return view !== "admin";
@@ -1227,7 +1227,7 @@ export default function App() {
   const normaliseRole = (raw: string): UserRole => {
     const r = (raw || "").trim();
     if (r === "System Admin"    || r === "system_admin")    return UserRole.SYSTEM_ADMIN;
-    if (r === "Company Admin"   || r === "company_admin")   return UserRole.COMPANY_ADMIN;
+    if (r === "Company Admin"   || r === "company_admin" || r === "Company Administrator" || r === "CompanyAdmin") return UserRole.COMPANY_ADMIN;
     if (r === "Read Only"       || r === "read_only" || r === "ReadOnly") return UserRole.READ_ONLY;
     if (r === "Sales Manager"   || r === "sales_manager")   return UserRole.SALES_MANAGER;
     if (r === "CRM Executive"   || r === "crm_executive")   return UserRole.CRM_EXECUTIVE;
