@@ -86,14 +86,39 @@ async function initDB() {
     await conn.execute(`
       INSERT IGNORE INTO users (id, email, password, name, role, company_id, branch_id)
       VALUES
-        ('u-apex',   'apex7tech@gmail.com',    'Search@1959', 'Apex Tech Admin', 'System Administrator', 'comp-1',      'br-hq'),
-        ('u-demo',   'demo@deinrim.in',         'demo123....', 'Demo User',       'Read Only',            'comp-1',      'br-hq'),
-        ('u-iswind', 'iswind.mail@gmail.com',   'isw@123',     'Iswind Client',   'Company Admin',        'comp-iswind', 'br-iswind-hq')
+        ('u-apex',   'apex7tech@gmail.com',    'Search@1959', 'Apex Tech Admin', 'System Administrator',  'comp-1',      'br-hq'),
+        ('u-demo',   'demo@deinrim.in',         'demo123....', 'Demo User',       'Read Only User',        'comp-1',      'br-hq'),
+        ('u-iswind', 'iswind.mail@gmail.com',   'isw@123',     'Iswind Client',   'Company Administrator', 'comp-iswind', 'br-iswind-hq')
     `);
 
-    // Fix role string mismatch
+    // Fix ALL legacy/incorrect role strings → canonical enum values (idempotent)
     await conn.execute(`
-      UPDATE users SET role = 'System Administrator' WHERE email = 'apex7tech@gmail.com' AND role = 'System Admin'
+      UPDATE users SET role = 'System Administrator'   WHERE role IN ('System Admin','system_admin','SystemAdmin')
+    `);
+    await conn.execute(`
+      UPDATE users SET role = 'Company Administrator'  WHERE role IN ('Company Admin','company_admin','CompanyAdmin')
+    `);
+    await conn.execute(`
+      UPDATE users SET role = 'Read Only User'         WHERE role IN ('Read Only','read_only','ReadOnly')
+    `);
+    await conn.execute(`
+      UPDATE users SET role = 'Sales Manager'          WHERE role IN ('sales_manager','SalesManager')
+    `);
+    await conn.execute(`
+      UPDATE users SET role = 'HR Manager'             WHERE role IN ('hr_manager','HRManager')
+    `);
+    await conn.execute(`
+      UPDATE users SET role = 'Finance Manager'        WHERE role IN ('finance_manager','FinanceManager')
+    `);
+    await conn.execute(`
+      UPDATE users SET role = 'Inventory Manager'      WHERE role IN ('inventory_manager','InventoryManager')
+    `);
+    await conn.execute(`
+      UPDATE users SET role = 'Purchase Manager'       WHERE role IN ('purchase_manager','PurchaseManager')
+    `);
+    // Fix MySQL column DEFAULT so any raw INSERT also gets the right value
+    await conn.execute(`
+      ALTER TABLE users MODIFY COLUMN role VARCHAR(100) NOT NULL DEFAULT 'Company Administrator'
     `);
 
     // Move iswind off comp-1 (shared/demo) onto their own isolated company
@@ -474,7 +499,7 @@ async function startServer() {
             u.email.toLowerCase().trim(),
             u.password || "",
             u.name || u.email,
-            u.role || "Company Admin",
+            normaliseRole(u.role || "Company Administrator"),
             u.companyId || "comp-1",
             u.branchId || "br-hq",
             u.status || "active",
