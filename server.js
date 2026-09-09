@@ -94,9 +94,13 @@ async function initDB() {
     await conn.execute(`
       UPDATE users SET role = 'Purchase Manager'       WHERE role IN ('purchase_manager','PurchaseManager')
     `);
-    await conn.execute(`
-      ALTER TABLE users MODIFY COLUMN role VARCHAR(100) NOT NULL DEFAULT 'Company Administrator'
-    `);
+    try {
+      await conn.execute(`
+        ALTER TABLE users MODIFY COLUMN role VARCHAR(100) NOT NULL DEFAULT 'Company Administrator'
+      `);
+    } catch (alterErr) {
+      console.warn("\u26A0\uFE0F  ALTER TABLE users (role default) skipped:", alterErr.message);
+    }
     await conn.execute(`
       UPDATE users
       SET company_id = 'comp-iswind', branch_id = 'br-iswind-hq'

@@ -117,9 +117,14 @@ async function initDB() {
       UPDATE users SET role = 'Purchase Manager'       WHERE role IN ('purchase_manager','PurchaseManager')
     `);
     // Fix MySQL column DEFAULT so any raw INSERT also gets the right value
-    await conn.execute(`
-      ALTER TABLE users MODIFY COLUMN role VARCHAR(100) NOT NULL DEFAULT 'Company Administrator'
-    `);
+    // Wrapped in try/catch — ALTER TABLE may fail on some MySQL configs but is non-critical
+    try {
+      await conn.execute(`
+        ALTER TABLE users MODIFY COLUMN role VARCHAR(100) NOT NULL DEFAULT 'Company Administrator'
+      `);
+    } catch (alterErr: unknown) {
+      console.warn("⚠️  ALTER TABLE users (role default) skipped:", (alterErr as Error).message);
+    }
 
     // Move iswind off comp-1 (shared/demo) onto their own isolated company
     await conn.execute(`

@@ -178,12 +178,13 @@ export default function App() {
 
   // Helper to check if a specific view is allowed for the user's role
   const isViewAllowed = (role: UserRole, view: string): boolean => {
-    if (role === UserRole.SYSTEM_ADMIN || role === UserRole.COMPANY_ADMIN) {
-      return true;
-    }
-    if (role === UserRole.READ_ONLY) {
-      return view !== "admin";
-    }
+    const r = (role as string).trim();
+    // Accept canonical enum values AND all legacy strings (belt-and-suspenders)
+    const isAdmin = r === UserRole.SYSTEM_ADMIN || r === "System Admin" || r === "system_admin";
+    const isCompanyAdmin = r === UserRole.COMPANY_ADMIN || r === "Company Admin" || r === "company_admin";
+    const isReadOnly = r === UserRole.READ_ONLY || r === "Read Only" || r === "read_only" || r === "ReadOnly";
+    if (isAdmin || isCompanyAdmin) return true;
+    if (isReadOnly) return view !== "admin";
 
     if (view === "dashboard" && role === UserRole.EMPLOYEE) {
       return true;
