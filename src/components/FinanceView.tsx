@@ -376,7 +376,9 @@ export default function FinanceView({
   vendorBills = [],
   salesPayments = [],
 }: FinanceViewProps) {
-  const [activeSubTab, setActiveSubTab] = useState<"ledger" | "pl" | "assets" | "tally">("ledger");
+  const [activeSubTab, setActiveSubTab] = useState<"ledger" | "pl" | "assets" | "tally" | "clientledger">("ledger");
+  const [clientLedgerSearch, setClientLedgerSearch] = useState("");
+  const [expandedClient, setExpandedClient] = useState<string | null>(null);
   const [showAddTx, setShowAddTx] = useState(false);
   const [showAddAsset, setShowAddAsset] = useState(false);
 
@@ -797,6 +799,14 @@ Office Ergonomic Chairs,AST-CH-99,Furniture,1200,1050,12`;
           }`}
         >
           <Download className="w-3 h-3" /> Tally Export
+        </button>
+        <button
+          onClick={() => setActiveSubTab("clientledger")}
+          className={`px-4 py-1.5 text-xs font-semibold rounded-md transition-colors flex items-center gap-1.5 ${
+            activeSubTab === "clientledger" ? "bg-sky-600 text-white shadow-xs" : "text-sky-400 hover:text-sky-300"
+          }`}
+        >
+          📒 Client Ledger
         </button>
       </div>
 
@@ -1573,6 +1583,216 @@ Office Ergonomic Chairs,AST-CH-99,Furniture,1200,1050,12`;
           </div>
         </div>
       )}
+
+      {/* SUB-TAB: CLIENT LEDGER */}
+      {activeSubTab === "clientledger" && (() => {
+        const allCustomers = (customers ?? []);
+        const allInvoices = (invoices ?? []);
+
+        // Build per-client ledger data
+        const clientData = allCustomers
+          .filter(c => {
+            const q = clientLedgerSearch.toLowerCase();
+            return !q || c.name.toLowerCase().includes(q) || c.phone?.includes(q) || c.email?.toLowerCase().includes(q);
+          })
+          .map(c => {
+            const cInvoices = allInvoices.filter(inv => inv.customerId === c.id);
+            const totalBilled = cInvoices.reduce((s, inv) => s + (inv.totalAmount ?? 0), 0);
+            const totalPaid = cInvoices
+              .filter(inv => inv.status === "paid")
+              .reduce((s, inv) => s + (inv.totalAmount ?? 0), 0);
+            const outstanding = totalBilled - totalPaid;
+
+            const today = new Date();
+            const aging = { current: 0, d30: 0, d60: 0, d90: 0 };
+            cInvoices
+              .filter(inv => inv.status === "unpaid" || inv.status === "partially_paid" || inv.status === "overdue")
+              .forEach(inv => {
+                const due = new Date(inv.dueDate);
+                const days = Math.floor((today.getTime() - due.getTime()) / 86400000);
+                const amt = inv.totalAmount ?? 0;
+                if (days <= 0) aging.current += amt;
+                else if (days <= 30) aging.d30 += amt;
+                else if (days <= 60) aging.d60 += amt;
+                else aging.d90 += amt;
+              });
+
+            return { customer: c, cInvoices, totalBilled, totalPaid, outstanding, aging };
+          })
+          .sort((a, b) => b.outstanding - a.outstanding);
+
+        const totalOutstanding = clientData.reduce((s, d) => s + d.outstanding, 0);
+        const overdueClients = clientData.filter(d => d.aging.d30 + d.aging.d60 + d.aging.d90 > 0).length;
+
+        const sendWhatsApp = (phone: string, name: string, outstanding: number, invoiceList: Invoice[]) => {
+          const unpaidInvs = invoiceList.filter(inv => inv.status !== "paid" && inv.status !== "void");
+          const invNums = unpaidInvs.map(i => i.invoiceNumber).join(", ");
+          const msg = encodeURIComponent(
+            `Dear ${name},\n\nThis is a gentle reminder from DEINRIM SOLUTIONSS regarding your outstanding balance of ₹${outstanding.toLocaleString("en-IN", { minimumFractionDigits: 2 })}.\n\nUnpaid Invoice(s): ${invNums || "—"}\n\nKindly arrange payment at the earliest. For any queries, please contact us.\n\nThank you.`
+          );
+          const cleanPhone = phone.replace(/\D/g, "");
+          const waPhone = cleanPhone.startsWith("91") ? cleanPhone : `91${cleanPhone}`;
+          window.open(`https://wa.me/${waPhone}?text=${msg}`, "_blank");
+        };
+
+        return (
+          <div className="space-y-4">
+            {/* Summary row */}
+            <div className="grid grid-cols-3 gap-3">
+              {[
+                { label: "Total Clients", value: clientData.length, color: "text-slate-200" },
+                { label: "Total Outstanding", value: formatINR(totalOutstanding), color: "text-amber-400" },
+                { label: "Overdue Clients", value: overdueClients, color: overdueClients > 0 ? "text-red-400" : "text-emerald-400" },
+              ].map(s => (
+                <div key={s.label} className="bg-slate-950/60 border border-slate-800 rounded-xl p-4">
+                  <div className="text-[10px] font-bold text-slate-500 uppercase tracking-widest font-mono">{s.label}</div>
+                  <div className={`text-xl font-bold font-mono mt-1 ${s.color}`}>{s.value}</div>
+                </div>
+              ))}
+            </div>
+
+            {/* Search */}
+            <div className="flex items-center gap-2 bg-slate-950/40 border border-slate-800 rounded-xl p-3">
+              <span className="text-slate-500 text-sm">🔍</span>
+              <input
+                type="text"
+                placeholder="Search client by name, phone, email…"
+                value={clientLedgerSearch}
+                onChange={e => setClientLedgerSearch(e.target.value)}
+                className="flex-1 bg-transparent text-sm text-white placeholder:text-slate-600 focus:outline-none"
+              />
+            </div>
+
+            {/* Client cards */}
+            <div className="space-y-3">
+              {clientData.length === 0 && (
+                <div className="text-center py-12 text-slate-500 text-sm">No clients found.</div>
+              )}
+              {clientData.map(({ customer: c, cInvoices, totalBilled, totalPaid, outstanding, aging }) => {
+                const isExpanded = expandedClient === c.id;
+                const hasOverdue = aging.d30 + aging.d60 + aging.d90 > 0;
+
+                return (
+                  <div key={c.id} className={`border rounded-xl overflow-hidden transition-all ${hasOverdue ? "border-red-500/30" : outstanding > 0 ? "border-amber-500/20" : "border-slate-800"} bg-slate-950/50`}>
+                    {/* Client header row */}
+                    <div className="flex items-center gap-3 p-4 cursor-pointer" onClick={() => setExpandedClient(isExpanded ? null : c.id)}>
+                      {/* Avatar */}
+                      <div className={`h-10 w-10 rounded-full flex items-center justify-center text-sm font-bold shrink-0 ${hasOverdue ? "bg-red-500/20 text-red-400" : outstanding > 0 ? "bg-amber-500/20 text-amber-400" : "bg-emerald-500/20 text-emerald-400"}`}>
+                        {c.name.slice(0, 2).toUpperCase()}
+                      </div>
+                      {/* Name + phone */}
+                      <div className="flex-1 min-w-0">
+                        <div className="font-semibold text-white text-sm truncate">{c.name}</div>
+                        <div className="text-[11px] text-slate-500 font-mono">{c.phone || "—"} · {c.email || "—"}</div>
+                      </div>
+                      {/* Financials */}
+                      <div className="hidden sm:flex flex-col items-end gap-0.5 shrink-0">
+                        <span className="text-[10px] text-slate-500 font-mono">Outstanding</span>
+                        <span className={`text-base font-bold font-mono ${outstanding > 0 ? "text-amber-400" : "text-emerald-400"}`}>
+                          {formatINR(outstanding)}
+                        </span>
+                      </div>
+                      {/* Aging badges */}
+                      <div className="hidden md:flex gap-1 shrink-0">
+                        {aging.d30 > 0 && <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-yellow-500/15 text-yellow-400 border border-yellow-500/20">31-60d</span>}
+                        {aging.d60 > 0 && <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-orange-500/15 text-orange-400 border border-orange-500/20">61-90d</span>}
+                        {aging.d90 > 0 && <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-red-500/15 text-red-400 border border-red-500/20">90d+</span>}
+                        {outstanding === 0 && <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-500/15 text-emerald-400 border border-emerald-500/20">Clear</span>}
+                      </div>
+                      {/* WhatsApp button */}
+                      {outstanding > 0 && c.phone && (
+                        <button
+                          onClick={e => { e.stopPropagation(); sendWhatsApp(c.phone, c.name, outstanding, cInvoices); }}
+                          className="shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-green-600 hover:bg-green-500 text-white text-xs font-bold transition-colors"
+                          title="Send WhatsApp reminder"
+                        >
+                          <span>💬</span> Remind
+                        </button>
+                      )}
+                      <span className="text-slate-600 text-xs shrink-0">{isExpanded ? "▲" : "▼"}</span>
+                    </div>
+
+                    {/* Expanded: invoice table */}
+                    {isExpanded && (
+                      <div className="border-t border-slate-800 bg-slate-900/40 p-4 space-y-3">
+                        {/* Totals bar */}
+                        <div className="grid grid-cols-3 gap-3 text-center">
+                          {[
+                            { label: "Total Billed", val: formatINR(totalBilled), color: "text-slate-200" },
+                            { label: "Total Paid", val: formatINR(totalPaid), color: "text-emerald-400" },
+                            { label: "Balance Due", val: formatINR(outstanding), color: outstanding > 0 ? "text-amber-400" : "text-emerald-400" },
+                          ].map(s => (
+                            <div key={s.label} className="bg-slate-800/40 rounded-lg p-2">
+                              <div className="text-[9px] text-slate-500 uppercase font-mono">{s.label}</div>
+                              <div className={`text-sm font-bold font-mono ${s.color}`}>{s.val}</div>
+                            </div>
+                          ))}
+                        </div>
+
+                        {/* Invoice rows */}
+                        {cInvoices.length === 0 ? (
+                          <div className="text-center text-slate-600 text-xs py-4">No invoices for this client.</div>
+                        ) : (
+                          <div className="overflow-x-auto">
+                            <table className="w-full text-xs">
+                              <thead>
+                                <tr className="text-slate-500 font-mono uppercase text-[10px] border-b border-slate-800">
+                                  <th className="text-left py-2 pr-3">Invoice #</th>
+                                  <th className="text-left py-2 pr-3">Date</th>
+                                  <th className="text-left py-2 pr-3">Due Date</th>
+                                  <th className="text-right py-2 pr-3">Amount</th>
+                                  <th className="text-center py-2">Status</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                {cInvoices.map(inv => {
+                                  const daysOverdue = Math.floor((new Date().getTime() - new Date(inv.dueDate).getTime()) / 86400000);
+                                  const isLate = (inv.status === "unpaid" || inv.status === "overdue") && daysOverdue > 0;
+                                  return (
+                                    <tr key={inv.id} className="border-b border-slate-800/50 hover:bg-slate-800/30">
+                                      <td className="py-2 pr-3 font-mono text-indigo-400 font-semibold">{inv.invoiceNumber}</td>
+                                      <td className="py-2 pr-3 text-slate-400">{inv.createdAt?.slice(0, 10)}</td>
+                                      <td className={`py-2 pr-3 font-mono ${isLate ? "text-red-400" : "text-slate-400"}`}>
+                                        {inv.dueDate} {isLate && <span className="text-[9px] text-red-400">({daysOverdue}d late)</span>}
+                                      </td>
+                                      <td className="py-2 pr-3 text-right font-mono text-slate-200">{formatINR(inv.totalAmount)}</td>
+                                      <td className="py-2 text-center">
+                                        <span className={`px-2 py-0.5 rounded text-[9px] font-bold uppercase ${
+                                          inv.status === "paid" ? "bg-emerald-500/15 text-emerald-400" :
+                                          inv.status === "overdue" ? "bg-red-500/15 text-red-400" :
+                                          inv.status === "partially_paid" ? "bg-yellow-500/15 text-yellow-400" :
+                                          "bg-slate-700 text-slate-400"
+                                        }`}>{inv.status.replace("_", " ")}</span>
+                                      </td>
+                                    </tr>
+                                  );
+                                })}
+                              </tbody>
+                            </table>
+                          </div>
+                        )}
+
+                        {/* Send reminder button (in expanded section too) */}
+                        {outstanding > 0 && c.phone && (
+                          <button
+                            onClick={() => sendWhatsApp(c.phone, c.name, outstanding, cInvoices)}
+                            className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl bg-green-600 hover:bg-green-500 text-white text-sm font-bold transition-colors"
+                          >
+                            💬 Send WhatsApp Payment Reminder to {c.name}
+                          </button>
+                        )}
+                        {outstanding > 0 && !c.phone && (
+                          <p className="text-center text-[11px] text-slate-500">⚠️ No phone number — add it in CRM to enable WhatsApp reminder</p>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        );
+      })()}
 
       {/* IMPORT TX MODAL */}
       {showImportTxModal && (
