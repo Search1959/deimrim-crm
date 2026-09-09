@@ -1,13 +1,7 @@
-var __require = /* @__PURE__ */ ((x) => typeof require !== "undefined" ? require : typeof Proxy !== "undefined" ? new Proxy(x, {
-  get: (a, b) => (typeof require !== "undefined" ? require : a)[b]
-}) : x)(function(x) {
-  if (typeof require !== "undefined") return require.apply(this, arguments);
-  throw Error('Dynamic require of "' + x + '" is not supported');
-});
-
 // server.ts
 import express from "express";
 import path from "path";
+import fs from "fs";
 import { createServer as createViteServer } from "vite";
 import mysql from "mysql2/promise";
 import * as dotenv from "dotenv";
@@ -736,7 +730,7 @@ Rules: invoiceDate must be YYYY-MM-DD format or empty string. qty and rate are n
     res.sendFile(path.join(process.cwd(), "public", "help.html"));
   });
   const distPath = path.join(process.cwd(), "dist");
-  const distExists = __require("fs").existsSync(path.join(distPath, "index.html"));
+  const distExists = fs.existsSync(path.join(distPath, "index.html"));
   if (!distExists && process.env.NODE_ENV !== "production") {
     try {
       const vite = await createViteServer({

@@ -1,5 +1,6 @@
 import express from "express";
 import path from "path";
+import fs from "fs";
 import { createServer as createViteServer } from "vite";
 import mysql from "mysql2/promise";
 import * as dotenv from "dotenv";
@@ -862,7 +863,7 @@ Rules: invoiceDate must be YYYY-MM-DD format or empty string. qty and rate are n
   // Only use Vite dev server in explicit local dev when dist/ is absent.
 
   const distPath = path.join(process.cwd(), "dist");
-  const distExists = require("fs").existsSync(path.join(distPath, "index.html"));
+  const distExists = fs.existsSync(path.join(distPath, "index.html"));
 
   if (!distExists && process.env.NODE_ENV !== "production") {
     try {
