@@ -858,19 +858,29 @@ Rules: invoiceDate must be YYYY-MM-DD format or empty string. qty and rate are n
   });
 
   // ── Vite dev middleware / static prod files ────────────────────────────
+  // Always prefer dist/ if it exists (Hostinger prod deploy).
+  // Only use Vite dev server in explicit local dev when dist/ is absent.
 
-  if (process.env.NODE_ENV !== "production") {
-    const vite = await createViteServer({
-      server: { middlewareMode: true },
-      appType: "spa",
-    });
-    app.use(vite.middlewares);
+  const distPath = path.join(process.cwd(), "dist");
+  const distExists = require("fs").existsSync(path.join(distPath, "index.html"));
+
+  if (!distExists && process.env.NODE_ENV !== "production") {
+    try {
+      const vite = await createViteServer({
+        server: { middlewareMode: true },
+        appType: "spa",
+      });
+      app.use(vite.middlewares);
+      console.log("🔧 Vite dev middleware active");
+    } catch (viteErr: unknown) {
+      console.warn("⚠️  Vite not available, falling back to dist/:", (viteErr as Error).message);
+      app.use(express.static(distPath));
+      app.get("*", (_req, res) => res.sendFile(path.join(distPath, "index.html")));
+    }
   } else {
-    const distPath = path.join(process.cwd(), "dist");
     app.use(express.static(distPath));
-    app.get("*", (_req, res) => {
-      res.sendFile(path.join(distPath, "index.html"));
-    });
+    app.get("*", (_req, res) => res.sendFile(path.join(distPath, "index.html")));
+    console.log("📦 Serving compiled dist/ folder");
   }
 
   // ── Boot ───────────────────────────────────────────────────────────────

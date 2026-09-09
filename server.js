@@ -1,3 +1,10 @@
+var __require = /* @__PURE__ */ ((x) => typeof require !== "undefined" ? require : typeof Proxy !== "undefined" ? new Proxy(x, {
+  get: (a, b) => (typeof require !== "undefined" ? require : a)[b]
+}) : x)(function(x) {
+  if (typeof require !== "undefined") return require.apply(this, arguments);
+  throw Error('Dynamic require of "' + x + '" is not supported');
+});
+
 // server.ts
 import express from "express";
 import path from "path";
@@ -728,18 +735,25 @@ Rules: invoiceDate must be YYYY-MM-DD format or empty string. qty and rate are n
   app.get("/help", (_req, res) => {
     res.sendFile(path.join(process.cwd(), "public", "help.html"));
   });
-  if (process.env.NODE_ENV !== "production") {
-    const vite = await createViteServer({
-      server: { middlewareMode: true },
-      appType: "spa"
-    });
-    app.use(vite.middlewares);
+  const distPath = path.join(process.cwd(), "dist");
+  const distExists = __require("fs").existsSync(path.join(distPath, "index.html"));
+  if (!distExists && process.env.NODE_ENV !== "production") {
+    try {
+      const vite = await createViteServer({
+        server: { middlewareMode: true },
+        appType: "spa"
+      });
+      app.use(vite.middlewares);
+      console.log("\u{1F527} Vite dev middleware active");
+    } catch (viteErr) {
+      console.warn("\u26A0\uFE0F  Vite not available, falling back to dist/:", viteErr.message);
+      app.use(express.static(distPath));
+      app.get("*", (_req, res) => res.sendFile(path.join(distPath, "index.html")));
+    }
   } else {
-    const distPath = path.join(process.cwd(), "dist");
     app.use(express.static(distPath));
-    app.get("*", (_req, res) => {
-      res.sendFile(path.join(distPath, "index.html"));
-    });
+    app.get("*", (_req, res) => res.sendFile(path.join(distPath, "index.html")));
+    console.log("\u{1F4E6} Serving compiled dist/ folder");
   }
   await initDB();
   app.listen(PORT, "0.0.0.0", () => {
