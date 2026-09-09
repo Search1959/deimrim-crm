@@ -1589,6 +1589,8 @@ Office Ergonomic Chairs,AST-CH-99,Furniture,1200,1050,12`;
         const allCustomers = (customers ?? []);
         const allInvoices = (invoices ?? []);
 
+        const allPayments = (salesPayments ?? []);
+
         // Build per-client ledger data
         const clientData = allCustomers
           .filter(c => {
@@ -1597,25 +1599,29 @@ Office Ergonomic Chairs,AST-CH-99,Furniture,1200,1050,12`;
           })
           .map(c => {
             const cInvoices = allInvoices.filter(inv => inv.customerId === c.id);
+            const cInvIds = new Set(cInvoices.map(inv => inv.id));
             const totalBilled = cInvoices.reduce((s, inv) => s + (inv.totalAmount ?? 0), 0);
-            const totalPaid = cInvoices
-              .filter(inv => inv.status === "paid")
-              .reduce((s, inv) => s + (inv.totalAmount ?? 0), 0);
-            const outstanding = totalBilled - totalPaid;
+            // Sum actual payment records (not invoice status) so partial payments show correctly
+            const totalPaid = allPayments
+              .filter(p => cInvIds.has(p.invoiceId))
+              .reduce((s, p) => s + (p.amount ?? 0), 0);
+            const outstanding = Math.max(0, totalBilled - totalPaid);
 
             const today = new Date();
             const aging = { current: 0, d30: 0, d60: 0, d90: 0 };
-            cInvoices
-              .filter(inv => inv.status === "unpaid" || inv.status === "partially_paid" || inv.status === "overdue")
-              .forEach(inv => {
-                const due = new Date(inv.dueDate);
-                const days = Math.floor((today.getTime() - due.getTime()) / 86400000);
-                const amt = inv.totalAmount ?? 0;
-                if (days <= 0) aging.current += amt;
-                else if (days <= 30) aging.d30 += amt;
-                else if (days <= 60) aging.d60 += amt;
-                else aging.d90 += amt;
-              });
+            cInvoices.forEach(inv => {
+              const paidForInv = allPayments
+                .filter(p => p.invoiceId === inv.id)
+                .reduce((s, p) => s + (p.amount ?? 0), 0);
+              const balanceForInv = Math.max(0, (inv.totalAmount ?? 0) - paidForInv);
+              if (balanceForInv <= 0) return; // fully paid
+              const due = new Date(inv.dueDate);
+              const days = Math.floor((today.getTime() - due.getTime()) / 86400000);
+              if (days <= 0) aging.current += balanceForInv;
+              else if (days <= 30) aging.d30 += balanceForInv;
+              else if (days <= 60) aging.d60 += balanceForInv;
+              else aging.d90 += balanceForInv;
+            });
 
             return { customer: c, cInvoices, totalBilled, totalPaid, outstanding, aging };
           })
@@ -1738,31 +1744,37 @@ Office Ergonomic Chairs,AST-CH-99,Furniture,1200,1050,12`;
                               <thead>
                                 <tr className="text-slate-500 font-mono uppercase text-[10px] border-b border-slate-800">
                                   <th className="text-left py-2 pr-3">Invoice #</th>
-                                  <th className="text-left py-2 pr-3">Date</th>
                                   <th className="text-left py-2 pr-3">Due Date</th>
-                                  <th className="text-right py-2 pr-3">Amount</th>
+                                  <th className="text-right py-2 pr-3">Billed</th>
+                                  <th className="text-right py-2 pr-3">Paid</th>
+                                  <th className="text-right py-2 pr-3">Balance</th>
                                   <th className="text-center py-2">Status</th>
                                 </tr>
                               </thead>
                               <tbody>
                                 {cInvoices.map(inv => {
+                                  const paidForInv = allPayments
+                                    .filter(p => p.invoiceId === inv.id)
+                                    .reduce((s, p) => s + (p.amount ?? 0), 0);
+                                  const balForInv = Math.max(0, (inv.totalAmount ?? 0) - paidForInv);
                                   const daysOverdue = Math.floor((new Date().getTime() - new Date(inv.dueDate).getTime()) / 86400000);
-                                  const isLate = (inv.status === "unpaid" || inv.status === "overdue") && daysOverdue > 0;
+                                  const isLate = balForInv > 0 && daysOverdue > 0;
                                   return (
                                     <tr key={inv.id} className="border-b border-slate-800/50 hover:bg-slate-800/30">
                                       <td className="py-2 pr-3 font-mono text-indigo-400 font-semibold">{inv.invoiceNumber}</td>
-                                      <td className="py-2 pr-3 text-slate-400">{inv.createdAt?.slice(0, 10)}</td>
-                                      <td className={`py-2 pr-3 font-mono ${isLate ? "text-red-400" : "text-slate-400"}`}>
-                                        {inv.dueDate} {isLate && <span className="text-[9px] text-red-400">({daysOverdue}d late)</span>}
+                                      <td className={`py-2 pr-3 font-mono text-xs ${isLate ? "text-red-400" : "text-slate-400"}`}>
+                                        {inv.dueDate}{isLate && <span className="ml-1 text-[9px]">({daysOverdue}d late)</span>}
                                       </td>
-                                      <td className="py-2 pr-3 text-right font-mono text-slate-200">{formatINR(inv.totalAmount)}</td>
+                                      <td className="py-2 pr-3 text-right font-mono text-slate-300">{formatINR(inv.totalAmount)}</td>
+                                      <td className="py-2 pr-3 text-right font-mono text-emerald-400">{formatINR(paidForInv)}</td>
+                                      <td className={`py-2 pr-3 text-right font-mono font-bold ${balForInv > 0 ? "text-amber-400" : "text-emerald-400"}`}>{formatINR(balForInv)}</td>
                                       <td className="py-2 text-center">
                                         <span className={`px-2 py-0.5 rounded text-[9px] font-bold uppercase ${
-                                          inv.status === "paid" ? "bg-emerald-500/15 text-emerald-400" :
-                                          inv.status === "overdue" ? "bg-red-500/15 text-red-400" :
-                                          inv.status === "partially_paid" ? "bg-yellow-500/15 text-yellow-400" :
+                                          balForInv === 0 ? "bg-emerald-500/15 text-emerald-400" :
+                                          isLate ? "bg-red-500/15 text-red-400" :
+                                          paidForInv > 0 ? "bg-yellow-500/15 text-yellow-400" :
                                           "bg-slate-700 text-slate-400"
-                                        }`}>{inv.status.replace("_", " ")}</span>
+                                        }`}>{balForInv === 0 ? "paid" : isLate ? "overdue" : paidForInv > 0 ? "partial" : "unpaid"}</span>
                                       </td>
                                     </tr>
                                   );
