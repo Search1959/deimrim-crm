@@ -149,9 +149,7 @@ export default function Header({
         </div>
 
         {/* Dynamic User Switcher — hidden on mobile */}
-        {(currentUser.role === UserRole.SYSTEM_ADMIN ||
-          currentUser.role === UserRole.COMPANY_ADMIN ||
-          currentUser.role === UserRole.READ_ONLY) && (
+        {currentUser.role === UserRole.SYSTEM_ADMIN && (
           <div className="relative hidden md:block">
             <button
               onClick={() => {

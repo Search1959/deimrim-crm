@@ -1601,11 +1601,20 @@ Office Ergonomic Chairs,AST-CH-99,Furniture,1200,1050,12`;
             const cInvoices = allInvoices.filter(inv => inv.customerId === c.id);
             const cInvIds = new Set(cInvoices.map(inv => inv.id));
             const totalBilled = cInvoices.reduce((s, inv) => s + (inv.totalAmount ?? 0), 0);
-            // Sum actual payment records (not invoice status) so partial payments show correctly
-            const totalPaid = allPayments
+            // Payment calculation: prefer salesPayments (linked by invoiceId), then fall back
+            // to customer.outstandingBalance which is updated by CRM on every payment recorded
+            const paidViaPayments = allPayments
               .filter(p => cInvIds.has(p.invoiceId))
               .reduce((s, p) => s + (p.amount ?? 0), 0);
-            const outstanding = Math.max(0, totalBilled - totalPaid);
+            const outstandingFromCRM = typeof c.outstandingBalance === "number" ? c.outstandingBalance : null;
+            const totalPaid = paidViaPayments > 0
+              ? paidViaPayments
+              : outstandingFromCRM !== null
+                ? Math.max(0, totalBilled - outstandingFromCRM)
+                : 0;
+            const outstanding = outstandingFromCRM !== null && paidViaPayments === 0
+              ? Math.max(0, outstandingFromCRM)
+              : Math.max(0, totalBilled - totalPaid);
 
             const today = new Date();
             const aging = { current: 0, d30: 0, d60: 0, d90: 0 };
