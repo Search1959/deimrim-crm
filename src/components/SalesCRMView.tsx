@@ -132,7 +132,7 @@ export default function SalesCRMView({
       case "do":
         return <DeliveryOrdersPanel customers={customers} companyId={companyId} />;
       case "payments":
-        return <PaymentsPanel invoices={invoices} setInvoices={setInvoices} customers={customers} companyId={companyId} onPaymentRecorded={onPaymentRecorded} salesPayments={salesPayments} setSalesPayments={setSalesPayments} />;
+        return <PaymentsPanel invoices={invoices} setInvoices={setInvoices} customers={customers} companyId={companyId} company={company} onPaymentRecorded={onPaymentRecorded} salesPayments={salesPayments} setSalesPayments={setSalesPayments} />;
       case "targets":
         return <TargetsPanel companyId={companyId} />;
       case "companies":
