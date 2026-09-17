@@ -4,11 +4,11 @@ import { toast } from "../utils/toast";
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import {
   FolderOpen, FolderPlus, UploadCloud, FileText, Trash2,
   Download, X, ChevronRight, Home, File,
-  FileImage, FileSpreadsheet, Folder, Search, Eye, RefreshCw, ExternalLink
+  FileImage, FileSpreadsheet, Folder, Search, Eye, RefreshCw, ExternalLink, Loader2
 } from "lucide-react";
 import { AppDocument, DocFolder, Supplier, Customer, Employee, Asset, UserRole } from "../types";
 
@@ -38,6 +38,179 @@ function formatBytes(bytes: number) {
   const i = Math.floor(Math.log(bytes) / Math.log(k));
   return `${parseFloat((bytes / Math.pow(k, i)).toFixed(1))} ${sizes[i]}`;
 }
+
+// ── File Viewer Modal ────────────────────────────────────────────────────────
+
+function FileViewerModal({ doc, onClose }: { doc: AppDocument; onClose: () => void }) {
+  const [xlsxRows, setXlsxRows] = useState<string[][]>([]);
+  const [xlsxSheet, setXlsxSheet] = useState("");
+  const [xlsxLoading, setXlsxLoading] = useState(false);
+  const [textContent, setTextContent] = useState<string | null>(null);
+
+  const ft = doc.fileType.toUpperCase();
+  const isImg  = ["JPG","JPEG","PNG","GIF","SVG","WEBP","BMP"].includes(ft);
+  const isPdf  = ft === "PDF";
+  const isXls  = ["XLS","XLSX","CSV"].includes(ft);
+  const isTxt  = ["TXT","MD","JSON","XML","HTML","HTM","CSS","JS","TS"].includes(ft);
+
+  // Load Excel / CSV preview
+  useEffect(() => {
+    if (!isXls) return;
+    setXlsxLoading(true);
+    import("xlsx").then(XLSX => {
+      try {
+        // doc.url is a data URL — convert to binary string
+        const base64 = doc.url.split(",")[1];
+        const binary = atob(base64);
+        const bytes = new Uint8Array(binary.length);
+        for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+        const wb = XLSX.read(bytes, { type: "array" });
+        const sheetName = wb.SheetNames[0];
+        setXlsxSheet(sheetName);
+        const ws = wb.Sheets[sheetName];
+        const data = XLSX.utils.sheet_to_json<string[]>(ws, { header: 1 });
+        setXlsxRows(data.slice(0, 200) as string[][]); // cap at 200 rows
+      } catch {
+        setXlsxRows([]);
+      } finally {
+        setXlsxLoading(false);
+      }
+    });
+  }, [doc.url, isXls]);
+
+  // Load plain text preview
+  useEffect(() => {
+    if (!isTxt) return;
+    try {
+      const base64 = doc.url.split(",")[1];
+      setTextContent(atob(base64));
+    } catch {
+      setTextContent(null);
+    }
+  }, [doc.url, isTxt]);
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4" onClick={onClose}>
+      <div className="w-full max-w-5xl max-h-[92vh] rounded-2xl border border-slate-800 bg-slate-950 shadow-2xl flex flex-col" onClick={e => e.stopPropagation()}>
+
+        {/* Header */}
+        <div className="flex items-center justify-between px-5 py-3.5 border-b border-slate-800 shrink-0">
+          <div className="flex items-center gap-2.5 min-w-0">
+            <div className="h-7 w-7 flex items-center justify-center rounded-lg bg-slate-800 shrink-0">
+              {fileIcon(doc.fileType)}
+            </div>
+            <div className="min-w-0">
+              <p className="text-sm font-bold text-white truncate">{doc.name}</p>
+              <p className="text-[10px] text-slate-500 font-mono">{doc.fileSize} · {doc.fileType}</p>
+            </div>
+          </div>
+          <div className="flex items-center gap-2 shrink-0 ml-3">
+            <a href={doc.url} download={doc.name}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-700 bg-slate-900 text-xs font-bold text-slate-300 hover:text-emerald-400 hover:border-emerald-500/40 transition-colors" title="Download">
+              <Download className="h-3.5 w-3.5" /> Download
+            </a>
+            <button onClick={onClose}
+              className="p-1.5 rounded-lg border border-slate-800 bg-slate-900 text-slate-400 hover:text-white transition-colors cursor-pointer">
+              <X className="h-4 w-4" />
+            </button>
+          </div>
+        </div>
+
+        {/* Preview */}
+        <div className="flex-1 overflow-auto min-h-0">
+          {isImg && (
+            <div className="flex items-center justify-center p-6 min-h-[400px]">
+              <img src={doc.url} alt={doc.name}
+                className="max-w-full max-h-[75vh] rounded-xl object-contain shadow-2xl border border-slate-800" />
+            </div>
+          )}
+
+          {isPdf && (
+            <iframe src={doc.url} title={doc.name}
+              className="w-full h-[78vh] bg-white" />
+          )}
+
+          {isXls && (
+            <div className="p-4">
+              {xlsxLoading ? (
+                <div className="flex items-center justify-center py-20 gap-3 text-slate-400">
+                  <Loader2 className="h-5 w-5 animate-spin" /> Loading spreadsheet…
+                </div>
+              ) : xlsxRows.length > 0 ? (
+                <>
+                  {xlsxSheet && <p className="text-[10px] font-bold text-indigo-400 uppercase tracking-wider mb-2 font-mono">Sheet: {xlsxSheet}</p>}
+                  <div className="overflow-auto max-h-[72vh] rounded-xl border border-slate-800">
+                    <table className="text-xs border-collapse w-max min-w-full">
+                      <thead>
+                        <tr>
+                          {(xlsxRows[0] || []).map((cell, ci) => (
+                            <th key={ci} className="bg-slate-900 border border-slate-700 px-3 py-2 text-left text-slate-300 font-bold font-mono whitespace-nowrap sticky top-0">
+                              {cell ?? ""}
+                            </th>
+                          ))}
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {xlsxRows.slice(1).map((row, ri) => (
+                          <tr key={ri} className={ri % 2 === 0 ? "bg-slate-950" : "bg-slate-900/40"}>
+                            {(xlsxRows[0] || []).map((_, ci) => (
+                              <td key={ci} className="border border-slate-800 px-3 py-1.5 text-slate-300 font-mono whitespace-nowrap">
+                                {row[ci] ?? ""}
+                              </td>
+                            ))}
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                  {xlsxRows.length >= 200 && (
+                    <p className="text-[10px] text-slate-500 mt-2 text-center">Showing first 200 rows. Download to see all data.</p>
+                  )}
+                </>
+              ) : (
+                <div className="flex flex-col items-center gap-3 py-16 text-center">
+                  <FileSpreadsheet className="h-10 w-10 text-emerald-400" />
+                  <p className="text-slate-400 text-sm">Could not parse spreadsheet</p>
+                  <a href={doc.url} download={doc.name} className="flex items-center gap-2 px-4 py-2 bg-emerald-700 hover:bg-emerald-600 text-white text-xs font-bold rounded-lg">
+                    <Download className="h-4 w-4" /> Download to open
+                  </a>
+                </div>
+              )}
+            </div>
+          )}
+
+          {isTxt && (
+            <div className="p-4">
+              {textContent !== null ? (
+                <pre className="text-xs text-slate-300 font-mono bg-slate-900 rounded-xl p-4 overflow-auto max-h-[72vh] whitespace-pre-wrap border border-slate-800">
+                  {textContent}
+                </pre>
+              ) : (
+                <p className="text-slate-500 text-xs text-center py-16">Could not read file content.</p>
+              )}
+            </div>
+          )}
+
+          {!isImg && !isPdf && !isXls && !isTxt && (
+            <div className="flex flex-col items-center gap-4 py-20 text-center px-6">
+              <div className="p-5 bg-slate-800 rounded-2xl">
+                {fileIcon(doc.fileType)}
+              </div>
+              <p className="text-slate-300 font-bold text-sm">{doc.fileType} files cannot be previewed in the browser</p>
+              <p className="text-slate-500 text-xs max-w-xs">Download the file and open it with the appropriate app on your device.</p>
+              <a href={doc.url} download={doc.name}
+                className="flex items-center gap-2 px-5 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold rounded-xl transition-colors">
+                <Download className="h-4 w-4" /> Download File
+              </a>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
 
 export default function DocumentView({
   documents, setDocuments,
@@ -119,32 +292,58 @@ export default function DocumentView({
     if (e.target.files) setSelectedFiles(Array.from(e.target.files));
   };
 
-  // Upload multiple files
-  const handleUpload = (e: React.FormEvent) => {
+  const [uploading, setUploading] = useState(false);
+
+  // Convert file to base64 data URL so it persists across page reloads
+  const toDataURL = (file: File): Promise<string> =>
+    new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result as string);
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+
+  // Upload multiple files — stored as base64 data URLs
+  const handleUpload = async (e: React.FormEvent) => {
     e.preventDefault();
     if (selectedFiles.length === 0) { toast.error("Select at least one file"); return; }
 
-    const now = new Date().toISOString();
-    const newDocs: AppDocument[] = selectedFiles.map(file => ({
-      id: `doc-${Date.now()}-${Math.random().toString(36).slice(2)}`,
-      name: file.name,
-      fileSize: formatBytes(file.size),
-      fileType: file.name.split(".").pop()?.toUpperCase() || "FILE",
-      uploadedAt: now,
-      uploadedBy: currentUserName,
-      attachedToType: attachType,
-      attachedToId: attachId || "none",
-      url: URL.createObjectURL(file),
-      folderId: currentFolderId,
-    }));
+    const MAX_MB = 8;
+    const oversized = selectedFiles.filter(f => f.size > MAX_MB * 1024 * 1024);
+    if (oversized.length > 0) {
+      toast.error(`Files exceed ${MAX_MB} MB limit`, oversized.map(f => f.name).join(", "));
+      return;
+    }
 
-    setDocuments(prev => [...newDocs, ...prev]);
-    setSelectedFiles([]);
-    setAttachType("GENERAL");
-    setAttachId("");
-    setShowUpload(false);
-    if (fileInputRef.current) fileInputRef.current.value = "";
-    toast.success(`${newDocs.length} file${newDocs.length > 1 ? "s" : ""} uploaded`);
+    setUploading(true);
+    try {
+      const now = new Date().toISOString();
+      const newDocs: AppDocument[] = await Promise.all(
+        selectedFiles.map(async file => ({
+          id: `doc-${Date.now()}-${Math.random().toString(36).slice(2)}`,
+          name: file.name,
+          fileSize: formatBytes(file.size),
+          fileType: file.name.split(".").pop()?.toUpperCase() || "FILE",
+          uploadedAt: now,
+          uploadedBy: currentUserName,
+          attachedToType: attachType,
+          attachedToId: attachId || "none",
+          url: await toDataURL(file),
+          folderId: currentFolderId,
+        }))
+      );
+      setDocuments(prev => [...newDocs, ...prev]);
+      setSelectedFiles([]);
+      setAttachType("GENERAL");
+      setAttachId("");
+      setShowUpload(false);
+      if (fileInputRef.current) fileInputRef.current.value = "";
+      toast.success(`${newDocs.length} file${newDocs.length > 1 ? "s" : ""} uploaded`);
+    } catch {
+      toast.error("Upload failed", "Could not read one or more files");
+    } finally {
+      setUploading(false);
+    }
   };
 
   const handleDelete = (id: string) => {
@@ -300,9 +499,9 @@ export default function DocumentView({
           <div className="flex justify-end gap-2">
             <button type="button" onClick={() => { setShowUpload(false); setSelectedFiles([]); }}
               className="px-4 py-2 text-xs font-bold text-slate-400 hover:text-white cursor-pointer">Cancel</button>
-            <button type="submit"
-              className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold rounded-lg cursor-pointer transition-all">
-              Upload {selectedFiles.length > 0 ? `${selectedFiles.length} File${selectedFiles.length > 1 ? "s" : ""}` : ""}
+            <button type="submit" disabled={uploading}
+              className="flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-60 text-white text-xs font-bold rounded-lg cursor-pointer transition-all">
+              {uploading ? <><Loader2 className="h-3.5 w-3.5 animate-spin" /> Processing…</> : `Upload ${selectedFiles.length > 0 ? `${selectedFiles.length} File${selectedFiles.length > 1 ? "s" : ""}` : ""}`}
             </button>
           </div>
         </form>
@@ -384,59 +583,7 @@ export default function DocumentView({
 
       {/* File Viewer Modal */}
       {viewingDoc && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4" onClick={() => setViewingDoc(null)}>
-          <div className="w-full max-w-4xl max-h-[90vh] rounded-2xl border border-slate-800 bg-slate-950 shadow-2xl flex flex-col" onClick={e => e.stopPropagation()}>
-            {/* Modal header */}
-            <div className="flex items-center justify-between px-5 py-3.5 border-b border-slate-800 shrink-0">
-              <div className="flex items-center gap-2.5 min-w-0">
-                <div className="h-7 w-7 flex items-center justify-center rounded-lg bg-slate-800 shrink-0">
-                  {fileIcon(viewingDoc.fileType)}
-                </div>
-                <div className="min-w-0">
-                  <p className="text-sm font-bold text-white truncate">{viewingDoc.name}</p>
-                  <p className="text-[10px] text-slate-500 font-mono">{viewingDoc.fileSize} · {viewingDoc.fileType}</p>
-                </div>
-              </div>
-              <div className="flex items-center gap-2 shrink-0 ml-3">
-                <a href={viewingDoc.url} target="_blank" rel="noreferrer"
-                  className="p-1.5 rounded-lg border border-slate-800 bg-slate-900 text-slate-400 hover:text-white transition-colors" title="Open in new tab">
-                  <ExternalLink className="h-4 w-4" />
-                </a>
-                <a href={viewingDoc.url} download={viewingDoc.name}
-                  className="p-1.5 rounded-lg border border-slate-800 bg-slate-900 text-slate-400 hover:text-emerald-400 transition-colors" title="Download">
-                  <Download className="h-4 w-4" />
-                </a>
-                <button onClick={() => setViewingDoc(null)}
-                  className="p-1.5 rounded-lg border border-slate-800 bg-slate-900 text-slate-400 hover:text-white transition-colors cursor-pointer">
-                  <X className="h-4 w-4" />
-                </button>
-              </div>
-            </div>
-
-            {/* Preview area */}
-            <div className="flex-1 overflow-auto flex items-center justify-center p-4 min-h-0">
-              {isImage(viewingDoc.fileType) ? (
-                <img src={viewingDoc.url} alt={viewingDoc.name}
-                  className="max-w-full max-h-[70vh] rounded-lg object-contain shadow-lg" />
-              ) : isPDF(viewingDoc.fileType) ? (
-                <iframe src={viewingDoc.url} title={viewingDoc.name}
-                  className="w-full h-[70vh] rounded-lg border border-slate-800 bg-white" />
-              ) : (
-                <div className="flex flex-col items-center gap-4 py-16 text-center">
-                  <div className="p-5 bg-slate-800 rounded-2xl">
-                    {fileIcon(viewingDoc.fileType)}
-                  </div>
-                  <p className="text-slate-300 font-bold text-sm">Preview not available for {viewingDoc.fileType} files</p>
-                  <p className="text-slate-500 text-xs">Download the file to open it on your device.</p>
-                  <a href={viewingDoc.url} download={viewingDoc.name}
-                    className="flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold rounded-lg transition-colors">
-                    <Download className="h-4 w-4" /> Download File
-                  </a>
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
+        <FileViewerModal doc={viewingDoc} onClose={() => setViewingDoc(null)} />
       )}
 
       {/* Empty state */}
