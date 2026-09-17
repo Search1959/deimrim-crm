@@ -538,6 +538,140 @@ export default function HRPayrollPanel({ employees, companyId, company, onSalary
         const emp = selectedEmpForSlip;
         const calc = getCalc(emp);
         const isPaid = payrollStatus[emp.id] === "paid";
+
+        const inr = (n: number) => `₹${n.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+
+        const buildPayslipHTML = () => {
+          const deductionRows = [
+            [`EPF (${taxConfig.epfPct}%)`, calc.epf],
+            [`ESIC (${taxConfig.esicPct}%)`, calc.esic],
+            ["Professional Tax", calc.pt],
+            ["TDS (Income Tax)", calc.tds],
+            ...(calc.adj.customDeduction > 0 ? [["Custom / Loss of Pay", calc.adj.customDeduction]] : []),
+          ] as [string, number][];
+
+          const earningRows: [string, number][] = [
+            ["Basic Salary", emp.salary],
+            ["HRA", calc.adj.hra],
+            ["Special Allowances", calc.adj.allowance],
+            ["Performance Bonus", calc.adj.bonus],
+          ];
+
+          const row = (label: string, value: number, bold = false) =>
+            `<tr style="border-bottom:1px solid #f1f5f9">
+              <td style="padding:7px 10px;font-size:12px;color:${bold?"#0f172a":"#334155"};${bold?"font-weight:700":""};">${label}</td>
+              <td style="padding:7px 10px;font-size:12px;font-family:monospace;text-align:right;color:${bold?"#0f172a":"#334155"};${bold?"font-weight:700":""};">${inr(value)}</td>
+            </tr>`;
+
+          return `<!DOCTYPE html><html><head><title>Payslip – ${emp.name} – ${payslipMonth}</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:Arial,Helvetica,sans-serif;background:#f8fafc;padding:24px;color:#1e293b}
+  .slip{max-width:720px;margin:auto;background:#fff;border:1px solid #e2e8f0;border-radius:10px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,.08)}
+  .hdr{background:#312e81;color:#fff;padding:20px 28px;display:flex;justify-content:space-between;align-items:flex-start}
+  .co-name{font-size:20px;font-weight:800;letter-spacing:-0.5px}
+  .co-sub{font-size:10px;color:#c7d2fe;margin-top:3px}
+  .badge{text-align:right}
+  .badge-title{font-size:13px;font-weight:800;letter-spacing:3px;color:#e0e7ff}
+  .badge-period{font-size:10px;color:#a5b4fc;margin-top:4px;font-family:monospace}
+  .emp-bar{background:#f8fafc;border-bottom:1px solid #e2e8f0;padding:14px 28px;display:grid;grid-template-columns:1fr 1fr;gap:6px 24px}
+  .emp-bar .f{font-size:11px;color:#64748b}
+  .emp-bar .v{font-size:11px;color:#1e293b;font-weight:600}
+  .body{padding:20px 28px}
+  .cols{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  table{width:100%;border-collapse:collapse}
+  .th{background:#f1f5f9;padding:6px 10px;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#64748b;text-align:left;border-bottom:2px solid #e2e8f0}
+  .th-r{text-align:right}
+  .earn-th{background:#f0fdf4;color:#166534;border-bottom-color:#bbf7d0}
+  .ded-th{background:#fef2f2;color:#991b1b;border-bottom-color:#fecaca}
+  .net{background:linear-gradient(135deg,#312e81,#4f46e5);color:#fff;padding:14px 20px;border-radius:8px;display:flex;justify-content:space-between;align-items:center;margin-top:16px}
+  .net-label{font-size:10px;font-weight:800;letter-spacing:2px;color:#c7d2fe;text-transform:uppercase}
+  .net-words{font-size:10px;color:#a5b4fc;margin-top:2px;font-style:italic}
+  .net-amt{font-size:22px;font-weight:900;font-family:monospace;color:#fff}
+  .footer{display:flex;justify-content:space-between;align-items:flex-end;margin-top:20px;padding-top:16px;border-top:1px dashed #e2e8f0}
+  .bank{font-size:11px;color:#475569}
+  .bank strong{color:#1e293b;display:block;margin-bottom:4px}
+  .status{display:inline-block;padding:4px 12px;border-radius:4px;font-size:10px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;border:2px solid ${isPaid?"#16a34a":"#d97706"};color:${isPaid?"#16a34a":"#d97706"}}
+  .sig{text-align:right}
+  .sig-line{border-top:1px solid #94a3b8;width:160px;margin-left:auto;margin-bottom:4px;padding-top:2px}
+  .sig-text{font-size:10px;color:#64748b}
+  .watermark{font-size:9px;color:#94a3b8;text-align:center;margin-top:12px}
+  @media print{body{padding:0;background:#fff}.slip{box-shadow:none;border:none}}
+</style></head><body>
+<div class="slip">
+  <div class="hdr">
+    <div>
+      <div class="co-name">${company?.name || "Your Company"}</div>
+      ${company?.address ? `<div class="co-sub">${company.address}</div>` : ""}
+      ${company?.phone || company?.email ? `<div class="co-sub">${[company?.phone, company?.email].filter(Boolean).join(" · ")}</div>` : ""}
+      ${company?.gstin ? `<div class="co-sub">GSTIN: ${company.gstin}</div>` : ""}
+    </div>
+    <div class="badge">
+      <div class="badge-title">SALARY PAYSLIP</div>
+      <div class="badge-period">PAY PERIOD: ${payslipMonth.toUpperCase()}</div>
+    </div>
+  </div>
+
+  <div class="emp-bar">
+    <div><span class="f">Employee Name</span><br><span class="v">${emp.name}</span></div>
+    <div><span class="f">Date of Joining</span><br><span class="v">${emp.joiningDate || "—"}</span></div>
+    <div><span class="f">Employee Code</span><br><span class="v">${emp.employeeCode || "—"}</span></div>
+    <div><span class="f">Bank A/C No.</span><br><span class="v" style="font-family:monospace">${emp.bankAccountNumber || "—"}</span></div>
+    <div><span class="f">Phone</span><br><span class="v">${emp.phone || "—"}</span></div>
+    <div><span class="f">IFSC Code</span><br><span class="v" style="font-family:monospace">${emp.bankIfsc || "—"}</span></div>
+    <div><span class="f">Email</span><br><span class="v">${emp.email || "—"}</span></div>
+    <div><span class="f">Bank Name</span><br><span class="v">${emp.bankName || "—"}</span></div>
+  </div>
+
+  <div class="body">
+    <div class="cols">
+      <table>
+        <thead><tr><th class="th earn-th">Earnings</th><th class="th earn-th th-r">Amount</th></tr></thead>
+        <tbody>
+          ${earningRows.map(([l, v]) => row(l, v)).join("")}
+          ${row("Gross Earnings", calc.gross, true)}
+        </tbody>
+      </table>
+      <table>
+        <thead><tr><th class="th ded-th">Deductions</th><th class="th ded-th th-r">Amount</th></tr></thead>
+        <tbody>
+          ${deductionRows.map(([l, v]) => row(l, v)).join("")}
+          ${row("Total Deductions", calc.totalDeductions, true)}
+        </tbody>
+      </table>
+    </div>
+
+    <div class="net">
+      <div>
+        <div class="net-label">Net Take-Home</div>
+        <div class="net-words">Rupees ${Math.floor(calc.netSalary).toLocaleString("en-IN")} only</div>
+      </div>
+      <div class="net-amt">${inr(calc.netSalary)}</div>
+    </div>
+
+    <div class="footer">
+      <div>
+        <span class="status">${isPaid ? "✓ PAID & DISBURSED" : "PENDING CLEARANCE"}</span>
+        <div class="bank" style="margin-top:10px">
+          <strong>Company Bank Details</strong>
+          ${company?.bankName ? `${company.bankName} · ${company?.bankAccountType || ""}` : ""}
+          ${company?.bankAccountNumber ? `<br>A/c: <span style="font-family:monospace">${company.bankAccountNumber}</span>` : ""}
+          ${company?.bankIFSC ? ` &nbsp;IFSC: <span style="font-family:monospace">${company.bankIFSC}</span>` : ""}
+          ${company?.bankUPI ? `<br>UPI: ${company.bankUPI}` : ""}
+        </div>
+      </div>
+      <div class="sig">
+        <div class="sig-line"></div>
+        <div class="sig-text">Authorised Signatory</div>
+        <div class="sig-text" style="font-weight:700;color:#1e293b">${company?.name || ""}</div>
+      </div>
+    </div>
+    <div class="watermark">Computer-generated payslip · ${company?.name || ""} · Generated on ${new Date().toLocaleDateString("en-IN")}</div>
+  </div>
+</div>
+</body></html>`;
+        };
+
         return (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
             <div className="w-full max-w-2xl rounded-2xl border border-slate-800 bg-slate-950 p-6 shadow-2xl animate-scaleUp text-left space-y-4 max-h-[90vh] overflow-y-auto">
@@ -548,56 +682,60 @@ export default function HRPayrollPanel({ employees, companyId, company, onSalary
                 </button>
               </div>
 
-              <div className="bg-white text-slate-900 p-6 rounded-xl space-y-5 shadow-md border border-slate-200" id="payslip-print">
-                <div className="flex justify-between items-start border-b border-slate-200 pb-4">
+              {/* Preview inside modal */}
+              <div className="bg-white rounded-xl overflow-hidden border border-slate-200 text-slate-900 text-xs">
+                {/* Header */}
+                <div className="bg-indigo-900 px-5 py-4 flex justify-between items-start">
                   <div>
-                    <h2 className="text-lg font-black text-slate-900 tracking-tight">{company?.name || "Your Company"}</h2>
-                    {company?.address && <p className="text-[10px] text-slate-500 mt-0.5">{company.address}</p>}
-                    {(company?.email || company?.phone) && (
-                      <p className="text-[10px] text-slate-400 mt-0.5">{company?.email}{company?.phone ? ` · ${company.phone}` : ""}</p>
-                    )}
-                    {company?.gstin && <p className="text-[10px] text-slate-400 mt-0.5">GSTIN: {company.gstin}</p>}
+                    <p className="text-base font-black text-white">{company?.name || "Your Company"}</p>
+                    {company?.address && <p className="text-[10px] text-indigo-200 mt-0.5">{company.address}</p>}
+                    {company?.gstin && <p className="text-[10px] text-indigo-300 mt-0.5">GSTIN: {company.gstin}</p>}
                   </div>
                   <div className="text-right">
-                    <h3 className="text-sm font-extrabold text-indigo-600 font-mono uppercase">SALARY PAYSLIP</h3>
-                    <p className="text-[10px] text-slate-500 font-mono font-bold mt-0.5">PAY PERIOD: {payslipMonth.toUpperCase()}</p>
+                    <p className="text-xs font-black tracking-widest text-indigo-100 uppercase">Salary Payslip</p>
+                    <p className="text-[10px] text-indigo-300 font-mono mt-1">PAY PERIOD: {payslipMonth.toUpperCase()}</p>
                   </div>
                 </div>
 
-                <div className="grid grid-cols-2 gap-4 text-xs font-medium text-slate-700 border-b border-slate-200 pb-4">
-                  <div className="space-y-1">
-                    <div><strong>Employee Name:</strong> {emp.name}</div>
-                    <div><strong>Code Number:</strong> {emp.employeeCode || "—"}</div>
-                    <div><strong>Phone:</strong> {emp.phone || "—"}</div>
-                    <div><strong>Email:</strong> {emp.email || "—"}</div>
-                  </div>
-                  <div className="space-y-1">
-                    <div><strong>Date of Joining:</strong> {emp.joiningDate || "—"}</div>
-                    <div><strong>Bank A/C No:</strong> {emp.bankAccountNumber || "—"}</div>
-                    <div><strong>IFSC Code:</strong> {emp.bankIfsc || "—"}</div>
-                    <div><strong>Bank Name:</strong> {emp.bankName || "—"}</div>
-                  </div>
+                {/* Employee info */}
+                <div className="grid grid-cols-2 gap-x-6 gap-y-2 px-5 py-3 bg-slate-50 border-b border-slate-200">
+                  {[
+                    ["Employee Name", emp.name],
+                    ["Date of Joining", emp.joiningDate || "—"],
+                    ["Employee Code", emp.employeeCode || "—"],
+                    ["Bank A/C No.", emp.bankAccountNumber || "—"],
+                    ["Phone", emp.phone || "—"],
+                    ["IFSC Code", emp.bankIfsc || "—"],
+                    ["Email", emp.email || "—"],
+                    ["Bank Name", emp.bankName || "—"],
+                  ].map(([l, v]) => (
+                    <div key={l}>
+                      <span className="text-[9px] text-slate-400 uppercase tracking-wider font-bold block">{l}</span>
+                      <span className="text-slate-700 font-semibold text-[11px]">{v}</span>
+                    </div>
+                  ))}
                 </div>
 
-                <div className="grid grid-cols-2 gap-6 text-xs">
-                  <div className="space-y-2">
-                    <span className="block text-[10px] font-extrabold text-emerald-600 uppercase tracking-wider border-b border-emerald-500 pb-1">EARNINGS</span>
+                {/* Earnings & Deductions */}
+                <div className="grid grid-cols-2 gap-0 border-b border-slate-200">
+                  <div className="border-r border-slate-200">
+                    <div className="bg-emerald-50 px-4 py-2 text-[9px] font-black text-emerald-700 uppercase tracking-wider border-b border-emerald-200">Earnings</div>
                     {[
                       ["Basic Salary", emp.salary],
                       ["HRA", calc.adj.hra],
                       ["Special Allowances", calc.adj.allowance],
                       ["Performance Bonus", calc.adj.bonus],
                     ].map(([l, v]) => (
-                      <div key={l as string} className="flex justify-between py-1 text-slate-600">
-                        <span>{l as string}</span><span className="font-mono">{formatINR(v as number)}</span>
+                      <div key={l as string} className="flex justify-between px-4 py-1.5 border-b border-slate-100">
+                        <span className="text-slate-500">{l as string}</span><span className="font-mono text-slate-700">{inr(v as number)}</span>
                       </div>
                     ))}
-                    <div className="flex justify-between border-t border-slate-200 font-bold text-slate-900 pt-2">
-                      <span>Gross Earnings</span><span className="font-mono">{formatINR(calc.gross)}</span>
+                    <div className="flex justify-between px-4 py-2 font-bold text-slate-900 bg-emerald-50">
+                      <span>Gross Earnings</span><span className="font-mono">{inr(calc.gross)}</span>
                     </div>
                   </div>
-                  <div className="space-y-2">
-                    <span className="block text-[10px] font-extrabold text-red-600 uppercase tracking-wider border-b border-red-500 pb-1">DEDUCTIONS</span>
+                  <div>
+                    <div className="bg-red-50 px-4 py-2 text-[9px] font-black text-red-700 uppercase tracking-wider border-b border-red-200">Deductions</div>
                     {[
                       [`EPF (${taxConfig.epfPct}%)`, calc.epf],
                       [`ESIC (${taxConfig.esicPct}%)`, calc.esic],
@@ -605,50 +743,45 @@ export default function HRPayrollPanel({ employees, companyId, company, onSalary
                       ["TDS (Income Tax)", calc.tds],
                       ...(calc.adj.customDeduction > 0 ? [["Custom / Loss of Pay", calc.adj.customDeduction]] : []),
                     ].map(([l, v]) => (
-                      <div key={l as string} className="flex justify-between py-1 text-slate-600">
-                        <span>{l as string}</span><span className="font-mono">{formatINR(v as number)}</span>
+                      <div key={l as string} className="flex justify-between px-4 py-1.5 border-b border-slate-100">
+                        <span className="text-slate-500">{l as string}</span><span className="font-mono text-red-600">{inr(v as number)}</span>
                       </div>
                     ))}
-                    <div className="flex justify-between border-t border-slate-200 font-bold text-slate-900 pt-2">
-                      <span>Total Deductions</span><span className="font-mono">{formatINR(calc.totalDeductions)}</span>
+                    <div className="flex justify-between px-4 py-2 font-bold text-slate-900 bg-red-50">
+                      <span>Total Deductions</span><span className="font-mono">{inr(calc.totalDeductions)}</span>
                     </div>
                   </div>
                 </div>
 
-                <div className="bg-slate-100 p-4 rounded-lg flex justify-between items-center">
+                {/* Net take-home */}
+                <div className="bg-indigo-900 px-5 py-4 flex justify-between items-center">
                   <div>
-                    <span className="text-[10px] font-black uppercase text-indigo-600 tracking-wider">NET TAKE-HOME</span>
-                    <p className="text-[10px] text-slate-500 mt-0.5 italic">Rupees {Math.floor(calc.netSalary).toLocaleString("en-IN")} only</p>
+                    <p className="text-[10px] font-black text-indigo-300 uppercase tracking-widest">Net Take-Home</p>
+                    <p className="text-[10px] text-indigo-400 italic mt-0.5">Rupees {Math.floor(calc.netSalary).toLocaleString("en-IN")} only</p>
                   </div>
-                  <strong className="text-lg font-mono font-black text-indigo-700">{formatINR(calc.netSalary)}</strong>
+                  <strong className="text-xl font-black font-mono text-white">{inr(calc.netSalary)}</strong>
                 </div>
 
-                <div className="flex justify-between items-end pt-6">
-                  <span className={`inline-block px-3 py-1 text-xs font-black uppercase tracking-widest border-2 rounded ${
-                    isPaid ? "border-emerald-600 text-emerald-600" : "border-amber-600 text-amber-600"
-                  }`}>
-                    {isPaid ? "PAID & DISBURSED" : "PENDING CLEARANCE"}
+                {/* Footer */}
+                <div className="flex justify-between items-end px-5 py-3">
+                  <span className={`inline-block px-3 py-1 text-[10px] font-black uppercase tracking-widest border-2 rounded ${isPaid ? "border-emerald-600 text-emerald-600" : "border-amber-600 text-amber-600"}`}>
+                    {isPaid ? "✓ Paid & Disbursed" : "Pending Clearance"}
                   </span>
-                  <div className="text-right border-t border-slate-400 w-44 pt-1">
-                    <span className="text-[9px] text-slate-500 font-bold uppercase tracking-wider block">Authorized Signatory</span>
+                  <div className="text-right border-t border-slate-300 w-36 pt-1">
+                    <span className="text-[9px] text-slate-400 font-bold uppercase tracking-wider">Authorised Signatory</span>
                   </div>
                 </div>
               </div>
 
-              <div className="flex justify-end gap-3 pt-2">
+              <div className="flex justify-end gap-3 pt-1">
                 <button
                   onClick={() => {
-                    const el = document.getElementById("payslip-print");
-                    if (!el) return;
-                    const html = el.outerHTML;
-                    const win = window.open("", "_blank", "width=800,height=700");
+                    const win = window.open("", "_blank", "width=820,height=750");
                     if (!win) return;
-                    win.document.write(`<!DOCTYPE html><html><head><title>Payslip</title>
-                      <style>body{font-family:sans-serif;padding:24px;} * {box-sizing:border-box;}</style>
-                    </head><body>${html}</body></html>`);
+                    win.document.write(buildPayslipHTML());
                     win.document.close();
                     win.focus();
-                    setTimeout(() => { win.print(); win.close(); }, 400);
+                    setTimeout(() => { win.print(); }, 500);
                   }}
                   className="rounded-lg border border-slate-800 bg-slate-900 px-3.5 py-1.5 text-xs font-bold text-slate-300 hover:text-white flex items-center gap-1.5 cursor-pointer"
                 >
