@@ -12,7 +12,7 @@ import {
   ChevronRight,
   ShieldCheck
 } from "lucide-react";
-import { Employee, LeaveRequest, Department, Designation, UserRole } from "../types";
+import { Employee, LeaveRequest, Department, Designation, UserRole, Company } from "../types";
 
 // Import modular HR components
 import HRDashboardPanel from "./hr/HRDashboardPanel";
@@ -31,6 +31,7 @@ interface HRViewProps {
   designations: Designation[];
   userRole: UserRole;
   companyId: string;
+  company?: Company;
   onSalaryDisbursed?: (employeeId: string, employeeName: string, amount: number, month: string) => void;
 }
 
@@ -43,6 +44,7 @@ export default function HRView({
   designations,
   userRole,
   companyId,
+  company,
   onSalaryDisbursed,
 }: HRViewProps) {
   // Local active menu subtab mapping to sidebar options
@@ -268,6 +270,7 @@ export default function HRView({
           <HRPayrollPanel
             employees={employees}
             companyId={companyId}
+            company={company}
             onSalaryDisbursed={onSalaryDisbursed}
           />
         )}

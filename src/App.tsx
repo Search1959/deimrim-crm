@@ -1170,6 +1170,7 @@ export default function App() {
             designations={defaultDesignations}
             userRole={currentUser.role}
             companyId={currentUser.companyId || ""}
+            company={company}
             onSalaryDisbursed={handleSalaryDisbursed}
           />
         );

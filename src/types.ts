@@ -52,6 +52,7 @@ export interface Company {
   bankIFSC?: string;
   bankAccountType?: string;
   bankUPI?: string;
+  upiQrCode?: string;
   defaultTerms?: string;
   // e-Invoice GSP settings
   gspApiUrl?: string;
@@ -366,6 +367,9 @@ export interface Employee {
   joiningDate: string;
   salary: number;
   status: "active" | "on_leave" | "terminated";
+  bankAccountNumber?: string;
+  bankIfsc?: string;
+  bankName?: string;
 }
 
 export interface Attendance {

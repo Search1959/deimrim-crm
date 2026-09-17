@@ -1,11 +1,12 @@
 import { toast } from "../../utils/toast";
 import React, { useState, useEffect } from "react";
 import { Wallet, Check, Printer, Eye, X, Calculator, Edit3, Search, Settings, Info, Download } from "lucide-react";
-import { Employee, formatINR } from "../../types";
+import { Employee, Company, formatINR } from "../../types";
 
 interface HRPayrollPanelProps {
   employees: Employee[];
   companyId: string;
+  company?: Company;
   onSalaryDisbursed?: (employeeId: string, employeeName: string, amount: number, month: string) => void;
 }
 
@@ -49,7 +50,7 @@ function generateMonthOptions(): string[] {
   return options;
 }
 
-export default function HRPayrollPanel({ employees, companyId, onSalaryDisbursed }: HRPayrollPanelProps) {
+export default function HRPayrollPanel({ employees, companyId, company, onSalaryDisbursed }: HRPayrollPanelProps) {
   const monthOptions = generateMonthOptions();
   const [payslipMonth, setPayslipMonth] = useState(monthOptions[0]);
   const [searchQuery, setSearchQuery] = useState("");
@@ -295,6 +296,8 @@ export default function HRPayrollPanel({ employees, companyId, onSalaryDisbursed
                     </td>
                     <td className="px-5 py-4 font-mono text-red-400">
                       <div>PF: {formatINR(calc.epf)}</div>
+                      {calc.esic > 0 && <div className="text-[10px] text-orange-400">ESIC: {formatINR(calc.esic)}</div>}
+                      {calc.pt > 0 && <div className="text-[10px] text-yellow-500">Prof Tax: {formatINR(calc.pt)}</div>}
                       <div className="text-[10px] text-amber-500">TDS: {formatINR(calc.tds)}</div>
                     </td>
                     <td className="px-5 py-4 font-mono font-extrabold text-emerald-400">{formatINR(calc.netSalary)}</td>
@@ -535,7 +538,6 @@ export default function HRPayrollPanel({ employees, companyId, onSalaryDisbursed
         const emp = selectedEmpForSlip;
         const calc = getCalc(emp);
         const isPaid = payrollStatus[emp.id] === "paid";
-        const custom = emp as any;
         return (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
             <div className="w-full max-w-2xl rounded-2xl border border-slate-800 bg-slate-950 p-6 shadow-2xl animate-scaleUp text-left space-y-4 max-h-[90vh] overflow-y-auto">
@@ -549,8 +551,12 @@ export default function HRPayrollPanel({ employees, companyId, onSalaryDisbursed
               <div className="bg-white text-slate-900 p-6 rounded-xl space-y-5 shadow-md border border-slate-200" id="payslip-print">
                 <div className="flex justify-between items-start border-b border-slate-200 pb-4">
                   <div>
-                    <h2 className="text-lg font-black text-slate-900 tracking-tight">DEINRIM Suite</h2>
-                    <p className="text-[10px] text-slate-500 uppercase tracking-wider font-bold">Workspace Tenant Node Corp.</p>
+                    <h2 className="text-lg font-black text-slate-900 tracking-tight">{company?.name || "Your Company"}</h2>
+                    {company?.address && <p className="text-[10px] text-slate-500 mt-0.5">{company.address}</p>}
+                    {(company?.email || company?.phone) && (
+                      <p className="text-[10px] text-slate-400 mt-0.5">{company?.email}{company?.phone ? ` · ${company.phone}` : ""}</p>
+                    )}
+                    {company?.gstin && <p className="text-[10px] text-slate-400 mt-0.5">GSTIN: {company.gstin}</p>}
                   </div>
                   <div className="text-right">
                     <h3 className="text-sm font-extrabold text-indigo-600 font-mono uppercase">SALARY PAYSLIP</h3>
@@ -561,15 +567,15 @@ export default function HRPayrollPanel({ employees, companyId, onSalaryDisbursed
                 <div className="grid grid-cols-2 gap-4 text-xs font-medium text-slate-700 border-b border-slate-200 pb-4">
                   <div className="space-y-1">
                     <div><strong>Employee Name:</strong> {emp.name}</div>
-                    <div><strong>Code Number:</strong> {emp.employeeCode}</div>
+                    <div><strong>Code Number:</strong> {emp.employeeCode || "—"}</div>
                     <div><strong>Phone:</strong> {emp.phone || "—"}</div>
-                    <div><strong>Email:</strong> {emp.email}</div>
+                    <div><strong>Email:</strong> {emp.email || "—"}</div>
                   </div>
                   <div className="space-y-1">
-                    <div><strong>Date of Joining:</strong> {emp.joiningDate}</div>
-                    <div><strong>Bank A/C No:</strong> {custom.bankAccountNumber || "—"}</div>
-                    <div><strong>IFSC Code:</strong> {custom.bankIfsc || "—"}</div>
-                    <div><strong>Bank Name:</strong> {custom.bankName || "—"}</div>
+                    <div><strong>Date of Joining:</strong> {emp.joiningDate || "—"}</div>
+                    <div><strong>Bank A/C No:</strong> {emp.bankAccountNumber || "—"}</div>
+                    <div><strong>IFSC Code:</strong> {emp.bankIfsc || "—"}</div>
+                    <div><strong>Bank Name:</strong> {emp.bankName || "—"}</div>
                   </div>
                 </div>
 
@@ -631,7 +637,19 @@ export default function HRPayrollPanel({ employees, companyId, onSalaryDisbursed
 
               <div className="flex justify-end gap-3 pt-2">
                 <button
-                  onClick={() => window.print()}
+                  onClick={() => {
+                    const el = document.getElementById("payslip-print");
+                    if (!el) return;
+                    const html = el.outerHTML;
+                    const win = window.open("", "_blank", "width=800,height=700");
+                    if (!win) return;
+                    win.document.write(`<!DOCTYPE html><html><head><title>Payslip</title>
+                      <style>body{font-family:sans-serif;padding:24px;} * {box-sizing:border-box;}</style>
+                    </head><body>${html}</body></html>`);
+                    win.document.close();
+                    win.focus();
+                    setTimeout(() => { win.print(); win.close(); }, 400);
+                  }}
                   className="rounded-lg border border-slate-800 bg-slate-900 px-3.5 py-1.5 text-xs font-bold text-slate-300 hover:text-white flex items-center gap-1.5 cursor-pointer"
                 >
                   <Printer className="h-4 w-4" /> Print Slip

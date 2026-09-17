@@ -456,12 +456,49 @@ export default function AdminView({
                     <option>Current</option><option>Savings</option><option>OD</option>
                   </select>
                 </div>
-                <div>
+                <div className="col-span-full">
                   <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1 font-mono">UPI ID (optional)</label>
                   <input type="text" value={company.bankUPI || ""}
                     onChange={(e) => setCompany(prev => ({ ...prev, bankUPI: e.target.value }))}
                     placeholder="e.g. business@upi"
                     className="w-full rounded-lg border border-slate-800 bg-slate-900 p-2.5 text-sm text-white font-mono focus:outline-hidden" />
+                </div>
+                <div className="col-span-full">
+                  <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 font-mono">UPI QR Code (optional)</label>
+                  <div className="flex items-start gap-4">
+                    {company.upiQrCode ? (
+                      <div className="relative shrink-0">
+                        <img src={company.upiQrCode} alt="UPI QR" className="h-28 w-28 rounded-lg border border-slate-700 object-contain bg-white p-1" />
+                        <button
+                          type="button"
+                          onClick={() => setCompany(prev => ({ ...prev, upiQrCode: "" }))}
+                          className="absolute -top-1.5 -right-1.5 h-5 w-5 rounded-full bg-red-600 text-white text-[10px] flex items-center justify-center font-bold cursor-pointer hover:bg-red-500"
+                          title="Remove QR"
+                        >✕</button>
+                      </div>
+                    ) : (
+                      <label className="flex flex-col items-center justify-center h-28 w-28 rounded-lg border-2 border-dashed border-slate-700 bg-slate-900 cursor-pointer hover:border-indigo-500 hover:bg-slate-800 transition-colors shrink-0">
+                        <span className="text-2xl text-slate-500">⬆</span>
+                        <span className="text-[10px] text-slate-500 mt-1 text-center font-mono leading-tight">Upload QR<br/>PNG / JPG</span>
+                        <input type="file" accept="image/png,image/jpeg,image/webp" className="hidden"
+                          onChange={(e) => {
+                            const file = e.target.files?.[0];
+                            if (!file) return;
+                            if (file.size > 500 * 1024) { alert("QR image must be under 500 KB"); return; }
+                            const reader = new FileReader();
+                            reader.onload = (ev) => setCompany(prev => ({ ...prev, upiQrCode: ev.target?.result as string }));
+                            reader.readAsDataURL(file);
+                            e.target.value = "";
+                          }}
+                        />
+                      </label>
+                    )}
+                    <div className="text-[11px] text-slate-500 leading-relaxed pt-1">
+                      Upload your bank's or payment app's QR code.<br/>
+                      It will appear on printed invoices &amp; payslips.<br/>
+                      <span className="text-slate-600">Max size: 500 KB · PNG or JPG</span>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>

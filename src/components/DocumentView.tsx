@@ -7,8 +7,8 @@ import { toast } from "../utils/toast";
 import React, { useState, useRef } from "react";
 import {
   FolderOpen, FolderPlus, UploadCloud, FileText, Trash2,
-  Download, Plus, X, ChevronRight, Home, File,
-  FileImage, FileSpreadsheet, Folder, Search
+  Download, X, ChevronRight, Home, File,
+  FileImage, FileSpreadsheet, Folder, Search, Eye, RefreshCw, ExternalLink
 } from "lucide-react";
 import { AppDocument, DocFolder, Supplier, Customer, Employee, Asset, UserRole } from "../types";
 
@@ -59,6 +59,11 @@ export default function DocumentView({
   const [attachId, setAttachId] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+  const [viewingDoc, setViewingDoc] = useState<AppDocument | null>(null);
+  const [refreshKey, setRefreshKey] = useState(0);
+
+  const isImage = (type: string) => ["JPG","JPEG","PNG","GIF","SVG","WEBP"].includes(type.toUpperCase());
+  const isPDF   = (type: string) => type.toUpperCase() === "PDF";
 
   // Breadcrumb path
   const buildPath = (fid: string | null): DocFolder[] => {
@@ -165,18 +170,27 @@ export default function DocumentView({
           <h1 className="text-xl font-black text-white tracking-tight">Document Vault</h1>
           <p className="text-xs text-slate-400 mt-0.5">{documents.length} files · {folders.length} folders</p>
         </div>
-        {canWrite && (
-          <div className="flex items-center gap-2">
-            <button onClick={() => { setShowNewFolder(true); setShowUpload(false); }}
-              className="flex items-center gap-1.5 rounded-lg border border-slate-700 bg-slate-800 hover:bg-slate-700 px-3 py-2 text-xs font-bold text-slate-200 cursor-pointer transition-all">
-              <FolderPlus className="h-3.5 w-3.5 text-amber-400" /> New Folder
-            </button>
-            <button onClick={() => { setShowUpload(true); setShowNewFolder(false); }}
-              className="flex items-center gap-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 px-3 py-2 text-xs font-bold text-white cursor-pointer transition-all">
-              <UploadCloud className="h-3.5 w-3.5" /> Upload Files
-            </button>
-          </div>
-        )}
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setRefreshKey(k => k + 1)}
+            className="p-2 rounded-lg border border-slate-700 bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white cursor-pointer transition-all"
+            title="Reload"
+          >
+            <RefreshCw className="h-3.5 w-3.5" />
+          </button>
+          {canWrite && (
+            <>
+              <button onClick={() => { setShowNewFolder(true); setShowUpload(false); }}
+                className="flex items-center gap-1.5 rounded-lg border border-slate-700 bg-slate-800 hover:bg-slate-700 px-3 py-2 text-xs font-bold text-slate-200 cursor-pointer transition-all">
+                <FolderPlus className="h-3.5 w-3.5 text-amber-400" /> New Folder
+              </button>
+              <button onClick={() => { setShowUpload(true); setShowNewFolder(false); }}
+                className="flex items-center gap-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 px-3 py-2 text-xs font-bold text-white cursor-pointer transition-all">
+                <UploadCloud className="h-3.5 w-3.5" /> Upload Files
+              </button>
+            </>
+          )}
+        </div>
       </div>
 
       {/* Breadcrumb */}
@@ -322,7 +336,7 @@ export default function DocumentView({
 
       {/* Files grid */}
       {currentDocs.length > 0 && (
-        <div>
+        <div key={refreshKey}>
           <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-2">Files</p>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {currentDocs.map(doc => (
@@ -346,8 +360,12 @@ export default function DocumentView({
                 <div className="flex items-center justify-between text-[10px] text-slate-600 border-t border-slate-800 pt-2">
                   <span>{doc.uploadedBy} · {new Date(doc.uploadedAt).toLocaleDateString("en-IN")}</span>
                   <div className="flex gap-1">
+                    <button onClick={() => setViewingDoc(doc)}
+                      className="p-1.5 rounded hover:bg-indigo-500/10 text-slate-400 hover:text-indigo-400 transition-colors cursor-pointer" title="View">
+                      <Eye className="h-3.5 w-3.5" />
+                    </button>
                     <a href={doc.url} download={doc.name}
-                      className="p-1.5 rounded hover:bg-slate-800 text-slate-400 hover:text-indigo-400 transition-colors" title="Download">
+                      className="p-1.5 rounded hover:bg-slate-800 text-slate-400 hover:text-emerald-400 transition-colors" title="Download">
                       <Download className="h-3.5 w-3.5" />
                     </a>
                     {canWrite && (
@@ -360,6 +378,63 @@ export default function DocumentView({
                 </div>
               </div>
             ))}
+          </div>
+        </div>
+      )}
+
+      {/* File Viewer Modal */}
+      {viewingDoc && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4" onClick={() => setViewingDoc(null)}>
+          <div className="w-full max-w-4xl max-h-[90vh] rounded-2xl border border-slate-800 bg-slate-950 shadow-2xl flex flex-col" onClick={e => e.stopPropagation()}>
+            {/* Modal header */}
+            <div className="flex items-center justify-between px-5 py-3.5 border-b border-slate-800 shrink-0">
+              <div className="flex items-center gap-2.5 min-w-0">
+                <div className="h-7 w-7 flex items-center justify-center rounded-lg bg-slate-800 shrink-0">
+                  {fileIcon(viewingDoc.fileType)}
+                </div>
+                <div className="min-w-0">
+                  <p className="text-sm font-bold text-white truncate">{viewingDoc.name}</p>
+                  <p className="text-[10px] text-slate-500 font-mono">{viewingDoc.fileSize} · {viewingDoc.fileType}</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-2 shrink-0 ml-3">
+                <a href={viewingDoc.url} target="_blank" rel="noreferrer"
+                  className="p-1.5 rounded-lg border border-slate-800 bg-slate-900 text-slate-400 hover:text-white transition-colors" title="Open in new tab">
+                  <ExternalLink className="h-4 w-4" />
+                </a>
+                <a href={viewingDoc.url} download={viewingDoc.name}
+                  className="p-1.5 rounded-lg border border-slate-800 bg-slate-900 text-slate-400 hover:text-emerald-400 transition-colors" title="Download">
+                  <Download className="h-4 w-4" />
+                </a>
+                <button onClick={() => setViewingDoc(null)}
+                  className="p-1.5 rounded-lg border border-slate-800 bg-slate-900 text-slate-400 hover:text-white transition-colors cursor-pointer">
+                  <X className="h-4 w-4" />
+                </button>
+              </div>
+            </div>
+
+            {/* Preview area */}
+            <div className="flex-1 overflow-auto flex items-center justify-center p-4 min-h-0">
+              {isImage(viewingDoc.fileType) ? (
+                <img src={viewingDoc.url} alt={viewingDoc.name}
+                  className="max-w-full max-h-[70vh] rounded-lg object-contain shadow-lg" />
+              ) : isPDF(viewingDoc.fileType) ? (
+                <iframe src={viewingDoc.url} title={viewingDoc.name}
+                  className="w-full h-[70vh] rounded-lg border border-slate-800 bg-white" />
+              ) : (
+                <div className="flex flex-col items-center gap-4 py-16 text-center">
+                  <div className="p-5 bg-slate-800 rounded-2xl">
+                    {fileIcon(viewingDoc.fileType)}
+                  </div>
+                  <p className="text-slate-300 font-bold text-sm">Preview not available for {viewingDoc.fileType} files</p>
+                  <p className="text-slate-500 text-xs">Download the file to open it on your device.</p>
+                  <a href={viewingDoc.url} download={viewingDoc.name}
+                    className="flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold rounded-lg transition-colors">
+                    <Download className="h-4 w-4" /> Download File
+                  </a>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       )}
