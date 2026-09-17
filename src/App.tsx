@@ -487,6 +487,8 @@ export default function App() {
     localStorage.setItem(`deinrim_company_${cid}`,        JSON.stringify(company));
     localStorage.setItem(`deinrim_branches_${cid}`,       JSON.stringify(branches));
     localStorage.setItem(`deinrim_products_${cid}`,       JSON.stringify(products));
+    localStorage.setItem(`deinrim_categories_${cid}`,     JSON.stringify(categories));
+    localStorage.setItem(`deinrim_brands_${cid}`,         JSON.stringify(brands));
     localStorage.setItem(`deinrim_batchStocks_${cid}`,    JSON.stringify(batchStocks));
     localStorage.setItem(`deinrim_suppliers_${cid}`,      JSON.stringify(suppliers));
     localStorage.setItem(`deinrim_purchaseOrders_${cid}`, JSON.stringify(purchaseOrders));
@@ -510,6 +512,8 @@ export default function App() {
       saveEntity(cid, "company",        company);
       saveEntity(cid, "branches",       branches);
       saveEntity(cid, "products",       products);
+      saveEntity(cid, "categories",     categories);
+      saveEntity(cid, "brands",         brands);
       saveEntity(cid, "batchStocks",    batchStocks);
       saveEntity(cid, "suppliers",      suppliers);
       saveEntity(cid, "purchaseOrders", purchaseOrders);
@@ -529,7 +533,7 @@ export default function App() {
     }, 1500);
   }, [
     isLoggedIn, currentUser.companyId,
-    company, branches, products, batchStocks, suppliers, purchaseOrders,
+    company, branches, products, categories, brands, batchStocks, suppliers, purchaseOrders,
     leads, customers, invoices, employees, leaveRequests, transactions,
     documents, notifications, auditLogs, assets, stockMovements, vendorBills,
     salesPayments,
