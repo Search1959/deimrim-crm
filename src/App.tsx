@@ -431,6 +431,8 @@ export default function App() {
       const resolvedVendorBills = (Array.isArray(apiVendorBills) && (apiVendorBills as any[]).length > 0)
         ? apiVendorBills
         : (lsVendorBills ?? []);
+      // salesPayments: load from localStorage (persisted there on every change)
+      const resolvedSalesPayments = lsGet("salesPayments") ?? [];
 
       // Apply branch migration (Mumbai → Kolkata)
       const migratedBranches = (resolvedBranches as any[]).map((br: any) =>
@@ -461,6 +463,7 @@ export default function App() {
       setAssets(resolvedAssets as any);
       setStockMovements(resolvedMovements as any);
       setVendorBills(resolvedVendorBills as any);
+      setSalesPayments(resolvedSalesPayments as any);
       tenantLoading.current = false;
       setServiceCatalog(isDemo ? [
         { id: "svc-1", name: "Consulting / Advisory", sacCode: "998311", unit: "Hour", defaultRate: 2500, description: "Professional consulting and advisory services" },
@@ -499,6 +502,7 @@ export default function App() {
     localStorage.setItem(`deinrim_assets_${cid}`,         JSON.stringify(assets));
     localStorage.setItem(`deinrim_stockMovements_${cid}`, JSON.stringify(stockMovements));
     localStorage.setItem(`deinrim_vendorBills_${cid}`,    JSON.stringify(vendorBills));
+    localStorage.setItem(`deinrim_salesPayments_${cid}`, JSON.stringify(salesPayments));
 
     // Debounced write to MySQL API (fire-and-forget, no blocking UI)
     if (saveTimer.current) clearTimeout(saveTimer.current);
@@ -521,12 +525,14 @@ export default function App() {
       saveEntity(cid, "assets",         assets);
       saveEntity(cid, "stockMovements", stockMovements);
       saveEntity(cid, "vendorBills",    vendorBills);
+      saveEntity(cid, "salesPayments",  salesPayments);
     }, 1500);
   }, [
     isLoggedIn, currentUser.companyId,
     company, branches, products, batchStocks, suppliers, purchaseOrders,
     leads, customers, invoices, employees, leaveRequests, transactions,
     documents, notifications, auditLogs, assets, stockMovements, vendorBills,
+    salesPayments,
   ]);
 
   useEffect(() => { persistTenant(); }, [persistTenant]);
@@ -882,7 +888,7 @@ export default function App() {
     });
 
     // B. Write stock movement log for product lines only
-    const invoiceNum = `INV-2026-000${invoices.length + 1}`;
+    const invoiceNum = `INV-${new Date().getFullYear()}-${String(invoices.length + 1).padStart(4, "0")}`;
     productItems.forEach(item => {
       const prod = products.find(p => p.id === item.productId);
       const moveLog: StockMovement = {
