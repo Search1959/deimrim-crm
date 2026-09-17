@@ -908,6 +908,7 @@ function buildPrintHTML(d: PrintData): string {
         <p style="font-size:11px"><strong>IFSC:</strong> <span style="font-family:monospace">${d.company.bankIFSC || "—"}</span></p>
         <p style="font-size:11px"><strong>Type:</strong> ${d.company.bankAccountType || "Current"}</p>
         ${d.company.bankUPI ? `<p style="font-size:11px"><strong>UPI:</strong> ${d.company.bankUPI}</p>` : ""}
+        ${d.company.upiQrCode ? `<div style="margin-top:8px"><img src="${d.company.upiQrCode}" alt="UPI QR" style="width:90px;height:90px;object-fit:contain;border:1px solid #e2e8f0;border-radius:6px;padding:3px" /></div>` : ""}
       </td>
       <td width="50%" style="border:1px solid #e2e8f0;padding:10px;vertical-align:top">
         <p style="font-size:10px;font-weight:700;color:#4a5568;margin-bottom:6px">TERMS & CONDITIONS</p>

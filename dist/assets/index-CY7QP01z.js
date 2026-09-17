@@ -863,6 +863,7 @@ DR-NET-92,My New Switch,cat-1,Unit,1200,1950,5,100,8809110,QR-NET-92,Premium swi
         <p style="font-size:11px"><strong>IFSC:</strong> <span style="font-family:monospace">${e.company.bankIFSC||"—"}</span></p>
         <p style="font-size:11px"><strong>Type:</strong> ${e.company.bankAccountType||"Current"}</p>
         ${e.company.bankUPI?`<p style="font-size:11px"><strong>UPI:</strong> ${e.company.bankUPI}</p>`:""}
+        ${e.company.upiQrCode?`<div style="margin-top:8px"><img src="${e.company.upiQrCode}" alt="UPI QR" style="width:90px;height:90px;object-fit:contain;border:1px solid #e2e8f0;border-radius:6px;padding:3px" /></div>`:""}
       </td>
       <td width="50%" style="border:1px solid #e2e8f0;padding:10px;vertical-align:top">
         <p style="font-size:10px;font-weight:700;color:#4a5568;margin-bottom:6px">TERMS & CONDITIONS</p>
