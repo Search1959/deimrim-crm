@@ -124,7 +124,7 @@ export default function AuctionsPanel({ suppliers, companyId }: AuctionsPanelPro
 
     const newAuction: EAuction = {
       id: `auc-${Date.now()}`,
-      auctionNumber: `AUC-2026-000${auctions.length + 1}`,
+      auctionNumber: `AUC-${new Date().getFullYear()}-${String(auctions.length + 1).padStart(4, "0")}`,
       title: auctionTitle,
       description,
       auctionType,

@@ -57,7 +57,7 @@ export default function TicketsPanel({ customers, companyId }: TicketsPanelProps
 
     const newTicket: ServiceTicket = {
       id: `tkt-${Date.now()}`,
-      ticketNumber: `ST-2026-090${tickets.length + 1}`,
+      ticketNumber: `ST-${new Date().getFullYear()}-${String(tickets.length + 1).padStart(4, "0")}`,
       subject,
       companyName,
       contactName,

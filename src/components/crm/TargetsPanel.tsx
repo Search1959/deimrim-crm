@@ -2,45 +2,30 @@ import React, { useState, useEffect } from "react";
 import { Plus, Award, Activity, Calendar } from "lucide-react";
 import { SalesTarget, formatINR } from "../../types";
 
-export default function TargetsPanel() {
+export default function TargetsPanel({ companyId }: { companyId: string }) {
   const [targets, setTargets] = useState<SalesTarget[]>([]);
   const [showAddModal, setShowAddModal] = useState(false);
 
   // Form states
-  const [period, setPeriod] = useState("July 2026");
+  const [period, setPeriod] = useState(`${new Date().toLocaleString("en-IN", { month: "long" })} ${new Date().getFullYear()}`);
   const [targetAmount, setTargetAmount] = useState("");
   const [achievedAmount, setAchievedAmount] = useState("");
   const [assignedTo, setAssignedTo] = useState("");
 
+  const storageKey = `deinrim_sales_targets_${companyId}`;
+
   useEffect(() => {
-    const stored = localStorage.getItem("deinrim_sales_targets");
+    const stored = localStorage.getItem(storageKey);
     if (stored) {
       try { setTargets(JSON.parse(stored)); } catch (e) {}
     } else {
-      const defaultT: SalesTarget[] = [
-        {
-          id: "tgt-1",
-          period: "June 2026",
-          targetAmount: 2500000,
-          achievedAmount: 1850000,
-          assignedTo: "Kolkata Sales Node"
-        },
-        {
-          id: "tgt-2",
-          period: "Q2 FY26",
-          targetAmount: 5000000,
-          achievedAmount: 3950000,
-          assignedTo: "National CRM Node"
-        }
-      ];
-      setTargets(defaultT);
-      localStorage.setItem("deinrim_sales_targets", JSON.stringify(defaultT));
+      setTargets([]);
     }
-  }, []);
+  }, [companyId]);
 
   const saveTargets = (updated: SalesTarget[]) => {
     setTargets(updated);
-    localStorage.setItem("deinrim_sales_targets", JSON.stringify(updated));
+    localStorage.setItem(storageKey, JSON.stringify(updated));
   };
 
   const handleOpenAdd = () => {

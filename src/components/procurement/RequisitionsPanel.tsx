@@ -123,7 +123,7 @@ export default function RequisitionsPanel({ onLinkToPR, companyId }: Requisition
 
     const newPR: PurchaseRequisition = {
       id: `pr-${Date.now()}`,
-      prNumber: `PR-2026-000${requisitions.length + 1}`,
+      prNumber: `PR-${new Date().getFullYear()}-${String(requisitions.length + 1).padStart(4, "0")}`,
       department,
       category,
       priority,

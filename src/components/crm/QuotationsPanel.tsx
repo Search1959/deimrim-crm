@@ -77,7 +77,7 @@ export default function QuotationsPanel({ customers, companyId, isDemo }: Quotat
     setContactPerson("");
     setGstNo("19AABCT1234D1Z5");
     setBillingAddress("");
-    setQuotationNo(`QT-2026-00${quotations.length + 1}`);
+    setQuotationNo(`QT-${new Date().getFullYear()}-${String(quotations.length + 1).padStart(4, "0")}`);
     setDealId("");
     setValidUntil("");
     setNotes("");
@@ -130,7 +130,7 @@ export default function QuotationsPanel({ customers, companyId, isDemo }: Quotat
 
     const newQ: Quotation = {
       id: `quot-${Date.now()}`,
-      quotationNumber: quotationNo || `QT-2026-00${quotations.length + 1}`,
+      quotationNumber: quotationNo || `QT-${new Date().getFullYear()}-${String(quotations.length + 1).padStart(4, "0")}`,
       companyName,
       contactPerson,
       gstNo,

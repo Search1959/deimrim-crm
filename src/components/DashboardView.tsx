@@ -149,7 +149,7 @@ export default function DashboardView({
 
     const newPO: PurchaseOrder = {
       id: `po-${Date.now()}`,
-      poNumber: `PO-2026-000${purchaseOrders.length + 1}`,
+      poNumber: `PO-${new Date().getFullYear()}-${String(purchaseOrders.length + 1).padStart(4, "0")}`,
       supplierId: poSupplierId,
       branchId: "br-hq",
       items: [

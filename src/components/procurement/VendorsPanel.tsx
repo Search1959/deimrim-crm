@@ -84,7 +84,7 @@ export default function VendorsPanel({ suppliers, onAddSupplier, onDeleteSupplie
 
   const handleOpenAdd = () => {
     setName("");
-    setCode(`SUP-${2026000 + suppliers.length + 1}`);
+    setCode(`SUP-${new Date().getFullYear()}-${String(suppliers.length + 1).padStart(3, "0")}`);
     setEmail("");
     setContactPerson("");
     setPhone("");

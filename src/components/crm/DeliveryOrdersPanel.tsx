@@ -174,7 +174,7 @@ export default function DeliveryOrdersPanel({ customers, companyId }: DeliveryOr
       setEditingDO(null);
       toast.success("DO Updated", "Delivery order saved")
     } else {
-      const doNumber = `DO-2026-000${deliveryOrders.length + 1}`;
+      const doNumber = `DO-${new Date().getFullYear()}-${String(deliveryOrders.length + 1).padStart(4, "0")}`;
       const newDO: DeliveryOrder = {
         id: `do-${Date.now()}`,
         doNumber,

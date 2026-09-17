@@ -396,8 +396,8 @@ export default function App() {
       const resolvedCompany   = pick(validApiCompany,        "company",        blankCompany);
       const resolvedBranches  = pick(safe(apiBranches),      "branches",       blankBranches);
       const resolvedProducts  = pick(safe(apiProducts),      "products",       isDemo ? defaultProducts       : []);
-      const resolvedCats      = pick(safe(apiCategories),    "categories",     defaultCategories);
-      const resolvedBrands    = pick(safe(apiBrands),        "brands",         defaultBrands);
+      const resolvedCats      = pick(safe(apiCategories),    "categories",     isDemo ? defaultCategories : []);
+      const resolvedBrands    = pick(safe(apiBrands),        "brands",         isDemo ? defaultBrands    : []);
       const resolvedStocks    = pick(safe(apiBatchStocks),   "batchStocks",    isDemo ? defaultBatchStocks    : []);
       const resolvedSuppliers = pick(safe(apiSuppliers),     "suppliers",      isDemo ? defaultSuppliers      : []);
       const resolvedPOs       = pick(safe(apiPOs),           "purchaseOrders", isDemo ? defaultPurchaseOrders : []);
@@ -772,7 +772,7 @@ export default function App() {
     const rateVal = Number(qPORate) || 100;
     const totalAmount = qtyVal * rateVal;
 
-    const poNumber = `PO-2026-000${purchaseOrders.length + 1}`;
+    const poNumber = `PO-${new Date().getFullYear()}-${String(purchaseOrders.length + 1).padStart(4, "0")}`;
     const newPO: PurchaseOrder = {
       id: `po-${Date.now()}`,
       poNumber,

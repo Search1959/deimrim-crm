@@ -615,8 +615,8 @@ export default function FinanceView({
     ...billLedgerRows,
   ].sort((a, b) => (b.date || "").localeCompare(a.date || ""));
 
-  // Compute stats
-  const totalIncome = combinedLedger.filter(t => t.type === "INCOME").reduce((s, t) => s + t.amount, 0);
+  // Compute stats — revenue = billed invoices only (avoid double-counting with payment receipts)
+  const totalIncome = combinedLedger.filter(t => t._source === "invoice").reduce((s, t) => s + t.amount, 0);
   const totalExpense = combinedLedger.filter(t => t.type === "EXPENSE").reduce((s, t) => s + t.amount, 0);
   const netSurplus = totalIncome - totalExpense;
 
@@ -1100,10 +1100,10 @@ Office Ergonomic Chairs,AST-CH-99,Furniture,1200,1050,12`;
             <div className="border-b border-slate-800 pb-2">
               <div className="flex items-center justify-between text-sm font-bold text-white">
                 <span className="uppercase tracking-wider font-mono">A. Operating Revenues (Inflow)</span>
-                <span className="font-mono text-emerald-400">+{formatINR(totalIncome)}</span>
+                <span className="font-mono text-emerald-400">+{formatINR(combinedLedger.filter(t => t._source === "invoice").reduce((s, t) => s + t.amount, 0))}</span>
               </div>
               <div className="mt-2 pl-4 space-y-1.5 text-xs text-slate-400">
-                {combinedLedger.filter(t => t.type === "INCOME").map(t => (
+                {combinedLedger.filter(t => t._source === "invoice").map(t => (
                   <div key={t.id} className="flex justify-between items-center">
                     <span>{t.description} ({t.category})</span>
                     <span className="font-mono text-slate-300">{formatINR(t.amount)}</span>
@@ -1154,9 +1154,12 @@ Office Ergonomic Chairs,AST-CH-99,Furniture,1200,1050,12`;
                 <strong className="text-white uppercase block tracking-wider text-xs font-mono font-bold">Dynamic Net Profit Margin</strong>
                 <span className="text-[10px] text-slate-500 font-semibold uppercase font-mono mt-0.5">Calculated automatically</span>
               </div>
-              <strong className={`font-mono text-lg font-extrabold ${netSurplus >= 0 ? "text-emerald-400" : "text-rose-400"}`}>
-                {netSurplus >= 0 ? "+" : ""}{formatINR(netSurplus)}
-              </strong>
+              {(() => {
+                const plRevenue = combinedLedger.filter(t => t._source === "invoice").reduce((s, t) => s + t.amount, 0);
+                const plExpenses = combinedLedger.filter(t => t.type === "EXPENSE").reduce((s, t) => s + t.amount, 0);
+                const plNet = plRevenue - plExpenses;
+                return <strong className={`font-mono text-lg font-extrabold ${plNet >= 0 ? "text-emerald-400" : "text-rose-400"}`}>{plNet >= 0 ? "+" : ""}{formatINR(plNet)}</strong>;
+              })()}
             </div>
           </div>
         </div>

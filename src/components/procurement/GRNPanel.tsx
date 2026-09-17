@@ -123,7 +123,7 @@ export default function GRNPanel({ orders, suppliers, onReceiveGRN, companyId }:
 
     const newGRN = {
       id: `grn-${Date.now()}`,
-      grnNumber: `GRN-2026-000${grns.length + 1}`,
+      grnNumber: `GRN-${new Date().getFullYear()}-${String(grns.length + 1).padStart(4, "0")}`,
       title: grnTitle,
       poId,
       poNumber: matchedPo?.poNumber || "PO-DIRECT",

@@ -327,7 +327,7 @@ export default function PaymentsPanel({ invoices, setInvoices, customers, compan
                     type="number"
                     required
                     min="0.01"
-                    step="0.01"
+                    step="any"
                     placeholder="0.00"
                     value={amount}
                     onChange={(e) => setAmount(e.target.value)}

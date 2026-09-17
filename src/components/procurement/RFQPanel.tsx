@@ -117,7 +117,7 @@ export default function RFQPanel({ suppliers, companyId }: RFQPanelProps) {
 
     const newRFQ: RequestForQuotation = {
       id: `rfq-${Date.now()}`,
-      rfqNumber: `RFQ-2026-000${rfqs.length + 1}`,
+      rfqNumber: `RFQ-${new Date().getFullYear()}-${String(rfqs.length + 1).padStart(4, "0")}`,
       title: rfqTitle,
       linkedPrId: linkedPrId || undefined,
       linkedPrNumber: linkedPR?.prNumber || undefined,
