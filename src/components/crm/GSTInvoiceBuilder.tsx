@@ -194,6 +194,8 @@ export default function GSTInvoiceBuilder({
   const [placeOfSupply, setPlaceOfSupply] = useState(company.state || "West Bengal");
   const [reverseCharge, setReverseCharge] = useState("No");
   const [refPO, setRefPO] = useState("");
+  const [paymentMode, setPaymentMode] = useState("Not Paid");
+  const [paymentRef, setPaymentRef] = useState("");
 
   // Buyer state (auto-filled from customer)
   const [selectedCustomerId, setSelectedCustomerId] = useState("");
@@ -351,6 +353,8 @@ export default function GSTInvoiceBuilder({
       placeOfSupply,
       reverseCharge,
       refPO,
+      paymentMode,
+      paymentRef,
       buyerName,
       buyerGSTIN,
       billingAddress,
@@ -376,6 +380,7 @@ export default function GSTInvoiceBuilder({
     const html = buildPrintHTML({
       invoice: {
         invoiceNumber, invDate, dueDate, placeOfSupply, reverseCharge, refPO,
+        paymentMode, paymentRef,
         buyerName, buyerGSTIN, billingAddress, buyerState, buyerPhone, buyerEmail,
         note, terms,
       },
@@ -438,6 +443,22 @@ export default function GSTInvoiceBuilder({
               <label className={inLabel}>Ref / PO No</label>
               <input value={refPO} onChange={e => setRefPO(e.target.value)} className={inClass} placeholder="Optional" />
             </div>
+            <div>
+              <label className={inLabel}>Payment Mode</label>
+              <select value={paymentMode} onChange={e => { setPaymentMode(e.target.value); if (e.target.value === "Not Paid" || e.target.value === "Cash") setPaymentRef(""); }} className={inClass}>
+                <option>Not Paid</option>
+                <option>Cash</option>
+                <option>UPI</option>
+                <option>Bank Transfer</option>
+                <option>Cheque</option>
+              </select>
+            </div>
+            {(paymentMode === "UPI" || paymentMode === "Bank Transfer" || paymentMode === "Cheque") && (
+              <div>
+                <label className={inLabel}>{paymentMode === "UPI" ? "UPI Ref / Txn ID" : paymentMode === "Cheque" ? "Cheque No." : "UTR / Ref No."}</label>
+                <input value={paymentRef} onChange={e => setPaymentRef(e.target.value)} className={inClass} placeholder="Reference number" />
+              </div>
+            )}
           </div>
 
           {/* Seller + Buyer side by side */}
@@ -759,7 +780,8 @@ export default function GSTInvoiceBuilder({
 interface PrintData {
   invoice: {
     invoiceNumber: string; invDate: string; dueDate: string; placeOfSupply: string;
-    reverseCharge: string; refPO: string; buyerName: string; buyerGSTIN: string;
+    reverseCharge: string; refPO: string; paymentMode: string; paymentRef: string;
+    buyerName: string; buyerGSTIN: string;
     billingAddress: string; buyerState: string; buyerPhone: string; buyerEmail: string;
     note: string; terms: string;
   };
@@ -834,6 +856,7 @@ function buildPrintHTML(d: PrintData): string {
           <tr><td style="font-size:10px;color:#4a5568;padding:2px 0">Place of Supply</td><td style="font-size:11px">${inv.placeOfSupply}</td></tr>
           <tr><td style="font-size:10px;color:#4a5568;padding:2px 0">Reverse Charge</td><td style="font-size:11px">${inv.reverseCharge}</td></tr>
           ${inv.refPO ? `<tr><td style="font-size:10px;color:#4a5568;padding:2px 0">Ref / PO</td><td style="font-size:11px">${inv.refPO}</td></tr>` : ""}
+          <tr><td style="font-size:10px;color:#4a5568;padding:2px 0">Payment</td><td style="font-size:11px;font-weight:${inv.paymentMode === "Not Paid" ? "400" : "700"};color:${inv.paymentMode === "Not Paid" ? "#e53e3e" : "#276749"}">${inv.paymentMode}${inv.paymentRef ? " — " + inv.paymentRef : ""}</td></tr>
         </table>
       </td>
     </tr>
