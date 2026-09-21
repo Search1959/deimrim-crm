@@ -1,5 +1,5 @@
 import React, { useState, useRef } from "react";
-import { FileCheck, Plus, X, IndianRupee, CreditCard, ChevronDown, ChevronUp, Upload, Printer, Eye } from "lucide-react";
+import { FileCheck, Plus, X, IndianRupee, CreditCard, ChevronDown, ChevronUp, Upload, Printer, Eye, Camera } from "lucide-react";
 import { Supplier, PurchaseOrder, VendorInvoice, BillPayment, Product, BatchStock, formatINR } from "../../types";
 import { toast } from "../../utils/toast";
 
@@ -319,6 +319,7 @@ export default function VendorBillsPanel({
           gstPct: String(item.gstPct ?? 18),
         })));
       }
+      if (isMobile) setWasScannedOnMobile(true);
       toast.success("Bill scanned — please review and save");
     } catch {
       toast.error("Scan failed — try a clearer photo");
@@ -336,6 +337,8 @@ export default function VendorBillsPanel({
   const [expandedBillId, setExpandedBillId] = useState<string | null>(null);
   const [importing, setImporting] = useState(false);
   const [skipStock, setSkipStock] = useState(false);
+  const [wasScannedOnMobile, setWasScannedOnMobile] = useState(false);
+  const isMobile = typeof window !== "undefined" && window.innerWidth < 768;
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [viewingBill, setViewingBill] = useState<VendorInvoice | null>(null);
 
@@ -347,6 +350,7 @@ export default function VendorBillsPanel({
     setFormSupplierGSTIN(""); setFormChallanNo(""); setFormEWayBillNo("");
     setFormVehicleNo(""); setFormTransportMode("Road"); setFormNarration("");
     setFormLines([blankLine()]); setUseLineItems(true);
+    setWasScannedOnMobile(false);
   };
   const resetPayForm = () => {
     setPayAmount(""); setPayDate(new Date().toISOString().slice(0, 10));
@@ -624,9 +628,30 @@ export default function VendorBillsPanel({
       items: billItems,
     };
     setBills(prev => [newBill, ...prev]);
-    toast.success("Purchase Bill Recorded", `${formatINR(finalTotal)} bill from ${sup?.name}`);
+
+    // Auto-add to inventory when bill was created from mobile camera scan
+    if (wasScannedOnMobile && billItems && billItems.length > 0) {
+      const batchNum = `BATCH-${newBill.billNumber}`;
+      const newStocks: BatchStock[] = billItems.map((it: any, idx: number) => {
+        const prod = products.find(p => p.name.toLowerCase() === it.description.toLowerCase());
+        if (!prod) return null;
+        return { id: `bs-scan-${Date.now()}-${idx}`, productId: prod.id, warehouseId: "wh-main", batchNumber: batchNum, quantity: it.quantity };
+      }).filter(Boolean) as BatchStock[];
+      if (newStocks.length > 0) {
+        const addedIds = new Set(newStocks.map((s: BatchStock) => s.productId));
+        setBatchStocks(prev => [...prev.filter(b => !addedIds.has(b.productId)), ...newStocks]);
+        setBills(prev => prev.map(b => b.id === newBill.id ? { ...b, stockAdded: true } : b));
+        toast.success("Purchase Bill Recorded + Stock Updated", `${newStocks.length} products added to inventory`);
+      } else {
+        toast.success("Purchase Bill Recorded", `${formatINR(finalTotal)} bill from ${sup?.name} — add products to inventory first`);
+      }
+    } else {
+      toast.success("Purchase Bill Recorded", `${formatINR(finalTotal)} bill from ${sup?.name}`);
+    }
+
     setShowBillForm(false);
     resetBillForm();
+    setWasScannedOnMobile(false);
   };
 
   const handleRecordPayment = (e: React.FormEvent) => {
@@ -695,6 +720,18 @@ export default function VendorBillsPanel({
           </button>
         </div>
       </div>
+
+      {/* Mobile hero scan button */}
+      {isMobile && (
+        <button
+          onClick={() => { setCameraFacing("environment"); setShowCamera(true); startCamera("environment"); }}
+          className="w-full flex items-center justify-center gap-3 rounded-2xl bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 active:from-indigo-700 active:to-violet-700 px-4 py-5 text-white font-bold text-base shadow-lg shadow-indigo-900/40 transition-all"
+        >
+          <Camera className="h-6 w-6" />
+          📷 SCAN PURCHASE BILL
+          <span className="text-xs font-normal opacity-75 ml-1">Auto inventory entry</span>
+        </button>
+      )}
 
       {/* Summary cards */}
       {bills.length > 0 && (
