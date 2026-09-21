@@ -823,6 +823,18 @@ export default function VendorBillsPanel({
                           <CreditCard className="w-3 h-3" /> Pay
                         </button>
                       )}
+                      <button
+                        onClick={() => {
+                          if (window.confirm(`Delete bill ${b.billNumber}? This cannot be undone.`)) {
+                            setBills(prev => prev.filter(x => x.id !== b.id));
+                            toast.success("Bill deleted");
+                          }
+                        }}
+                        title="Delete Bill"
+                        className="flex items-center gap-1 px-2 py-1 rounded-md bg-red-700/20 hover:bg-red-700/40 text-red-400 text-[10px] font-bold transition-colors cursor-pointer"
+                      >
+                        <X className="w-3 h-3" />
+                      </button>
                       {b.payments.length > 0 && (
                         <button
                           onClick={() => setExpandedBillId(expandedBillId === b.id ? null : b.id)}
