@@ -8,7 +8,7 @@ import {
   LayoutDashboard, Boxes, ShoppingBag, TrendingUp,
   Users2, Wallet, Settings, FolderOpen, FileSpreadsheet,
   Briefcase, ExternalLink, ShieldCheck, LogOut, KeyRound,
-  X, Menu, Building,
+  X, Menu, Building, ScanLine,
 } from "lucide-react";
 import { User, UserRole, AppNotification, Branch, Company } from "../types";
 
@@ -25,6 +25,7 @@ interface Props {
 }
 
 const ALL_TABS = [
+  { id: "pos",       name: "POS",        icon: ScanLine },
   { id: "dashboard", name: "Dashboard",  icon: LayoutDashboard },
   { id: "inventory", name: "Inventory",  icon: Boxes },
   { id: "purchase",  name: "Purchase",   icon: ShoppingBag },
@@ -37,7 +38,7 @@ const ALL_TABS = [
 ];
 
 const VIEW_TITLES: Record<string, string> = {
-  dashboard: "Dashboard", inventory: "Inventory", purchase: "Purchase",
+  pos: "POS Terminal", dashboard: "Dashboard", inventory: "Inventory", purchase: "Purchase",
   "sales-crm": "Sales & CRM", hr: "HR", finance: "Finance",
   admin: "Admin", documents: "Documents", gst: "GST Compliance",
 };
@@ -54,6 +55,7 @@ export default function MobileAppShell({
   const unread = notifications.filter(n => !n.read).length;
 
   const allowed = ALL_TABS.filter(t => {
+    if (t.id === "pos") return true; // POS available to all roles
     const r = currentUser.role;
     if (r === UserRole.SYSTEM_ADMIN || r === UserRole.COMPANY_ADMIN || r === UserRole.READ_ONLY) return true;
     const map: Record<string, string> = {

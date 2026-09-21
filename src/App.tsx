@@ -21,6 +21,7 @@ import GSTView from "./components/GSTView";
 import HomePage from "./components/HomePage";
 import MobileLogin from "./components/MobileLogin";
 import MobileAppShell from "./components/MobileAppShell";
+import MobilePOS from "./components/MobilePOS";
 import ToastContainer from "./components/ToastContainer";
 
 // Seed states imports
@@ -178,6 +179,7 @@ export default function App() {
 
   // Helper to check if a specific view is allowed for the user's role
   const isViewAllowed = (role: UserRole, view: string): boolean => {
+    if (view === "pos") return true; // POS is open to all roles
     const r = (role as string).trim();
     // Accept canonical enum values AND all legacy strings (belt-and-suspenders)
     const isAdmin = r === UserRole.SYSTEM_ADMIN || r === "System Admin" || r === "system_admin";
@@ -348,19 +350,19 @@ export default function App() {
     setTransactions([]); setDocuments([]); setNotifications([]); setAuditLogs([]);
     setAssets([]); setStockMovements([]); setServiceCatalog([]); setVendorBills([]);
     (async () => {
-      // Load all 19 entities from MySQL in parallel (one round-trip each via Promise.all)
+      // Load all entities from MySQL in parallel (one round-trip each via Promise.all)
       const [
         apiCompany, apiBranches, apiProducts, apiCategories, apiBrands,
         apiBatchStocks, apiSuppliers, apiPOs, apiLeads, apiCustomers,
         apiInvoices, apiEmployees, apiLeaves, apiTransactions, apiDocs,
-        apiNotifications, apiAudit, apiAssets, apiMovements, apiVendorBills,
+        apiNotifications, apiAudit, apiAssets, apiMovements, apiVendorBills, apiSalesPayments,
       ] = await Promise.all([
         loadAllEntities(companyId).then(d => d)
       ]).then(([d]) => [
         d.company, d.branches, d.products, d.categories, d.brands,
         d.batchStocks, d.suppliers, d.purchaseOrders, d.leads, d.customers,
         d.invoices, d.employees, d.leaveRequests, d.transactions, d.documents,
-        d.notifications, d.auditLogs, d.assets, d.stockMovements, d.vendorBills,
+        d.notifications, d.auditLogs, d.assets, d.stockMovements, d.vendorBills, d.salesPayments,
       ]);
 
       // Build blank tenant defaults for new companies (isDemo defined above)
@@ -431,8 +433,11 @@ export default function App() {
       const resolvedVendorBills = (Array.isArray(apiVendorBills) && (apiVendorBills as any[]).length > 0)
         ? apiVendorBills
         : (lsVendorBills ?? []);
-      // salesPayments: load from localStorage (persisted there on every change)
-      const resolvedSalesPayments = lsGet("salesPayments") ?? [];
+      // salesPayments: prefer MySQL API, fall back to localStorage
+      const lsSalesPayments = lsGet("salesPayments");
+      const resolvedSalesPayments = (Array.isArray(apiSalesPayments) && (apiSalesPayments as any[]).length > 0)
+        ? apiSalesPayments
+        : (lsSalesPayments ?? []);
 
       // Apply branch migration (Mumbai → Kolkata)
       const migratedBranches = (resolvedBranches as any[]).map((br: any) =>
@@ -1072,6 +1077,18 @@ export default function App() {
     }
 
     switch (activeView) {
+      case "pos":
+        return (
+          <MobilePOS
+            products={products}
+            batchStocks={batchStocks}
+            customers={customers}
+            company={company}
+            currentUser={currentUser}
+            companyId={currentUser.companyId}
+            setInvoices={setInvoices}
+          />
+        );
       case "dashboard":
         return (
           <DashboardView
