@@ -37,76 +37,177 @@ function makeSKU(desc: string): string {
 
 function printBill(bill: VendorInvoice, companyName: string) {
   const items = bill.items || [];
-  const rows = items.map((it, i) => `
-    <tr>
-      <td style="padding:6px 8px;border:1px solid #ccc;text-align:center">${i + 1}</td>
-      <td style="padding:6px 8px;border:1px solid #ccc">${it.description}</td>
-      <td style="padding:6px 8px;border:1px solid #ccc;text-align:center">${it.hsn || ""}</td>
-      <td style="padding:6px 8px;border:1px solid #ccc;text-align:center">${it.quantity}</td>
-      <td style="padding:6px 8px;border:1px solid #ccc;text-align:center">${it.unit}</td>
-      <td style="padding:6px 8px;border:1px solid #ccc;text-align:right">₹${it.rate.toLocaleString("en-IN", { minimumFractionDigits: 2 })}</td>
-      <td style="padding:6px 8px;border:1px solid #ccc;text-align:right">₹${it.amount.toLocaleString("en-IN", { minimumFractionDigits: 2 })}</td>
+
+  // Per-slab GST aggregation
+  const slabMap: Record<number, { taxable: number; cgst: number; sgst: number }> = {};
+
+  const rows = items.map((it, i) => {
+    const qty    = it.quantity || 0;
+    const free   = (it as any).free || "";
+    const pack   = (it as any).pack || "";
+    const batch  = (it as any).batch || "";
+    const expiry = (it as any).expiryDate || "";
+    const mrp    = parseFloat((it as any).mrp) || 0;
+    const disc   = parseFloat((it as any).discount) || 0;
+    const gstPct = parseFloat((it as any).gstPct) || 0;
+    const taxable = +(it.amount * (1 - disc / 100)).toFixed(2);
+    const cgstPct = gstPct / 2;
+    const sgstPct = gstPct / 2;
+    const cgstAmt = +(taxable * cgstPct / 100).toFixed(2);
+    const sgstAmt = +(taxable * sgstPct / 100).toFixed(2);
+    if (!slabMap[gstPct]) slabMap[gstPct] = { taxable: 0, cgst: 0, sgst: 0 };
+    slabMap[gstPct].taxable += taxable;
+    slabMap[gstPct].cgst += cgstAmt;
+    slabMap[gstPct].sgst += sgstAmt;
+    const lineTotal = +(taxable + cgstAmt + sgstAmt).toFixed(2);
+    const td = (v: string | number, align = "center") => `<td style="padding:4px 5px;border:1px solid #ccc;text-align:${align}">${v}</td>`;
+    return `<tr>
+      ${td(i + 1)}
+      ${td(it.description, "left")}
+      ${td(pack)}
+      ${td(it.hsn || "")}
+      ${td(batch)}
+      ${td(expiry)}
+      ${td(mrp > 0 ? mrp.toFixed(2) : "—", "right")}
+      ${td(qty)}
+      ${td(free || "")}
+      ${td(it.rate.toFixed(2), "right")}
+      ${td(disc > 0 ? disc + "%" : "—")}
+      ${td(taxable.toFixed(2), "right")}
+      ${td(cgstPct > 0 ? cgstPct + "%" : "—")}
+      ${td(cgstAmt > 0 ? cgstAmt.toFixed(2) : "—", "right")}
+      ${td(sgstPct > 0 ? sgstPct + "%" : "—")}
+      ${td(sgstAmt > 0 ? sgstAmt.toFixed(2) : "—", "right")}
+      <td style="padding:4px 5px;border:1px solid #ccc;text-align:right;font-weight:600">${lineTotal.toFixed(2)}</td>
+    </tr>`;
+  }).join("");
+
+  const subtotal = items.reduce((s, it) => s + it.amount, 0);
+  const totalDiscount = items.reduce((s, it) => s + it.amount * (parseFloat((it as any).discount) || 0) / 100, 0);
+  const taxableTotal = subtotal - totalDiscount;
+  const totalCGST = Object.values(slabMap).reduce((s, v) => s + v.cgst, 0);
+  const totalSGST = Object.values(slabMap).reduce((s, v) => s + v.sgst, 0);
+  const grandTotal = bill.totalAmount;
+  const roundOff = +(grandTotal - (taxableTotal + totalCGST + totalSGST)).toFixed(2);
+
+  const slabRows = Object.entries(slabMap)
+    .filter(([, v]) => v.taxable > 0)
+    .sort(([a], [b]) => Number(a) - Number(b))
+    .map(([rate, v]) => `<tr>
+      <td style="padding:4px 8px;border:1px solid #ddd">${rate}%</td>
+      <td style="padding:4px 8px;border:1px solid #ddd;text-align:right">${v.taxable.toFixed(2)}</td>
+      <td style="padding:4px 8px;border:1px solid #ddd;text-align:center">${(Number(rate)/2).toFixed(1)}%</td>
+      <td style="padding:4px 8px;border:1px solid #ddd;text-align:right">${v.cgst.toFixed(2)}</td>
+      <td style="padding:4px 8px;border:1px solid #ddd;text-align:center">${(Number(rate)/2).toFixed(1)}%</td>
+      <td style="padding:4px 8px;border:1px solid #ddd;text-align:right">${v.sgst.toFixed(2)}</td>
+      <td style="padding:4px 8px;border:1px solid #ddd;text-align:right;font-weight:600">${(v.cgst + v.sgst).toFixed(2)}</td>
     </tr>`).join("");
 
-  const gstAmt = bill.totalAmount - bill.amountBeforeGst;
-
-  const html = `<!DOCTYPE html><html><head><title>Purchase Bill – ${bill.billNumber}</title>
+  const html = `<!DOCTYPE html><html><head><title>Purchase Invoice – ${bill.billNumber}</title>
   <style>
-    body { font-family: Arial, sans-serif; font-size: 12px; color: #111; margin: 0; padding: 20px; }
-    h1 { margin: 0; font-size: 18px; } h2 { margin: 0; font-size: 13px; font-weight: normal; }
-    table { border-collapse: collapse; width: 100%; }
-    th { background: #f0f0f0; padding: 6px 8px; border: 1px solid #ccc; text-align: left; font-size: 11px; }
-    .total-row td { font-weight: bold; background: #f9f9f9; }
-    @media print { button { display: none; } }
+    * { box-sizing: border-box; }
+    body { font-family: Arial, sans-serif; font-size: 11px; color: #111; margin: 0; padding: 15px; }
+    h1 { margin: 0; font-size: 16px; color: #1a237e; }
+    h2 { margin: 4px 0 2px; font-size: 12px; font-weight: bold; color: #1a237e; letter-spacing: 2px; }
+    table { border-collapse: collapse; width: 100%; margin-bottom: 10px; }
+    th { background: #e8eaf6; padding: 5px; border: 1px solid #9fa8da; text-align: center; font-size: 9px; font-weight: bold; }
+    .total-row td { font-weight: bold; background: #f5f5f5; }
+    .grand-row td { font-weight: bold; background: #e8eaf6; font-size: 12px; color: #1a237e; }
+    .sec { font-size: 10px; font-weight: bold; color: #1a237e; text-transform: uppercase; letter-spacing: 1px; margin: 8px 0 4px; border-bottom: 1px solid #9fa8da; padding-bottom: 2px; }
+    @media print { button { display: none; } body { padding: 8px; } }
   </style></head><body>
-  <div style="text-align:center;border-bottom:2px solid #333;padding-bottom:10px;margin-bottom:14px">
+
+  <div style="text-align:center;border-bottom:3px double #1a237e;padding-bottom:10px;margin-bottom:12px">
     <h1>${companyName}</h1>
     <h2>PURCHASE INVOICE</h2>
   </div>
-  <div style="display:flex;justify-content:space-between;margin-bottom:14px">
-    <div>
-      <strong>Supplier:</strong> ${bill.supplierName}<br/>
-      <strong>Bill No.:</strong> ${bill.billNumber}
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px">
+    <div style="border:1px solid #ddd;border-radius:4px;padding:8px;background:#fafafa">
+      <div class="sec">Supplier Details</div>
+      <strong>${bill.supplierName || "—"}</strong><br/>
+      ${(bill as any).supplierGSTIN ? `GSTIN: <strong>${(bill as any).supplierGSTIN}</strong><br/>` : ""}
     </div>
-    <div style="text-align:right">
-      <strong>Invoice Date:</strong> ${bill.invoiceDate || "—"}<br/>
-      <strong>Due Date:</strong> ${bill.dueDate}
+    <div style="border:1px solid #ddd;border-radius:4px;padding:8px;background:#fafafa">
+      <div class="sec">Invoice Details</div>
+      <table style="margin:0;border:none">
+        <tr><td style="padding:2px 6px 2px 0;border:none;color:#555">Invoice No.:</td><td style="padding:2px 0;border:none;font-weight:bold">${bill.billNumber}</td></tr>
+        <tr><td style="padding:2px 6px 2px 0;border:none;color:#555">Invoice Date:</td><td style="padding:2px 0;border:none;font-weight:bold">${bill.invoiceDate || "—"}</td></tr>
+        <tr><td style="padding:2px 6px 2px 0;border:none;color:#555">Due Date:</td><td style="padding:2px 0;border:none">${bill.dueDate || "—"}</td></tr>
+        ${(bill as any).challanNo ? `<tr><td style="padding:2px 6px 2px 0;border:none;color:#555">Challan No.:</td><td style="padding:2px 0;border:none">${(bill as any).challanNo}</td></tr>` : ""}
+      </table>
     </div>
   </div>
+
   ${items.length > 0 ? `
-  <table>
+  <div class="sec">Product Details</div>
+  <div style="overflow-x:auto">
+  <table style="font-size:9.5px">
     <thead><tr>
-      <th style="width:40px">Sl.</th>
-      <th>Description</th>
-      <th style="width:80px">HSN</th>
-      <th style="width:60px">Qty</th>
-      <th style="width:50px">Unit</th>
-      <th style="width:100px;text-align:right">Rate</th>
-      <th style="width:110px;text-align:right">Amount</th>
+      <th style="width:26px">Sl.</th>
+      <th style="min-width:140px;text-align:left">Product Description</th>
+      <th style="width:44px">Pack</th>
+      <th style="width:52px">HSN</th>
+      <th style="width:68px">Batch No.</th>
+      <th style="width:52px">Exp.Dt</th>
+      <th style="width:58px">MRP</th>
+      <th style="width:36px">Qty</th>
+      <th style="width:32px">Free</th>
+      <th style="width:58px">Rate</th>
+      <th style="width:42px">Dis%</th>
+      <th style="width:68px">Taxable</th>
+      <th style="width:42px">CGST%</th>
+      <th style="width:58px">CGST ₹</th>
+      <th style="width:42px">SGST%</th>
+      <th style="width:58px">SGST ₹</th>
+      <th style="width:70px">Amt (₹)</th>
     </tr></thead>
     <tbody>${rows}</tbody>
     <tfoot>
       <tr class="total-row">
-        <td colspan="6" style="padding:6px 8px;border:1px solid #ccc;text-align:right">Sub Total</td>
-        <td style="padding:6px 8px;border:1px solid #ccc;text-align:right">₹${bill.amountBeforeGst.toLocaleString("en-IN",{minimumFractionDigits:2})}</td>
-      </tr>
-      <tr>
-        <td colspan="6" style="padding:6px 8px;border:1px solid #ccc;text-align:right">GST (${bill.gstRate}%)</td>
-        <td style="padding:6px 8px;border:1px solid #ccc;text-align:right">₹${gstAmt.toLocaleString("en-IN",{minimumFractionDigits:2})}</td>
-      </tr>
-      <tr class="total-row">
-        <td colspan="6" style="padding:8px;border:1px solid #ccc;text-align:right;font-size:13px">GRAND TOTAL</td>
-        <td style="padding:8px;border:1px solid #ccc;text-align:right;font-size:13px">₹${bill.totalAmount.toLocaleString("en-IN",{minimumFractionDigits:2})}</td>
+        <td colspan="7" style="padding:5px;border:1px solid #ccc;text-align:right">Sub Total</td>
+        <td style="padding:5px;border:1px solid #ccc;text-align:center">${items.reduce((s, it) => s + it.quantity, 0)}</td>
+        <td colspan="3" style="padding:5px;border:1px solid #ccc"></td>
+        <td style="padding:5px;border:1px solid #ccc;text-align:right">${taxableTotal.toFixed(2)}</td>
+        <td colspan="2" style="padding:5px;border:1px solid #ccc;text-align:right">${totalCGST.toFixed(2)}</td>
+        <td colspan="2" style="padding:5px;border:1px solid #ccc;text-align:right">${totalSGST.toFixed(2)}</td>
+        <td style="padding:5px;border:1px solid #ccc;text-align:right">${(taxableTotal + totalCGST + totalSGST).toFixed(2)}</td>
       </tr>
     </tfoot>
-  </table>` : `<p>No line items recorded.</p>`}
-  <div style="margin-top:30px;text-align:right">
-    <button onclick="window.print()" style="padding:8px 20px;background:#333;color:#fff;border:none;cursor:pointer;font-size:12px">🖨 Print</button>
+  </table>
+  </div>
+
+  ${slabRows ? `<div class="sec" style="margin-top:10px">GST Summary (Slab-wise)</div>
+  <table style="max-width:480px;font-size:10px">
+    <thead><tr>
+      <th>GST Slab</th><th>Taxable Amt</th><th>CGST %</th><th>CGST Amt</th><th>SGST %</th><th>SGST Amt</th><th>Total Tax</th>
+    </tr></thead>
+    <tbody>${slabRows}</tbody>
+  </table>` : ""}
+
+  <div style="display:flex;justify-content:flex-end;margin-top:10px">
+    <table style="width:280px;font-size:11px">
+      <tr><td style="padding:4px 8px;border:1px solid #ddd">Gross Amount</td><td style="padding:4px 8px;border:1px solid #ddd;text-align:right">${subtotal.toFixed(2)}</td></tr>
+      ${totalDiscount > 0 ? `<tr><td style="padding:4px 8px;border:1px solid #ddd">(-) Discount</td><td style="padding:4px 8px;border:1px solid #ddd;text-align:right;color:#c62828">${totalDiscount.toFixed(2)}</td></tr>` : ""}
+      <tr><td style="padding:4px 8px;border:1px solid #ddd">Taxable Value</td><td style="padding:4px 8px;border:1px solid #ddd;text-align:right">${taxableTotal.toFixed(2)}</td></tr>
+      <tr><td style="padding:4px 8px;border:1px solid #ddd">CGST</td><td style="padding:4px 8px;border:1px solid #ddd;text-align:right">${totalCGST.toFixed(2)}</td></tr>
+      <tr><td style="padding:4px 8px;border:1px solid #ddd">SGST</td><td style="padding:4px 8px;border:1px solid #ddd;text-align:right">${totalSGST.toFixed(2)}</td></tr>
+      ${roundOff !== 0 ? `<tr><td style="padding:4px 8px;border:1px solid #ddd">Round Off</td><td style="padding:4px 8px;border:1px solid #ddd;text-align:right">${roundOff > 0 ? "+" : ""}${roundOff.toFixed(2)}</td></tr>` : ""}
+      <tr class="grand-row"><td style="padding:6px 8px;border:1px solid #9fa8da">Grand Total</td><td style="padding:6px 8px;border:1px solid #9fa8da;text-align:right">₹${grandTotal.toLocaleString("en-IN", { minimumFractionDigits: 2 })}</td></tr>
+    </table>
+  </div>` : `<p style="color:#888">No line items recorded.</p>`}
+
+  <div style="display:flex;justify-content:space-between;margin-top:30px;padding-top:10px;border-top:1px solid #ddd">
+    <div style="text-align:center;min-width:140px"><div style="border-top:1px solid #333;padding-top:4px;margin-top:30px">Receiver's Signature</div></div>
+    <div style="text-align:center;min-width:140px"><div style="border-top:1px solid #333;padding-top:4px;margin-top:30px">Authorised Signatory</div></div>
+  </div>
+  <div style="margin-top:16px">
+    <button onclick="window.print()" style="padding:8px 20px;background:#1a237e;color:#fff;border:none;cursor:pointer;font-size:12px;border-radius:4px">🖨 Print</button>
   </div>
   </body></html>`;
 
-  const w = window.open("", "_blank", "width=900,height=700");
-  if (w) { w.document.write(html); w.document.close(); }
+  const w = window.open("", "_blank", "width=1150,height=780");
+  if (w) { w.document.write(html); w.document.close(); setTimeout(() => w.print(), 500); }
 }
 
 export default function VendorBillsPanel({
@@ -130,8 +231,8 @@ export default function VendorBillsPanel({
   const [formVehicleNo, setFormVehicleNo] = useState("");
   const [formTransportMode, setFormTransportMode] = useState("Road");
   const [formNarration, setFormNarration] = useState("");
-  type BillLineItem = { id: string; description: string; hsn: string; qty: string; unit: string; rate: string; gstPct: string; };
-  const blankLine = (): BillLineItem => ({ id: Date.now().toString(), description: "", hsn: "", qty: "1", unit: "Nos", rate: "", gstPct: "18" });
+  type BillLineItem = { id: string; description: string; hsn: string; qty: string; free: string; pack: string; unit: string; batch: string; expiryDate: string; mrp: string; rate: string; discount: string; gstPct: string; };
+  const blankLine = (): BillLineItem => ({ id: Date.now().toString(), description: "", hsn: "", qty: "1", free: "", pack: "", unit: "Nos", batch: "", expiryDate: "", mrp: "", rate: "", discount: "", gstPct: "18" });
   const [formLines, setFormLines] = useState<BillLineItem[]>([blankLine()]);
   const [useLineItems, setUseLineItems] = useState(true);
   const [scanning, setScanning] = useState(false);
@@ -202,13 +303,19 @@ export default function VendorBillsPanel({
       if (b.narration) setFormNarration(b.narration);
       if (b.items?.length) {
         setUseLineItems(true);
-        setFormLines(b.items.map((item: { description?: string; hsn?: string; qty?: number; unit?: string; rate?: number; gstPct?: number }) => ({
+        setFormLines(b.items.map((item: any) => ({
           id: Date.now().toString() + Math.random(),
           description: item.description || "",
           hsn: item.hsn || "",
           qty: String(item.qty ?? 1),
+          free: String(item.free ?? ""),
+          pack: item.pack || "",
           unit: item.unit || "Nos",
+          batch: item.batch || "",
+          expiryDate: item.expiryDate || "",
+          mrp: String(item.mrp ?? ""),
           rate: String(item.rate ?? ""),
+          discount: String(item.discount ?? ""),
           gstPct: String(item.gstPct ?? 18),
         })));
       }
@@ -287,17 +394,31 @@ export default function VendorBillsPanel({
         for (let j = 0; j < row.length; j++) {
           const cell = String(row[j]).toLowerCase().trim();
           if (cell.includes("invoice no") && !cell.includes("supplier") && !invoiceNo) {
-            const val = String(rows[i + 1]?.[j] ?? "").trim().split(/\s+/)[0];
-            if (val) invoiceNo = val;
+            const val = String(rows[i + 1]?.[j] ?? row[j + 1] ?? "").trim().split(/\s+/)[0];
+            if (val && !/^(no|number|#)$/i.test(val)) invoiceNo = val;
           }
           if ((cell === "dated" || cell === "date" || cell.includes("invoice date")) && !invDate) {
-            const val = String(rows[i + 1]?.[j] ?? "").trim();
+            const val = String(rows[i + 1]?.[j] ?? row[j + 1] ?? "").trim();
             if (val) invDate = val;
           }
+          // Capture supplier name from adjacent cell (common in Tally: "Party Name:" "M/s XYZ")
+          if (!supplierName && /^(party\s*name|party|supplier\s*name|vendor\s*name|bill\s*to|sold\s*to|buyer|from\s*m\/s|company\s*name)/i.test(cell)) {
+            const sameRow = String(row[j + 1] ?? "").trim();
+            const nextRow = String(rows[i + 1]?.[j] ?? "").trim();
+            const candidate = sameRow || nextRow;
+            if (candidate && !/^(name|gstin|address|phone|email|:)$/i.test(candidate) && candidate.length > 1) {
+              supplierName = candidate;
+            }
+          }
         }
-        const firstCell = String(row[0]).toLowerCase();
-        if (firstCell.includes("supplier") && firstCell.includes("bill")) {
+        const firstCell = String(row[0]).toLowerCase().trim();
+        // Legacy pattern + broader fallback
+        if (!supplierName && (firstCell.includes("supplier") && firstCell.includes("bill"))) {
           supplierName = String(rows[i + 1]?.[0] ?? "").trim();
+        }
+        if (!supplierName && /^(party|supplier|vendor|bill\s*to|from)[\s:]/i.test(firstCell)) {
+          const candidate = String(row[1] ?? rows[i + 1]?.[0] ?? "").trim();
+          if (candidate && candidate.length > 1) supplierName = candidate;
         }
       }
 
@@ -354,7 +475,7 @@ export default function VendorBillsPanel({
           createdProducts.push(prod);
         }
         importedLines.push({ productId: prod.id, quantity: qty, unitPrice: rate });
-        billItems.push({ description: desc, hsn, unit, quantity: qty, rate, amount: +(qty * rate).toFixed(2) });
+        billItems.push({ description: desc, hsn, unit, quantity: qty, rate, amount: +(qty * rate).toFixed(2), gstPct: 18 } as any);
       }
 
       if (createdProducts.length > 0) setProducts(prev => [...prev, ...createdProducts]);
@@ -460,13 +581,20 @@ export default function VendorBillsPanel({
     if (useLineItems && formLines.some(l => l.description && l.rate)) {
       const validLines = formLines.filter(l => l.description && l.rate);
       billItems = validLines.map(l => {
-        const qty = parseFloat(l.qty) || 1;
+        const qty  = parseFloat(l.qty) || 1;
         const rate = parseFloat(l.rate) || 0;
-        const amt = +(qty * rate).toFixed(2);
-        const gst = parseFloat(l.gstPct) || 0;
-        computedSubtotal += amt;
+        const disc = parseFloat(l.discount) || 0;
+        const gross = +(qty * rate).toFixed(2);
+        const amt   = +(gross * (1 - disc / 100)).toFixed(2);
+        const gst   = parseFloat(l.gstPct) || 0;
+        computedSubtotal += gross;
         computedGST += +(amt * gst / 100).toFixed(2);
-        return { description: l.description, hsn: l.hsn, unit: l.unit, quantity: qty, rate, amount: amt };
+        return {
+          description: l.description, hsn: l.hsn, unit: l.unit, quantity: qty, rate, amount: amt,
+          free: parseFloat(l.free) || 0, pack: l.pack, batch: l.batch,
+          expiryDate: l.expiryDate, mrp: parseFloat(l.mrp) || 0,
+          discount: disc, gstPct: gst,
+        } as any;
       });
     } else {
       computedSubtotal = parseFloat(formAmount) || 0;
@@ -922,7 +1050,8 @@ export default function VendorBillsPanel({
                               description: item.productName || prod?.name || "",
                               hsn: prod?.hsn || "",
                               qty: String(item.quantity || 1),
-                              unit: item.unit || prod?.unit || "Nos",
+                              free: "", pack: "", unit: item.unit || prod?.unit || "Nos",
+                              batch: "", expiryDate: "", mrp: "", discount: "",
                               rate: String(item.unitPrice || item.rate || ""),
                               gstPct: String(prod?.gstRate || "18"),
                             };
@@ -993,28 +1122,38 @@ export default function VendorBillsPanel({
                 {useLineItems ? (
                   <div className="overflow-x-auto rounded-lg border border-slate-800">
                     <table className="min-w-full text-xs">
-                      <thead className="bg-slate-900 text-slate-400 uppercase font-mono text-[10px]">
+                      <thead className="bg-slate-900 text-slate-400 uppercase font-mono text-[9px]">
                         <tr>
-                          <th className="px-2 py-2 text-left w-8">#</th>
-                          <th className="px-2 py-2 text-left min-w-[180px]">Description *</th>
-                          <th className="px-2 py-2 text-center w-24">HSN</th>
-                          <th className="px-2 py-2 text-center w-16">Qty</th>
-                          <th className="px-2 py-2 text-center w-16">Unit</th>
-                          <th className="px-2 py-2 text-right w-24">Rate (₹)</th>
-                          <th className="px-2 py-2 text-center w-16">GST%</th>
-                          <th className="px-2 py-2 text-right w-24">Amount (₹)</th>
-                          <th className="px-2 py-2 w-8"></th>
+                          <th className="px-1 py-2 text-left w-8">#</th>
+                          <th className="px-2 py-2 text-left min-w-[150px]">Description *</th>
+                          <th className="px-1 py-2 text-center w-20">HSN</th>
+                          <th className="px-1 py-2 text-center w-14">Pack</th>
+                          <th className="px-1 py-2 text-center w-16">Qty</th>
+                          <th className="px-1 py-2 text-center w-12">Free</th>
+                          <th className="px-1 py-2 text-center w-16">Unit</th>
+                          <th className="px-1 py-2 text-center w-20">Batch</th>
+                          <th className="px-1 py-2 text-center w-20">Exp.Dt</th>
+                          <th className="px-1 py-2 text-right w-18">MRP</th>
+                          <th className="px-1 py-2 text-right w-22">Rate (₹)</th>
+                          <th className="px-1 py-2 text-center w-14">Dis%</th>
+                          <th className="px-1 py-2 text-center w-14">GST%</th>
+                          <th className="px-1 py-2 text-right w-22">Amount (₹)</th>
+                          <th className="px-1 py-2 w-6"></th>
                         </tr>
                       </thead>
                       <tbody>
                         {formLines.map((line, idx) => {
-                          const qty = parseFloat(line.qty) || 0;
+                          const qty  = parseFloat(line.qty) || 0;
                           const rate = parseFloat(line.rate) || 0;
-                          const amt = +(qty * rate).toFixed(2);
+                          const disc = parseFloat(line.discount) || 0;
+                          const gross = +(qty * rate).toFixed(2);
+                          const amt  = +(gross * (1 - disc / 100)).toFixed(2);
+                          const upd = (field: keyof typeof line) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) =>
+                            setFormLines(prev => prev.map((l, i) => i === idx ? { ...l, [field]: e.target.value } : l));
                           return (
                             <tr key={line.id} className="border-t border-slate-800">
-                              <td className="px-2 py-1.5 text-slate-500 text-center">{idx + 1}</td>
-                              <td className="px-2 py-1.5">
+                              <td className="px-1 py-1 text-slate-500 text-center text-[10px]">{idx + 1}</td>
+                              <td className="px-1 py-1">
                                 <select value={line.description} onChange={e => {
                                   const val = e.target.value;
                                   const prod = products.find(p => p.name === val);
@@ -1026,60 +1165,57 @@ export default function VendorBillsPanel({
                                     rate: prod ? String(prod.sellingPrice ?? prod.costPrice ?? l.rate) : l.rate,
                                     gstPct: prod?.gstRate ? String(prod.gstRate) : l.gstPct,
                                   } : l));
-                                }} className="w-full bg-slate-800 rounded px-2 py-1 text-white focus:outline-none focus:ring-1 focus:ring-indigo-500 text-xs">
-                                  <option value="">-- Select product --</option>
+                                }} className="w-full bg-slate-800 rounded px-1 py-1 text-white focus:outline-none focus:ring-1 focus:ring-indigo-500 text-xs">
+                                  <option value="">-- Product --</option>
                                   {products.map(p => <option key={p.id} value={p.name}>{p.name}</option>)}
-                                  <option value={line.description && !products.find(p => p.name === line.description) ? line.description : "__manual__"}>✏ Manual entry</option>
+                                  <option value={line.description && !products.find(p => p.name === line.description) ? line.description : "__manual__"}>✏ Manual</option>
                                 </select>
                                 {(line.description === "__manual__" || (line.description && !products.find(p => p.name === line.description))) && (
                                   <input value={line.description === "__manual__" ? "" : line.description} onChange={e => setFormLines(prev => prev.map((l, i) => i === idx ? { ...l, description: e.target.value } : l))}
-                                    className="w-full bg-slate-700 rounded px-2 py-1 text-white focus:outline-none focus:ring-1 focus:ring-indigo-500 text-xs mt-1" placeholder="Type description..." autoFocus />
+                                    className="w-full bg-slate-700 rounded px-1 py-1 text-white focus:outline-none focus:ring-1 focus:ring-indigo-500 text-xs mt-1" placeholder="Description..." autoFocus />
                                 )}
                               </td>
-                              <td className="px-2 py-1.5">
-                                <input value={line.hsn} onChange={e => setFormLines(prev => prev.map((l, i) => i === idx ? { ...l, hsn: e.target.value } : l))}
-                                  className="w-full bg-slate-800 rounded px-2 py-1 text-white font-mono focus:outline-none focus:ring-1 focus:ring-indigo-500" placeholder="HSN" />
-                              </td>
-                              <td className="px-2 py-1.5">
-                                <input type="number" value={line.qty} onChange={e => setFormLines(prev => prev.map((l, i) => i === idx ? { ...l, qty: e.target.value } : l))}
-                                  className="w-full bg-slate-800 rounded px-2 py-1 text-white text-center font-mono focus:outline-none focus:ring-1 focus:ring-indigo-500" />
-                              </td>
-                              <td className="px-2 py-1.5">
-                                <select value={line.unit} onChange={e => setFormLines(prev => prev.map((l, i) => i === idx ? { ...l, unit: e.target.value } : l))}
-                                  className="w-full bg-slate-800 rounded px-1 py-1 text-white focus:outline-none">
-                                  {["Nos","Pcs","Set","Kg","Ltr","Mtr","Box","Bag","Pair"].map(u => <option key={u}>{u}</option>)}
+                              <td className="px-1 py-1"><input value={line.hsn} onChange={upd("hsn")} className="w-full bg-slate-800 rounded px-1 py-1 text-white font-mono focus:outline-none text-[10px]" placeholder="HSN" /></td>
+                              <td className="px-1 py-1"><input value={line.pack} onChange={upd("pack")} className="w-full bg-slate-800 rounded px-1 py-1 text-white focus:outline-none text-[10px]" placeholder="e.g. 10×10" /></td>
+                              <td className="px-1 py-1"><input type="number" value={line.qty} onChange={upd("qty")} className="w-full bg-slate-800 rounded px-1 py-1 text-white text-center font-mono focus:outline-none text-[10px]" /></td>
+                              <td className="px-1 py-1"><input type="number" value={line.free} onChange={upd("free")} className="w-full bg-slate-800 rounded px-1 py-1 text-white text-center font-mono focus:outline-none text-[10px]" placeholder="0" /></td>
+                              <td className="px-1 py-1">
+                                <select value={line.unit} onChange={upd("unit")} className="w-full bg-slate-800 rounded px-1 py-1 text-white focus:outline-none text-[10px]">
+                                  {["Nos","Pcs","Set","Kg","Ltr","Mtr","Box","Bag","Strip","Botl","Amp","Vial"].map(u => <option key={u}>{u}</option>)}
                                 </select>
                               </td>
-                              <td className="px-2 py-1.5">
-                                <input type="number" value={line.rate} onChange={e => setFormLines(prev => prev.map((l, i) => i === idx ? { ...l, rate: e.target.value } : l))}
-                                  className="w-full bg-slate-800 rounded px-2 py-1 text-white text-right font-mono focus:outline-none focus:ring-1 focus:ring-indigo-500" placeholder="0.00" />
-                              </td>
-                              <td className="px-2 py-1.5">
-                                <select value={line.gstPct} onChange={e => setFormLines(prev => prev.map((l, i) => i === idx ? { ...l, gstPct: e.target.value } : l))}
-                                  className="w-full bg-slate-800 rounded px-1 py-1 text-white focus:outline-none">
+                              <td className="px-1 py-1"><input value={line.batch} onChange={upd("batch")} className="w-full bg-slate-800 rounded px-1 py-1 text-white font-mono focus:outline-none text-[10px]" placeholder="Batch" /></td>
+                              <td className="px-1 py-1"><input value={line.expiryDate} onChange={upd("expiryDate")} className="w-full bg-slate-800 rounded px-1 py-1 text-white font-mono focus:outline-none text-[10px]" placeholder="MM/YY" /></td>
+                              <td className="px-1 py-1"><input type="number" value={line.mrp} onChange={upd("mrp")} className="w-full bg-slate-800 rounded px-1 py-1 text-white text-right font-mono focus:outline-none text-[10px]" placeholder="MRP" /></td>
+                              <td className="px-1 py-1"><input type="number" value={line.rate} onChange={upd("rate")} className="w-full bg-slate-800 rounded px-1 py-1 text-white text-right font-mono focus:outline-none text-[10px]" placeholder="0.00" /></td>
+                              <td className="px-1 py-1"><input type="number" value={line.discount} onChange={upd("discount")} className="w-full bg-slate-800 rounded px-1 py-1 text-white text-center font-mono focus:outline-none text-[10px]" placeholder="0" /></td>
+                              <td className="px-1 py-1">
+                                <select value={line.gstPct} onChange={upd("gstPct")} className="w-full bg-slate-800 rounded px-1 py-1 text-white focus:outline-none text-[10px]">
                                   {["0","5","12","18","28"].map(r => <option key={r} value={r}>{r}%</option>)}
                                 </select>
                               </td>
-                              <td className="px-2 py-1.5 text-right font-mono font-bold text-emerald-400">{amt > 0 ? amt.toLocaleString("en-IN", { minimumFractionDigits: 2 }) : "—"}</td>
-                              <td className="px-2 py-1.5">
+                              <td className="px-1 py-1 text-right font-mono font-bold text-emerald-400 text-[10px]">{amt > 0 ? amt.toLocaleString("en-IN", { minimumFractionDigits: 2 }) : "—"}</td>
+                              <td className="px-1 py-1">
                                 {formLines.length > 1 && (
-                                  <button type="button" onClick={() => setFormLines(prev => prev.filter((_, i) => i !== idx))} className="text-red-400 hover:text-red-300 cursor-pointer"><X className="w-3.5 h-3.5" /></button>
+                                  <button type="button" onClick={() => setFormLines(prev => prev.filter((_, i) => i !== idx))} className="text-red-400 hover:text-red-300 cursor-pointer"><X className="w-3 h-3" /></button>
                                 )}
                               </td>
                             </tr>
                           );
                         })}
                       </tbody>
-                      <tfoot className="bg-slate-900/60 text-xs font-mono">
+                      <tfoot className="bg-slate-900/60 text-[10px] font-mono">
                         {(() => {
                           const validLines = formLines.filter(l => l.description && l.rate);
-                          const subtotal = validLines.reduce((s, l) => s + (parseFloat(l.qty)||0)*(parseFloat(l.rate)||0), 0);
-                          const gstTotal = validLines.reduce((s, l) => s + (parseFloat(l.qty)||0)*(parseFloat(l.rate)||0)*(parseFloat(l.gstPct)||0)/100, 0);
+                          const gross    = validLines.reduce((s, l) => s + (parseFloat(l.qty)||0)*(parseFloat(l.rate)||0), 0);
+                          const discTotal= validLines.reduce((s, l) => s + (parseFloat(l.qty)||0)*(parseFloat(l.rate)||0)*(parseFloat(l.discount)||0)/100, 0);
+                          const subtotal = gross - discTotal;
+                          const gstTotal = validLines.reduce((s, l) => { const amt = (parseFloat(l.qty)||0)*(parseFloat(l.rate)||0)*(1-(parseFloat(l.discount)||0)/100); return s + amt*(parseFloat(l.gstPct)||0)/100; }, 0);
                           const grand = subtotal + gstTotal;
                           return (<>
-                            <tr><td colSpan={7} className="px-3 py-1.5 text-right text-slate-400 border-t border-slate-700">Taxable Amount</td><td colSpan={2} className="px-3 py-1.5 text-right text-slate-200 border-t border-slate-700">{subtotal.toLocaleString("en-IN",{minimumFractionDigits:2})}</td></tr>
-                            <tr><td colSpan={7} className="px-3 py-1.5 text-right text-slate-400">GST</td><td colSpan={2} className="px-3 py-1.5 text-right text-amber-400">{gstTotal.toLocaleString("en-IN",{minimumFractionDigits:2})}</td></tr>
-                            <tr><td colSpan={7} className="px-3 py-2 text-right font-bold text-white">Grand Total</td><td colSpan={2} className="px-3 py-2 text-right font-bold text-emerald-400 text-sm">{formatINR(grand)}</td></tr>
+                            <tr><td colSpan={13} className="px-3 py-1.5 text-right text-slate-400 border-t border-slate-700">Taxable Amount</td><td colSpan={2} className="px-3 py-1.5 text-right text-slate-200 border-t border-slate-700">{subtotal.toLocaleString("en-IN",{minimumFractionDigits:2})}</td></tr>
+                            <tr><td colSpan={13} className="px-3 py-1.5 text-right text-slate-400">GST</td><td colSpan={2} className="px-3 py-1.5 text-right text-amber-400">{gstTotal.toLocaleString("en-IN",{minimumFractionDigits:2})}</td></tr>
+                            <tr><td colSpan={13} className="px-3 py-2 text-right font-bold text-white">Grand Total</td><td colSpan={2} className="px-3 py-2 text-right font-bold text-emerald-400 text-sm">{formatINR(grand)}</td></tr>
                           </>);
                         })()}
                       </tfoot>
