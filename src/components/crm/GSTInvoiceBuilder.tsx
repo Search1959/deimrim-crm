@@ -824,6 +824,7 @@ function buildPrintHTML(d: PrintData): string {
   body { font-family: Arial, sans-serif; color: #1a202c; font-size: 12px; background: #fff; }
   @media print { @page { margin: 10mm; size: A4 portrait; } }
 </style>
+${inv.paymentMode === "UPI" && company.bankUPI ? `<script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>` : ""}
 </head>
 <body style="padding:20px;max-width:900px;margin:0 auto">
 
@@ -930,8 +931,18 @@ function buildPrintHTML(d: PrintData): string {
         <p style="font-size:11px"><strong>A/c No.:</strong> <span style="font-family:monospace">${d.company.bankAccountNumber || "—"}</span></p>
         <p style="font-size:11px"><strong>IFSC:</strong> <span style="font-family:monospace">${d.company.bankIFSC || "—"}</span></p>
         <p style="font-size:11px"><strong>Type:</strong> ${d.company.bankAccountType || "Current"}</p>
-        ${d.company.bankUPI ? `<p style="font-size:11px"><strong>UPI:</strong> ${d.company.bankUPI}</p>` : ""}
-        ${d.company.upiQrCode ? `<div style="margin-top:8px"><img src="${d.company.upiQrCode}" alt="UPI QR" style="width:90px;height:90px;object-fit:contain;border:1px solid #e2e8f0;border-radius:6px;padding:3px" /></div>` : ""}
+        ${company.bankUPI ? `<p style="font-size:11px"><strong>UPI:</strong> ${company.bankUPI}</p>` : ""}
+        ${inv.paymentMode === "UPI" && company.bankUPI ? `
+        <div style="margin-top:8px">
+          <p style="font-size:10px;color:#4a5568;margin-bottom:4px">Scan to Pay ₹${grandTotal.toFixed(2)}</p>
+          <canvas id="upiQr" style="width:110px;height:110px;border:1px solid #e2e8f0;border-radius:6px;padding:3px"></canvas>
+        </div>
+        <script>
+          window.addEventListener("load", function() {
+            var upiUrl = "upi://pay?pa=${company.bankUPI}&pn=${encodeURIComponent(company.name || "")}&am=${grandTotal.toFixed(2)}&cu=INR&tn=Invoice%20${inv.invoiceNumber}";
+            QRCode.toCanvas(document.getElementById("upiQr"), upiUrl, { width: 110, margin: 1 }, function(){});
+          });
+        </script>` : ""}
       </td>
       <td width="50%" style="border:1px solid #e2e8f0;padding:10px;vertical-align:top">
         <p style="font-size:10px;font-weight:700;color:#4a5568;margin-bottom:6px">TERMS & CONDITIONS</p>
