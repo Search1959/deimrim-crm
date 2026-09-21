@@ -1057,39 +1057,78 @@ export default function VendorBillsPanel({
                 <table className="min-w-full text-xs border-collapse">
                   <thead>
                     <tr className="bg-slate-900 text-slate-400 uppercase font-mono text-[10px]">
-                      <th className="px-3 py-2 border border-slate-800 text-center w-10">Sl.</th>
-                      <th className="px-3 py-2 border border-slate-800 text-left">Description</th>
-                      <th className="px-3 py-2 border border-slate-800 text-center w-24">HSN</th>
-                      <th className="px-3 py-2 border border-slate-800 text-center w-16">Qty</th>
-                      <th className="px-3 py-2 border border-slate-800 text-center w-16">Unit</th>
-                      <th className="px-3 py-2 border border-slate-800 text-right w-28">Rate (₹)</th>
-                      <th className="px-3 py-2 border border-slate-800 text-right w-32">Amount (₹)</th>
+                      <th className="px-2 py-2 border border-slate-800 text-center w-8">Sl.</th>
+                      <th className="px-2 py-2 border border-slate-800 text-left">Description</th>
+                      <th className="px-2 py-2 border border-slate-800 text-center w-20">HSN</th>
+                      <th className="px-2 py-2 border border-slate-800 text-center w-20">Batch</th>
+                      <th className="px-2 py-2 border border-slate-800 text-center w-16">Exp Dt</th>
+                      <th className="px-2 py-2 border border-slate-800 text-right w-20">MRP</th>
+                      <th className="px-2 py-2 border border-slate-800 text-center w-12">Qty</th>
+                      <th className="px-2 py-2 border border-slate-800 text-center w-12">Free</th>
+                      <th className="px-2 py-2 border border-slate-800 text-right w-20">Rate</th>
+                      <th className="px-2 py-2 border border-slate-800 text-center w-16">Disc%</th>
+                      <th className="px-2 py-2 border border-slate-800 text-center w-14">GST%</th>
+                      <th className="px-2 py-2 border border-slate-800 text-right w-24">Amount</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {viewingBill.items.map((it, i) => (
-                      <tr key={i} className="border-b border-slate-800 hover:bg-slate-900/40">
-                        <td className="px-3 py-2 border border-slate-800 text-center text-slate-400">{i + 1}</td>
-                        <td className="px-3 py-2 border border-slate-800 text-slate-200">{it.description}</td>
-                        <td className="px-3 py-2 border border-slate-800 text-center text-slate-400 font-mono">{it.hsn || "—"}</td>
-                        <td className="px-3 py-2 border border-slate-800 text-center font-bold text-white">{it.quantity}</td>
-                        <td className="px-3 py-2 border border-slate-800 text-center text-slate-400">{it.unit}</td>
-                        <td className="px-3 py-2 border border-slate-800 text-right font-mono text-slate-300">{it.rate.toLocaleString("en-IN", { minimumFractionDigits: 2 })}</td>
-                        <td className="px-3 py-2 border border-slate-800 text-right font-bold font-mono text-white">{it.amount.toLocaleString("en-IN", { minimumFractionDigits: 2 })}</td>
-                      </tr>
-                    ))}
+                    {viewingBill.items.map((it, i) => {
+                      const batch  = (it as any).batch || "—";
+                      const expiry = (it as any).expiryDate || "—";
+                      const mrp    = parseFloat((it as any).mrp) || 0;
+                      const free   = (it as any).free || 0;
+                      const disc   = parseFloat((it as any).discount) || 0;
+                      const gstPct = parseFloat((it as any).gstPct) || 0;
+                      return (
+                        <tr key={i} className="border-b border-slate-800 hover:bg-slate-900/40 text-[11px]">
+                          <td className="px-2 py-1.5 border border-slate-800 text-center text-slate-400">{i + 1}</td>
+                          <td className="px-2 py-1.5 border border-slate-800 text-slate-200">{it.description}</td>
+                          <td className="px-2 py-1.5 border border-slate-800 text-center text-slate-400 font-mono">{it.hsn || "—"}</td>
+                          <td className="px-2 py-1.5 border border-slate-800 text-center text-cyan-400 font-mono">{batch}</td>
+                          <td className="px-2 py-1.5 border border-slate-800 text-center text-slate-300">{expiry}</td>
+                          <td className="px-2 py-1.5 border border-slate-800 text-right font-mono text-slate-300">{mrp > 0 ? mrp.toFixed(2) : "—"}</td>
+                          <td className="px-2 py-1.5 border border-slate-800 text-center font-bold text-white">{it.quantity}</td>
+                          <td className="px-2 py-1.5 border border-slate-800 text-center text-emerald-400">{free > 0 ? free : "—"}</td>
+                          <td className="px-2 py-1.5 border border-slate-800 text-right font-mono text-slate-300">{it.rate.toFixed(2)}</td>
+                          <td className="px-2 py-1.5 border border-slate-800 text-center text-amber-400">{disc > 0 ? disc.toFixed(2) + "%" : "—"}</td>
+                          <td className="px-2 py-1.5 border border-slate-800 text-center text-violet-400">{gstPct > 0 ? gstPct + "%" : "0%"}</td>
+                          <td className="px-2 py-1.5 border border-slate-800 text-right font-bold font-mono text-white">{it.amount.toLocaleString("en-IN", { minimumFractionDigits: 2 })}</td>
+                        </tr>
+                      );
+                    })}
                   </tbody>
                   <tfoot>
                     <tr className="bg-slate-900/60">
-                      <td colSpan={6} className="px-3 py-2 border border-slate-800 text-right text-slate-400 font-bold">Sub Total</td>
+                      <td colSpan={11} className="px-3 py-2 border border-slate-800 text-right text-slate-400 font-bold">Sub Total</td>
                       <td className="px-3 py-2 border border-slate-800 text-right font-bold font-mono text-slate-200">{viewingBill.amountBeforeGst.toLocaleString("en-IN", { minimumFractionDigits: 2 })}</td>
                     </tr>
-                    <tr>
-                      <td colSpan={6} className="px-3 py-2 border border-slate-800 text-right text-slate-400">{viewingBill.gstType} @ {viewingBill.gstRate}%</td>
-                      <td className="px-3 py-2 border border-slate-800 text-right font-mono text-amber-400">{(viewingBill.totalAmount - viewingBill.amountBeforeGst).toLocaleString("en-IN", { minimumFractionDigits: 2 })}</td>
-                    </tr>
+                    {(() => {
+                      const gstAmt = viewingBill.totalAmount - viewingBill.amountBeforeGst;
+                      const halfGst = gstAmt / 2;
+                      const gstRate = viewingBill.gstRate || 0;
+                      if (viewingBill.gstType === "IGST") {
+                        return (
+                          <tr>
+                            <td colSpan={11} className="px-3 py-2 border border-slate-800 text-right text-slate-400">IGST @ {gstRate}%</td>
+                            <td className="px-3 py-2 border border-slate-800 text-right font-mono text-amber-400">{gstAmt.toLocaleString("en-IN", { minimumFractionDigits: 2 })}</td>
+                          </tr>
+                        );
+                      }
+                      return (
+                        <>
+                          <tr>
+                            <td colSpan={11} className="px-3 py-2 border border-slate-800 text-right text-slate-400">CGST @ {gstRate / 2}%</td>
+                            <td className="px-3 py-2 border border-slate-800 text-right font-mono text-amber-400">{halfGst.toLocaleString("en-IN", { minimumFractionDigits: 2 })}</td>
+                          </tr>
+                          <tr>
+                            <td colSpan={11} className="px-3 py-2 border border-slate-800 text-right text-slate-400">SGST @ {gstRate / 2}%</td>
+                            <td className="px-3 py-2 border border-slate-800 text-right font-mono text-amber-400">{halfGst.toLocaleString("en-IN", { minimumFractionDigits: 2 })}</td>
+                          </tr>
+                        </>
+                      );
+                    })()}
                     <tr className="bg-indigo-950/40">
-                      <td colSpan={6} className="px-3 py-2.5 border border-slate-700 text-right font-bold text-white text-sm">Grand Total</td>
+                      <td colSpan={11} className="px-3 py-2.5 border border-slate-700 text-right font-bold text-white text-sm">Grand Total</td>
                       <td className="px-3 py-2.5 border border-slate-700 text-right font-bold font-mono text-indigo-300 text-sm">{formatINR(viewingBill.totalAmount)}</td>
                     </tr>
                   </tfoot>
