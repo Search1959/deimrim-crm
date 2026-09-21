@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { FileCheck, Plus, X, IndianRupee, CreditCard, ChevronDown, ChevronUp, Upload, Printer, Eye, Camera } from "lucide-react";
 import { Supplier, PurchaseOrder, VendorInvoice, BillPayment, Product, BatchStock, formatINR } from "../../types";
 import { toast } from "../../utils/toast";
@@ -252,14 +252,27 @@ export default function VendorBillsPanel({
   const startCamera = async (facing: "environment" | "user") => {
     stopCamera();
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: facing }, audio: false });
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: { ideal: facing }, width: { ideal: 1920 }, height: { ideal: 1080 } },
+        audio: false
+      });
       streamRef.current = stream;
-      if (videoRef.current) { videoRef.current.srcObject = stream; videoRef.current.play(); }
+      if (videoRef.current) { videoRef.current.srcObject = stream; await videoRef.current.play(); }
     } catch {
-      toast.error("Camera access denied — please allow camera permission");
+      toast.error("Camera access denied — please allow camera permission in browser settings");
       setShowCamera(false);
     }
   };
+
+  // Start camera after modal renders, and restart when facing changes (Flip)
+  useEffect(() => {
+    if (showCamera) {
+      const timer = setTimeout(() => startCamera(cameraFacing), 150);
+      return () => clearTimeout(timer);
+    } else {
+      stopCamera();
+    }
+  }, [showCamera, cameraFacing]);
 
   const captureFromCamera = () => {
     if (!videoRef.current || !canvasRef.current) return;
@@ -788,7 +801,7 @@ export default function VendorBillsPanel({
 
       {isMobile && (
         <button
-          onClick={() => { setCameraFacing("environment"); setShowCamera(true); startCamera("environment"); }}
+          onClick={() => { setCameraFacing("environment"); setShowCamera(true); }}
           className="w-full flex items-center justify-center gap-3 rounded-2xl bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 active:from-indigo-700 active:to-violet-700 px-4 py-5 text-white font-bold text-base shadow-lg shadow-indigo-900/40 transition-all"
         >
           <Camera className="h-6 w-6" />
@@ -1162,7 +1175,7 @@ export default function VendorBillsPanel({
             <div className="flex items-center justify-between px-5 py-3 border-b border-slate-800">
               <h3 className="text-sm font-bold text-white font-mono">📷 Scan Purchase Bill</h3>
               <div className="flex items-center gap-2">
-                <button onClick={() => { setCameraFacing(f => { const next = f === "environment" ? "user" : "environment"; startCamera(next); return next; }); }}
+                <button onClick={() => { setCameraFacing(f => f === "environment" ? "user" : "environment"); }}
                   className="text-[10px] text-slate-400 hover:text-white border border-slate-700 rounded px-2 py-1 cursor-pointer">🔄 Flip</button>
                 <button onClick={() => { stopCamera(); setShowCamera(false); }} className="text-slate-400 hover:text-white cursor-pointer">✕</button>
               </div>
@@ -1203,11 +1216,11 @@ export default function VendorBillsPanel({
                   </button>
                   {showScanMenu && (
                     <div className="absolute right-0 top-full mt-1 z-50 w-52 rounded-xl border border-slate-700 bg-slate-900 shadow-2xl overflow-hidden">
-                      <button type="button" onClick={() => { setShowScanMenu(false); setCameraFacing("environment"); setShowCamera(true); setTimeout(() => startCamera("environment"), 100); }}
+                      <button type="button" onClick={() => { setShowScanMenu(false); setCameraFacing("environment"); setShowCamera(true); }}
                         className="w-full flex items-center gap-2 px-4 py-3 text-xs text-white hover:bg-slate-800 cursor-pointer text-left">
                         📷 <span><span className="font-bold">Rear Camera</span><br/><span className="text-slate-400">Mobile rear / desktop webcam</span></span>
                       </button>
-                      <button type="button" onClick={() => { setShowScanMenu(false); setCameraFacing("user"); setShowCamera(true); setTimeout(() => startCamera("user"), 100); }}
+                      <button type="button" onClick={() => { setShowScanMenu(false); setCameraFacing("user"); setShowCamera(true); }}
                         className="w-full flex items-center gap-2 px-4 py-3 text-xs text-white hover:bg-slate-800 cursor-pointer text-left border-t border-slate-800">
                         🤳 <span><span className="font-bold">Front Camera</span><br/><span className="text-slate-400">Selfie / front-facing cam</span></span>
                       </button>
