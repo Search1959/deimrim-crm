@@ -376,6 +376,7 @@ export default function VendorBillsPanel({
 
       // ── Column detection: support both Tally-style and pharma-style headers ──
       let descCol = 1, hsnCol = -1, qtyCol = -1, rateCol = -1, unitCol = -1, discCol = -1;
+      let batchCol = -1, expCol = -1, mrpCol = -1, freeCol = -1, cgstPctCol = -1;
       for (const row of rows) {
         const lower = (row as any[]).map((c: any) => String(c).toLowerCase().trim());
         // Match "Product Name", "Item Name", "Particulars", "Description", "Items", "Name"
@@ -395,6 +396,16 @@ export default function VendorBillsPanel({
           if (uIdx >= 0) unitCol = uIdx;
           const dIdx = lower.findIndex((c: string) => c === "dis%" || c === "disc%" || c === "discount" || c === "disc");
           if (dIdx >= 0) discCol = dIdx;
+          const bIdx = lower.findIndex((c: string) => c === "batch" || c === "batch no" || c === "batch no." || c === "lot no");
+          if (bIdx >= 0) batchCol = bIdx;
+          const eIdx = lower.findIndex((c: string) => c === "exp dt" || c === "expiry" || c === "exp date" || c === "expiry date" || c === "exp");
+          if (eIdx >= 0) expCol = eIdx;
+          const mIdx = lower.findIndex((c: string) => c === "mrp" || c === "m.r.p." || c === "max. retail price" || c === "m r p");
+          if (mIdx >= 0) mrpCol = mIdx;
+          const fIdx = lower.findIndex((c: string) => c === "free" || c === "free qty" || c === "bonus");
+          if (fIdx >= 0) freeCol = fIdx;
+          const cgstIdx = lower.findIndex((c: string) => c === "cgst%" || c === "cgst" || c === "gst%");
+          if (cgstIdx >= 0) cgstPctCol = cgstIdx;
           break;
         }
       }
@@ -475,11 +486,32 @@ export default function VendorBillsPanel({
         // Skip header/summary rows
         if (/^(description|product|item|particulars|total|sub.?total|grand|note|narration|sgst|cgst|igst|tax|amount|sl|sr|no\.|#)/i.test(desc)) continue;
 
-        const qty  = Number((row as any[])[qtyCol])  || 0;
-        const rate = Number((row as any[])[rateCol]) || 0;
-        const unit = unitCol >= 0 ? (String((row as any[])[unitCol] ?? "NOS").trim() || "NOS") : "NOS";
-        const hsn  = hsnCol >= 0 ? String((row as any[])[hsnCol] ?? "").trim() : "";
-        const disc = discCol >= 0 ? (Number((row as any[])[discCol]) || 0) : 0;
+        const qty   = Number((row as any[])[qtyCol])  || 0;
+        const rate  = Number((row as any[])[rateCol]) || 0;
+        const unit  = unitCol >= 0 ? (String((row as any[])[unitCol] ?? "NOS").trim() || "NOS") : "NOS";
+        const hsn   = hsnCol  >= 0 ? String((row as any[])[hsnCol]  ?? "").trim() : "";
+        // Disc% — handle compound "6.0+9.09" by summing parts
+        const rawDisc = discCol >= 0 ? String((row as any[])[discCol] ?? "0") : "0";
+        const disc = rawDisc.split("+").reduce((acc, part) => {
+          const p = parseFloat(part.trim()) || 0;
+          return +(1 - (1 - acc / 100) * (1 - p / 100)).toFixed(6) * 100;
+        }, 0);
+        const batch = batchCol >= 0 ? String((row as any[])[batchCol] ?? "").trim() : "";
+        const expRaw = expCol  >= 0 ? (row as any[])[expCol] : "";
+        // Convert Excel serial date or string to YYYY-MM (pharma uses month/year expiry)
+        let expiryDate = "";
+        if (expRaw && expRaw !== "-") {
+          if (typeof expRaw === "number") {
+            // Excel date serial → JS Date
+            const d = new Date(Math.round((expRaw - 25569) * 86400 * 1000));
+            expiryDate = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
+          } else {
+            expiryDate = String(expRaw).trim();
+          }
+        }
+        const mrp  = mrpCol  >= 0 ? (Number((row as any[])[mrpCol])  || 0) : 0;
+        const free = freeCol >= 0 ? (Number((row as any[])[freeCol]) || 0) : 0;
+        const gstPct = cgstPctCol >= 0 ? ((Number((row as any[])[cgstPctCol]) || 0) * 2) : 18; // CGST% × 2 = total GST
 
         if (qty <= 0 || rate <= 0) continue;
 
@@ -502,21 +534,26 @@ export default function VendorBillsPanel({
         }
         importedLines.push({ productId: prod.id, quantity: qty, unitPrice: +(rate * (1 - disc / 100)).toFixed(2) });
         const netAmt = +(qty * rate * (1 - disc / 100)).toFixed(2);
-        billItems.push({ description: desc, hsn, unit, quantity: qty, rate, discount: disc, amount: netAmt, gstPct: 18 } as any);
+        billItems.push({ description: desc, hsn, unit, quantity: qty, rate, discount: +disc.toFixed(2), amount: netAmt, gstPct, batch, expiryDate, mrp, free } as any);
       }
 
       if (createdProducts.length > 0) setProducts(prev => [...prev, ...createdProducts]);
 
       const subtotalCalc = importedLines.reduce((s, i) => s + i.quantity * i.unitPrice, 0);
-      let igst = 0;
-      for (const row of rows) {
-        const rowText = (row as any[]).map((c: any) => String(c)).join(" ").toUpperCase();
-        if (rowText.includes("GST") && !rowText.includes("GSTIN")) {
-          const amounts = (row as any[]).map((c: any) => Number(c)).filter(n => n > 1000);
-          if (amounts.length > 0) igst = Math.max(...amounts);
-        }
-      }
-      const detectedGST = subtotalCalc > 0 && igst > 0 ? Math.round((igst / subtotalCalc) * 100) : 18;
+      // Use per-line gstPct average if detected from CGST% col, else scan for GST row
+      const detectedGST = cgstPctCol >= 0
+        ? Math.round((billItems as any[]).reduce((s: number, it: any) => s + (it.gstPct || 0), 0) / (billItems.length || 1))
+        : (() => {
+            let igst = 0;
+            for (const row of rows) {
+              const rowText = (row as any[]).map((c: any) => String(c)).join(" ").toUpperCase();
+              if (rowText.includes("GST") && !rowText.includes("GSTIN")) {
+                const amounts = (row as any[]).map((c: any) => Number(c)).filter(n => n > 1000);
+                if (amounts.length > 0) igst = Math.max(...amounts);
+              }
+            }
+            return subtotalCalc > 0 && igst > 0 ? Math.round((igst / subtotalCalc) * 100) : 18;
+          })();
       const gstAmt = subtotalCalc * (detectedGST / 100);
       const grandTotal = +(subtotalCalc + gstAmt).toFixed(2);
 
