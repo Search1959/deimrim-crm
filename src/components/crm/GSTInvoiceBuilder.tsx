@@ -345,7 +345,7 @@ export default function GSTInvoiceBuilder({
       cgst: totalCGST,
       sgst: totalSGST,
       totalAmount: grandTotal,
-      status: "unpaid",
+      status: paymentMode === "Not Paid" ? "unpaid" : "paid",
       createdAt: invDate,
       dueDate,
       notes: note,
