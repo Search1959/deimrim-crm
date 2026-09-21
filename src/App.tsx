@@ -339,7 +339,8 @@ export default function App() {
     if (companyId !== "comp-1") {
       ["company","branches","products","categories","brands","batchStocks","suppliers",
        "purchaseOrders","leads","customers","invoices","employees","leaveRequests",
-       "transactions","documents","notifications","auditLogs","assets","stockMovements"
+       "transactions","documents","notifications","auditLogs","assets","stockMovements",
+       "vendorBills","salesPayments"
       ].forEach(key => localStorage.removeItem(`deinrim_${key}_${companyId}`));
     }
     // Immediately wipe previous-tenant data so persistTenant (which fires on state change)
@@ -428,16 +429,9 @@ export default function App() {
       }]);
       const resolvedAssets      = pick(apiAssets,      "assets",        []);
       const resolvedMovements   = pick(apiMovements,   "stockMovements",[]);
-      // vendorBills: prefer localStorage (MySQL may not have table yet); API overrides only if non-empty
-      const lsVendorBills = lsGet("vendorBills");
-      const resolvedVendorBills = (Array.isArray(apiVendorBills) && (apiVendorBills as any[]).length > 0)
-        ? apiVendorBills
-        : (lsVendorBills ?? []);
-      // salesPayments: prefer MySQL API, fall back to localStorage
-      const lsSalesPayments = lsGet("salesPayments");
-      const resolvedSalesPayments = (Array.isArray(apiSalesPayments) && (apiSalesPayments as any[]).length > 0)
-        ? apiSalesPayments
-        : (lsSalesPayments ?? []);
+      // vendorBills + salesPayments: MySQL is source of truth (same as all other entities)
+      const resolvedVendorBills  = pick(safe(apiVendorBills),  "vendorBills",  []);
+      const resolvedSalesPayments = pick(safe(apiSalesPayments), "salesPayments", []);
 
       // Apply branch migration (Mumbai → Kolkata)
       const migratedBranches = (resolvedBranches as any[]).map((br: any) =>

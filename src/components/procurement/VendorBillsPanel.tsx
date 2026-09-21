@@ -374,56 +374,76 @@ export default function VendorBillsPanel({
       const ws = wb.Sheets[wb.SheetNames[0]];
       const rows = XLSX.utils.sheet_to_json<any[]>(ws, { header: 1, defval: "" });
 
-      let descCol = 1, hsnCol = -1, qtyCol = 10, rateCol = 11, unitCol = 12;
+      // ── Column detection: support both Tally-style and pharma-style headers ──
+      let descCol = 1, hsnCol = -1, qtyCol = -1, rateCol = -1, unitCol = -1, discCol = -1;
       for (const row of rows) {
         const lower = (row as any[]).map((c: any) => String(c).toLowerCase().trim());
-        const descIdx = lower.findIndex((c: string) => c.includes("description"));
+        // Match "Product Name", "Item Name", "Particulars", "Description", "Items", "Name"
+        const descIdx = lower.findIndex((c: string) =>
+          c.includes("description") || c === "product name" || c === "item name" ||
+          c === "particulars" || c === "items" || c === "product"
+        );
         if (descIdx >= 0) {
           descCol = descIdx;
-          const hsnIdx = lower.findIndex((c: string) => c === "hsn" || c.includes("hsn code"));
-          if (hsnIdx >= 0) hsnCol = hsnIdx;
-          const qtyIdx = lower.findIndex((c: string) => c === "quantity" || c === "qty");
-          if (qtyIdx >= 0) qtyCol = qtyIdx;
-          const rateIdx = lower.findIndex((c: string) => c === "rate" || c.includes("unit price"));
-          if (rateIdx >= 0) rateCol = rateIdx;
-          const unitIdx = lower.findIndex((c: string) => c === "per" || c === "unit");
-          if (unitIdx >= 0) unitCol = unitIdx;
+          const qIdx = lower.findIndex((c: string) => c === "qty" || c === "quantity" || c === "nos.");
+          if (qIdx >= 0) qtyCol = qIdx;
+          const rIdx = lower.findIndex((c: string) => c === "rate" || c === "price" || c.includes("unit price") || c.includes("unit rate"));
+          if (rIdx >= 0) rateCol = rIdx;
+          const hIdx = lower.findIndex((c: string) => c === "hsn" || c.includes("hsn") || c.includes("sac"));
+          if (hIdx >= 0) hsnCol = hIdx;
+          const uIdx = lower.findIndex((c: string) => c === "per" || c === "unit" || c === "uom" || c === "pack");
+          if (uIdx >= 0) unitCol = uIdx;
+          const dIdx = lower.findIndex((c: string) => c === "dis%" || c === "disc%" || c === "discount" || c === "disc");
+          if (dIdx >= 0) discCol = dIdx;
           break;
         }
       }
+      // Fallback defaults for Tally standard format
+      if (qtyCol < 0) qtyCol = 10;
+      if (rateCol < 0) rateCol = 11;
+      if (unitCol < 0) unitCol = 12;
 
-      let invoiceNo = "", invDate = "", supplierName = "";
+      // ── Extract invoice metadata ───────────────────────────────────────────
+      let invoiceNo = "", invDate = "", supplierName = "", buyerName = "";
       for (let i = 0; i < rows.length; i++) {
         const row = rows[i] as any[];
         for (let j = 0; j < row.length; j++) {
           const cell = String(row[j]).toLowerCase().trim();
-          if (cell.includes("invoice no") && !cell.includes("supplier") && !invoiceNo) {
-            const val = String(rows[i + 1]?.[j] ?? row[j + 1] ?? "").trim().split(/\s+/)[0];
+          // Invoice / Memo / Bill number
+          if (!invoiceNo && /^(invoice\s*no|memo\s*no|bill\s*no|ref\s*no|voucher\s*no)/i.test(String(row[j]).trim())) {
+            const val = String(row[j + 1] ?? rows[i + 1]?.[j] ?? "").trim().split(/\s+/)[0];
             if (val && !/^(no|number|#)$/i.test(val)) invoiceNo = val;
           }
-          if ((cell === "dated" || cell === "date" || cell.includes("invoice date")) && !invDate) {
-            const val = String(rows[i + 1]?.[j] ?? row[j + 1] ?? "").trim();
-            if (val) invDate = val;
+          // Date
+          if (!invDate && /^(date|invoice\s*date|dated|bill\s*date)$/i.test(String(row[j]).trim())) {
+            const val = String(row[j + 1] ?? rows[i + 1]?.[j] ?? "").trim();
+            if (val && /\d/.test(val)) invDate = val;
           }
-          // Capture supplier name from adjacent cell (common in Tally: "Party Name:" "M/s XYZ")
-          if (!supplierName && /^(party\s*name|party|supplier\s*name|vendor\s*name|bill\s*to|sold\s*to|buyer|from\s*m\/s|company\s*name)/i.test(cell)) {
-            const sameRow = String(row[j + 1] ?? "").trim();
-            const nextRow = String(rows[i + 1]?.[j] ?? "").trim();
-            const candidate = sameRow || nextRow;
-            if (candidate && !/^(name|gstin|address|phone|email|:)$/i.test(candidate) && candidate.length > 1) {
+          // Seller/Supplier name — prefer "Seller", "From", "Supplier Name" over "Buyer"
+          if (!supplierName && /^(seller\s*name|seller|from|supplier\s*name|party\s*name|vendor\s*name|sold\s*by)/i.test(cell)) {
+            const candidate = String(row[j + 1] ?? rows[i + 1]?.[j] ?? "").trim();
+            if (candidate && !/^(name|gstin|address|phone|email|gst|dl|no)$/i.test(candidate) && candidate.length > 2)
               supplierName = candidate;
-            }
+          }
+          // Buyer name (fallback if no seller found)
+          if (!buyerName && /^(buyer\s*name|buyer|bill\s*to|ship\s*to|party\s*name|party)$/i.test(cell)) {
+            const candidate = String(row[j + 1] ?? rows[i + 1]?.[j] ?? "").trim();
+            if (candidate && candidate.length > 2) buyerName = candidate;
           }
         }
         const firstCell = String(row[0]).toLowerCase().trim();
-        // Legacy pattern + broader fallback
-        if (!supplierName && (firstCell.includes("supplier") && firstCell.includes("bill"))) {
-          supplierName = String(rows[i + 1]?.[0] ?? "").trim();
-        }
-        if (!supplierName && /^(party|supplier|vendor|bill\s*to|from)[\s:]/i.test(firstCell)) {
+        if (!supplierName && /^(party|supplier|vendor|from)[\s:]/i.test(firstCell)) {
           const candidate = String(row[1] ?? rows[i + 1]?.[0] ?? "").trim();
           if (candidate && candidate.length > 1) supplierName = candidate;
         }
+      }
+      // Use buyerName only if NO seller was found AND it doesn't look like a customer
+      // (for pharma bills, buyer = our client, seller = pharma distributor — we never want buyer)
+      // So only fall back to a generic "Unknown Supplier" if nothing found
+      if (!supplierName && buyerName && suppliers.some(s => s.name.toLowerCase().includes(buyerName.toLowerCase().slice(0,6)))) {
+        // buyerName matches an existing supplier — it was misdetected; skip it
+      } else if (!supplierName) {
+        supplierName = ""; // stays empty; bill will be created without auto-vendor
       }
 
       let supplierId = "";
@@ -449,17 +469,19 @@ export default function VendorBillsPanel({
       const createdProducts: Product[] = [];
 
       for (const row of rows) {
-        const slNo = (row as any[])[0];
-        if (typeof slNo !== "number" || slNo <= 0) continue;
-
         const rawDesc = String((row as any[])[descCol] ?? "").trim();
         const desc = rawDesc.replace(/^[*#\s]+|[*#\s]+$/g, "").replace(/\s+/g, " ").trim();
+        if (!desc || desc.length < 2) continue;
+        // Skip header/summary rows
+        if (/^(description|product|item|particulars|total|sub.?total|grand|note|narration|sgst|cgst|igst|tax|amount|sl|sr|no\.|#)/i.test(desc)) continue;
+
         const qty  = Number((row as any[])[qtyCol])  || 0;
         const rate = Number((row as any[])[rateCol]) || 0;
-        const unit = String((row as any[])[unitCol] ?? "NOS").trim() || "NOS";
+        const unit = unitCol >= 0 ? (String((row as any[])[unitCol] ?? "NOS").trim() || "NOS") : "NOS";
         const hsn  = hsnCol >= 0 ? String((row as any[])[hsnCol] ?? "").trim() : "";
+        const disc = discCol >= 0 ? (Number((row as any[])[discCol]) || 0) : 0;
 
-        if (!desc || qty <= 0 || rate <= 0) continue;
+        if (qty <= 0 || rate <= 0) continue;
 
         const sku = makeSKU(desc);
         const allProducts = [...products, ...createdProducts];
@@ -478,8 +500,9 @@ export default function VendorBillsPanel({
           };
           createdProducts.push(prod);
         }
-        importedLines.push({ productId: prod.id, quantity: qty, unitPrice: rate });
-        billItems.push({ description: desc, hsn, unit, quantity: qty, rate, amount: +(qty * rate).toFixed(2), gstPct: 18 } as any);
+        importedLines.push({ productId: prod.id, quantity: qty, unitPrice: +(rate * (1 - disc / 100)).toFixed(2) });
+        const netAmt = +(qty * rate * (1 - disc / 100)).toFixed(2);
+        billItems.push({ description: desc, hsn, unit, quantity: qty, rate, discount: disc, amount: netAmt, gstPct: 18 } as any);
       }
 
       if (createdProducts.length > 0) setProducts(prev => [...prev, ...createdProducts]);
@@ -722,6 +745,10 @@ export default function VendorBillsPanel({
       </div>
 
       {/* Mobile hero scan button */}
+      {isMobile && bills.length === 0 && (
+        <div className="text-center py-8 text-slate-500 text-sm">No bills yet — scan or import to add one.</div>
+      )}
+
       {isMobile && (
         <button
           onClick={() => { setCameraFacing("environment"); setShowCamera(true); startCamera("environment"); }}
@@ -747,8 +774,81 @@ export default function VendorBillsPanel({
         </div>
       )}
 
-      {/* Bills table */}
-      <div className="bg-slate-950/60 border border-slate-800 rounded-xl overflow-hidden">
+      {/* Mobile card list */}
+      {isMobile && bills.length > 0 && (
+        <div className="space-y-3">
+          {bills.map(b => (
+            <div key={b.id} className="bg-slate-900 border border-slate-800 rounded-2xl p-4 space-y-3">
+              {/* Top row: bill no + status */}
+              <div className="flex items-start justify-between gap-2">
+                <div>
+                  <p className="text-xs font-bold text-indigo-400 font-mono">{b.billNumber}</p>
+                  <p className="text-sm font-bold text-white mt-0.5">{b.supplierName || "—"}</p>
+                </div>
+                <span className={`inline-flex items-center px-2 py-1 rounded-full text-[9px] font-bold uppercase border shrink-0 ${STATUS_COLORS[b.status]}`}>
+                  {b.status}
+                </span>
+              </div>
+              {/* Dates */}
+              <div className="flex gap-4 text-[11px] text-slate-400 font-mono">
+                <span>Invoice: {b.invoiceDate || "—"}</span>
+                <span>Due: {b.dueDate || "—"}</span>
+              </div>
+              {/* Amounts */}
+              <div className="grid grid-cols-3 gap-2 text-center">
+                <div className="bg-slate-800/60 rounded-xl p-2">
+                  <p className="text-[9px] text-slate-500 uppercase font-bold">Bill</p>
+                  <p className="text-xs font-bold text-slate-200 font-mono">{formatINR(b.totalAmount)}</p>
+                </div>
+                <div className="bg-emerald-900/20 rounded-xl p-2">
+                  <p className="text-[9px] text-emerald-600 uppercase font-bold">Paid</p>
+                  <p className="text-xs font-bold text-emerald-400 font-mono">{formatINR(b.paidAmount)}</p>
+                </div>
+                <div className={`rounded-xl p-2 ${b.balanceAmount > 0 ? "bg-red-900/20" : "bg-slate-800/40"}`}>
+                  <p className="text-[9px] text-red-500 uppercase font-bold">Balance</p>
+                  <p className={`text-xs font-bold font-mono ${b.balanceAmount > 0 ? "text-red-400" : "text-slate-500"}`}>{formatINR(b.balanceAmount)}</p>
+                </div>
+              </div>
+              {/* Action buttons */}
+              <div className="flex items-center gap-2 flex-wrap">
+                {!b.stockAdded && b.items && b.items.length > 0 && (
+                  <button onClick={() => handleAddStock(b)}
+                    className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-emerald-700/20 text-emerald-400 text-xs font-bold active:bg-emerald-700/40">
+                    + Stock
+                  </button>
+                )}
+                {b.stockAdded && <span className="text-[10px] font-bold text-emerald-600 font-mono">✓ Stocked</span>}
+                <button onClick={() => setViewingBill(b)}
+                  className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-indigo-500/10 text-indigo-400 text-xs font-bold active:bg-indigo-500/20">
+                  <Eye className="w-3.5 h-3.5" /> View
+                </button>
+                <button onClick={() => printBill(b, companyName)}
+                  className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-slate-800 text-slate-300 text-xs font-bold active:bg-slate-700">
+                  <Printer className="w-3.5 h-3.5" /> Print
+                </button>
+                {b.status !== "Paid" && (
+                  <button onClick={() => { setPayingBillId(b.id); resetPayForm(); setPayAmount(String(b.balanceAmount)); }}
+                    className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-emerald-700/20 text-emerald-400 text-xs font-bold active:bg-emerald-700/40">
+                    <CreditCard className="w-3.5 h-3.5" /> Pay
+                  </button>
+                )}
+                <button onClick={() => {
+                    if (window.confirm(`Delete bill ${b.billNumber}?`)) {
+                      setBills(prev => prev.filter(x => x.id !== b.id));
+                      toast.success("Bill deleted");
+                    }
+                  }}
+                  className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-red-700/20 text-red-400 text-xs font-bold active:bg-red-700/40 ml-auto">
+                  <X className="w-3.5 h-3.5" /> Delete
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Bills table (desktop only) */}
+      <div className={`bg-slate-950/60 border border-slate-800 rounded-xl overflow-hidden ${isMobile ? "hidden" : ""}`}>
         <table className="min-w-full divide-y divide-slate-800 text-xs">
           <thead className="bg-slate-950 text-slate-300 font-semibold uppercase font-mono tracking-wider">
             <tr>
