@@ -309,12 +309,12 @@ export default function AdminView({
   };
 
   return (
-    <div className="flex-1 space-y-6 overflow-y-auto p-6 text-left">
+    <div data-theme="dark" className="flex-1 space-y-6 overflow-y-auto p-6 text-left">
       {/* Title */}
       <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between border-b border-slate-800 pb-4">
         <div>
-          <h1 className="text-2xl font-bold text-white tracking-tight">System Administration</h1>
-          <p className="text-sm text-slate-400 mt-1">Configure company profiles, manipulate RBAC permissions, and oversee system security profiles.</p>
+          <h1 className="text-2xl font-bold tracking-tight" style={{color:"#0f172a"}}>System Administration</h1>
+          <p className="text-sm mt-1" style={{color:"#475569"}}>Configure company profiles, manipulate RBAC permissions, and oversee system security profiles.</p>
         </div>
 
         {/* Dynamic status badges */}
@@ -333,7 +333,7 @@ export default function AdminView({
       </div>
 
       {/* Sub tabs switches */}
-      <div className="flex flex-wrap gap-1 bg-[#070d1a] border border-[#1e2d45] p-1 rounded-xl self-start">
+      <div data-theme="dark" className="flex flex-wrap gap-1 bg-[#070d1a] border border-[#1e2d45] p-1 rounded-xl self-start">
         {[
           { key: "company",     label: "Company Setup" },
           { key: "permissions", label: "RBAC Permissions" },
