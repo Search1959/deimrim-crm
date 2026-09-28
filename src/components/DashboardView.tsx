@@ -311,7 +311,7 @@ export default function DashboardView({
           <h1 className="text-2xl font-bold text-slate-900 tracking-tight mt-1">
             {currentUser?.role === UserRole.SYSTEM_ADMIN ? "System Administrator Control Center" : "Executive Enterprise Dashboard"}
           </h1>
-          <p className="text-sm text-gray-500 mt-0.5">
+          <p className="text-sm mt-0.5" style={{ color: "#475569" }}>
             {currentUser?.role === UserRole.SYSTEM_ADMIN 
               ? "Global operational overview of enterprise databases, registered tenant nodes, and administrative activity streams." 
               : "Real-time dynamic business intelligence, custom inventory counts, CRM pipelines, and financial ledgers."}
@@ -328,7 +328,7 @@ export default function DashboardView({
 
       {/* Dynamic Dashboard Hero Card tailored for System Admin vs Client */}
       {currentUser?.role === UserRole.SYSTEM_ADMIN ? (
-        <div className="bg-gradient-to-r from-slate-950 via-slate-900 to-indigo-950 text-white rounded-xl p-5 border border-indigo-500/10 shadow-lg relative overflow-hidden">
+        <div data-theme="dark" className="bg-gradient-to-r from-slate-950 via-slate-900 to-indigo-950 text-white rounded-xl p-5 border border-indigo-500/10 shadow-lg relative overflow-hidden">
           <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-4 text-left">
             <div className="space-y-1">
               <h2 className="text-base font-bold text-slate-100 flex items-center gap-2">
@@ -357,7 +357,7 @@ export default function DashboardView({
           </div>
         </div>
       ) : (
-        <div className="bg-gradient-to-r from-indigo-950 via-slate-900 to-slate-950 text-white rounded-xl p-5 border border-indigo-500/10 shadow-lg relative overflow-hidden">
+        <div data-theme="dark" className="bg-gradient-to-r from-indigo-950 via-slate-900 to-slate-950 text-white rounded-xl p-5 border border-indigo-500/10 shadow-lg relative overflow-hidden">
           <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-4 text-left">
             <div className="space-y-1">
               <div className="flex items-center gap-2">
