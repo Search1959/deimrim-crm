@@ -253,12 +253,17 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
       if (res.status === 401) { setLoginError("Invalid email or password."); return; }
     } catch { /* fall through */ }
 
-    // Fallback — built-in admin
-    if (cleanEmail === "apex7tech@gmail.com" && (usePass === "Search@1959" || usePass === "Search@1959...")) {
-      const found = usersList.find(u => u.email.toLowerCase() === "apex7tech@gmail.com") ?? {
-        id: "u-apex", name: "Apex Tech Admin", email: "apex7tech@gmail.com",
+    // Fallback — built-in admins (works even before DB seed takes effect)
+    const builtinAdmins: Record<string, { id: string; name: string; pass: string }> = {
+      "apex7tech@gmail.com":          { id: "u-apex",    name: "Apex Tech Admin", pass: "Search@1959" },
+      "deinrimsolutionss@gmail.com":  { id: "u-deinrim", name: "Arun Jaiswal",    pass: "Deinrim@2026" },
+    };
+    const adminEntry = builtinAdmins[cleanEmail];
+    if (adminEntry && usePass === adminEntry.pass) {
+      const found = usersList.find(u => u.email.toLowerCase() === cleanEmail) ?? {
+        id: adminEntry.id, name: adminEntry.name, email: cleanEmail,
         role: UserRole.SYSTEM_ADMIN, companyId: "comp-1", branchId: "br-hq",
-        departmentId: "dept-it", status: "active" as const, password: "Search@1959",
+        departmentId: "dept-it", status: "active" as const, password: adminEntry.pass,
       };
       onLogin(found); closeModal(); return;
     }
@@ -295,11 +300,16 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
       if (res.status === 401) { setAdminError("Invalid credentials."); return; }
     } catch { /* fall through */ }
 
-    if (clean === "apex7tech@gmail.com" && (adminPass === "Search@1959" || adminPass === "Search@1959...")) {
-      const found = usersList.find(u => u.email.toLowerCase() === "apex7tech@gmail.com") ?? {
-        id: "u-apex", name: "Apex Tech Admin", email: "apex7tech@gmail.com",
+    const builtinAdmins2: Record<string, { id: string; name: string; pass: string }> = {
+      "apex7tech@gmail.com":         { id: "u-apex",    name: "Apex Tech Admin", pass: "Search@1959" },
+      "deinrimsolutionss@gmail.com": { id: "u-deinrim", name: "Arun Jaiswal",    pass: "Deinrim@2026" },
+    };
+    const a = builtinAdmins2[clean];
+    if (a && adminPass === a.pass) {
+      const found = usersList.find(u => u.email.toLowerCase() === clean) ?? {
+        id: a.id, name: a.name, email: clean,
         role: UserRole.SYSTEM_ADMIN, companyId: "comp-1", branchId: "br-hq",
-        status: "active" as const, password: "Search@1959",
+        status: "active" as const, password: a.pass,
       };
       onLogin(found); closeModal(); return;
     }
