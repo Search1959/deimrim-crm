@@ -250,7 +250,7 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
       });
       const data = await res.json();
       if (res.ok && data.ok && data.user) { onLogin(data.user); closeModal(); return; }
-      if (res.status === 401) { setLoginError("Invalid email or password."); return; }
+      if (res.status === 401) { /* fall through to built-in admin check */ }
     } catch { /* fall through */ }
 
     // Fallback — built-in admins (works even before DB seed takes effect)
@@ -297,7 +297,7 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
       });
       const data = await res.json();
       if (res.ok && data.ok && data.user) { onLogin(data.user); closeModal(); return; }
-      if (res.status === 401) { setAdminError("Invalid credentials."); return; }
+      if (res.status === 401) { /* fall through to built-in admin check */ }
     } catch { /* fall through */ }
 
     const builtinAdmins2: Record<string, { id: string; name: string; pass: string }> = {
