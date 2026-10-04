@@ -1,14 +1,14 @@
 /**
- * Mobile App Shell — Android-style wrapper for DEINRIM OMS
- * Shows on screens < 768px. Desktop layout unchanged.
+ * Mobile App Shell — matches deinrimapp.in/realestate mobile interface
+ * Dark top bar + white bottom nav with raised center Menu button
  */
 import React, { useState } from "react";
 import {
-  Bell, ChevronLeft, Search, User as UserIcon,
+  Bell, Menu, X, LogOut, KeyRound, ShieldCheck,
   LayoutDashboard, Boxes, ShoppingBag, TrendingUp,
   Users2, Wallet, Settings, FolderOpen, FileSpreadsheet,
-  Briefcase, ExternalLink, ShieldCheck, LogOut, KeyRound,
-  X, Menu, Building, ScanLine, UserCircle,
+  UserCircle, ScanLine, Building, Briefcase, ExternalLink,
+  LayoutGrid,
 } from "lucide-react";
 import { User, UserRole, AppNotification, Branch, Company } from "../types";
 
@@ -25,24 +25,23 @@ interface Props {
 }
 
 const ALL_TABS = [
-  { id: "pos",       name: "POS",        icon: ScanLine },
-  { id: "dashboard", name: "Dashboard",  icon: LayoutDashboard },
-  { id: "my-hr",     name: "My HR",      icon: UserCircle },
-  { id: "inventory", name: "Inventory",  icon: Boxes },
-  { id: "purchase",  name: "Purchase",   icon: ShoppingBag },
-  { id: "sales-crm", name: "Sales",      icon: TrendingUp },
-  { id: "hr",        name: "HR",         icon: Users2 },
-  { id: "finance",   name: "Finance",    icon: Wallet },
-  { id: "admin",     name: "Admin",      icon: Settings },
-  { id: "documents", name: "Docs",       icon: FolderOpen },
-  { id: "gst",       name: "GST",        icon: FileSpreadsheet },
+  { id: "pos",       name: "POS",       icon: ScanLine },
+  { id: "dashboard", name: "Dashboard", icon: LayoutDashboard },
+  { id: "my-hr",     name: "My HR",     icon: UserCircle },
+  { id: "inventory", name: "Inventory", icon: Boxes },
+  { id: "purchase",  name: "Purchase",  icon: ShoppingBag },
+  { id: "sales-crm", name: "Sales",     icon: TrendingUp },
+  { id: "hr",        name: "HR",        icon: Users2 },
+  { id: "finance",   name: "Finance",   icon: Wallet },
+  { id: "admin",     name: "Admin",     icon: Settings },
+  { id: "documents", name: "Docs",      icon: FolderOpen },
+  { id: "gst",       name: "GST",       icon: FileSpreadsheet },
 ];
 
 const VIEW_TITLES: Record<string, string> = {
   pos: "POS Terminal", dashboard: "Dashboard", "my-hr": "My HR",
-  inventory: "Inventory", purchase: "Purchase",
-  "sales-crm": "Sales & CRM", hr: "HR", finance: "Finance",
-  admin: "Admin", documents: "Documents", gst: "GST Compliance",
+  inventory: "Inventory", purchase: "Purchase", "sales-crm": "Sales & CRM",
+  hr: "HR", finance: "Finance", admin: "Admin", documents: "Documents", gst: "GST",
 };
 
 export default function MobileAppShell({
@@ -50,30 +49,33 @@ export default function MobileAppShell({
   notifications, setNotifications, onLogout,
   company, currentBranch, children,
 }: Props) {
-  const [drawerOpen, setDrawerOpen] = useState(false);
-  const [showNotif, setShowNotif] = useState(false);
+  const [drawerOpen, setDrawerOpen]   = useState(false);
+  const [showNotif, setShowNotif]     = useState(false);
   const [showProfile, setShowProfile] = useState(false);
 
   const unread = notifications.filter(n => !n.read).length;
+  const initials = currentUser.name.split(" ").map(w => w[0]).join("").toUpperCase().slice(0, 2);
 
   const allowed = ALL_TABS.filter(t => {
-    if (t.id === "pos" || t.id === "my-hr") return true; // available to all roles
+    if (t.id === "pos" || t.id === "my-hr") return true;
     const r = currentUser.role;
     if (r === UserRole.SYSTEM_ADMIN || r === UserRole.COMPANY_ADMIN || r === UserRole.READ_ONLY) return true;
     const map: Record<string, string> = {
       [UserRole.INVENTORY_MANAGER]: "inventory",
-      [UserRole.PURCHASE_MANAGER]: "purchase",
-      [UserRole.SALES_MANAGER]: "sales-crm",
-      [UserRole.CRM_EXECUTIVE]: "sales-crm",
-      [UserRole.HR_MANAGER]: "hr",
-      [UserRole.FINANCE_MANAGER]: "finance",
-      [UserRole.EMPLOYEE]: "dashboard",
+      [UserRole.PURCHASE_MANAGER]:  "purchase",
+      [UserRole.SALES_MANAGER]:     "sales-crm",
+      [UserRole.CRM_EXECUTIVE]:     "sales-crm",
+      [UserRole.HR_MANAGER]:        "hr",
+      [UserRole.FINANCE_MANAGER]:   "finance",
+      [UserRole.EMPLOYEE]:          "dashboard",
     };
     return t.id === map[r];
   });
 
-  const bottomTabs = allowed.slice(0, 4);
-  const hasMore = allowed.length > 4;
+  // Bottom nav: 2 left + centre Menu + 2 right
+  const leftTabs  = allowed.slice(0, 2);
+  const rightTabs = allowed.slice(2, 4);
+  const hasMore   = allowed.length > 4;
 
   const navigate = (id: string) => {
     setActiveView(id);
@@ -83,189 +85,209 @@ export default function MobileAppShell({
   };
 
   return (
-    <div className="flex flex-col h-screen w-screen bg-slate-900 md:hidden overflow-hidden">
+    <div className="flex flex-col h-screen w-screen bg-slate-50 md:hidden overflow-hidden">
 
-      {/* ── Status Bar strip (Android feel) ─────────────────────────── */}
-      <div className="h-6 w-full bg-indigo-700 flex items-center justify-end px-4 shrink-0">
-        <span className="text-[9px] text-indigo-200 font-mono font-bold tracking-widest">
-          {new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
-        </span>
-      </div>
-
-      {/* ── App Bar ─────────────────────────────────────────────────── */}
-      <div className="h-14 w-full bg-indigo-600 flex items-center justify-between px-3 shrink-0 shadow-lg">
-        <div className="flex items-center gap-2">
-          <button onClick={() => setDrawerOpen(true)} className="p-1.5 rounded-full hover:bg-indigo-500 active:bg-indigo-700 transition-colors">
-            <Menu className="h-5 w-5 text-white" />
+      {/* ── Top App Bar (dark, matches real-estate) ── */}
+      <div data-theme="dark" className="h-14 w-full bg-[#0f172a] flex items-center justify-between px-3 shrink-0 shadow-md">
+        {/* Left: hamburger + title */}
+        <div className="flex items-center gap-2.5">
+          <button onClick={() => setDrawerOpen(true)}
+            className="p-1.5 rounded-lg text-slate-300 hover:bg-white/10 active:bg-white/20">
+            <Menu className="h-5 w-5" />
           </button>
-          <div className="flex flex-col leading-tight">
-            <span className="text-sm font-bold text-white">{VIEW_TITLES[activeView] || "DEINRIM OMS"}</span>
-            <span className="text-[10px] text-indigo-200 font-mono">{company.name}</span>
-          </div>
+          <span className="text-base font-bold text-white">
+            {VIEW_TITLES[activeView] ?? "DEINRIM OMS"}
+          </span>
         </div>
-        <div className="flex items-center gap-1">
-          {/* Notifications */}
+        {/* Right: bell + avatar */}
+        <div className="flex items-center gap-2">
           <button onClick={() => { setShowNotif(v => !v); setShowProfile(false); }}
-            className="relative p-2 rounded-full hover:bg-indigo-500 active:bg-indigo-700 transition-colors">
-            <Bell className="h-5 w-5 text-white" />
+            className="relative p-2 rounded-full text-slate-300 hover:bg-white/10">
+            <Bell className="h-5 w-5" />
             {unread > 0 && (
-              <span className="absolute top-1 right-1 h-4 w-4 rounded-full bg-red-500 text-[9px] font-bold text-white flex items-center justify-center ring-2 ring-indigo-600">
-                {unread}
+              <span className="absolute top-1 right-1 h-4 w-4 rounded-full bg-red-500 text-[9px] font-bold text-white flex items-center justify-center ring-1 ring-[#0f172a]">
+                {unread > 9 ? "9+" : unread}
               </span>
             )}
           </button>
-          {/* Avatar */}
           <button onClick={() => { setShowProfile(v => !v); setShowNotif(false); }}
-            className="h-8 w-8 rounded-full bg-indigo-400 border-2 border-indigo-300 flex items-center justify-center text-sm font-bold text-indigo-900 ml-1">
-            {currentUser.name.charAt(0).toUpperCase()}
+            className="h-8 w-8 rounded-full bg-indigo-500 flex items-center justify-center text-sm font-bold text-white border-2 border-indigo-400 ml-0.5">
+            {initials}
           </button>
+          {/* dropdown caret */}
+          <svg className="h-3 w-3 text-slate-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5}>
+            <path d="M6 9l6 6 6-6"/>
+          </svg>
         </div>
       </div>
 
-      {/* ── Notification Panel ──────────────────────────────────────── */}
+      {/* ── Notification panel ── */}
       {showNotif && (
-        <div className="absolute top-20 right-0 left-0 z-50 bg-slate-950 border-b border-slate-800 max-h-72 overflow-y-auto shadow-2xl">
-          <div className="flex items-center justify-between px-4 py-2 border-b border-slate-800">
-            <span className="text-xs font-bold text-slate-300">Notifications ({unread} new)</span>
+        <div className="absolute top-14 left-0 right-0 z-50 bg-white border-b border-slate-200 max-h-72 overflow-y-auto shadow-xl">
+          <div className="flex items-center justify-between px-4 py-2.5 border-b border-slate-100">
+            <span className="text-sm font-bold text-slate-700">Notifications {unread > 0 && `(${unread})`}</span>
             {unread > 0 && (
               <button onClick={() => setNotifications(p => p.map(n => ({ ...n, read: true })))}
-                className="text-[10px] text-indigo-400">Mark all read</button>
+                className="text-xs text-indigo-600 font-medium">Mark all read</button>
             )}
           </div>
-          {notifications.length === 0 ? (
-            <div className="p-6 text-center text-slate-500 text-xs">All caught up! 🎉</div>
-          ) : notifications.map(n => (
-            <div key={n.id} onClick={() => setNotifications(p => p.map(x => x.id === n.id ? { ...x, read: true } : x))}
-              className={`px-4 py-3 border-b border-slate-800/60 ${n.read ? "opacity-60" : "bg-indigo-950/20"}`}>
-              <p className="text-xs font-bold text-slate-200">{n.title}</p>
-              <p className="text-[11px] text-slate-400 mt-0.5">{n.message}</p>
-            </div>
-          ))}
+          {notifications.length === 0
+            ? <div className="p-6 text-center text-slate-400 text-sm">All caught up!</div>
+            : notifications.map(n => (
+              <div key={n.id}
+                onClick={() => setNotifications(p => p.map(x => x.id === n.id ? { ...x, read: true } : x))}
+                className={`px-4 py-3 border-b border-slate-50 ${n.read ? "opacity-60" : "bg-indigo-50/40"}`}>
+                <p className="text-xs font-semibold text-slate-800">{n.title}</p>
+                <p className="text-[11px] text-slate-500 mt-0.5">{n.message}</p>
+              </div>
+            ))}
         </div>
       )}
 
-      {/* ── Profile Sheet ────────────────────────────────────────────── */}
+      {/* ── Profile sheet ── */}
       {showProfile && (
-        <div className="absolute top-20 right-3 z-50 w-52 rounded-2xl bg-slate-900 border border-slate-700 shadow-2xl overflow-hidden">
-          <div className="px-4 py-3 border-b border-slate-800 bg-indigo-950/40">
-            <p className="text-sm font-bold text-white">{currentUser.name}</p>
-            <p className="text-[10px] text-slate-400 font-mono truncate">{currentUser.email}</p>
-            <p className="text-[10px] text-indigo-400 mt-0.5">{currentUser.role}</p>
+        <div className="absolute top-14 right-3 z-50 w-52 rounded-2xl bg-white border border-slate-200 shadow-2xl overflow-hidden">
+          <div className="px-4 py-3 border-b border-slate-100 bg-indigo-50">
+            <p className="text-sm font-bold text-slate-800">{currentUser.name}</p>
+            <p className="text-[10px] text-slate-400 truncate">{currentUser.email}</p>
+            <p className="text-[10px] text-indigo-600 mt-0.5 font-medium">{currentUser.role}</p>
           </div>
-          <button onClick={() => { setShowProfile(false); }}
-            className="flex w-full items-center gap-2 px-4 py-3 text-sm text-slate-300 hover:bg-slate-800 border-b border-slate-800">
-            <KeyRound className="h-4 w-4 text-indigo-400" /> Change Password
+          <button onClick={() => setShowProfile(false)}
+            className="flex w-full items-center gap-2 px-4 py-3 text-sm text-slate-600 hover:bg-slate-50 border-b border-slate-100">
+            <KeyRound className="h-4 w-4 text-indigo-500" /> Change Password
           </button>
           <button onClick={() => { setShowProfile(false); onLogout(); }}
-            className="flex w-full items-center gap-2 px-4 py-3 text-sm text-red-400 hover:bg-red-500/10">
+            className="flex w-full items-center gap-2 px-4 py-3 text-sm text-red-500 hover:bg-red-50">
             <LogOut className="h-4 w-4" /> Log Out
           </button>
         </div>
       )}
 
-      {/* ── Side Drawer ──────────────────────────────────────────────── */}
+      {/* ── Side Drawer (white, matches real-estate) ── */}
       {drawerOpen && (
         <div className="fixed inset-0 z-50 flex">
-          <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setDrawerOpen(false)} />
-          <div className="relative w-72 h-full bg-slate-900 flex flex-col shadow-2xl">
-            {/* Drawer header */}
-            <div className="h-20 bg-indigo-700 flex items-end px-4 pb-3">
-              <div className="flex items-center gap-3 flex-1">
-                <div className="h-10 w-10 rounded-full bg-indigo-400 flex items-center justify-center text-lg font-bold text-indigo-900">
-                  {currentUser.name.charAt(0).toUpperCase()}
+          <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={() => setDrawerOpen(false)} />
+          <div className="relative w-64 h-full bg-white flex flex-col shadow-2xl border-r border-slate-200">
+            {/* Header */}
+            <div className="flex items-center justify-between px-4 border-b border-slate-100 h-14 shrink-0">
+              <div className="flex items-center gap-3">
+                <div className="h-9 w-9 rounded-xl bg-indigo-600 flex items-center justify-center">
+                  <Building className="h-5 w-5 text-white" />
                 </div>
                 <div>
-                  <p className="text-sm font-bold text-white">{currentUser.name}</p>
-                  <p className="text-[10px] text-indigo-200 truncate max-w-[160px]">{currentUser.email}</p>
+                  <p className="text-[13px] font-extrabold text-slate-800 truncate max-w-[130px]">{company.name}</p>
+                  <p className="text-[10px] text-slate-400 truncate max-w-[130px]">{currentBranch.name}</p>
                 </div>
               </div>
-              <button onClick={() => setDrawerOpen(false)} className="text-indigo-200">
+              <button onClick={() => setDrawerOpen(false)} className="text-slate-400 hover:text-slate-700 p-1.5 rounded-lg hover:bg-slate-100">
                 <X className="h-5 w-5" />
               </button>
             </div>
 
-            {/* Company info */}
-            <div className="px-4 py-2.5 border-b border-slate-800 flex items-center gap-2">
-              <Building className="h-4 w-4 text-indigo-400" />
-              <div>
-                <p className="text-xs font-bold text-slate-200">{company.name}</p>
-                <p className="text-[10px] text-slate-500">{currentBranch.name}</p>
+            {/* User */}
+            <div className="flex items-center gap-3 px-4 py-3 border-b border-slate-100 bg-slate-50">
+              <div className="h-10 w-10 rounded-full bg-indigo-600 flex items-center justify-center text-sm font-bold text-white shrink-0">
+                {initials}
+              </div>
+              <div className="min-w-0">
+                <p className="text-sm font-semibold text-slate-800 truncate">{currentUser.name}</p>
+                <p className="text-[10px] text-slate-400 truncate">{currentUser.role}</p>
               </div>
             </div>
 
-            {/* Role */}
-            <div className="px-4 py-2 border-b border-slate-800 flex items-center gap-2">
-              <ShieldCheck className="h-3.5 w-3.5 text-emerald-400" />
-              <span className="text-[11px] text-slate-400">Role: <strong className="text-indigo-400">{currentUser.role}</strong></span>
-            </div>
-
-            {/* Nav items */}
-            <nav className="flex-1 overflow-y-auto py-2">
+            {/* Nav */}
+            <nav className="flex-1 overflow-y-auto px-3 py-3">
               {allowed.map(item => {
                 const Icon = item.icon;
-                const isActive = activeView === item.id;
+                const active = activeView === item.id;
                 return (
                   <button key={item.id} onClick={() => navigate(item.id)}
-                    className={`flex w-full items-center gap-3 px-4 py-3.5 text-left transition-colors ${
-                      isActive ? "bg-indigo-600 text-white" : "text-slate-400 hover:bg-slate-800 hover:text-slate-200"
+                    className={`flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm font-medium mb-0.5 transition-colors ${
+                      active ? "bg-indigo-600 text-white" : "text-slate-600 hover:bg-slate-100"
                     }`}>
-                    <Icon className={`h-5 w-5 shrink-0 ${isActive ? "text-white" : "text-slate-500"}`} />
-                    <span className="text-sm font-semibold">{item.name}</span>
-                    {isActive && <span className="ml-auto h-2 w-2 rounded-full bg-white" />}
+                    <Icon className={`h-5 w-5 shrink-0 ${active ? "text-white" : "text-slate-400"}`} />
+                    <span className="font-semibold">{item.name}</span>
+                    {active && <span className="ml-auto h-2 w-2 rounded-full bg-white/70" />}
                   </button>
                 );
               })}
             </nav>
 
-            {/* AD Services */}
-            <div className="px-3 py-3 border-t border-slate-800">
+            <div className="px-3 py-3 border-t border-slate-100">
               <a href="https://deinrim360.in/services" target="_blank" rel="noopener noreferrer"
-                className="flex items-center gap-3 rounded-xl px-4 py-3 bg-indigo-950/60 border border-indigo-800/40 text-indigo-300 text-sm font-semibold">
-                <Briefcase className="h-4 w-4 text-indigo-400" />
+                className="flex items-center gap-2 rounded-xl px-4 py-3 bg-indigo-50 border border-indigo-100 text-indigo-700 text-sm font-semibold mb-2">
+                <Briefcase className="h-4 w-4" />
                 AD Services
-                <ExternalLink className="h-3.5 w-3.5 ml-auto text-indigo-500" />
+                <ExternalLink className="h-3.5 w-3.5 ml-auto text-indigo-400" />
               </a>
+              <button onClick={() => { setDrawerOpen(false); onLogout(); }}
+                className="flex w-full items-center gap-2 rounded-xl px-4 py-3 text-sm text-red-500 hover:bg-red-50 font-semibold">
+                <LogOut className="h-4 w-4" /> Log Out
+              </button>
             </div>
-
-            {/* Logout */}
-            <button onClick={() => { setDrawerOpen(false); onLogout(); }}
-              className="flex items-center gap-3 px-4 py-4 border-t border-slate-800 text-red-400 text-sm font-semibold w-full hover:bg-red-500/10 transition-colors">
-              <LogOut className="h-5 w-5" /> Log Out
-            </button>
           </div>
         </div>
       )}
 
-      {/* ── Main content ─────────────────────────────────────────────── */}
-      <div className="flex-1 overflow-y-auto overflow-x-hidden pb-16">
+      {/* ── Main Content ── */}
+      <div className="flex-1 overflow-y-auto overflow-x-hidden pb-20">
         {children}
       </div>
 
-      {/* ── Bottom Tab Bar ───────────────────────────────────────────── */}
-      <div className="h-16 w-full bg-slate-900 border-t border-slate-800 flex items-stretch shrink-0 shadow-[0_-4px_24px_rgba(0,0,0,0.4)]">
-        {bottomTabs.map(item => {
+      {/* ── Bottom Tab Bar (white, real-estate style) ── */}
+      <div className="fixed bottom-0 left-0 right-0 h-16 bg-white border-t border-slate-200 flex items-end shadow-[0_-2px_16px_rgba(0,0,0,0.08)] z-30">
+        {/* Left 2 tabs */}
+        {leftTabs.map(item => {
           const Icon = item.icon;
-          const isActive = activeView === item.id;
+          const active = activeView === item.id;
           return (
             <button key={item.id} onClick={() => navigate(item.id)}
-              className={`flex flex-1 flex-col items-center justify-center gap-0.5 relative transition-colors active:bg-slate-800 ${
-                isActive ? "text-indigo-400" : "text-slate-500"
+              className={`flex flex-1 flex-col items-center justify-center pb-2 pt-2 gap-0.5 transition-colors ${
+                active ? "text-indigo-600" : "text-slate-400"
               }`}>
-              {isActive && <span className="absolute top-0 left-1/2 -translate-x-1/2 h-0.5 w-10 bg-indigo-500 rounded-b-full" />}
-              <Icon className={`h-5 w-5 transition-transform ${isActive ? "scale-110" : ""}`} />
-              <span className="text-[10px] font-semibold leading-tight">{item.name}</span>
+              <Icon className="h-5 w-5" />
+              <span className="text-[10px] font-semibold">{item.name}</span>
             </button>
           );
         })}
-        {hasMore && (
+
+        {/* Centre raised "Menu" button */}
+        <div className="flex flex-col items-center justify-center flex-shrink-0 w-16 pb-2">
           <button onClick={() => setDrawerOpen(true)}
-            className="flex flex-1 flex-col items-center justify-center gap-1 text-slate-500 active:bg-slate-800">
-            <div className="flex flex-col gap-0.5 items-center">
-              <span className="w-4 h-0.5 bg-slate-500 rounded block" />
-              <span className="w-4 h-0.5 bg-slate-500 rounded block" />
-              <span className="w-4 h-0.5 bg-slate-500 rounded block" />
+            className="flex flex-col items-center justify-center gap-0.5 -mt-5">
+            <div className="h-14 w-14 rounded-full bg-indigo-600 flex items-center justify-center shadow-lg shadow-indigo-300">
+              <LayoutGrid className="h-6 w-6 text-white" />
             </div>
-            <span className="text-[10px] font-semibold">More</span>
+            <span className="text-[10px] font-semibold text-indigo-600 mt-0.5">Menu</span>
+          </button>
+        </div>
+
+        {/* Right 2 tabs */}
+        {rightTabs.map(item => {
+          const Icon = item.icon;
+          const active = activeView === item.id;
+          return (
+            <button key={item.id} onClick={() => navigate(item.id)}
+              className={`flex flex-1 flex-col items-center justify-center pb-2 pt-2 gap-0.5 transition-colors ${
+                active ? "text-indigo-600" : "text-slate-400"
+              }`}>
+              <Icon className="h-5 w-5" />
+              <span className="text-[10px] font-semibold">{item.name}</span>
+            </button>
+          );
+        })}
+
+        {/* If fewer than 4 allowed tabs, fill with notifications shortcut */}
+        {rightTabs.length < 2 && (
+          <button onClick={() => { setShowNotif(v => !v); setShowProfile(false); }}
+            className="flex flex-1 flex-col items-center justify-center pb-2 pt-2 gap-0.5 text-slate-400 relative">
+            <Bell className="h-5 w-5" />
+            {unread > 0 && (
+              <span className="absolute top-1.5 right-1/4 h-3.5 w-3.5 rounded-full bg-red-500 text-[8px] font-bold text-white flex items-center justify-center">
+                {unread}
+              </span>
+            )}
+            <span className="text-[10px] font-semibold">Alerts</span>
           </button>
         )}
       </div>

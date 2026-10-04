@@ -1367,10 +1367,11 @@ export default function App() {
             setCurrentUser(prev => ({ ...prev, email: newEmail, password: newPassword }));
           }}
           onOpenMobileMenu={() => setMobileSidebarOpen(true)}
+          activeView={activeView}
         />
 
         {/* Dynamic workspace context panel — add bottom padding on mobile for tab bar */}
-        <main className="flex-1 overflow-hidden flex flex-col bg-slate-900 pb-16 md:pb-0">
+        <main className="flex-1 overflow-hidden flex flex-col bg-slate-50 pb-16 md:pb-0">
           {renderView()}
         </main>
       </div>
