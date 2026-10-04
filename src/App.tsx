@@ -14,6 +14,7 @@ import PurchaseView from "./components/PurchaseView";
 import InventoryView from "./components/InventoryView";
 import SalesCRMView from "./components/SalesCRMView";
 import HRView from "./components/HRView";
+import MyHRView from "./components/MyHRView";
 import FinanceView from "./components/FinanceView";
 import AdminView from "./components/AdminView";
 import DocumentView from "./components/DocumentView";
@@ -1168,6 +1169,17 @@ export default function App() {
             isDemo={!currentUser.id.startsWith("u-client-") && !currentUser.id.startsWith("u-staff-") && currentUser.companyId === "comp-1"}
             autoOpenInvoiceBuilder={quickNewInvoice}
             onAutoOpenHandled={() => setQuickNewInvoice(false)}
+          />
+        );
+      case "my-hr":
+        return (
+          <MyHRView
+            currentUser={currentUser}
+            employees={employees}
+            leaveRequests={leaveRequests}
+            setLeaveRequests={setLeaveRequests}
+            departments={defaultDepartments}
+            designations={defaultDesignations}
           />
         );
       case "hr":

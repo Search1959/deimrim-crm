@@ -20,6 +20,7 @@ import {
   Briefcase,
   ExternalLink,
   FileSpreadsheet,
+  UserCircle,
   X,
 } from "lucide-react";
 import { Company, UserRole } from "../types";
@@ -48,6 +49,7 @@ export default function Sidebar({
 
   const menuItems = [
     { id: "dashboard",  name: "Dashboard",       icon: LayoutDashboard, description: "Overview & Analytics",          badge: null },
+    { id: "my-hr",     name: "My HR",           icon: UserCircle,      description: "Attendance, Leave & Payslips",   badge: null },
     { id: "inventory",  name: "Inventory",        icon: Boxes,           description: "Real-time Stock Ledger",        badge: "Heart" },
     { id: "purchase",   name: "Purchase",         icon: ShoppingBag,     description: "Procurement & Suppliers",       badge: null },
     { id: "sales-crm",  name: "Sales & CRM",      icon: TrendingUp,      description: "Leads, pipeline & Invoices",    badge: null },
@@ -59,6 +61,7 @@ export default function Sidebar({
   ];
 
   const allowedMenuItems = menuItems.filter((item) => {
+    if (item.id === "my-hr") return true; // visible to everyone — self-service portal
     if (userRole === UserRole.SYSTEM_ADMIN || userRole === UserRole.COMPANY_ADMIN) return true;
     if (userRole === UserRole.READ_ONLY) return item.id !== "admin";
     switch (userRole) {
