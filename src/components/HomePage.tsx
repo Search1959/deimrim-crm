@@ -368,7 +368,7 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
     { q: "Can it work for multiple branches?", a: "Yes! **DEINRIM 360** is natively designed for **multi-branch, multi-tenant, and multi-location businesses**. Administrators can map distinct branch structures, assign branch-specific staff, and query isolated transaction tables while retaining high-level executive consolidation." },
     { q: "Can I customize modules?", a: "Absolutely. You can toggle specific operational modules, adjust permissions via the **Role-Based Access Control (RBAC) matrix**, configure brand assets, and whitelabel the client portals with your own company name, logo, and contact details." },
     { q: "Is cloud hosting available?", a: "Yes. The standard tier is **secure, fully-managed, high-speed Cloud hosting** with a 99.9% uptime SLA. Data is partitioned per tenant, encrypted with AES-256 standard, and backed up with automated database snapshots every 6 hours." },
-    { q: "Is on-premise deployment available?", a: "Yes, for larger corporations with rigorous local compliance requirements, **M/s Deinrim Solutionss (P) Ltd.** offers on-premise deployments or dedicated private cloud setups with specialized SLA agreements." },
+    { q: "Is on-premise deployment available?", a: "Yes, for larger corporations with rigorous local compliance requirements, **Apex7tech** offers on-premise deployments or dedicated private cloud setups with specialized SLA agreements." },
     { q: "How does the 'Enter Once' inventory-to-finance automation work?", a: "Every transaction propagates automatically through the ledger. When a Purchase Order (PO) receives stock via a Goods Receipt Note (GRN), the system automatically increases physical batch levels, registers a stock movement log, and submits an operational COGS expense to the Finance module without manual re-entry." },
     { q: "What happens to ledgers when a Sales Invoice is generated?", a: "When you issue an invoice in Sales & CRM, the system does three things simultaneously: (1) auto-depletes product stocks in FIFO order, (2) adds a tax invoice entry to Customer receivables, and (3) posts an INCOME transaction to the Finance profit/loss database." },
   ];
@@ -433,7 +433,7 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
               <span className="text-sky-400">Your Entire Organization</span>
             </h2>
             <p className="text-slate-400 text-sm md:text-base leading-relaxed max-w-lg">
-              CRM · Inventory · Purchase · HR · Finance · GST — all linked under one secure, multi-tenant workspace. Built and supported from Kolkata by M/s Deinrim Solutionss (P) Ltd.
+              CRM · Inventory · Purchase · HR · Finance · GST — all linked under one secure, multi-tenant workspace. Built and supported from Kolkata by Apex7tech
             </p>
             <div className="flex flex-wrap items-center gap-3">
               <button onClick={() => openModal("register")} className="px-6 py-3 bg-sky-500 hover:bg-sky-400 text-white font-bold text-xs rounded-xl transition-all shadow-lg shadow-sky-500/20 flex items-center gap-1.5 cursor-pointer">
@@ -694,7 +694,7 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
             {activeReviewTab === "about" && (
               <div className="space-y-4 text-left">
                 <div className="flex items-center gap-2 pb-2 border-b border-slate-800/60"><History className="h-4 w-4 text-sky-400" /><h4 className="text-xs font-bold uppercase tracking-wider text-white">Corporate Heritage & High-Touch Support</h4></div>
-                <p className="text-xs text-slate-300">Operated by <strong className="text-white">M/s Deinrim Solutionss (P) Ltd.</strong>, incorporated in Kolkata, WB, India. Engineering custom SaaS enterprise software since 2018, scaling from a regional consultancy to managing high-performance multi-tenant platforms.</p>
+                <p className="text-xs text-slate-300">Operated by <strong className="text-white">Apex7tech</strong>, incorporated in Kolkata, WB, India. Engineering custom SaaS enterprise software since 2018, scaling from a regional consultancy to managing high-performance multi-tenant platforms.</p>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs font-mono">
                   <div className="bg-slate-950/45 p-3 rounded-lg border border-slate-800"><span className="text-[10px] text-sky-400 uppercase tracking-widest font-bold">Priority Support SLA</span><p className="text-slate-300 mt-1 font-sans">2-hour response time for critical issues. Standard tickets resolved within 12-24 hours via dedicated email and callback.</p></div>
                   <div className="bg-slate-950/45 p-3 rounded-lg border border-slate-800"><span className="text-[10px] text-orange-400 uppercase tracking-widest font-bold">Active Customer Retention</span><p className="text-slate-300 mt-1 font-sans">Serving 140+ active business tenants in South Asia with zero telemetry loss incidents since inception.</p></div>
@@ -941,7 +941,7 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
               💬 WhatsApp (+91 98361-30393)
             </a>
           </div>
-          <div className="text-[10px] text-slate-500 font-mono">M/s Deinrim Solutionss (P) Ltd. • Kolkata, India • deinrim360.in</div>
+          <div className="text-[10px] text-slate-500 font-mono">Apex7tech • Kolkata, India • deinrim360.in</div>
         </div>
       </section>
 
@@ -982,7 +982,7 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 max-w-6xl mx-auto text-left">
           <div className="space-y-1.5">
             <h4 className="text-[11px] font-extrabold text-sky-400 uppercase tracking-wider font-mono">OPERATED & DEVELOPED BY</h4>
-            <p className="text-slate-200 font-semibold text-sm">M/s Deinrim Solutionss (P) Ltd.</p>
+            <p className="text-slate-200 font-semibold text-sm">Apex7tech</p>
             <p className="text-slate-300">Kolkata, West Bengal (WB), India</p>
             <p className="text-white font-bold text-sm">Corporate: +91 98361-30393</p>
             <p className="text-slate-500 text-[10px] leading-normal pt-2 border-t border-slate-900 mt-2">DEINRIM OMS v2.0 • Isolated high-performance relational structures with real-time replication.</p>
@@ -1172,7 +1172,7 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
             {activeFooterModal === "terms" && (
               <div className="space-y-4 text-xs text-slate-300 leading-relaxed">
                 <p className="font-semibold text-slate-200">Last Updated: June 28, 2026</p>
-                <p>These Terms of Service govern your access to <strong>DEINRIM OMS & ERP</strong> operated by M/s Deinrim Solutionss (P) Ltd.</p>
+                <p>These Terms of Service govern your access to <strong>DEINRIM OMS & ERP</strong> operated by Apex7tech</p>
                 {[["1. Tenant Account Registration","Tenants must register with valid corporate coordinates. All white-label configurations must comply with terms and not infringe third-party intellectual property."],["2. Operational Correctness","Financial ledgers and inventory records are calculated based on parameters configured by managers. Tenants are ultimately responsible for checking accounting accuracy."],["3. Service Availability (SLA)","DEINRIM OMS is committed to 99.9% uptime SLA. Scheduled maintenance is performed during off-peak hours with prior notification."],["4. Platform Integrity","Unauthorized access, structural reverse engineering, or API endpoint scanning is prohibited."]].map(([title,text],i)=>(
                   <div key={i}><h4 className="font-bold text-sky-400 font-mono uppercase tracking-wider text-[10px]">{title}</h4><p className="mt-1">{text}</p></div>
                 ))}

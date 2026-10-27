@@ -1637,7 +1637,7 @@ Office Ergonomic Chairs,AST-CH-99,Furniture,1200,1050,12`;
           const unpaidInvs = invoiceList.filter(inv => inv.status !== "paid" && inv.status !== "void");
           const invNums = unpaidInvs.map(i => i.invoiceNumber).join(", ");
           const msg = encodeURIComponent(
-            `Dear ${name},\n\nThis is a gentle reminder from DEINRIM SOLUTIONSS regarding your outstanding balance of ₹${outstanding.toLocaleString("en-IN", { minimumFractionDigits: 2 })}.\n\nUnpaid Invoice(s): ${invNums || "—"}\n\nKindly arrange payment at the earliest. For any queries, please contact us.\n\nThank you.`
+            `Dear ${name},\n\nThis is a gentle reminder from APEX7TECH regarding your outstanding balance of ₹${outstanding.toLocaleString("en-IN", { minimumFractionDigits: 2 })}.\n\nUnpaid Invoice(s): ${invNums || "—"}\n\nKindly arrange payment at the earliest. For any queries, please contact us.\n\nThank you.`
           );
           const cleanPhone = phone.replace(/\D/g, "");
           const waPhone = cleanPhone.startsWith("91") ? cleanPhone : `91${cleanPhone}`;

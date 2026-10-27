@@ -329,7 +329,7 @@ export default function MobileLogin({ onLogin, usersList }: Props) {
             </button>
           </div>
           <p className="text-center text-[10px] text-slate-600 font-mono">
-            M/s Deinrim Solutionss (P) Ltd. · deinrim360.in
+            Apex7tech · deinrim360.in
           </p>
         </div>
       </div>
