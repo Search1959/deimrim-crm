@@ -22,6 +22,7 @@ import GSTView from "./components/GSTView";
 import HomePage from "./components/HomePage";
 import MobileLogin from "./components/MobileLogin";
 import MobileAppShell from "./components/MobileAppShell";
+import ProductTour from "./components/ProductTour";
 import MobilePOS from "./components/MobilePOS";
 import ToastContainer from "./components/ToastContainer";
 
@@ -90,6 +91,7 @@ export default function App() {
   
   // Login Session state
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [showTour, setShowTour]     = useState(false);
   // Guard: prevents persistTenant from writing stale previous-tenant data
   // into the new tenant's localStorage before the loading useEffect completes
   const tenantLoading = useRef(false);
@@ -1278,6 +1280,11 @@ export default function App() {
     setCurrentUser(normalisedUser);
     setIsLoggedIn(true);
     setActiveView(getDefaultViewForRole(normalisedUser.role));
+    // Show product tour for first-time / demo logins
+    const tourKey = `tour_seen_${normalisedUser.id}`;
+    if (!localStorage.getItem(tourKey)) {
+      setShowTour(true);
+    }
   };
 
   if (!isLoggedIn) {
@@ -1302,13 +1309,19 @@ export default function App() {
   if (isMobile) {
     return (
       <>
+        {showTour && (
+          <ProductTour onDone={() => {
+            setShowTour(false);
+            try { localStorage.setItem(`tour_seen_${currentUser.id}`, "1"); } catch {}
+          }} />
+        )}
         <MobileAppShell
           currentUser={currentUser}
           activeView={activeView}
           setActiveView={(view) => { setActiveView(view); setGlobalSearchQuery(""); }}
           notifications={notifications}
           setNotifications={setNotifications}
-          onLogout={() => { setIsLoggedIn(false); setActiveView("dashboard"); }}
+          onLogout={() => { setIsLoggedIn(false); setActiveView("dashboard"); setShowTour(false); }}
           company={company}
           currentBranch={currentBranch}
         >
@@ -1359,6 +1372,7 @@ export default function App() {
           onLogout={() => {
             setIsLoggedIn(false);
             setActiveView("dashboard");
+            setShowTour(false);
           }}
           onUpdateCredentials={(userId, newEmail, newPassword) => {
             setUsers(prev => prev.map(u =>
@@ -1735,6 +1749,12 @@ export default function App() {
             </form>
           </div>
         </div>
+      )}
+      {showTour && (
+        <ProductTour onDone={() => {
+          setShowTour(false);
+          try { localStorage.setItem(`tour_seen_${currentUser.id}`, "1"); } catch {}
+        }} />
       )}
       <ToastContainer />
     </div>

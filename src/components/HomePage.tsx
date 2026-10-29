@@ -317,20 +317,18 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
   };
 
   // ── Demo quick-login ──────────────────────────────────────────────────────
-  const handleDemoLogin = async (type: "admin" | "sales" | "readonly") => {
+  const handleDemoLogin = async (type: "admin" | "sales" | "readonly" | "hr" | "finance" | "inventory") => {
     const demoMap: Record<string, Partial<User>> = {
-      admin:    { id: "u-demo-admin",  name: "Demo Company Admin",   email: "demo@deinrim.in",       role: UserRole.COMPANY_ADMIN,  companyId: "comp-1", branchId: "br-hq", status: "active" },
-      sales:    { id: "u-demo-sales",  name: "Demo Sales Manager",   email: "demo.sales@deinrim.in", role: UserRole.SALES_MANAGER,  companyId: "comp-1", branchId: "br-hq", status: "active" },
-      readonly: { id: "u-demo-ro",     name: "Demo Read-Only User",  email: "demo@deinrim.in",       role: UserRole.READ_ONLY,      companyId: "comp-1", branchId: "br-hq", status: "active" },
+      admin:     { id: "u-demo-admin", name: "Demo Company Admin",    email: "demo@deinrim.in",         role: UserRole.COMPANY_ADMIN,     companyId: "comp-1", branchId: "br-hq", status: "active" },
+      sales:     { id: "u-demo-sales", name: "Demo Sales Manager",    email: "demo.sales@deinrim.in",   role: UserRole.SALES_MANAGER,     companyId: "comp-1", branchId: "br-hq", status: "active" },
+      hr:        { id: "u-demo-hr",    name: "Demo HR Manager",       email: "demo.hr@deinrim.in",      role: UserRole.HR_MANAGER,        companyId: "comp-1", branchId: "br-hq", status: "active" },
+      finance:   { id: "u-demo-fin",   name: "Demo Finance Manager",  email: "demo.finance@deinrim.in", role: UserRole.FINANCE_MANAGER,   companyId: "comp-1", branchId: "br-hq", status: "active" },
+      inventory: { id: "u-demo-inv",   name: "Demo Inventory Manager",email: "demo.inv@deinrim.in",     role: UserRole.INVENTORY_MANAGER, companyId: "comp-1", branchId: "br-hq", status: "active" },
+      readonly:  { id: "u-demo-ro",    name: "Demo Read-Only User",   email: "demo.ro@deinrim.in",      role: UserRole.READ_ONLY,         companyId: "comp-1", branchId: "br-hq", status: "active" },
     };
     // Try server first
     try {
-      const creds = type === "admin"
-        ? { email: "demo@deinrim.in", password: "demo123...." }
-        : type === "sales"
-        ? { email: "demo.sales@deinrim.in", password: "demo123...." }
-        : { email: "demo@deinrim.in", password: "demo123...." };
-      const res = await fetch("/api/login", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(creds) });
+      const res = await fetch("/api/login", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ email: demoMap[type]?.email, password: "demo123...." }) });
       const data = await res.json();
       if (res.ok && data.ok && data.user) { onLogin(data.user); closeModal(); return; }
     } catch { /* fall through */ }
@@ -1117,9 +1115,12 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
                     </div>
                     <div className="space-y-2">
                       {([
-                        { type: "admin",    label: "Demo — Company Admin",    sub: "Full company view (read-write demo)",  dot: "bg-sky-500" },
-                        { type: "sales",    label: "Demo — Sales Manager",    sub: "CRM + Sales pipeline only",           dot: "bg-emerald-500" },
-                        { type: "readonly", label: "Demo — Read-Only User",   sub: "All modules, no write access",        dot: "bg-slate-500" },
+                        { type: "admin",     label: "Company Admin",     sub: "Full company view (read-write demo)",  dot: "bg-sky-500"     },
+                        { type: "sales",     label: "Sales Manager",     sub: "CRM + Sales pipeline only",           dot: "bg-emerald-500" },
+                        { type: "hr",        label: "HR Manager",        sub: "HR module + My HR self-service",      dot: "bg-violet-500"  },
+                        { type: "finance",   label: "Finance Manager",   sub: "Finance + GST modules",               dot: "bg-amber-500"   },
+                        { type: "inventory", label: "Inventory Manager", sub: "Inventory + Purchase modules",        dot: "bg-orange-500"  },
+                        { type: "readonly",  label: "Read-Only Observer",sub: "All modules, no write access",        dot: "bg-slate-500"   },
                       ] as const).map(item => (
                         <button key={item.type} onClick={() => handleDemoLogin(item.type)}
                           className="w-full bg-slate-800/60 hover:bg-slate-700/60 border border-slate-700 hover:border-sky-500/30 rounded-xl px-4 py-3 flex items-center gap-3 text-left cursor-pointer transition-all"

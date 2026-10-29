@@ -276,41 +276,106 @@ export default function MyHRView({
           </div>
         )}
 
-        {/* ATTENDANCE TAB */}
+        {/* ATTENDANCE TAB — calendar grid like realestate me.php */}
         {activeTab === "attendance" && (
-          <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
-            <div className="px-5 py-4 border-b border-slate-100 flex items-center justify-between">
-              <h2 className="font-semibold text-slate-700">Attendance — {now.toLocaleDateString("en-IN", { month: "long", year: "numeric" })}</h2>
-              <div className="flex gap-3 text-xs text-slate-500">
-                <span className="flex gap-1 items-center"><span className="w-2 h-2 rounded-full bg-emerald-400 inline-block" />Present</span>
-                <span className="flex gap-1 items-center"><span className="w-2 h-2 rounded-full bg-amber-400 inline-block" />Late</span>
-                <span className="flex gap-1 items-center"><span className="w-2 h-2 rounded-full bg-red-400 inline-block" />Absent</span>
-              </div>
-            </div>
-            <div className="divide-y divide-slate-50">
-              {ATTENDANCE_LOG.length === 0 && (
-                <p className="text-center text-slate-400 py-10 text-sm">No attendance data yet for this month.</p>
-              )}
-              {ATTENDANCE_LOG.map((row, i) => (
-                <div key={i} className="flex items-center justify-between px-5 py-3">
-                  <div className="flex items-center gap-3">
-                    <span className="text-sm text-slate-500 w-10">
-                      {row.date.toLocaleDateString("en-IN", { day: "2-digit" })}
-                    </span>
-                    <span className="text-xs text-slate-400">
-                      {row.date.toLocaleDateString("en-IN", { weekday: "short" })}
-                    </span>
-                    <span className={`text-xs font-medium capitalize ${statusColor(row.status)}`}>
-                      {row.status}
-                    </span>
-                  </div>
-                  <div className="flex gap-6 text-xs text-slate-400">
-                    <span>{(row as any).inTime  ?? "—"}</span>
-                    <span>{(row as any).outTime ?? "—"}</span>
-                  </div>
-                </div>
+          <div className="space-y-4">
+            {/* Legend */}
+            <div className="bg-white rounded-2xl shadow-sm border border-slate-100 px-5 py-3 flex items-center gap-5 flex-wrap">
+              {[
+                { label: "Present",  color: "bg-emerald-500" },
+                { label: "Late",     color: "bg-amber-400"   },
+                { label: "Absent",   color: "bg-red-400"     },
+                { label: "Weekend",  color: "bg-slate-200"   },
+                { label: "Holiday",  color: "bg-indigo-300"  },
+              ].map(s => (
+                <span key={s.label} className="flex items-center gap-1.5 text-xs text-slate-500">
+                  <span className={`w-3 h-3 rounded-sm ${s.color}`} />{s.label}
+                </span>
               ))}
             </div>
+
+            {/* Calendar grid */}
+            <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+              <div className="px-5 py-4 border-b border-slate-100">
+                <h2 className="font-semibold text-slate-700">
+                  {now.toLocaleDateString("en-IN", { month: "long", year: "numeric" })}
+                </h2>
+              </div>
+              <div className="p-4">
+                {/* Day-of-week header */}
+                <div className="grid grid-cols-7 mb-2">
+                  {["Sun","Mon","Tue","Wed","Thu","Fri","Sat"].map(d => (
+                    <div key={d} className="text-center text-[10px] font-bold text-slate-400 py-1">{d}</div>
+                  ))}
+                </div>
+
+                {/* Build full calendar */}
+                {(() => {
+                  const year  = now.getFullYear();
+                  const month = now.getMonth();
+                  const firstDay = new Date(year, month, 1).getDay(); // 0=Sun
+                  const daysInMonth = new Date(year, month + 1, 0).getDate();
+                  const today = now.getDate();
+
+                  // Map date→log entry
+                  const logMap: Record<number, typeof ATTENDANCE_LOG[0]> = {};
+                  ATTENDANCE_LOG.forEach(r => { logMap[r.date.getDate()] = r; });
+
+                  const cells: React.ReactNode[] = [];
+                  for (let i = 0; i < firstDay; i++) {
+                    cells.push(<div key={`e${i}`} />);
+                  }
+                  for (let d = 1; d <= daysInMonth; d++) {
+                    const entry = logMap[d];
+                    const isFuture = d > today;
+                    const isToday  = d === today;
+                    const st = entry?.status ?? (isFuture ? "future" : "weekend");
+                    const bgMap: Record<string, string> = {
+                      present: "bg-emerald-500 text-white",
+                      late:    "bg-amber-400 text-white",
+                      absent:  "bg-red-400 text-white",
+                      weekend: "bg-slate-100 text-slate-400",
+                      holiday: "bg-indigo-200 text-indigo-700",
+                      future:  "bg-slate-50 text-slate-300",
+                    };
+                    cells.push(
+                      <div key={d} className="flex items-center justify-center py-1">
+                        <span className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-all
+                          ${bgMap[st] ?? "bg-slate-50 text-slate-400"}
+                          ${isToday ? "ring-2 ring-indigo-500 ring-offset-1" : ""}`}>
+                          {d}
+                        </span>
+                      </div>
+                    );
+                  }
+
+                  return <div className="grid grid-cols-7 gap-y-1">{cells}</div>;
+                })()}
+              </div>
+            </div>
+
+            {/* Summary row */}
+            {(() => {
+              const present = ATTENDANCE_LOG.filter(r => r.status === "present").length;
+              const late    = ATTENDANCE_LOG.filter(r => r.status === "late").length;
+              const absent  = ATTENDANCE_LOG.filter(r => r.status === "absent").length;
+              const working = ATTENDANCE_LOG.filter(r => r.status !== "weekend").length;
+              return (
+                <div className="grid grid-cols-4 gap-3">
+                  {[
+                    { label: "Present",  value: present, color: "text-emerald-600" },
+                    { label: "Late",     value: late,    color: "text-amber-500"   },
+                    { label: "Absent",   value: absent,  color: "text-red-500"     },
+                    { label: "Working",  value: working, color: "text-slate-600"   },
+                  ].map(s => (
+                    <div key={s.label} className="bg-white rounded-xl border border-slate-100 p-3 text-center shadow-sm">
+                      <p className={`text-2xl font-bold ${s.color}`}>{s.value}</p>
+                      <p className="text-[10px] text-slate-400 mt-0.5">{s.label}</p>
+                    </div>
+                  ))}
+                </div>
+              );
+            })()}
           </div>
         )}
 

@@ -4,13 +4,14 @@
  */
 import React, { useState } from "react";
 import {
-  Bell, Menu, X, LogOut, KeyRound, ShieldCheck,
+  Bell, Menu, X, LogOut, KeyRound,
   LayoutDashboard, Boxes, ShoppingBag, TrendingUp,
   Users2, Wallet, Settings, FolderOpen, FileSpreadsheet,
   UserCircle, ScanLine, Building, Briefcase, ExternalLink,
   LayoutGrid,
 } from "lucide-react";
 import { User, UserRole, AppNotification, Branch, Company } from "../types";
+import MobileMenuView from "./MobileMenuView";
 
 interface Props {
   currentUser: User;
@@ -50,6 +51,7 @@ export default function MobileAppShell({
   company, currentBranch, children,
 }: Props) {
   const [drawerOpen, setDrawerOpen]   = useState(false);
+  const [menuOpen, setMenuOpen]       = useState(false);
   const [showNotif, setShowNotif]     = useState(false);
   const [showProfile, setShowProfile] = useState(false);
 
@@ -253,7 +255,7 @@ export default function MobileAppShell({
 
         {/* Centre raised "Menu" button */}
         <div className="flex flex-col items-center justify-center flex-shrink-0 w-16 pb-2">
-          <button onClick={() => setDrawerOpen(true)}
+          <button onClick={() => setMenuOpen(true)}
             className="flex flex-col items-center justify-center gap-0.5 -mt-5">
             <div className="h-14 w-14 rounded-full bg-indigo-600 flex items-center justify-center shadow-lg shadow-indigo-300">
               <LayoutGrid className="h-6 w-6 text-white" />
@@ -291,6 +293,16 @@ export default function MobileAppShell({
           </button>
         )}
       </div>
+
+      {/* ── Full-screen Menu ── */}
+      {menuOpen && (
+        <MobileMenuView
+          currentUser={currentUser}
+          activeView={activeView}
+          setActiveView={setActiveView}
+          onClose={() => setMenuOpen(false)}
+        />
+      )}
     </div>
   );
 }
