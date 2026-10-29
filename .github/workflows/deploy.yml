@@ -1,0 +1,31 @@
+name: Deploy to Hostinger
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          password: ${{ secrets.SSH_PASSWORD }}
+          port: ${{ secrets.SSH_PORT }}
+          script: |
+            cd ${{ secrets.APP_DIR }}
+            git pull origin main
+            npm install --production=false
+            npm run build
+            if pm2 list | grep -q "deimrim-crm"; then
+              pm2 restart deimrim-crm
+            else
+              pm2 start server.js --name deimrim-crm
+            fi
+            pm2 save
+            echo "✅ Deployed successfully"
