@@ -182,7 +182,7 @@ export default function App() {
 
   // Helper to check if a specific view is allowed for the user's role
   const isViewAllowed = (role: UserRole, view: string): boolean => {
-    if (view === "pos") return true; // POS is open to all roles
+    if (view === "pos" || view === "my-hr") return true; // open to all roles
     const r = (role as string).trim();
     // Accept canonical enum values AND all legacy strings (belt-and-suspenders)
     const isAdmin = r === UserRole.SYSTEM_ADMIN || r === "System Admin" || r === "system_admin";
