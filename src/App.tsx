@@ -962,14 +962,14 @@ export default function App() {
     // Role privilege check
     if (!isViewAllowed(currentUser.role, activeView)) {
       return (
-        <div className="flex-1 flex flex-col items-center justify-center text-slate-400 p-6 bg-slate-900">
-          <div className="bg-slate-950/80 border border-slate-800/80 rounded-2xl p-8 max-w-md text-center space-y-4 shadow-xl">
-            <div className="mx-auto w-12 h-12 rounded-full bg-red-950/20 border border-red-500/30 flex items-center justify-center text-red-400 text-lg">
+        <div className="flex-1 flex flex-col items-center justify-center text-slate-400 p-6 bg-slate-50">
+          <div className="bg-white border border-slate-200 rounded-2xl p-8 max-w-md text-center space-y-4 shadow-xl">
+            <div className="mx-auto w-12 h-12 rounded-full bg-red-50 border border-red-200 flex items-center justify-center text-red-500 text-lg">
               ⚠️
             </div>
-            <h2 className="text-base font-bold text-white uppercase tracking-wider font-mono">Access Restricted</h2>
-            <p className="text-xs leading-relaxed text-slate-400">
-              Your staff user account (<strong className="text-indigo-400">{currentUser.role}</strong>) is restricted to your assigned role-based dashboard only.
+            <h2 className="text-base font-bold text-slate-800 uppercase tracking-wider font-mono">Access Restricted</h2>
+            <p className="text-xs leading-relaxed text-slate-500">
+              Your staff user account (<strong className="text-indigo-600">{currentUser.role}</strong>) is restricted to your assigned role-based dashboard only.
             </p>
           </div>
         </div>
@@ -986,27 +986,27 @@ export default function App() {
       const filteredInvoices = invoices.filter(inv => inv.invoiceNumber.toLowerCase().includes(query));
 
       return (
-        <div className="flex-1 space-y-6 overflow-y-auto p-6 text-left bg-slate-900 text-slate-100">
-          <div className="border-b border-slate-800 pb-3">
-            <h2 className="text-xl font-bold text-white">Global Search Outcomes</h2>
-            <p className="text-xs text-slate-400 mt-1">Found results matching: <strong className="text-indigo-400 font-mono">"{globalSearchQuery}"</strong></p>
+        <div className="flex-1 space-y-6 overflow-y-auto p-6 text-left bg-slate-50 text-slate-800">
+          <div className="border-b border-slate-200 pb-3">
+            <h2 className="text-xl font-bold text-slate-900">Global Search Outcomes</h2>
+            <p className="text-xs text-slate-500 mt-1">Found results matching: <strong className="text-indigo-600 font-mono">"{globalSearchQuery}"</strong></p>
           </div>
 
           <div className="space-y-6">
             {/* Products */}
             {filteredProds.length > 0 && (
-              <div className="bg-slate-950/60 border border-slate-800 rounded-xl p-5 space-y-3">
-                <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest block font-mono">Matched Products ({filteredProds.length})</span>
+              <div className="bg-white border border-slate-100 rounded-xl p-5 space-y-3">
+                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block font-mono">Matched Products ({filteredProds.length})</span>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs font-semibold">
                   {filteredProds.map(p => (
-                    <div key={p.id} className="p-3 bg-slate-900 rounded-lg border border-slate-800/80 flex justify-between items-center">
+                    <div key={p.id} className="p-3 bg-slate-50 rounded-lg border border-slate-100 flex justify-between items-center">
                       <div>
-                        <div className="text-slate-100">{p.name}</div>
-                        <div className="text-slate-400 font-mono text-[10px] mt-0.5">{p.sku}</div>
+                        <div className="text-slate-800">{p.name}</div>
+                        <div className="text-slate-500 font-mono text-[10px] mt-0.5">{p.sku}</div>
                       </div>
-                      <button 
-                        onClick={() => { setGlobalSearchQuery(""); setActiveView("inventory"); }} 
-                        className="text-indigo-400 hover:text-indigo-300 text-[10px]"
+                      <button
+                        onClick={() => { setGlobalSearchQuery(""); setActiveView("inventory"); }}
+                        className="text-indigo-600 hover:text-indigo-700 text-[10px]"
                       >
                         View Stock
                       </button>
@@ -1018,18 +1018,18 @@ export default function App() {
 
             {/* Suppliers */}
             {filteredSuppliers.length > 0 && (
-              <div className="bg-slate-950/60 border border-slate-800 rounded-xl p-5 space-y-3">
-                <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest block font-mono">Matched Suppliers ({filteredSuppliers.length})</span>
+              <div className="bg-white border border-slate-100 rounded-xl p-5 space-y-3">
+                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block font-mono">Matched Suppliers ({filteredSuppliers.length})</span>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs font-semibold">
                   {filteredSuppliers.map(s => (
-                    <div key={s.id} className="p-3 bg-slate-900 rounded-lg border border-slate-800/80 flex justify-between items-center">
+                    <div key={s.id} className="p-3 bg-slate-50 rounded-lg border border-slate-100 flex justify-between items-center">
                       <div>
-                        <div className="text-slate-100">{s.name}</div>
-                        <div className="text-slate-400 font-mono text-[10px] mt-0.5">{s.contactPerson}</div>
+                        <div className="text-slate-800">{s.name}</div>
+                        <div className="text-slate-500 font-mono text-[10px] mt-0.5">{s.contactPerson}</div>
                       </div>
-                      <button 
-                        onClick={() => { setGlobalSearchQuery(""); setActiveView("purchase"); }} 
-                        className="text-indigo-400 hover:text-indigo-300 text-[10px]"
+                      <button
+                        onClick={() => { setGlobalSearchQuery(""); setActiveView("purchase"); }}
+                        className="text-indigo-600 hover:text-indigo-700 text-[10px]"
                       >
                         View Ledger
                       </button>
@@ -1041,18 +1041,18 @@ export default function App() {
 
             {/* Invoices */}
             {filteredInvoices.length > 0 && (
-              <div className="bg-slate-950/60 border border-slate-800 rounded-xl p-5 space-y-3">
-                <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest block font-mono">Matched Invoices ({filteredInvoices.length})</span>
+              <div className="bg-white border border-slate-100 rounded-xl p-5 space-y-3">
+                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block font-mono">Matched Invoices ({filteredInvoices.length})</span>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs font-semibold">
                   {filteredInvoices.map(inv => (
-                    <div key={inv.id} className="p-3 bg-slate-900 rounded-lg border border-slate-800/80 flex justify-between items-center">
+                    <div key={inv.id} className="p-3 bg-slate-50 rounded-lg border border-slate-100 flex justify-between items-center">
                       <div>
-                        <div className="text-slate-100">{inv.invoiceNumber}</div>
-                        <div className="text-slate-400 font-mono text-[10px] mt-0.5 font-normal">Total: {formatINR(inv.totalAmount)}</div>
+                        <div className="text-slate-800">{inv.invoiceNumber}</div>
+                        <div className="text-slate-500 font-mono text-[10px] mt-0.5 font-normal">Total: {formatINR(inv.totalAmount)}</div>
                       </div>
-                      <button 
-                        onClick={() => { setGlobalSearchQuery(""); setActiveView("sales-crm"); }} 
-                        className="text-indigo-400 hover:text-indigo-300 text-[10px]"
+                      <button
+                        onClick={() => { setGlobalSearchQuery(""); setActiveView("sales-crm"); }}
+                        className="text-indigo-600 hover:text-indigo-700 text-[10px]"
                       >
                         View Billing
                       </button>
@@ -1335,7 +1335,7 @@ export default function App() {
   }
 
   return (
-    <div className="flex h-screen w-screen overflow-hidden bg-slate-900 font-sans antialiased text-slate-100">
+    <div className="flex h-screen w-screen overflow-hidden bg-slate-100 font-sans antialiased text-slate-800">
       {/* Sidebar Navigation */}
       <Sidebar
         activeView={activeView}
@@ -1398,7 +1398,7 @@ export default function App() {
 
               {/* New Invoice */}
               <div className="flex items-center gap-2">
-                <span className="bg-slate-950/90 text-[10px] text-slate-200 border border-slate-800 px-2 py-1 rounded-md font-bold shadow-lg uppercase font-mono">New Invoice</span>
+                <span className="bg-white text-[10px] text-slate-700 border border-slate-200 px-2 py-1 rounded-md font-bold shadow-md uppercase font-mono">New Invoice</span>
                 <button
                   onClick={() => { setActiveView("sales-crm"); setQuickNewInvoice(true); setShowQuickActionMenu(false); }}
                   className="h-10 w-10 rounded-full bg-emerald-600 hover:bg-emerald-500 text-white flex items-center justify-center shadow-lg transition-all hover:scale-105 cursor-pointer"
@@ -1410,7 +1410,7 @@ export default function App() {
 
               {/* Stock Check */}
               <div className="flex items-center gap-2">
-                <span className="bg-slate-950/90 text-[10px] text-slate-200 border border-slate-800 px-2 py-1 rounded-md font-bold shadow-lg uppercase font-mono">Stock Check</span>
+                <span className="bg-white text-[10px] text-slate-700 border border-slate-200 px-2 py-1 rounded-md font-bold shadow-md uppercase font-mono">Stock Check</span>
                 <button
                   onClick={() => { setShowStockCheck(true); setStockCheckQuery(""); setShowQuickActionMenu(false); }}
                   className="h-10 w-10 rounded-full bg-indigo-600 hover:bg-indigo-500 text-white flex items-center justify-center shadow-lg transition-all hover:scale-105 cursor-pointer"
@@ -1435,10 +1435,10 @@ export default function App() {
       {/* Stock Check popup */}
       {showStockCheck && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4" onClick={() => setShowStockCheck(false)}>
-          <div className="w-full max-w-md bg-slate-950 border border-slate-800 rounded-2xl shadow-2xl overflow-hidden" onClick={e => e.stopPropagation()}>
-            <div className="p-4 border-b border-slate-800 flex items-center justify-between">
-              <h3 className="text-sm font-bold text-white uppercase tracking-wider font-mono">Quick Stock Check</h3>
-              <button onClick={() => setShowStockCheck(false)} className="text-slate-400 hover:text-white cursor-pointer"><X className="h-4 w-4" /></button>
+          <div className="w-full max-w-md bg-white border border-slate-200 rounded-2xl shadow-2xl overflow-hidden" onClick={e => e.stopPropagation()}>
+            <div className="p-4 border-b border-slate-100 flex items-center justify-between">
+              <h3 className="text-sm font-bold text-slate-800 uppercase tracking-wider font-mono">Quick Stock Check</h3>
+              <button onClick={() => setShowStockCheck(false)} className="text-slate-400 hover:text-slate-700 cursor-pointer"><X className="h-4 w-4" /></button>
             </div>
             <div className="p-4">
               <input
@@ -1446,24 +1446,24 @@ export default function App() {
                 value={stockCheckQuery}
                 onChange={e => setStockCheckQuery(e.target.value)}
                 placeholder="Type product name…"
-                className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white placeholder:text-slate-500 outline-none focus:border-indigo-500"
+                className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-800 placeholder:text-slate-400 outline-none focus:border-indigo-400"
               />
               <div className="mt-3 max-h-72 overflow-y-auto space-y-1">
                 {stockCheckQuery.trim() === "" ? (
-                  <p className="text-xs text-slate-500 text-center py-4">Start typing to search products…</p>
+                  <p className="text-xs text-slate-400 text-center py-4">Start typing to search products…</p>
                 ) : (() => {
                   const q = stockCheckQuery.toLowerCase();
                   const matched = products.filter(p => p.name.toLowerCase().includes(q)).slice(0, 20);
-                  if (matched.length === 0) return <p className="text-xs text-slate-500 text-center py-4">No products found</p>;
+                  if (matched.length === 0) return <p className="text-xs text-slate-400 text-center py-4">No products found</p>;
                   return matched.map(p => {
                     const qty = batchStocks.filter(b => b.productId === p.id).reduce((s, b) => s + b.quantity, 0);
                     return (
-                      <div key={p.id} className="flex items-center justify-between px-3 py-2 rounded-lg bg-slate-900 border border-slate-800">
+                      <div key={p.id} className="flex items-center justify-between px-3 py-2 rounded-lg bg-slate-50 border border-slate-100">
                         <div>
-                          <div className="text-xs font-semibold text-slate-100">{p.name}</div>
+                          <div className="text-xs font-semibold text-slate-800">{p.name}</div>
                           <div className="text-[10px] text-slate-500">{p.description || ""}</div>
                         </div>
-                        <span className={`text-xs font-bold font-mono px-2 py-0.5 rounded-full ${qty === 0 ? "bg-red-900/50 text-red-300" : qty < (p.minStockLevel || 5) ? "bg-amber-900/50 text-amber-300" : "bg-emerald-900/50 text-emerald-300"}`}>
+                        <span className={`text-xs font-bold font-mono px-2 py-0.5 rounded-full ${qty === 0 ? "bg-red-100 text-red-600" : qty < (p.minStockLevel || 5) ? "bg-amber-100 text-amber-700" : "bg-emerald-100 text-emerald-700"}`}>
                           {qty} {p.unit || "nos"}
                         </span>
                       </div>

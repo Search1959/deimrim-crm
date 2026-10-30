@@ -205,12 +205,12 @@ export default function DashboardView({
   const today = new Date().toLocaleDateString("en-IN", { weekday: "long", year: "numeric", month: "long", day: "numeric" });
 
   const KPI_CARDS = [
-    { label: "TOTAL SALES", value: formatINR(totalSalesVal), sub: `${invoices.length} invoices issued`, icon: TrendingUp, color: "text-indigo-600", bg: "bg-indigo-50" },
-    { label: "PURCHASE ORDERS", value: formatINR(totalPurchaseVal), sub: `${purchaseOrders.length} orders placed`, icon: ShoppingBag, color: "text-amber-600", bg: "bg-amber-50" },
-    { label: "NET REVENUE", value: formatINR(totalRevenue), sub: "Cash settlements cleared", icon: DollarSign, color: "text-emerald-600", bg: "bg-emerald-50" },
-    { label: "TOTAL OUTFLOWS", value: formatINR(totalExpenseSum), sub: "Payroll & COGS bound", icon: Wallet, color: "text-rose-600", bg: "bg-rose-50" },
-    { label: "PROFIT MARGIN", value: `${profitMargin.toFixed(1)}%`, sub: formatINR(netProfit) + " net profit", icon: Percent, color: "text-teal-600", bg: "bg-teal-50" },
-    { label: "PENDING RECEIVABLES", value: formatINR(pendingPaymentsSum), sub: `${invoices.filter(i => i.status !== "paid").length} invoices unpaid`, icon: AlertTriangle, color: "text-violet-600", bg: "bg-violet-50" },
+    { label: "TOTAL SALES", value: formatINR(totalSalesVal), sub: `${invoices.length} invoices issued`, icon: TrendingUp, color: "text-indigo-600", bg: "bg-indigo-50", accent: "bg-indigo-500" },
+    { label: "PURCHASE ORDERS", value: formatINR(totalPurchaseVal), sub: `${purchaseOrders.length} orders placed`, icon: ShoppingBag, color: "text-amber-600", bg: "bg-amber-50", accent: "bg-amber-500" },
+    { label: "NET REVENUE", value: formatINR(totalRevenue), sub: "Cash settlements cleared", icon: DollarSign, color: "text-emerald-600", bg: "bg-emerald-50", accent: "bg-emerald-500" },
+    { label: "TOTAL OUTFLOWS", value: formatINR(totalExpenseSum), sub: "Payroll & COGS bound", icon: Wallet, color: "text-rose-600", bg: "bg-rose-50", accent: "bg-rose-500" },
+    { label: "PROFIT MARGIN", value: `${profitMargin.toFixed(1)}%`, sub: formatINR(netProfit) + " net profit", icon: Percent, color: "text-teal-600", bg: "bg-teal-50", accent: "bg-teal-500" },
+    { label: "PENDING RECEIVABLES", value: formatINR(pendingPaymentsSum), sub: `${invoices.filter(i => i.status !== "paid").length} invoices unpaid`, icon: AlertTriangle, color: "text-violet-600", bg: "bg-violet-50", accent: "bg-violet-500" },
   ];
 
   const LEAD_STATUS_COLORS: Record<string, string> = {
@@ -229,18 +229,18 @@ export default function DashboardView({
       {/* Page Header */}
       <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div>
-          <div className="flex items-center gap-2 mb-1">
+          <p className="text-xs text-slate-400 mb-1">{today}</p>
+          <h1 className="text-2xl font-black text-slate-900 tracking-tight leading-none">
+            {currentUser?.role === UserRole.SYSTEM_ADMIN ? "System Control Center" : "Executive Dashboard"}
+          </h1>
+          <div className="flex items-center gap-2 mt-1.5">
             {currentUser?.role === UserRole.SYSTEM_ADMIN ? (
-              <span className="px-2 py-0.5 rounded-full bg-rose-100 text-rose-700 text-[9px] font-bold uppercase tracking-widest">System Admin</span>
+              <span className="px-2 py-0.5 rounded-full bg-rose-100 text-rose-700 text-[9px] font-bold uppercase tracking-wide">System Admin</span>
             ) : (
-              <span className="px-2 py-0.5 rounded-full bg-indigo-100 text-indigo-700 text-[9px] font-bold uppercase tracking-widest">Client Workspace · {company?.code || "OMS"}</span>
+              <span className="px-2 py-0.5 rounded-full bg-indigo-100 text-indigo-700 text-[9px] font-bold uppercase tracking-wide">{company?.code || "OMS"} Workspace</span>
             )}
             <span className="text-[10px] text-slate-400">{currentUser?.name}</span>
           </div>
-          <h1 className="text-xl font-black text-slate-900 tracking-tight">
-            {currentUser?.role === UserRole.SYSTEM_ADMIN ? "System Control Center" : "Executive Dashboard"}
-          </h1>
-          <p className="text-xs text-slate-400 mt-0.5">{today}</p>
         </div>
         <div className="flex items-center gap-2 shrink-0">
           <button
@@ -258,34 +258,52 @@ export default function DashboardView({
         </div>
       </div>
 
-      {/* Hero Banner */}
+      {/* Workspace Info Strip */}
       {currentUser?.role === UserRole.SYSTEM_ADMIN ? (
-        <div className="bg-gradient-to-r from-slate-950 via-slate-900 to-indigo-950 text-white rounded-xl p-5 border border-indigo-500/10 shadow-lg">
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-            <div className="space-y-1">
-              <h2 className="text-base font-bold text-slate-100">🛡️ Global Operations Node — Active</h2>
-              <p className="text-xs text-slate-400 max-w-2xl leading-relaxed">Root admin access. Oversee all tenant nodes, provision workspaces, inspect journals, and audit operations.</p>
+        <div className="bg-rose-50 border border-rose-100 rounded-xl px-5 py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div className="flex items-center gap-3">
+            <div className="h-9 w-9 bg-rose-600 rounded-lg flex items-center justify-center shrink-0">
+              <Sparkles className="h-4 w-4 text-white" />
             </div>
-            <div className="flex gap-2 shrink-0">
-              <button onClick={() => onNavigate("admin")} className="bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold px-3.5 py-2 rounded-lg transition-all cursor-pointer">Provision Tenant</button>
-              <button onClick={() => onNavigate("admin")} className="bg-slate-800 text-slate-200 text-xs font-bold px-3.5 py-2 rounded-lg border border-slate-700 transition-all cursor-pointer">RBAC Permissions</button>
+            <div>
+              <p className="text-sm font-bold text-rose-900">Global Operations Node — Active</p>
+              <p className="text-xs text-rose-400 mt-0.5">Root admin · provision workspaces, audit journals, manage RBAC</p>
             </div>
+          </div>
+          <div className="flex gap-2 shrink-0">
+            <button onClick={() => onNavigate("admin")} className="bg-rose-600 hover:bg-rose-700 text-white text-xs font-semibold px-3.5 py-2 rounded-lg transition-colors">Provision Tenant</button>
+            <button onClick={() => onNavigate("admin")} className="bg-white border border-rose-200 text-rose-700 text-xs font-semibold px-3.5 py-2 rounded-lg hover:bg-rose-50 transition-colors">RBAC Permissions</button>
           </div>
         </div>
       ) : (
-        <div className="bg-gradient-to-r from-indigo-950 via-slate-900 to-slate-950 text-white rounded-xl p-5 border border-indigo-500/10 shadow-lg">
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-            <div className="space-y-1">
-              <div className="flex items-center gap-2">
-                <span className="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 text-[9px] font-bold uppercase tracking-widest border border-emerald-500/30">Active Workspace</span>
-                <span className="text-[10px] text-slate-400">{company?.name || "Client Workspace"}</span>
-              </div>
-              <p className="text-xs text-slate-400 max-w-2xl leading-relaxed">Accounts, supplier registry, employee files, and batch inventory isolated in your workspace. ₹500/month flat.</p>
+        <div className="bg-indigo-50 border border-indigo-100 rounded-xl px-5 py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div className="flex items-center gap-3">
+            <div className="h-9 w-9 bg-indigo-600 rounded-lg flex items-center justify-center shrink-0">
+              <Sparkles className="h-4 w-4 text-white" />
             </div>
-            <div className="flex gap-2 shrink-0">
-              <button onClick={() => onNavigate("sales-crm")} className="bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold px-3.5 py-2 rounded-lg transition-all cursor-pointer">+ Issue Invoice</button>
-              <button onClick={() => onNavigate("inventory")} className="bg-slate-800 text-slate-200 text-xs font-bold px-3.5 py-2 rounded-lg border border-slate-700 transition-all cursor-pointer">Check Stocks</button>
+            <div>
+              <p className="text-sm font-bold text-indigo-900">{company?.name || "Client Workspace"}</p>
+              <p className="text-xs text-indigo-400 mt-0.5">Active workspace · accounts, inventory, HR and CRM isolated</p>
             </div>
+          </div>
+          <div className="hidden sm:flex items-center gap-5 mr-2">
+            <div className="text-center">
+              <p className="text-sm font-black text-indigo-700">{invoices.length}</p>
+              <p className="text-[9px] text-indigo-400 uppercase tracking-wide font-semibold">Invoices</p>
+            </div>
+            <div className="w-px h-6 bg-indigo-200" />
+            <div className="text-center">
+              <p className="text-sm font-black text-indigo-700">{employees.length}</p>
+              <p className="text-[9px] text-indigo-400 uppercase tracking-wide font-semibold">Staff</p>
+            </div>
+            <div className="w-px h-6 bg-indigo-200" />
+            <div className="text-center">
+              <p className="text-sm font-black text-indigo-700">{products.length}</p>
+              <p className="text-[9px] text-indigo-400 uppercase tracking-wide font-semibold">Products</p>
+            </div>
+          </div>
+          <div className="flex gap-2 shrink-0">
+            <button onClick={() => onNavigate("inventory")} className="bg-white border border-indigo-200 text-indigo-700 text-xs font-semibold px-3.5 py-2 rounded-lg hover:bg-indigo-50 transition-colors">Check Stocks</button>
           </div>
         </div>
       )}
@@ -293,13 +311,16 @@ export default function DashboardView({
       {/* 6 KPI Cards */}
       <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-3">
         {KPI_CARDS.map(kpi => (
-          <div key={kpi.label} className="bg-white rounded-xl border border-slate-100 p-4 hover:border-indigo-100 transition-colors">
-            <div className="flex items-start justify-between mb-3">
-              <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest leading-tight">{kpi.label}</span>
-              <div className={`${kpi.bg} p-1.5 rounded-lg shrink-0`}><kpi.icon className={`h-3.5 w-3.5 ${kpi.color}`} /></div>
+          <div key={kpi.label} className="bg-white rounded-xl border border-slate-100 overflow-hidden hover:shadow-md transition-all">
+            <div className={`h-[3px] w-full ${kpi.accent}`} />
+            <div className="p-4">
+              <div className="flex items-start justify-between mb-3">
+                <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wide leading-tight">{kpi.label}</span>
+                <div className={`${kpi.bg} p-1.5 rounded-lg shrink-0`}><kpi.icon className={`h-3.5 w-3.5 ${kpi.color}`} /></div>
+              </div>
+              <p className="text-xl font-black text-slate-900 leading-none">{kpi.value}</p>
+              <p className="text-[10px] text-slate-400 mt-1.5 leading-snug">{kpi.sub}</p>
             </div>
-            <p className="text-xl font-black text-slate-900 leading-none">{kpi.value}</p>
-            <p className="text-[10px] text-slate-400 mt-1.5 leading-snug">{kpi.sub}</p>
           </div>
         ))}
       </div>
