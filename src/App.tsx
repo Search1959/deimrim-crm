@@ -1335,7 +1335,7 @@ export default function App() {
   }
 
   return (
-    <div className="flex h-screen w-screen overflow-hidden bg-slate-100 font-sans antialiased text-slate-800">
+    <div data-theme="dark" className="flex h-screen w-screen overflow-hidden font-sans antialiased" style={{ background: "#070d1a", color: "#e2e8f0" }}>
       {/* Sidebar Navigation */}
       <Sidebar
         activeView={activeView}
@@ -1385,7 +1385,7 @@ export default function App() {
         />
 
         {/* Dynamic workspace context panel — add bottom padding on mobile for tab bar */}
-        <main className="flex-1 overflow-hidden flex flex-col bg-slate-50 pb-16 md:pb-0">
+        <main className="flex-1 overflow-hidden flex flex-col pb-16 md:pb-0" style={{ background: "#070d1a" }}>
           {renderView()}
         </main>
       </div>
