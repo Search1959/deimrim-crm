@@ -427,7 +427,8 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
   const CurrentFlowIcon = flowNodeDetails[activeFlowNode]?.icon || Workflow;
 
   // ── Sky-blue input / button class helpers ─────────────────────────────────
-  const inputCls = "w-full bg-white/5 border border-white/10 rounded-lg px-3.5 py-2.5 text-xs text-slate-200 placeholder-slate-600 focus:outline-none focus:border-indigo-500/50 focus:ring-1 focus:ring-indigo-500/20 font-mono";
+  const inputCls = "w-full rounded-lg px-3.5 py-2.5 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:ring-1 font-mono";
+  const inputStyle = { background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)", color: "#e2e8f0" };
   const btnSky = "w-full py-2.5 bg-gradient-to-r from-indigo-500 to-violet-600 hover:from-indigo-400 hover:to-violet-500 active:opacity-90 text-white font-bold text-xs rounded-lg flex items-center justify-center gap-2 cursor-pointer font-mono tracking-wider uppercase transition-all shadow-lg shadow-indigo-500/20";
 
   return (
@@ -648,7 +649,7 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
 
       {/* ── FLOW DIAGRAM ──────────────────────────────────────────────────── */}
       <section className="w-full max-w-6xl mx-auto px-4 md:px-8 pb-16">
-        <div className="bg-white/3 rounded-2xl p-6 border border-white/5 shadow-xl space-y-6">
+        <div className="rounded-2xl p-6 shadow-xl space-y-6" style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.07)" }}>
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Workflow className="h-5 w-5 text-indigo-500" />
@@ -678,7 +679,7 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
             </div>
           </div>
           {activeFlowNode && (
-            <div className="bg-white/5 rounded-xl p-5 border border-white/8">
+            <div className="rounded-xl p-5" style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.08)" }}>
               <div className="flex items-start gap-4">
                 <div className="p-3 bg-indigo-600/10 rounded-xl text-indigo-500 border border-indigo-200">
                   <CurrentFlowIcon className="h-6 w-6" />
@@ -721,9 +722,9 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
             { title: "💻 Coworking Spaces",        desc: "Multi-tenant logins, resource allocation, monthly subscription tracking, and corporate desk occupancy." },
             { title: "🏭 Manufacturing Plants",    desc: "Raw material mapping, batch codes, GRN processing, and equipment maintenance scheduling." },
           ].map((item, idx) => (
-            <div key={idx} className="bg-white/3 p-5 rounded-2xl border border-white/5 hover:border-indigo-500/30 transition-all space-y-2">
+            <div key={idx} className="p-5 rounded-2xl hover:border-indigo-500/30 transition-all space-y-2" style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.07)" }}>
               <h4 className="text-sm font-bold text-slate-100">{item.title}</h4>
-              <p className="text-xs text-slate-500 leading-relaxed mt-1">{item.desc}</p>
+              <p className="text-xs text-slate-400 leading-relaxed mt-1">{item.desc}</p>
             </div>
           ))}
         </div>
@@ -731,12 +732,12 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
 
       {/* ── TRUST HUB ─────────────────────────────────────────────────────── */}
       <section className="w-full max-w-6xl mx-auto px-4 md:px-8 pb-16">
-        <div className="bg-white/3 rounded-2xl p-6 border border-white/5 shadow-xl space-y-6">
+        <div className="rounded-2xl p-6 shadow-xl space-y-6" style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.07)" }}>
           <div className="space-y-1 text-center">
             <span className="text-[10px] uppercase font-bold tracking-widest text-indigo-400 font-mono">── Platform Trust</span>
             <h3 className="text-xl font-black text-white">Enterprise Transparency Hub</h3>
           </div>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-2 bg-white/3 p-1 rounded-xl border border-white/5">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-2 p-1 rounded-xl" style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.07)" }}>
             {([
               { id: "about",     icon: HeartHandshake, label: "Company & Trust" },
               { id: "tech",      icon: Server,         label: "Tech Specs" },
@@ -753,14 +754,14 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
               );
             })}
           </div>
-          <div className="bg-white/3 rounded-xl p-5 border border-white/5 text-sm">
+          <div className="rounded-xl p-5 text-sm" style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.07)" }}>
             {activeReviewTab === "about" && (
               <div className="space-y-4 text-left">
                 <div className="flex items-center gap-2 pb-2 border-b border-slate-200/60"><History className="h-4 w-4 text-indigo-500" /><h4 className="text-xs font-bold uppercase tracking-wider text-slate-200">Corporate Heritage & High-Touch Support</h4></div>
                 <p className="text-xs text-slate-300">Operated by <strong className="text-white">Apex7tech</strong>, incorporated in Kolkata, WB, India. Engineering custom SaaS enterprise software since 2018, scaling from a regional consultancy to managing high-performance multi-tenant platforms.</p>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs font-mono">
-                  <div className="bg-white/5 p-3 rounded-lg border border-white/8"><span className="text-[10px] text-indigo-400 uppercase tracking-widest font-bold">Priority Support SLA</span><p className="text-slate-300 mt-1 font-sans">2-hour response time for critical issues. Standard tickets resolved within 12-24 hours via dedicated email and callback.</p></div>
-                  <div className="bg-white/5 p-3 rounded-lg border border-white/8"><span className="text-[10px] text-amber-400 uppercase tracking-widest font-bold">Active Customer Retention</span><p className="text-slate-300 mt-1 font-sans">Serving 140+ active business tenants in South Asia with zero telemetry loss incidents since inception.</p></div>
+                  <div className="p-3 rounded-lg" style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.08)" }}><span className="text-[10px] text-indigo-400 uppercase tracking-widest font-bold">Priority Support SLA</span><p className="text-slate-300 mt-1 font-sans">2-hour response time for critical issues. Standard tickets resolved within 12-24 hours via dedicated email and callback.</p></div>
+                  <div className="p-3 rounded-lg" style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.08)" }}><span className="text-[10px] text-amber-400 uppercase tracking-widest font-bold">Active Customer Retention</span><p className="text-slate-300 mt-1 font-sans">Serving 140+ active business tenants in South Asia with zero telemetry loss incidents since inception.</p></div>
                 </div>
               </div>
             )}
@@ -789,7 +790,7 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
                     { label: "2. Custom Domain Mapping", text: "Point your domain (e.g., erp.yourbrand.com) via standard CNAME records mapped instantly." },
                     { label: "3. Custom Pricing Margin", text: "You pay wholesale ₹500/tenant/month. Bill your customers ₹2,000–₹5,000 per month." },
                   ].map((item, i) => (
-                    <div key={i} className="bg-white/5 p-3 rounded-lg border border-white/8 text-left space-y-1">
+                    <div key={i} className="p-3 rounded-lg text-left space-y-1" style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.08)" }}>
                       <span className="text-indigo-400 font-bold text-xs">{item.label}</span>
                       <p className="text-[10px] text-slate-400 leading-normal">{item.text}</p>
                     </div>
@@ -806,7 +807,7 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
                     { emoji: "🏭", name: "Manufacturing Preset", text: "Preloads raw materials, production racks, assembly employee codes, and depreciation ledger maps." },
                     { emoji: "📦", name: "Wholesaling & Retail Preset", text: "Preloads barcode formats, product batches, supplier categories, and margin ledgers." },
                   ].map((item, i) => (
-                    <div key={i} className="bg-white/5 p-3 rounded-lg border border-white/8 flex gap-2.5 items-start">
+                    <div key={i} className="p-3 rounded-lg flex gap-2.5 items-start" style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.08)" }}>
                       <span className="bg-indigo-600/10 text-indigo-500 p-1 rounded font-bold text-xs shrink-0">{item.emoji}</span>
                       <div><span className="text-slate-200 font-bold text-[11px] block">{item.name}</span><p className="text-slate-400 text-[10px] mt-0.5 font-sans leading-normal">{item.text}</p></div>
                     </div>
@@ -820,7 +821,7 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
 
       {/* ── DASHBOARD MOCKUPS ─────────────────────────────────────────────── */}
       <section className="w-full max-w-6xl mx-auto px-4 md:px-8 pb-16">
-        <div className="bg-white/3 rounded-2xl p-6 md:p-8 border border-white/5 shadow-xl space-y-6 text-left">
+        <div className="rounded-2xl p-6 md:p-8 shadow-xl space-y-6 text-left" style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.07)" }}>
           <div className="space-y-2 text-center">
             <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded bg-indigo-600/10 text-indigo-500 font-mono text-[10px] font-bold uppercase tracking-wider">Interactive UI Previews</span>
             <h3 className="text-xl font-black text-white">Inspect Our Multi-Tenant Workspace</h3>
@@ -835,13 +836,14 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
               { id: "purchases", label: "🛍️ Procurement (PO)" },
             ].map(tab => (
               <button key={tab.id} onClick={() => setActiveScreenshotTab(tab.id as any)}
-                className={`px-3 py-2 rounded-lg text-xs font-bold transition-all cursor-pointer ${activeScreenshotTab === tab.id ? "bg-indigo-600 text-white shadow-md" : "bg-white/5 text-slate-500 hover:text-slate-300"}`}
+                className={`px-3 py-2 rounded-lg text-xs font-bold transition-all cursor-pointer ${activeScreenshotTab === tab.id ? "bg-indigo-600 text-white shadow-md" : "text-slate-400 hover:text-slate-200"}`}
+                style={activeScreenshotTab !== tab.id ? { background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.08)" } : {}}
               >
                 {tab.label}
               </button>
             ))}
           </div>
-          <div className="bg-white/3 rounded-xl p-5 border border-white/5 min-h-[280px]">
+          <div className="rounded-xl p-5 min-h-[280px]" style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.07)" }}>
             {activeScreenshotTab === "admin" && (
               <div className="space-y-4">
                 <div className="flex items-center justify-between pb-3 border-b border-slate-200/60">
@@ -1086,7 +1088,7 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
             </div>
 
             {/* 3 Tabs */}
-            <div className="flex gap-1 p-3 bg-white/3 border-b border-white/8">
+            <div className="flex gap-1 p-3" style={{ background: "rgba(255,255,255,0.04)", borderBottom: "1px solid rgba(255,255,255,0.08)" }}>
               {([
                 { id: "login",      label: "Login",         icon: LogIn },
                 { id: "register",   label: "Create Account",icon: UserPlus },
@@ -1111,11 +1113,11 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
                   {loginError && <div className="bg-red-500/10 border border-red-500/30 text-red-600 p-3 rounded-lg text-xs flex items-start gap-2"><ShieldAlert className="h-4 w-4 shrink-0 text-red-400 mt-0.5" />{loginError}</div>}
                   <div className="space-y-1.5">
                     <label className="text-[10px] font-bold text-indigo-400/80 font-mono uppercase tracking-widest">Email Address</label>
-                    <div className="relative"><Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500" /><input type="email" required placeholder="your@company.com" value={email} onChange={e => { setEmail(e.target.value); setLoginError(""); }} className={`${inputCls} pl-10`} /></div>
+                    <div className="relative"><Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500" /><input type="email" required placeholder="your@company.com" value={email} onChange={e => { setEmail(e.target.value); setLoginError(""); }} className={`${inputCls} pl-10`} style={inputStyle} /></div>
                   </div>
                   <div className="space-y-1.5">
                     <label className="text-[10px] font-bold text-indigo-400/80 font-mono uppercase tracking-widest">Password</label>
-                    <div className="relative"><Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500" /><input type="password" required placeholder="Enter password" value={password} onChange={e => { setPassword(e.target.value); setLoginError(""); }} className={`${inputCls} pl-10`} /></div>
+                    <div className="relative"><Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500" /><input type="password" required placeholder="Enter password" value={password} onChange={e => { setPassword(e.target.value); setLoginError(""); }} className={`${inputCls} pl-10`} style={inputStyle} /></div>
                   </div>
                   <button type="submit" className={btnSky}>Sign In <ArrowRight className="h-3.5 w-3.5" /></button>
                   <p className="text-center text-[10px] text-slate-400 font-mono">Secure multi-tenant verification · DEINRIM OMS v2</p>
@@ -1131,19 +1133,19 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
                   </div>
                   <div className="space-y-1.5">
                     <label className="text-[10px] font-bold text-indigo-400/80 font-mono uppercase tracking-widest">Company Name *</label>
-                    <input type="text" required placeholder="Acme Corp Pvt. Ltd." value={regCompany} onChange={e => setRegCompany(e.target.value)} className={inputCls} />
+                    <input type="text" required placeholder="Acme Corp Pvt. Ltd." value={regCompany} onChange={e => setRegCompany(e.target.value)} className={inputCls} style={inputStyle} />
                   </div>
                   <div className="space-y-1.5">
                     <label className="text-[10px] font-bold text-indigo-400/80 font-mono uppercase tracking-widest">Admin Email *</label>
-                    <div className="relative"><Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500" /><input type="email" required placeholder="admin@company.com" value={regEmail} onChange={e => setRegEmail(e.target.value)} className={`${inputCls} pl-10`} /></div>
+                    <div className="relative"><Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500" /><input type="email" required placeholder="admin@company.com" value={regEmail} onChange={e => setRegEmail(e.target.value)} className={`${inputCls} pl-10`} style={inputStyle} /></div>
                   </div>
                   <div className="space-y-1.5">
                     <label className="text-[10px] font-bold text-indigo-400/80 font-mono uppercase tracking-widest">Password *</label>
-                    <div className="relative"><Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500" /><input type="password" required placeholder="Min 6 characters" value={regPassword} onChange={e => setRegPassword(e.target.value)} className={`${inputCls} pl-10`} /></div>
+                    <div className="relative"><Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500" /><input type="password" required placeholder="Min 6 characters" value={regPassword} onChange={e => setRegPassword(e.target.value)} className={`${inputCls} pl-10`} style={inputStyle} /></div>
                   </div>
                   <div className="space-y-1.5">
                     <label className="text-[10px] font-bold text-indigo-400/80 font-mono uppercase tracking-widest">Confirm Password *</label>
-                    <div className="relative"><Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500" /><input type="password" required placeholder="Repeat password" value={regConfirm} onChange={e => setRegConfirm(e.target.value)} className={`${inputCls} pl-10`} /></div>
+                    <div className="relative"><Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500" /><input type="password" required placeholder="Repeat password" value={regConfirm} onChange={e => setRegConfirm(e.target.value)} className={`${inputCls} pl-10`} style={inputStyle} /></div>
                   </div>
                   <button type="submit" disabled={regLoading} className={`${btnSky} ${regLoading ? "opacity-70 cursor-not-allowed" : ""}`}>
                     {regLoading ? "Creating Account…" : <><UserPlus className="h-3.5 w-3.5" /> Create Account</>}
@@ -1163,8 +1165,8 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
                     </div>
                     <form onSubmit={handleAdminLogin} className="space-y-3">
                       {adminError && <div className="p-2.5 rounded-lg text-xs" style={{ background: "rgba(239,68,68,0.1)", border: "1px solid rgba(239,68,68,0.3)", color: "#f87171" }}>{adminError}</div>}
-                      <div className="relative"><Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4" style={{ color: "#475569" }} /><input type="email" required placeholder="Admin email" value={adminEmail} onChange={e => { setAdminEmail(e.target.value); setAdminError(""); }} className={`${inputCls} pl-10`} /></div>
-                      <div className="relative"><Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4" style={{ color: "#475569" }} /><input type="password" required placeholder="Admin password" value={adminPass} onChange={e => { setAdminPass(e.target.value); setAdminError(""); }} className={`${inputCls} pl-10`} /></div>
+                      <div className="relative"><Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4" style={{ color: "#475569" }} /><input type="email" required placeholder="Admin email" value={adminEmail} onChange={e => { setAdminEmail(e.target.value); setAdminError(""); }} className={`${inputCls} pl-10`} style={inputStyle} /></div>
+                      <div className="relative"><Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4" style={{ color: "#475569" }} /><input type="password" required placeholder="Admin password" value={adminPass} onChange={e => { setAdminPass(e.target.value); setAdminError(""); }} className={`${inputCls} pl-10`} style={inputStyle} /></div>
                       <button type="submit" className={btnSky}><Shield className="h-3.5 w-3.5" /> Admin Sign In</button>
                     </form>
                   </div>
