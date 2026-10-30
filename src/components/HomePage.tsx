@@ -1116,47 +1116,50 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
               {/* ── ADMIN + DEMO TAB ── */}
               {modalTab === "admin-demo" && (
                 <div className="space-y-5">
-                  {/* Admin section — requires credentials */}
+                  {/* Admin section */}
                   <div className="space-y-3">
-                    <div className="flex items-center gap-2 pb-2 border-b border-slate-200">
-                      <Shield className="h-3.5 w-3.5 text-indigo-500" />
-                      <span className="text-[10px] font-bold text-indigo-500 uppercase tracking-widest font-mono">System Admin Access</span>
+                    <div className="flex items-center gap-2 pb-2" style={{ borderBottom: "1px solid rgba(255,255,255,0.08)" }}>
+                      <Shield className="h-3.5 w-3.5" style={{ color: "#818cf8" }} />
+                      <span className="text-[10px] font-bold uppercase tracking-widest font-mono" style={{ color: "#818cf8" }}>System Admin Access</span>
                     </div>
                     <form onSubmit={handleAdminLogin} className="space-y-3">
-                      {adminError && <div className="bg-red-500/10 border border-red-500/30 text-red-600 p-2.5 rounded-lg text-xs">{adminError}</div>}
-                      <div className="relative"><Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500" /><input type="email" required placeholder="Admin email" value={adminEmail} onChange={e => { setAdminEmail(e.target.value); setAdminError(""); }} className={`${inputCls} pl-10`} /></div>
-                      <div className="relative"><Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500" /><input type="password" required placeholder="Admin password" value={adminPass} onChange={e => { setAdminPass(e.target.value); setAdminError(""); }} className={`${inputCls} pl-10`} /></div>
+                      {adminError && <div className="p-2.5 rounded-lg text-xs" style={{ background: "rgba(239,68,68,0.1)", border: "1px solid rgba(239,68,68,0.3)", color: "#f87171" }}>{adminError}</div>}
+                      <div className="relative"><Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4" style={{ color: "#475569" }} /><input type="email" required placeholder="Admin email" value={adminEmail} onChange={e => { setAdminEmail(e.target.value); setAdminError(""); }} className={`${inputCls} pl-10`} /></div>
+                      <div className="relative"><Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4" style={{ color: "#475569" }} /><input type="password" required placeholder="Admin password" value={adminPass} onChange={e => { setAdminPass(e.target.value); setAdminError(""); }} className={`${inputCls} pl-10`} /></div>
                       <button type="submit" className={btnSky}><Shield className="h-3.5 w-3.5" /> Admin Sign In</button>
                     </form>
                   </div>
 
-                  {/* Demo section — instant access */}
+                  {/* Demo section */}
                   <div className="space-y-3">
-                    <div className="flex items-center gap-2 pb-2 border-b border-slate-200">
-                      <Zap className="h-3.5 w-3.5 text-amber-400" />
-                      <span className="text-[10px] font-bold text-amber-400 uppercase tracking-widest font-mono">Quick Demo Access</span>
+                    <div className="flex items-center gap-2 pb-2" style={{ borderBottom: "1px solid rgba(255,255,255,0.08)" }}>
+                      <Zap className="h-3.5 w-3.5" style={{ color: "#fbbf24" }} />
+                      <span className="text-[10px] font-bold uppercase tracking-widest font-mono" style={{ color: "#fbbf24" }}>Quick Demo Access</span>
                     </div>
-                    <div className="bg-amber-500/10 border border-amber-500/20 rounded-lg p-2.5 text-[10px] text-amber-300 font-sans">
+                    <div className="rounded-lg p-2.5 text-[10px] font-sans" style={{ background: "rgba(245,158,11,0.08)", border: "1px solid rgba(245,158,11,0.2)", color: "#fbbf24" }}>
                       Demo accounts use shared read-only data. Click any role to land directly on the dashboard.
                     </div>
                     <div className="space-y-2">
                       {([
-                        { type: "admin",     label: "Company Admin",     sub: "Full company view (read-write demo)",  dot: "bg-indigo-600"     },
-                        { type: "sales",     label: "Sales Manager",     sub: "CRM + Sales pipeline only",           dot: "bg-emerald-500" },
-                        { type: "hr",        label: "HR Manager",        sub: "HR module + My HR self-service",      dot: "bg-violet-500"  },
-                        { type: "finance",   label: "Finance Manager",   sub: "Finance + GST modules",               dot: "bg-amber-500"   },
-                        { type: "inventory", label: "Inventory Manager", sub: "Inventory + Purchase modules",        dot: "bg-orange-500"  },
-                        { type: "readonly",  label: "Read-Only Observer",sub: "All modules, no write access",        dot: "bg-slate-500"   },
+                        { type: "admin",     label: "Company Admin",     sub: "Full company view (read-write demo)", color: "#818cf8" },
+                        { type: "sales",     label: "Sales Manager",     sub: "CRM + Sales pipeline only",          color: "#34d399" },
+                        { type: "hr",        label: "HR Manager",        sub: "HR module + My HR self-service",     color: "#a78bfa" },
+                        { type: "finance",   label: "Finance Manager",   sub: "Finance + GST modules",              color: "#fbbf24" },
+                        { type: "inventory", label: "Inventory Manager", sub: "Inventory + Purchase modules",       color: "#fb923c" },
+                        { type: "readonly",  label: "Read-Only Observer",sub: "All modules, no write access",       color: "#64748b" },
                       ] as const).map(item => (
                         <button key={item.type} onClick={() => handleDemoLogin(item.type)}
-                          className="w-full bg-slate-100/60 hover:bg-indigo-500/10 border border-white/8 hover:border-indigo-500/30 rounded-xl px-4 py-3 flex items-center gap-3 text-left cursor-pointer transition-all"
+                          className="w-full rounded-xl px-4 py-3 flex items-center gap-3 text-left cursor-pointer transition-all"
+                          style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.07)" }}
+                          onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = "rgba(99,102,241,0.08)"; (e.currentTarget as HTMLElement).style.borderColor = "rgba(99,102,241,0.3)"; }}
+                          onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.03)"; (e.currentTarget as HTMLElement).style.borderColor = "rgba(255,255,255,0.07)"; }}
                         >
-                          <div className={`w-2 h-2 rounded-full ${item.dot} shrink-0`}></div>
+                          <div className="w-2 h-2 rounded-full shrink-0" style={{ background: item.color }}></div>
                           <div className="flex-1">
-                            <div className="text-xs font-bold text-slate-200 font-mono">{item.label}</div>
-                            <div className="text-[10px] text-slate-500 font-mono">{item.sub}</div>
+                            <div className="text-xs font-bold font-mono" style={{ color: "#e2e8f0" }}>{item.label}</div>
+                            <div className="text-[10px] font-mono" style={{ color: "#475569" }}>{item.sub}</div>
                           </div>
-                          <ArrowRight className="h-3.5 w-3.5 text-slate-500" />
+                          <ArrowRight className="h-3.5 w-3.5" style={{ color: "#475569" }} />
                         </button>
                       ))}
                     </div>
@@ -1171,8 +1174,8 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
       {/* ── FOOTER MODALS ─────────────────────────────────────────────────── */}
       {activeFooterModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm">
-          <div className="w-full max-w-lg rounded-2xl border border-slate-200 bg-white p-6 shadow-2xl text-left max-h-[85vh] overflow-y-auto">
-            <div className="flex items-start justify-between border-b border-slate-200 pb-4 mb-4">
+          <div className="w-full max-w-lg rounded-2xl p-6 shadow-2xl text-left max-h-[85vh] overflow-y-auto" style={{ background: "#0d1424", border: "1px solid rgba(255,255,255,0.08)" }}>
+            <div className="flex items-start justify-between pb-4 mb-4" style={{ borderBottom: "1px solid rgba(255,255,255,0.08)" }}>
               <div className="flex items-center gap-2">
                 {activeFooterModal === "privacy"  && <Shield className="h-5 w-5 text-indigo-500" />}
                 {activeFooterModal === "terms"    && <FileText className="h-5 w-5 text-indigo-500" />}
@@ -1188,8 +1191,8 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
               <button onClick={closeFooterModal} className="text-slate-400 hover:text-slate-800"><X className="h-5 w-5" /></button>
             </div>
             {activeFooterModal === "privacy" && (
-              <div className="space-y-4 text-xs text-slate-600 leading-relaxed">
-                <p className="font-semibold text-slate-700">Last Updated: June 28, 2026</p>
+              <div className="space-y-4 text-xs leading-relaxed" style={{ color: "#94a3b8" }}>
+                <p className="font-semibold" style={{ color: "#cbd5e1" }}>Last Updated: June 28, 2026</p>
                 <p>Welcome to <strong>DEINRIM OMS & ERP Enterprise</strong>. We respect your privacy and are committed to protecting business data processed by our platform.</p>
                 {[["1. Multi-Tenant Logical Partitioning","Our software strictly partitions customer databases by organizational identifiers, ensuring no cross-tenant queries can ever leak between corporate workspaces."],["2. Staff Account & RBAC Security","Access is strictly guarded by Role-Based Access Control schemas, verifying user authorization before allowing read or write execution."],["3. Data Security & Encryption","All transactional streams are processed over secure channels with 256-bit TLS encryption and AES-256 rest encryption."],["4. Contact Info","For inquiries: privacy@deinrim.in or +91 98361-30393."]].map(([title,text],i)=>(
                   <div key={i}><h4 className="font-bold text-indigo-500 font-mono uppercase tracking-wider text-[10px]">{title}</h4><p className="mt-1">{text}</p></div>
@@ -1197,8 +1200,8 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
               </div>
             )}
             {activeFooterModal === "terms" && (
-              <div className="space-y-4 text-xs text-slate-600 leading-relaxed">
-                <p className="font-semibold text-slate-700">Last Updated: June 28, 2026</p>
+              <div className="space-y-4 text-xs leading-relaxed" style={{ color: "#94a3b8" }}>
+                <p className="font-semibold" style={{ color: "#cbd5e1" }}>Last Updated: June 28, 2026</p>
                 <p>These Terms of Service govern your access to <strong>DEINRIM OMS & ERP</strong> operated by Apex7tech</p>
                 {[["1. Tenant Account Registration","Tenants must register with valid corporate coordinates. All white-label configurations must comply with terms and not infringe third-party intellectual property."],["2. Operational Correctness","Financial ledgers and inventory records are calculated based on parameters configured by managers. Tenants are ultimately responsible for checking accounting accuracy."],["3. Service Availability (SLA)","DEINRIM OMS is committed to 99.9% uptime SLA. Scheduled maintenance is performed during off-peak hours with prior notification."],["4. Platform Integrity","Unauthorized access, structural reverse engineering, or API endpoint scanning is prohibited."]].map(([title,text],i)=>(
                   <div key={i}><h4 className="font-bold text-indigo-500 font-mono uppercase tracking-wider text-[10px]">{title}</h4><p className="mt-1">{text}</p></div>
@@ -1210,16 +1213,16 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
                 <form onSubmit={e => { e.preventDefault(); setSupportSubmitted(true); }} className="space-y-4 text-xs">
                   <p className="text-slate-400">Fill out this support ticket and our desk will respond within 24 hours.</p>
                   {[["Full Name",supportName,setSupportName,"text","Your Name"],["Registered Email",supportEmail,setSupportEmail,"email","you@example.com"]].map(([label,val,setter,type,ph]: any,i)=>(
-                    <div key={i}><label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 font-mono">{label}</label><input type={type} required value={val} onChange={e => setter(e.target.value)} placeholder={ph} className="w-full rounded-lg border border-slate-200 bg-white p-2.5 text-sm text-slate-800 focus:outline-none" /></div>
+                    <div key={i}><label className="block text-[10px] font-bold uppercase tracking-wider mb-1 font-mono" style={{ color: "#64748b" }}>{label}</label><input type={type} required value={val} onChange={e => setter(e.target.value)} placeholder={ph} className="w-full rounded-lg p-2.5 text-sm focus:outline-none" style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)", color: "#e2e8f0" }} /></div>
                   ))}
-                  <div><label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 font-mono">Support Details</label><textarea required value={supportMessage} onChange={e => setSupportMessage(e.target.value)} rows={4} placeholder="Describe your issue..." className="w-full rounded-lg border border-slate-200 bg-white p-2.5 text-sm text-slate-800 focus:outline-none resize-none" /></div>
+                  <div><label className="block text-[10px] font-bold uppercase tracking-wider mb-1 font-mono" style={{ color: "#64748b" }}>Support Details</label><textarea required value={supportMessage} onChange={e => setSupportMessage(e.target.value)} rows={4} placeholder="Describe your issue..." className="w-full rounded-lg p-2.5 text-sm focus:outline-none resize-none" style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)", color: "#e2e8f0" }} /></div>
                   <button type="submit" className="w-full rounded-lg bg-indigo-700 hover:bg-indigo-600 py-2.5 text-xs font-bold text-white flex items-center justify-center gap-1.5 cursor-pointer"><CheckCircle2 className="h-4 w-4" /> Submit Ticket</button>
                 </form>
               ) : (
                 <div className="text-center py-6 space-y-4">
                   <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-emerald-500/10 text-emerald-400"><CheckCircle2 className="h-8 w-8" /></div>
                   <div><h4 className="text-sm font-bold text-slate-100">Ticket Submitted!</h4><p className="text-xs text-slate-400 max-w-xs mx-auto mt-1">Thank you, {supportName}. Ticket <strong>#OMS-{Math.floor(100000 + Math.random() * 900000)}</strong> is raised.</p></div>
-                  <button onClick={closeFooterModal} className="rounded-lg bg-white border border-slate-200 px-4 py-2 text-xs font-bold text-white cursor-pointer">Close</button>
+                  <button onClick={closeFooterModal} className="rounded-lg px-4 py-2 text-xs font-bold cursor-pointer" style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)", color: "#e2e8f0" }}>Close</button>
                 </div>
               )
             )}
@@ -1229,9 +1232,9 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
                   <p className="text-slate-400">Request permanent deletion of your DEINRIM OMS account, tenant database, and all uploaded documents.</p>
                   <div className="rounded-lg border border-rose-900/40 bg-rose-950/10 p-3 text-rose-400 flex items-start gap-2.5"><AlertTriangle className="h-5 w-5 shrink-0 mt-0.5" /><div><strong className="block text-white mb-0.5">Warning: Irreversible Operation</strong>This permanently deletes all sales, inventory, purchase history, and payroll records. Cannot be undone.</div></div>
                   {[["Registered Corporate Email",deletionEmail,setDeletionEmail,"email","you@example.com"],["Corporate Phone",deletionPhone,setDeletionPhone,"tel","+91 XXXXX-XXXXX"]].map(([label,val,setter,type,ph]: any,i)=>(
-                    <div key={i}><label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 font-mono">{label}</label><input type={type} required value={val} onChange={e => setter(e.target.value)} placeholder={ph} className="w-full rounded-lg border border-slate-200 bg-white p-2.5 text-sm text-slate-800 focus:outline-none" /></div>
+                    <div key={i}><label className="block text-[10px] font-bold uppercase tracking-wider mb-1 font-mono" style={{ color: "#64748b" }}>{label}</label><input type={type} required value={val} onChange={e => setter(e.target.value)} placeholder={ph} className="w-full rounded-lg p-2.5 text-sm focus:outline-none" style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)", color: "#e2e8f0" }} /></div>
                   ))}
-                  <div><label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 font-mono">Reason for Deletion</label><textarea required value={deletionReason} onChange={e => setDeletionReason(e.target.value)} rows={3} placeholder="Briefly describe why..." className="w-full rounded-lg border border-slate-200 bg-white p-2.5 text-sm text-slate-800 focus:outline-none resize-none" /></div>
+                  <div><label className="block text-[10px] font-bold uppercase tracking-wider mb-1 font-mono" style={{ color: "#64748b" }}>Reason for Deletion</label><textarea required value={deletionReason} onChange={e => setDeletionReason(e.target.value)} rows={3} placeholder="Briefly describe why..." className="w-full rounded-lg p-2.5 text-sm focus:outline-none resize-none" style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)", color: "#e2e8f0" }} /></div>
                   <div className="flex items-start gap-2 pt-1"><input type="checkbox" required id="confirmDel" className="mt-1" /><label htmlFor="confirmDel" className="text-[11px] text-slate-400 leading-normal cursor-pointer">I confirm that I want to schedule all operational histories for absolute deletion.</label></div>
                   <button type="submit" className="w-full rounded-lg bg-rose-600 hover:bg-rose-500 py-2.5 text-xs font-bold text-white flex items-center justify-center gap-1.5 cursor-pointer"><Trash2 className="h-4 w-4" /> Schedule Deletion</button>
                 </form>
@@ -1239,7 +1242,7 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
                 <div className="text-center py-6 space-y-4">
                   <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-rose-500/10 text-rose-400"><Trash2 className="h-8 w-8" /></div>
                   <div><h4 className="text-sm font-bold text-slate-100">Deletion Scheduled</h4><p className="text-xs text-slate-400 max-w-xs mx-auto mt-1">Request for <strong>{deletionEmail}</strong> received. Ticket: <strong>#OMS-DEL-{Math.floor(100000 + Math.random() * 900000)}</strong>. Processing within 14 business days.</p></div>
-                  <button onClick={closeFooterModal} className="rounded-lg bg-white border border-slate-200 px-4 py-2 text-xs font-bold text-white cursor-pointer">Close</button>
+                  <button onClick={closeFooterModal} className="rounded-lg px-4 py-2 text-xs font-bold cursor-pointer" style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)", color: "#e2e8f0" }}>Close</button>
                 </div>
               )
             )}
