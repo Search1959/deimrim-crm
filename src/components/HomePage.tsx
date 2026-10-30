@@ -199,6 +199,42 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
         ["Payroll – July 2026",         "Operating",  "-₹3,20,000"],
       ],
     },
+    {
+      id: "purchase",
+      label: "🛒 Procurement",
+      accent: "sky",
+      tag: "PURCHASE & PO",
+      title: "Purchase Orders, GRN & Vendor Management",
+      kpis: [
+        { label: "Open POs",      val: "8",      sub: "Pending",    color: "text-amber-400" },
+        { label: "GRNs This Mth", val: "22",     sub: "Received",   color: "text-emerald-400" },
+        { label: "Vendors",       val: "47",     sub: "Active",     color: "text-indigo-500" },
+        { label: "PO Value",      val: "₹6.1L",  sub: "This Month", color: "text-white" },
+      ],
+      rows: [
+        ["PO #PO-2026-041 · Bengal Steel",   "Approved",  "₹1,80,000"],
+        ["PO #PO-2026-044 · Mehta Traders",  "GRN Done",  "₹92,000"],
+        ["PO #PO-2026-048 · Apex Suppliers", "Pending",   "₹2,40,000"],
+      ],
+    },
+    {
+      id: "gst",
+      label: "🧾 GST Reconciliation",
+      accent: "sky",
+      tag: "GST & COMPLIANCE",
+      title: "GSTR-1 / GSTR-3B Filing & ITC Matching",
+      kpis: [
+        { label: "Taxable Supply", val: "₹21.4L", sub: "This Quarter", color: "text-white" },
+        { label: "GST Collected",  val: "₹3.85L", sub: "Output Tax",   color: "text-emerald-400" },
+        { label: "ITC Available",  val: "₹2.12L", sub: "Input Credit", color: "text-indigo-500" },
+        { label: "Net Payable",    val: "₹1.73L", sub: "Due",          color: "text-amber-400" },
+      ],
+      rows: [
+        ["GSTR-1 July 2026",   "Outward Supplies", "Filed ✅"],
+        ["GSTR-3B July 2026",  "Monthly Return",   "Due 20 Aug"],
+        ["ITC Mismatch #3",    "2B vs Books",      "₹8,400 ⚠️"],
+      ],
+    },
   ];
   const [heroSlide, setHeroSlide] = useState(0);
   const [heroAnim, setHeroAnim] = useState(true);

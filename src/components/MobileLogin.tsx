@@ -6,7 +6,7 @@ import React, { useState, useEffect, useRef } from "react";
 import {
   Building2, Eye, EyeOff, Loader2, LogIn, UserPlus, Shield,
   Zap, ArrowRight, Check, X, Package, TrendingUp, Users,
-  DollarSign, ShoppingBag, LayoutDashboard, ChevronLeft,
+  DollarSign, ShoppingBag, LayoutDashboard, ChevronLeft, FileSpreadsheet,
 } from "lucide-react";
 import { User, UserRole } from "../types";
 
@@ -20,37 +20,51 @@ const SLIDES = [
   {
     emoji: "📊",
     title: "Live Dashboard",
-    sub: "Real-time KPIs, revenue charts & stock alerts",
+    sub: "Real-time KPIs, revenue charts & stock alerts — all in one view",
     color: "from-sky-600 to-blue-700",
     icon: LayoutDashboard,
   },
   {
-    emoji: "📦",
-    title: "Inventory Control",
-    sub: "Batch tracking, FIFO depletion & rack codes",
-    color: "from-violet-600 to-indigo-700",
-    icon: Package,
-  },
-  {
     emoji: "📈",
     title: "CRM & Sales",
-    sub: "Leads pipeline, invoicing & customer ledger",
+    sub: "Lead pipeline, proposals, invoicing & customer revenue ledger",
     color: "from-emerald-600 to-teal-700",
     icon: TrendingUp,
   },
   {
+    emoji: "📦",
+    title: "Inventory Control",
+    sub: "Multi-warehouse, batch tracking, FIFO depletion & rack codes",
+    color: "from-violet-600 to-indigo-700",
+    icon: Package,
+  },
+  {
+    emoji: "🛒",
+    title: "Procurement",
+    sub: "Purchase orders, GRN receipts & vendor management",
+    color: "from-orange-600 to-amber-700",
+    icon: ShoppingBag,
+  },
+  {
     emoji: "👥",
     title: "HR & Attendance",
-    sub: "Staff rosters, clock-in & leave approvals",
+    sub: "Staff rosters, biometric clock-in & leave approvals",
     color: "from-amber-600 to-orange-700",
     icon: Users,
   },
   {
     emoji: "💰",
-    title: "Finance & GST",
-    sub: "Live P&L, AP/AR & automated COGS posting",
+    title: "Finance & P&L",
+    sub: "Double-entry ledger, live P&L, AP/AR & automated COGS posting",
     color: "from-rose-600 to-pink-700",
     icon: DollarSign,
+  },
+  {
+    emoji: "🧾",
+    title: "GST Compliance",
+    sub: "GSTR-1 / GSTR-3B filing, ITC matching & tax reconciliation",
+    color: "from-teal-600 to-cyan-700",
+    icon: FileSpreadsheet,
   },
 ];
 
