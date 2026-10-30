@@ -388,10 +388,10 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
   const btnSky = "w-full py-2.5 bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-700 text-white font-bold text-xs rounded-lg flex items-center justify-center gap-2 cursor-pointer font-mono tracking-wider uppercase transition-all shadow-lg shadow-indigo-200";
 
   return (
-    <div  className="min-h-screen w-full bg-white text-slate-800 flex flex-col overflow-x-hidden font-sans">
+    <div  className="min-h-screen w-full bg-gradient-to-br from-slate-50 via-white to-indigo-50/40 text-slate-800 flex flex-col overflow-x-hidden font-sans">
 
       {/* ── NAV ───────────────────────────────────────────────────────────── */}
-      <header className="sticky top-0 z-30 border-b border-slate-100 bg-white/95 backdrop-blur-sm shadow-sm px-4 md:px-8 py-3 flex items-center justify-between">
+      <header className="sticky top-0 z-30 border-b border-white/70 bg-white/80 backdrop-blur-xl shadow-sm px-4 md:px-8 py-3 flex items-center justify-between">
         <div className="flex items-center gap-3">
           <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-indigo-600 text-white shadow-md shadow-sky-500/30">
             <Building2 className="h-5 w-5" />
@@ -423,31 +423,31 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
 
           {/* LEFT — copy */}
           <div className="space-y-6 text-left">
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold bg-indigo-50 text-indigo-600 border border-indigo-200 font-mono tracking-wide uppercase">
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-semibold bg-gradient-to-r from-indigo-50 to-violet-50 text-indigo-700 border border-indigo-100 shadow-sm">
               <Sparkles className="h-3 w-3" /> Enterprise Business Operating System
             </div>
             <h2 className="text-4xl md:text-5xl font-extrabold text-slate-900 tracking-tight leading-[1.1]">
               One Platform to Run<br />
-              <span className="text-indigo-600">Your Entire Organization</span>
+              <span className="bg-gradient-to-r from-indigo-600 to-violet-600 bg-clip-text text-transparent">Your Entire Organization</span>
             </h2>
             <p className="text-slate-500 text-sm md:text-base leading-relaxed max-w-lg">
               CRM · Inventory · Purchase · HR · Finance · GST — all linked under one secure, multi-tenant workspace. Built and supported from Kolkata by Apex7tech
             </p>
             <div className="flex flex-wrap items-center gap-3">
-              <button onClick={() => openModal("register")} className="px-6 py-3 bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs rounded-xl transition-all shadow-md flex items-center gap-1.5 cursor-pointer">
+              <button onClick={() => openModal("register")} className="px-6 py-3.5 bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white font-semibold text-sm rounded-xl transition-all shadow-lg shadow-indigo-200 flex items-center gap-2 cursor-pointer">
                 <UserPlus className="h-3.5 w-3.5" /> Create Free Account
               </button>
-              <button onClick={() => openModal("admin-demo")} className="px-6 py-3 bg-slate-50 hover:bg-slate-100 text-slate-700 border border-slate-200 font-bold text-xs rounded-xl transition-all flex items-center gap-1.5 cursor-pointer">
+              <button onClick={() => openModal("admin-demo")} className="px-6 py-3.5 bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 font-semibold text-sm rounded-xl transition-all shadow-sm flex items-center gap-2 cursor-pointer">
                 <Zap className="h-3.5 w-3.5 text-indigo-500" /> Try Live Demo
               </button>
-              <a href="https://wa.me/919836130393?text=I'm%20interested%20in%20a%20DEINRIM%20360%20demo" target="_blank" rel="noreferrer" className="px-6 py-3 bg-emerald-600/10 hover:bg-emerald-600/20 text-emerald-400 border border-emerald-500/30 font-bold text-xs rounded-xl transition-all flex items-center gap-1.5">
+              <a href="https://wa.me/919836130393?text=I'm%20interested%20in%20a%20DEINRIM%20360%20demo" target="_blank" rel="noreferrer" className="px-6 py-3.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 font-semibold text-sm rounded-xl transition-all flex items-center gap-1.5">
                 💬 WhatsApp <ExternalLink className="h-3 w-3" />
               </a>
             </div>
-            <div className="flex flex-wrap items-center gap-4 pt-1 text-[10px] font-mono text-slate-500 font-bold uppercase">
+            <div className="flex flex-wrap items-center gap-4 pt-2 text-xs text-slate-500 font-medium">
               <span className="flex items-center gap-1"><Check className="h-3.5 w-3.5 text-emerald-500" /> SSL Secure</span>
               <span className="flex items-center gap-1"><Check className="h-3.5 w-3.5 text-indigo-500" /> Cloud Hosted</span>
-              <span className="flex items-center gap-1"><Check className="h-3.5 w-3.5 text-violet-400" /> Mobile Ready</span>
+              <span className="flex items-center gap-1"><Check className="h-3.5 w-3.5 text-violet-500" /> Mobile Ready</span>
               <span className="flex items-center gap-1"><Check className="h-3.5 w-3.5 text-amber-400" /> Zero Demo Data</span>
             </div>
           </div>
@@ -455,11 +455,11 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
           {/* RIGHT — dashboard slideshow */}
           <div className="relative">
             {/* glow behind card */}
-            <div className="absolute -inset-4 bg-indigo-600/5 rounded-3xl blur-2xl pointer-events-none" />
+            <div className="absolute -inset-6 bg-gradient-to-br from-indigo-400/10 to-violet-400/10 rounded-3xl blur-3xl pointer-events-none" />
 
             {/* slide card */}
             <div
-              className="relative rounded-2xl border border-slate-200/80 bg-slate-800 overflow-hidden shadow-2xl shadow-indigo-100"
+              className="relative rounded-2xl border border-indigo-100 bg-slate-800 overflow-hidden shadow-2xl shadow-indigo-200/50 ring-1 ring-indigo-100"
               style={{ transition: "opacity 0.15s ease", opacity: heroAnim ? 1 : 0 }}
             >
               {/* top bar */}
@@ -538,7 +538,7 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
             {/* floating badge bottom-right */}
             <div className="absolute -bottom-3 -right-3 bg-white border border-slate-200 rounded-xl px-3 py-2 shadow-xl flex items-center gap-2">
               <div className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse"></div>
-              <span className="text-[10px] font-mono font-bold text-slate-300">Live on deinrim360.in</span>
+              <span className="text-[10px] font-semibold text-slate-600">Live on deinrim360.in</span>
             </div>
           </div>
         </div>
@@ -546,10 +546,10 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
 
       {/* ── MODULES GRID ──────────────────────────────────────────────────── */}
       <section id="modules" className="w-full max-w-6xl mx-auto px-4 md:px-8 pb-16 space-y-6">
-        <div className="text-center space-y-1">
-          <span className="text-[10px] uppercase font-bold tracking-widest text-indigo-500 font-mono">Unified Features</span>
-          <h3 className="text-2xl font-extrabold text-white">9 Production-Ready Modules</h3>
-          <p className="text-xs text-slate-400 max-w-xl mx-auto">All fully linked — one entry propagates across inventory, finance, CRM and HR automatically.</p>
+        <div className="text-center space-y-2">
+          <span className="text-xs uppercase font-bold tracking-widest text-indigo-600">Unified Features</span>
+          <h3 className="text-3xl font-bold text-slate-900">9 Production-Ready Modules</h3>
+          <p className="text-sm text-slate-500 max-w-xl mx-auto">All fully linked — one entry propagates across inventory, finance, CRM and HR automatically.</p>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {[
@@ -565,16 +565,16 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
           ].map((mod, idx) => {
             const Icon = mod.icon;
             return (
-              <div key={idx} className="bg-slate-50 p-5 rounded-2xl border border-slate-200 hover:border-sky-500/30 transition-all relative overflow-hidden">
-                <div className="absolute top-0 right-0 h-1 w-16 bg-gradient-to-r from-sky-500 to-blue-500"></div>
+              <div key={idx} className="bg-white p-5 rounded-2xl border border-slate-200 hover:border-indigo-200 hover:shadow-md transition-all relative overflow-hidden group">
+                <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-indigo-400 via-violet-400 to-indigo-400 opacity-0 group-hover:opacity-100 transition-opacity"></div>
                 <div className="flex items-center gap-2 mb-2">
                   <div className="p-1.5 bg-indigo-600/10 rounded-lg border border-indigo-200">
                     <Icon className="h-4 w-4 text-indigo-500" />
                   </div>
-                  <h4 className="text-xs font-bold text-sky-300 uppercase tracking-wide font-mono">{mod.name}</h4>
+                  <h4 className="text-xs font-bold text-slate-800 uppercase tracking-wide">{mod.name}</h4>
                 </div>
-                <p className="text-xs text-slate-400 leading-relaxed">{mod.desc}</p>
-                <span className="mt-2 inline-block text-[9px] bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-2 py-0.5 rounded-full font-bold font-mono">Active</span>
+                <p className="text-xs text-slate-500 leading-relaxed mt-1">{mod.desc}</p>
+                <span className="mt-2 inline-block text-[9px] bg-emerald-50 text-emerald-700 border border-emerald-200 px-2 py-0.5 rounded-full font-bold">Active</span>
               </div>
             );
           })}
@@ -600,7 +600,7 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
                 return (
                   <button key={key} onClick={() => setActiveFlowNode(key)}
                     className={`flex flex-col items-center p-3 rounded-xl border text-center transition-all ${
-                      isActive ? "bg-indigo-700/20 border-sky-500 text-white shadow-lg shadow-sky-500/10" : "bg-white border-slate-200/80 text-slate-400 hover:border-slate-200 hover:text-slate-700"
+                      isActive ? "bg-indigo-50 border-indigo-300 text-indigo-700 shadow-md shadow-indigo-100" : "bg-white border-slate-200/80 text-slate-400 hover:border-slate-200 hover:text-slate-700"
                     } ${key === "finance" ? "col-span-2 sm:col-span-1" : ""}`}
                   >
                     <div className={`p-2 rounded-lg mb-2 ${isActive ? "bg-indigo-600 text-white" : "bg-slate-100"}`}>
@@ -619,19 +619,19 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
                   <CurrentFlowIcon className="h-6 w-6" />
                 </div>
                 <div className="space-y-3 flex-1 text-sm">
-                  <h4 className="text-base font-bold text-white">{flowNodeDetails[activeFlowNode].title}</h4>
+                  <h4 className="text-base font-bold text-slate-800">{flowNodeDetails[activeFlowNode].title}</h4>
                   <div>
                     <span className="text-[10px] uppercase font-bold tracking-wider text-slate-400 block font-mono">Operational Trigger</span>
-                    <p className="text-slate-300 mt-0.5 text-xs">{flowNodeDetails[activeFlowNode].trigger}</p>
+                    <p className="text-slate-600 mt-0.5 text-xs">{flowNodeDetails[activeFlowNode].trigger}</p>
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                      <span className="text-[10px] uppercase font-bold tracking-wider text-emerald-400 block font-mono">Database Effect</span>
-                      <p className="text-slate-400 text-xs mt-0.5 leading-relaxed">{flowNodeDetails[activeFlowNode].databaseEffect}</p>
+                      <span className="text-[10px] uppercase font-bold tracking-wider text-emerald-700 block">Database Effect</span>
+                      <p className="text-slate-500 text-xs mt-0.5 leading-relaxed">{flowNodeDetails[activeFlowNode].databaseEffect}</p>
                     </div>
                     <div>
                       <span className="text-[10px] uppercase font-bold tracking-wider text-indigo-500 block font-mono">Automated Next Step</span>
-                      <p className="text-slate-400 text-xs mt-0.5 leading-relaxed">{flowNodeDetails[activeFlowNode].nextStep}</p>
+                      <p className="text-slate-500 text-xs mt-0.5 leading-relaxed">{flowNodeDetails[activeFlowNode].nextStep}</p>
                     </div>
                   </div>
                 </div>
@@ -643,9 +643,9 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
 
       {/* ── INDUSTRIES ────────────────────────────────────────────────────── */}
       <section id="industries" className="w-full max-w-6xl mx-auto px-4 md:px-8 pb-16 space-y-6">
-        <div className="text-center space-y-1">
+        <div className="text-center space-y-2">
           <span className="text-[10px] uppercase font-bold tracking-widest text-indigo-500 font-mono">Target Sectors</span>
-          <h3 className="text-2xl font-extrabold text-white">Designed for Versatile Organizations</h3>
+          <h3 className="text-3xl font-bold text-slate-900">Designed for Versatile Organizations</h3>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {[
@@ -657,8 +657,8 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
             { title: "🏭 Manufacturing Plants",    desc: "Raw material mapping, batch codes, GRN processing, and equipment maintenance scheduling." },
           ].map((item, idx) => (
             <div key={idx} className="bg-slate-50 p-5 rounded-2xl border border-slate-200 hover:border-indigo-200 transition-all space-y-2">
-              <h4 className="text-sm font-bold text-white">{item.title}</h4>
-              <p className="text-xs text-slate-400 leading-relaxed">{item.desc}</p>
+              <h4 className="text-sm font-bold text-slate-800">{item.title}</h4>
+              <p className="text-xs text-slate-500 leading-relaxed mt-1">{item.desc}</p>
             </div>
           ))}
         </div>
@@ -669,7 +669,7 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
         <div className="bg-slate-50 rounded-2xl p-6 border border-slate-200 shadow-xl space-y-6">
           <div className="space-y-1 text-center">
             <span className="text-[10px] uppercase font-bold tracking-widest text-indigo-500 font-mono">Platform Trust</span>
-            <h3 className="text-xl font-extrabold text-white">Enterprise Transparency Hub</h3>
+            <h3 className="text-xl font-bold text-slate-900">Enterprise Transparency Hub</h3>
           </div>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-2 bg-white/50 p-1 rounded-xl border border-slate-200">
             {([
@@ -681,7 +681,7 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
               const Icon = tab.icon;
               return (
                 <button key={tab.id} onClick={() => setActiveReviewTab(tab.id)}
-                  className={`flex items-center justify-center gap-1.5 py-2 px-2 rounded-lg text-xs font-bold transition-all cursor-pointer ${activeReviewTab === tab.id ? "bg-indigo-700 text-white shadow-md" : "text-slate-400 hover:text-slate-700"}`}
+                  className={`flex items-center justify-center gap-1.5 py-2 px-2 rounded-lg text-xs font-bold transition-all cursor-pointer ${activeReviewTab === tab.id ? "bg-indigo-600 text-white shadow-md" : "text-slate-500 hover:text-slate-700"}`}
                 >
                   <Icon className="h-3.5 w-3.5" /> {tab.label}
                 </button>
@@ -691,17 +691,17 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
           <div className="bg-slate-50 rounded-xl p-5 border border-slate-200/80 text-sm">
             {activeReviewTab === "about" && (
               <div className="space-y-4 text-left">
-                <div className="flex items-center gap-2 pb-2 border-b border-slate-200/60"><History className="h-4 w-4 text-indigo-500" /><h4 className="text-xs font-bold uppercase tracking-wider text-white">Corporate Heritage & High-Touch Support</h4></div>
-                <p className="text-xs text-slate-300">Operated by <strong className="text-white">Apex7tech</strong>, incorporated in Kolkata, WB, India. Engineering custom SaaS enterprise software since 2018, scaling from a regional consultancy to managing high-performance multi-tenant platforms.</p>
+                <div className="flex items-center gap-2 pb-2 border-b border-slate-200/60"><History className="h-4 w-4 text-indigo-500" /><h4 className="text-xs font-bold uppercase tracking-wider text-slate-800">Corporate Heritage & High-Touch Support</h4></div>
+                <p className="text-xs text-slate-600">Operated by <strong className="text-white">Apex7tech</strong>, incorporated in Kolkata, WB, India. Engineering custom SaaS enterprise software since 2018, scaling from a regional consultancy to managing high-performance multi-tenant platforms.</p>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs font-mono">
-                  <div className="bg-white/45 p-3 rounded-lg border border-slate-200"><span className="text-[10px] text-indigo-500 uppercase tracking-widest font-bold">Priority Support SLA</span><p className="text-slate-300 mt-1 font-sans">2-hour response time for critical issues. Standard tickets resolved within 12-24 hours via dedicated email and callback.</p></div>
-                  <div className="bg-white/45 p-3 rounded-lg border border-slate-200"><span className="text-[10px] text-orange-400 uppercase tracking-widest font-bold">Active Customer Retention</span><p className="text-slate-300 mt-1 font-sans">Serving 140+ active business tenants in South Asia with zero telemetry loss incidents since inception.</p></div>
+                  <div className="bg-white/45 p-3 rounded-lg border border-slate-200"><span className="text-[10px] text-indigo-500 uppercase tracking-widest font-bold">Priority Support SLA</span><p className="text-slate-600 mt-1 font-sans">2-hour response time for critical issues. Standard tickets resolved within 12-24 hours via dedicated email and callback.</p></div>
+                  <div className="bg-white/45 p-3 rounded-lg border border-slate-200"><span className="text-[10px] text-amber-600 uppercase tracking-widest font-bold">Active Customer Retention</span><p className="text-slate-600 mt-1 font-sans">Serving 140+ active business tenants in South Asia with zero telemetry loss incidents since inception.</p></div>
                 </div>
               </div>
             )}
             {activeReviewTab === "tech" && (
               <div className="space-y-4 text-left">
-                <div className="flex items-center gap-2 pb-2 border-b border-slate-200/60"><Code className="h-4 w-4 text-indigo-500" /><h4 className="text-xs font-bold uppercase tracking-wider text-white">Technical Specifications & Data Sovereignty</h4></div>
+                <div className="flex items-center gap-2 pb-2 border-b border-slate-200/60"><Code className="h-4 w-4 text-indigo-500" /><h4 className="text-xs font-bold uppercase tracking-wider text-slate-800">Technical Specifications & Data Sovereignty</h4></div>
                 <div className="grid grid-cols-2 gap-3.5 text-xs">
                   {[
                     { label: "DATABASE LAYER",        text: "Strictly partitioned schemas on high-performance relational MySQL, preventing cross-tenant leakage." },
@@ -709,15 +709,15 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
                     { label: "SECURITY ENCRYPTION",   text: "256-Bit SSL/TLS in-transit encryption and AES-256 rest encryption on cloud storage blocks." },
                     { label: "DISASTER BACKUP",       text: "Automated snapshots every 6 hours, replicated across redundant physical availability zones." },
                   ].map((item, i) => (
-                    <div key={i} className="space-y-1"><span className="text-[10px] font-mono text-indigo-500 block font-bold">{item.label}</span><p className="text-slate-300 text-xs">{item.text}</p></div>
+                    <div key={i} className="space-y-1"><span className="text-[10px] font-mono text-indigo-500 block font-bold">{item.label}</span><p className="text-slate-600 text-xs">{item.text}</p></div>
                   ))}
                 </div>
               </div>
             )}
             {activeReviewTab === "reseller" && (
               <div className="space-y-4 text-left">
-                <div className="flex items-center gap-2 pb-2 border-b border-slate-200/60"><Building2 className="h-4 w-4 text-indigo-500" /><h4 className="text-xs font-bold uppercase tracking-wider text-white">White-Label Partner Program</h4></div>
-                <p className="text-xs text-slate-300">Create a recurring high-margin SaaS revenue channel. We charge you a wholesale flat rate, letting you keep 100% of the customer margins.</p>
+                <div className="flex items-center gap-2 pb-2 border-b border-slate-200/60"><Building2 className="h-4 w-4 text-indigo-500" /><h4 className="text-xs font-bold uppercase tracking-wider text-slate-800">White-Label Partner Program</h4></div>
+                <p className="text-xs text-slate-600">Create a recurring high-margin SaaS revenue channel. We charge you a wholesale flat rate, letting you keep 100% of the customer margins.</p>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-center">
                   {[
                     { label: "1. Brand Customization", text: "Upload your custom logo, configure brand hex colors, set support emails, and configure footer text." },
@@ -734,8 +734,8 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
             )}
             {activeReviewTab === "templates" && (
               <div className="space-y-4 text-left">
-                <div className="flex items-center gap-2 pb-2 border-b border-slate-200/60"><CheckCircle2 className="h-4 w-4 text-indigo-500" /><h4 className="text-xs font-bold uppercase tracking-wider text-white">One-Click Setup Industry Templates</h4></div>
-                <p className="text-xs text-slate-300">When provisioning a new tenant, select an industry preset to seed standard master records instantly — zero manual configuration.</p>
+                <div className="flex items-center gap-2 pb-2 border-b border-slate-200/60"><CheckCircle2 className="h-4 w-4 text-indigo-500" /><h4 className="text-xs font-bold uppercase tracking-wider text-slate-800">One-Click Setup Industry Templates</h4></div>
+                <p className="text-xs text-slate-600">When provisioning a new tenant, select an industry preset to seed standard master records instantly — zero manual configuration.</p>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5 text-xs font-mono">
                   {[
                     { emoji: "🏭", name: "Manufacturing Preset", text: "Preloads raw materials, production racks, assembly employee codes, and depreciation ledger maps." },
@@ -743,7 +743,7 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
                   ].map((item, i) => (
                     <div key={i} className="bg-white/45 p-3 rounded-lg border border-slate-200 flex gap-2.5 items-start">
                       <span className="bg-indigo-600/10 text-indigo-500 p-1 rounded font-bold text-xs shrink-0">{item.emoji}</span>
-                      <div><span className="text-white font-bold text-[11px] block">{item.name}</span><p className="text-slate-400 text-[10px] mt-0.5 font-sans leading-normal">{item.text}</p></div>
+                      <div><span className="text-slate-800 font-bold text-[11px] block">{item.name}</span><p className="text-slate-400 text-[10px] mt-0.5 font-sans leading-normal">{item.text}</p></div>
                     </div>
                   ))}
                 </div>
@@ -755,10 +755,10 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
 
       {/* ── DASHBOARD MOCKUPS ─────────────────────────────────────────────── */}
       <section className="w-full max-w-6xl mx-auto px-4 md:px-8 pb-16">
-        <div className="bg-white/80 rounded-2xl p-6 md:p-8 border border-sky-500/10 shadow-2xl space-y-6 text-left">
+        <div className="bg-white/80 rounded-2xl p-6 md:p-8 border border-slate-200 shadow-xl space-y-6 text-left">
           <div className="space-y-2 text-center">
             <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded bg-indigo-600/10 text-indigo-500 font-mono text-[10px] font-bold uppercase tracking-wider">Interactive UI Previews</span>
-            <h3 className="text-xl font-extrabold text-white">Inspect Our Multi-Tenant Workspace</h3>
+            <h3 className="text-xl font-bold text-slate-900">Inspect Our Multi-Tenant Workspace</h3>
             <p className="text-xs text-slate-400">Click tabs to switch between department portals and trace operations.</p>
           </div>
           <div className="flex flex-wrap gap-2 border-b border-slate-200 pb-3">
@@ -770,7 +770,7 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
               { id: "purchases", label: "🛍️ Procurement (PO)" },
             ].map(tab => (
               <button key={tab.id} onClick={() => setActiveScreenshotTab(tab.id as any)}
-                className={`px-3 py-2 rounded-lg text-xs font-bold transition-all cursor-pointer ${activeScreenshotTab === tab.id ? "bg-indigo-700 text-white shadow-md" : "bg-white text-slate-400 hover:text-slate-700"}`}
+                className={`px-3 py-2 rounded-lg text-xs font-bold transition-all cursor-pointer ${activeScreenshotTab === tab.id ? "bg-indigo-600 text-white shadow-md" : "bg-slate-50 text-slate-500 hover:text-slate-700"}`}
               >
                 {tab.label}
               </button>
@@ -780,8 +780,8 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
             {activeScreenshotTab === "admin" && (
               <div className="space-y-4">
                 <div className="flex items-center justify-between pb-3 border-b border-slate-200/60">
-                  <div><span className="text-[10px] text-indigo-500 font-mono font-bold">SYSTEM ADMIN PORTAL</span><h4 className="text-sm font-extrabold text-white">Root Configuration & Tenant Management</h4></div>
-                  <span className="text-[10px] bg-emerald-500/10 text-emerald-400 px-2.5 py-0.5 rounded font-mono font-bold">LIVE</span>
+                  <div><span className="text-[10px] text-indigo-500 font-mono font-bold">SYSTEM ADMIN PORTAL</span><h4 className="text-sm font-extrabold text-slate-800">Root Configuration & Tenant Management</h4></div>
+                  <span className="text-[10px] bg-emerald-50 text-emerald-700 border border-emerald-200 px-2.5 py-0.5 rounded font-bold">LIVE</span>
                 </div>
                 <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
                   {[["Active Tenants","14 Companies","text-white"],["Isolated Schemas","14 Partitioned","text-indigo-500"],["SSL Routing","100% Active","text-emerald-400"],["API Webhooks","2 Active","text-violet-400"]].map(([label,val,cls],i)=>(
@@ -874,7 +874,7 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
             <div><span className="text-4xl font-extrabold text-white">₹500</span><span className="text-xs text-slate-400 ml-1">INR</span></div>
             <span className="text-xs text-slate-500 block">per tenant / month</span>
           </div>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs text-slate-300 max-w-2xl mx-auto">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs text-slate-600 max-w-2xl mx-auto">
             {["Zero Demo Data","Whitelabel Identity","10 Staff Logins","Full Ledger Integration"].map((f,i)=>(
               <div key={i} className="flex items-center gap-1.5"><Check className="h-3.5 w-3.5 text-emerald-400 shrink-0" />{f}</div>
             ))}
@@ -889,7 +889,7 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
       <section className="w-full max-w-6xl mx-auto px-4 md:px-8 pb-16">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 text-left">
           <div className="lg:col-span-7 space-y-6">
-            <div className="space-y-1"><span className="text-[10px] uppercase font-bold tracking-widest text-indigo-500 font-mono">Engineering Trust</span><h3 className="text-xl font-extrabold text-white">Why Companies Choose DEINRIM 360</h3></div>
+            <div className="space-y-1"><span className="text-[10px] uppercase font-bold tracking-widest text-indigo-500 font-mono">Engineering Trust</span><h3 className="text-xl font-bold text-slate-900">Why Companies Choose DEINRIM 360</h3></div>
             <div className="space-y-4">
               {[
                 { title: "⚡ Reduce Manual Effort & Double Entry", desc: "Inventory movements trigger procurement and CRM entries automatically — no re-keying." },
@@ -915,7 +915,7 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
                 ["🔔 WhatsApp Automated Alerts","Q2 2027"],
               ].map(([name,status],i)=>(
                 <div key={i} className="flex items-center justify-between p-2 rounded bg-slate-50 border border-slate-200">
-                  <span className="text-slate-300 font-sans font-semibold">{name}</span>
+                  <span className="text-slate-600 font-sans font-semibold">{name}</span>
                   <span className="text-[9px] bg-amber-500/10 text-amber-400 px-2 py-0.5 rounded shrink-0">{status}</span>
                 </div>
               ))}
@@ -929,7 +929,7 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
         <div className="bg-gradient-to-r from-sky-950/80 via-slate-900 to-sky-950/80 rounded-2xl p-6 md:p-8 border border-indigo-200 text-center space-y-5">
           <div className="space-y-2 max-w-2xl mx-auto">
             <h3 className="text-xl font-black text-white">Ready to Digitize Your Organization?</h3>
-            <p className="text-xs text-slate-300 leading-relaxed">Unlock operational clarity, eliminate double entry, and secure your company database. Schedule a sandbox demo with our Kolkata engineering desk.</p>
+            <p className="text-xs text-slate-600 leading-relaxed">Unlock operational clarity, eliminate double entry, and secure your company database. Schedule a sandbox demo with our Kolkata engineering desk.</p>
           </div>
           <div className="flex flex-wrap items-center justify-center gap-4">
             <button onClick={() => openModal("register")} className="px-6 py-3 bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs rounded-xl transition-all cursor-pointer shadow-lg shadow-indigo-200">
@@ -981,7 +981,7 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
           <div className="space-y-1.5">
             <h4 className="text-[11px] font-extrabold text-indigo-500 uppercase tracking-wider font-mono">OPERATED & DEVELOPED BY</h4>
             <p className="text-slate-700 font-semibold text-sm">Apex7tech</p>
-            <p className="text-slate-300">Kolkata, West Bengal (WB), India</p>
+            <p className="text-slate-600">Kolkata, West Bengal (WB), India</p>
             <p className="text-white font-bold text-sm">Corporate: +91 98361-30393</p>
             <p className="text-slate-500 text-[10px] leading-normal pt-2 border-t border-slate-100 mt-2">DEINRIM OMS v2.0 • Isolated high-performance relational structures with real-time replication.</p>
           </div>
@@ -1043,7 +1043,7 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
               {/* ── LOGIN TAB ── */}
               {modalTab === "login" && (
                 <form onSubmit={handleLogin} className="space-y-4">
-                  {loginError && <div className="bg-red-500/10 border border-red-500/30 text-red-300 p-3 rounded-lg text-xs flex items-start gap-2"><ShieldAlert className="h-4 w-4 shrink-0 text-red-400 mt-0.5" />{loginError}</div>}
+                  {loginError && <div className="bg-red-500/10 border border-red-500/30 text-red-600 p-3 rounded-lg text-xs flex items-start gap-2"><ShieldAlert className="h-4 w-4 shrink-0 text-red-400 mt-0.5" />{loginError}</div>}
                   <div className="space-y-1.5">
                     <label className="text-[10px] font-bold text-indigo-500/80 font-mono uppercase tracking-widest">Email Address</label>
                     <div className="relative"><Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500" /><input type="email" required placeholder="your@company.com" value={email} onChange={e => { setEmail(e.target.value); setLoginError(""); }} className={`${inputCls} pl-10`} /></div>
@@ -1060,8 +1060,8 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
               {/* ── REGISTER TAB ── */}
               {modalTab === "register" && (
                 <form onSubmit={handleRegister} className="space-y-4">
-                  {regError && <div className="bg-red-500/10 border border-red-500/30 text-red-300 p-3 rounded-lg text-xs flex items-start gap-2"><ShieldAlert className="h-4 w-4 shrink-0 text-red-400 mt-0.5" />{regError}</div>}
-                  <div className="bg-indigo-600/5 border border-sky-500/15 rounded-lg p-3 text-[10px] text-sky-300/80 font-mono">
+                  {regError && <div className="bg-red-500/10 border border-red-500/30 text-red-600 p-3 rounded-lg text-xs flex items-start gap-2"><ShieldAlert className="h-4 w-4 shrink-0 text-red-400 mt-0.5" />{regError}</div>}
+                  <div className="bg-indigo-50 border border-indigo-100 rounded-lg p-3 text-[10px] text-indigo-600 font-sans">
                     Creating an account provisions a <strong className="text-sky-300">clean, isolated company workspace</strong> with zero demo data. You will be the Company Admin.
                   </div>
                   <div className="space-y-1.5">
@@ -1097,7 +1097,7 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
                       <span className="text-[10px] font-bold text-indigo-500 uppercase tracking-widest font-mono">System Admin Access</span>
                     </div>
                     <form onSubmit={handleAdminLogin} className="space-y-3">
-                      {adminError && <div className="bg-red-500/10 border border-red-500/30 text-red-300 p-2.5 rounded-lg text-xs">{adminError}</div>}
+                      {adminError && <div className="bg-red-500/10 border border-red-500/30 text-red-600 p-2.5 rounded-lg text-xs">{adminError}</div>}
                       <div className="relative"><Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500" /><input type="email" required placeholder="Admin email" value={adminEmail} onChange={e => { setAdminEmail(e.target.value); setAdminError(""); }} className={`${inputCls} pl-10`} /></div>
                       <div className="relative"><Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500" /><input type="password" required placeholder="Admin password" value={adminPass} onChange={e => { setAdminPass(e.target.value); setAdminError(""); }} className={`${inputCls} pl-10`} /></div>
                       <button type="submit" className={btnSky}><Shield className="h-3.5 w-3.5" /> Admin Sign In</button>
@@ -1108,9 +1108,9 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
                   <div className="space-y-3">
                     <div className="flex items-center gap-2 pb-2 border-b border-slate-200">
                       <Zap className="h-3.5 w-3.5 text-amber-400" />
-                      <span className="text-[10px] font-bold text-amber-400 uppercase tracking-widest font-mono">Quick Demo Access</span>
+                      <span className="text-[10px] font-bold text-amber-700 uppercase tracking-widest font-mono">Quick Demo Access</span>
                     </div>
-                    <div className="bg-amber-500/5 border border-amber-500/15 rounded-lg p-2.5 text-[10px] text-amber-300/80 font-mono">
+                    <div className="bg-amber-50 border border-amber-100 rounded-lg p-2.5 text-[10px] text-amber-700 font-sans">
                       Demo accounts use shared read-only data. Click any role to land directly on the dashboard.
                     </div>
                     <div className="space-y-2">
@@ -1123,7 +1123,7 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
                         { type: "readonly",  label: "Read-Only Observer",sub: "All modules, no write access",        dot: "bg-slate-500"   },
                       ] as const).map(item => (
                         <button key={item.type} onClick={() => handleDemoLogin(item.type)}
-                          className="w-full bg-slate-100/60 hover:bg-slate-700/60 border border-slate-200 hover:border-sky-500/30 rounded-xl px-4 py-3 flex items-center gap-3 text-left cursor-pointer transition-all"
+                          className="w-full bg-slate-100/60 hover:bg-indigo-50 border border-slate-200 hover:border-indigo-200 rounded-xl px-4 py-3 flex items-center gap-3 text-left cursor-pointer transition-all"
                         >
                           <div className={`w-2 h-2 rounded-full ${item.dot} shrink-0`}></div>
                           <div className="flex-1">
@@ -1152,7 +1152,7 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
                 {activeFooterModal === "terms"    && <FileText className="h-5 w-5 text-indigo-500" />}
                 {activeFooterModal === "support"  && <BookOpen className="h-5 w-5 text-indigo-500" />}
                 {activeFooterModal === "deletion" && <AlertTriangle className="h-5 w-5 text-rose-500" />}
-                <h3 className="text-base font-bold text-white">
+                <h3 className="text-base font-bold text-slate-800">
                   {activeFooterModal === "privacy"  && "Privacy Policy"}
                   {activeFooterModal === "terms"    && "Terms of Service"}
                   {activeFooterModal === "support"  && "Submit Support Query"}
@@ -1162,7 +1162,7 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
               <button onClick={closeFooterModal} className="text-slate-400 hover:text-slate-800"><X className="h-5 w-5" /></button>
             </div>
             {activeFooterModal === "privacy" && (
-              <div className="space-y-4 text-xs text-slate-300 leading-relaxed">
+              <div className="space-y-4 text-xs text-slate-600 leading-relaxed">
                 <p className="font-semibold text-slate-700">Last Updated: June 28, 2026</p>
                 <p>Welcome to <strong>DEINRIM OMS & ERP Enterprise</strong>. We respect your privacy and are committed to protecting business data processed by our platform.</p>
                 {[["1. Multi-Tenant Logical Partitioning","Our software strictly partitions customer databases by organizational identifiers, ensuring no cross-tenant queries can ever leak between corporate workspaces."],["2. Staff Account & RBAC Security","Access is strictly guarded by Role-Based Access Control schemas, verifying user authorization before allowing read or write execution."],["3. Data Security & Encryption","All transactional streams are processed over secure channels with 256-bit TLS encryption and AES-256 rest encryption."],["4. Contact Info","For inquiries: privacy@deinrim.in or +91 98361-30393."]].map(([title,text],i)=>(
@@ -1171,7 +1171,7 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
               </div>
             )}
             {activeFooterModal === "terms" && (
-              <div className="space-y-4 text-xs text-slate-300 leading-relaxed">
+              <div className="space-y-4 text-xs text-slate-600 leading-relaxed">
                 <p className="font-semibold text-slate-700">Last Updated: June 28, 2026</p>
                 <p>These Terms of Service govern your access to <strong>DEINRIM OMS & ERP</strong> operated by Apex7tech</p>
                 {[["1. Tenant Account Registration","Tenants must register with valid corporate coordinates. All white-label configurations must comply with terms and not infringe third-party intellectual property."],["2. Operational Correctness","Financial ledgers and inventory records are calculated based on parameters configured by managers. Tenants are ultimately responsible for checking accounting accuracy."],["3. Service Availability (SLA)","DEINRIM OMS is committed to 99.9% uptime SLA. Scheduled maintenance is performed during off-peak hours with prior notification."],["4. Platform Integrity","Unauthorized access, structural reverse engineering, or API endpoint scanning is prohibited."]].map(([title,text],i)=>(
@@ -1192,7 +1192,7 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
               ) : (
                 <div className="text-center py-6 space-y-4">
                   <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-emerald-500/10 text-emerald-400"><CheckCircle2 className="h-8 w-8" /></div>
-                  <div><h4 className="text-sm font-bold text-white">Ticket Submitted!</h4><p className="text-xs text-slate-400 max-w-xs mx-auto mt-1">Thank you, {supportName}. Ticket <strong>#OMS-{Math.floor(100000 + Math.random() * 900000)}</strong> is raised.</p></div>
+                  <div><h4 className="text-sm font-bold text-slate-800">Ticket Submitted!</h4><p className="text-xs text-slate-400 max-w-xs mx-auto mt-1">Thank you, {supportName}. Ticket <strong>#OMS-{Math.floor(100000 + Math.random() * 900000)}</strong> is raised.</p></div>
                   <button onClick={closeFooterModal} className="rounded-lg bg-white border border-slate-200 px-4 py-2 text-xs font-bold text-white cursor-pointer">Close</button>
                 </div>
               )
@@ -1212,7 +1212,7 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
               ) : (
                 <div className="text-center py-6 space-y-4">
                   <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-rose-500/10 text-rose-400"><Trash2 className="h-8 w-8" /></div>
-                  <div><h4 className="text-sm font-bold text-white">Deletion Scheduled</h4><p className="text-xs text-slate-400 max-w-xs mx-auto mt-1">Request for <strong>{deletionEmail}</strong> received. Ticket: <strong>#OMS-DEL-{Math.floor(100000 + Math.random() * 900000)}</strong>. Processing within 14 business days.</p></div>
+                  <div><h4 className="text-sm font-bold text-slate-800">Deletion Scheduled</h4><p className="text-xs text-slate-400 max-w-xs mx-auto mt-1">Request for <strong>{deletionEmail}</strong> received. Ticket: <strong>#OMS-DEL-{Math.floor(100000 + Math.random() * 900000)}</strong>. Processing within 14 business days.</p></div>
                   <button onClick={closeFooterModal} className="rounded-lg bg-white border border-slate-200 px-4 py-2 text-xs font-bold text-white cursor-pointer">Close</button>
                 </div>
               )
@@ -1223,5 +1223,8 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
     </div>
   );
 }
+
+
+
 
 
