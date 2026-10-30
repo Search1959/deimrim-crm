@@ -1,4 +1,4 @@
-/**
+﻿/**
  * @license
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -562,7 +562,7 @@ DR-IOT-TEMP1,IoT Ambient Temperature Sensor,cat-3,Unit,45,95,20,200,88091100225,
 
               <button
                 onClick={handleExportCSV}
-                className="flex items-center gap-1 rounded-lg border border-slate-800 bg-slate-900 hover:bg-slate-800 px-3 py-2 text-xs font-bold text-slate-300 transition-colors cursor-pointer"
+                className="flex items-center gap-1 rounded-lg border border-slate-200 bg-white hover:bg-slate-100 px-3 py-2 text-xs font-bold text-slate-300 transition-colors cursor-pointer"
                 title="Download CSV database file"
               >
                 <Download className="h-3.5 w-3.5 text-slate-400" />
@@ -575,10 +575,10 @@ DR-IOT-TEMP1,IoT Ambient Temperature Sensor,cat-3,Unit,45,95,20,200,88091100225,
 
       {/* TAB: STOCK ON HAND LEDGER */}
       {activeSubTab === "catalog" && !selectedProductDetail && (
-        <div className="bg-slate-950/60 border border-slate-800 rounded-xl overflow-hidden shadow-xs">
+        <div className="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-xs">
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-slate-800 text-sm text-left">
-              <thead className="bg-slate-950 text-slate-300 font-semibold">
+              <thead className="bg-white text-slate-300 font-semibold">
                 <tr>
                   <th className="px-5 py-3">Product Description</th>
                   <th className="px-5 py-3">SKU Code</th>
@@ -597,18 +597,18 @@ DR-IOT-TEMP1,IoT Ambient Temperature Sensor,cat-3,Unit,45,95,20,200,88091100225,
                   const isNegative = qty < 0;
 
                   return (
-                    <tr key={p.id} className="hover:bg-slate-900/40 transition-colors">
+                    <tr key={p.id} className="hover:bg-slate-50 transition-colors">
                       <td className="px-5 py-4">
-                        <div className="font-bold text-slate-100 leading-tight">{p.name}</div>
+                        <div className="font-bold text-slate-800 leading-tight">{p.name}</div>
                         <div className="text-[10px] text-slate-400 mt-1 max-w-[280px] truncate">{p.description}</div>
                       </td>
                       <td className="px-5 py-4 font-mono font-bold text-xs text-indigo-400">{p.sku}</td>
                       <td className="px-5 py-4 text-xs font-semibold text-slate-400">{category?.name || "Uncategorized"}</td>
                       <td className="px-5 py-4">
-                        <div className="font-mono text-xs text-slate-300">Cost: <strong className="text-slate-100">{formatINR(p.purchasePrice)}</strong></div>
+                        <div className="font-mono text-xs text-slate-300">Cost: <strong className="text-slate-800">{formatINR(p.purchasePrice)}</strong></div>
                         <div className="font-mono text-[10px] text-indigo-400 mt-0.5">MSRP: {formatINR(p.sellingPrice)}</div>
                       </td>
-                      <td className="px-5 py-4 font-mono font-bold text-slate-100 text-xs">
+                      <td className="px-5 py-4 font-mono font-bold text-slate-800 text-xs">
                         {qty} {p.unit}
                       </td>
                       <td className="px-5 py-4">
@@ -641,7 +641,7 @@ DR-IOT-TEMP1,IoT Ambient Temperature Sensor,cat-3,Unit,45,95,20,200,88091100225,
                           {canWrite && (
                           <button
                             onClick={(e) => openEditModal(p, e)}
-                            className="rounded-lg p-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 transition-colors"
+                            className="rounded-lg p-1.5 bg-slate-100 hover:bg-slate-700 text-slate-300 transition-colors"
                             title="Edit Product Specification"
                           >
                             <Edit className="h-3.5 w-3.5" />
@@ -667,7 +667,7 @@ DR-IOT-TEMP1,IoT Ambient Temperature Sensor,cat-3,Unit,45,95,20,200,88091100225,
           </div>
           {/* Pagination */}
           {totalPages > 1 && (
-            <div className="flex items-center justify-between px-5 py-3 border-t border-slate-800 bg-slate-950/60">
+            <div className="flex items-center justify-between px-5 py-3 border-t border-slate-200 bg-white">
               <span className="text-xs text-slate-500">
                 Showing {(currentPage - 1) * PAGE_SIZE + 1}–{Math.min(currentPage * PAGE_SIZE, filteredProducts.length)} of {filteredProducts.length} products
               </span>
@@ -675,12 +675,12 @@ DR-IOT-TEMP1,IoT Ambient Temperature Sensor,cat-3,Unit,45,95,20,200,88091100225,
                 <button
                   onClick={() => setCurrentPage(1)}
                   disabled={currentPage === 1}
-                  className="px-2 py-1 text-xs rounded border border-slate-700 bg-slate-900 text-slate-400 hover:bg-slate-800 disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer"
+                  className="px-2 py-1 text-xs rounded border border-slate-200 bg-white text-slate-400 hover:bg-slate-100 disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer"
                 >«</button>
                 <button
                   onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
                   disabled={currentPage === 1}
-                  className="px-2.5 py-1 text-xs rounded border border-slate-700 bg-slate-900 text-slate-400 hover:bg-slate-800 disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer"
+                  className="px-2.5 py-1 text-xs rounded border border-slate-200 bg-white text-slate-400 hover:bg-slate-100 disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer"
                 >‹</button>
                 {Array.from({ length: Math.min(7, totalPages) }, (_, i) => {
                   let page: number;
@@ -692,19 +692,19 @@ DR-IOT-TEMP1,IoT Ambient Temperature Sensor,cat-3,Unit,45,95,20,200,88091100225,
                     <button
                       key={page}
                       onClick={() => setCurrentPage(page)}
-                      className={`px-2.5 py-1 text-xs rounded border cursor-pointer ${currentPage === page ? "border-indigo-500 bg-indigo-600 text-white font-bold" : "border-slate-700 bg-slate-900 text-slate-400 hover:bg-slate-800"}`}
+                      className={`px-2.5 py-1 text-xs rounded border cursor-pointer ${currentPage === page ? "border-indigo-500 bg-indigo-600 text-white font-bold" : "border-slate-200 bg-white text-slate-400 hover:bg-slate-100"}`}
                     >{page}</button>
                   );
                 })}
                 <button
                   onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
                   disabled={currentPage === totalPages}
-                  className="px-2.5 py-1 text-xs rounded border border-slate-700 bg-slate-900 text-slate-400 hover:bg-slate-800 disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer"
+                  className="px-2.5 py-1 text-xs rounded border border-slate-200 bg-white text-slate-400 hover:bg-slate-100 disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer"
                 >›</button>
                 <button
                   onClick={() => setCurrentPage(totalPages)}
                   disabled={currentPage === totalPages}
-                  className="px-2 py-1 text-xs rounded border border-slate-700 bg-slate-900 text-slate-400 hover:bg-slate-800 disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer"
+                  className="px-2 py-1 text-xs rounded border border-slate-200 bg-white text-slate-400 hover:bg-slate-100 disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer"
                 >»</button>
               </div>
             </div>
@@ -714,15 +714,15 @@ DR-IOT-TEMP1,IoT Ambient Temperature Sensor,cat-3,Unit,45,95,20,200,88091100225,
 
       {/* PRODUCT SUB-DRILLDOWN DETAILS (Barcode, Batch Lists) */}
       {activeSubTab === "catalog" && selectedProductDetail && (
-        <div className="bg-slate-950/60 border border-slate-800 rounded-xl p-6 space-y-6">
-          <div className="border-b border-slate-800 pb-3 flex items-center justify-between">
+        <div className="bg-white border border-slate-200 rounded-xl p-6 space-y-6">
+          <div className="border-b border-slate-200 pb-3 flex items-center justify-between">
             <div>
               <span className="text-[10px] font-bold text-indigo-400 font-mono tracking-widest uppercase">Product Registry Details</span>
               <h3 className="text-lg font-bold text-white mt-1">{selectedProductDetail.name}</h3>
             </div>
             <button
               onClick={() => setSelectedProductDetail(null)}
-              className="text-xs font-semibold text-slate-400 hover:text-white border border-slate-800 rounded-lg px-3 py-1.5 bg-slate-900"
+              className="text-xs font-semibold text-slate-400 hover:text-slate-800 border border-slate-200 rounded-lg px-3 py-1.5 bg-white"
             >
               Back to List
             </button>
@@ -730,11 +730,11 @@ DR-IOT-TEMP1,IoT Ambient Temperature Sensor,cat-3,Unit,45,95,20,200,88091100225,
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {/* Product Info Panel */}
-            <div className="border border-slate-800 rounded-xl p-5 space-y-3 bg-slate-950/40">
+            <div className="border border-slate-200 rounded-xl p-5 space-y-3 bg-slate-50">
               <span className="text-xs font-bold text-slate-400 uppercase tracking-wider block font-mono">Product Details</span>
 
               {/* HSN */}
-              <div className="bg-slate-900 border border-slate-800 rounded-lg p-3">
+              <div className="bg-white border border-slate-200 rounded-lg p-3">
                 <div className="text-[10px] text-slate-500 uppercase font-mono mb-0.5">HSN Code</div>
                 <div className="text-sm font-bold text-indigo-300 font-mono">
                   {extractHsn(selectedProductDetail.description || "") || "—"}
@@ -742,15 +742,15 @@ DR-IOT-TEMP1,IoT Ambient Temperature Sensor,cat-3,Unit,45,95,20,200,88091100225,
               </div>
 
               {/* Category */}
-              <div className="bg-slate-900 border border-slate-800 rounded-lg p-3">
+              <div className="bg-white border border-slate-200 rounded-lg p-3">
                 <div className="text-[10px] text-slate-500 uppercase font-mono mb-0.5">Category</div>
-                <div className="text-sm font-semibold text-slate-100">
+                <div className="text-sm font-semibold text-slate-800">
                   {categories.find(c => c.id === selectedProductDetail.categoryId)?.name || "—"}
                 </div>
               </div>
 
               {/* Prices */}
-              <div className="bg-slate-900 border border-slate-800 rounded-lg p-3 grid grid-cols-2 gap-2">
+              <div className="bg-white border border-slate-200 rounded-lg p-3 grid grid-cols-2 gap-2">
                 <div>
                   <div className="text-[10px] text-slate-500 uppercase font-mono mb-0.5">Purchase Cost</div>
                   <div className="text-sm font-bold text-emerald-400 font-mono">{formatINR(selectedProductDetail.purchasePrice)}</div>
@@ -762,14 +762,14 @@ DR-IOT-TEMP1,IoT Ambient Temperature Sensor,cat-3,Unit,45,95,20,200,88091100225,
               </div>
 
               {/* Stock thresholds */}
-              <div className="bg-slate-900 border border-slate-800 rounded-lg p-3 grid grid-cols-2 gap-2">
+              <div className="bg-white border border-slate-200 rounded-lg p-3 grid grid-cols-2 gap-2">
               </div>
 
               {/* Unit + SKU */}
-              <div className="bg-slate-900 border border-slate-800 rounded-lg p-3 grid grid-cols-2 gap-2">
+              <div className="bg-white border border-slate-200 rounded-lg p-3 grid grid-cols-2 gap-2">
                 <div>
                   <div className="text-[10px] text-slate-500 uppercase font-mono mb-0.5">Unit</div>
-                  <div className="text-sm font-semibold text-slate-200">{selectedProductDetail.unit || "—"}</div>
+                  <div className="text-sm font-semibold text-slate-700">{selectedProductDetail.unit || "—"}</div>
                 </div>
                 <div>
                   <div className="text-[10px] text-slate-500 uppercase font-mono mb-0.5">SKU</div>
@@ -779,7 +779,7 @@ DR-IOT-TEMP1,IoT Ambient Temperature Sensor,cat-3,Unit,45,95,20,200,88091100225,
 
               {/* Notes */}
               {extractNotes(selectedProductDetail.description || "") && (
-                <div className="bg-slate-900 border border-slate-800 rounded-lg p-3">
+                <div className="bg-white border border-slate-200 rounded-lg p-3">
                   <div className="text-[10px] text-slate-500 uppercase font-mono mb-0.5">Notes</div>
                   <div className="text-xs text-slate-300">{extractNotes(selectedProductDetail.description || "")}</div>
                 </div>
@@ -796,7 +796,7 @@ DR-IOT-TEMP1,IoT Ambient Temperature Sensor,cat-3,Unit,45,95,20,200,88091100225,
                   .map(bs => {
                     const wh = warehouses.find(w => w.id === bs.warehouseId);
                     return (
-                      <div key={bs.id} className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-4 bg-slate-900 border border-slate-800 rounded-xl shadow-xs gap-3">
+                      <div key={bs.id} className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-4 bg-white border border-slate-200 rounded-xl shadow-xs gap-3">
                         <div>
                           <div className="flex items-center gap-2">
                             <strong className="text-sm text-white font-bold">Batch: {bs.batchNumber}</strong>
@@ -814,14 +814,14 @@ DR-IOT-TEMP1,IoT Ambient Temperature Sensor,cat-3,Unit,45,95,20,200,88091100225,
 
                         <div className="text-left sm:text-right font-mono">
                           <span className="block text-xs text-slate-500">Inventory Segment</span>
-                          <strong className="block text-sm text-slate-200 font-extrabold">{bs.quantity} {selectedProductDetail.unit}</strong>
+                          <strong className="block text-sm text-slate-700 font-extrabold">{bs.quantity} {selectedProductDetail.unit}</strong>
                           <span className="block text-[10px] text-indigo-400 font-semibold">{bs.rackLocation || "General Floor"}</span>
                         </div>
                       </div>
                     );
                   })}
                 {batchStocks.filter(bs => bs.productId === selectedProductDetail.id).length === 0 && (
-                  <div className="text-center py-6 text-slate-500 border border-dashed rounded-xl border-slate-800 bg-slate-950/20">
+                  <div className="text-center py-6 text-slate-500 border border-dashed rounded-xl border-slate-200 bg-slate-50">
                     <Archive className="mx-auto h-8 w-8 mb-2 text-slate-600" />
                     <span className="text-xs font-medium">No batch items registered. Generate a Purchase GRN to add stock.</span>
                   </div>
@@ -836,8 +836,8 @@ DR-IOT-TEMP1,IoT Ambient Temperature Sensor,cat-3,Unit,45,95,20,200,88091100225,
       {activeSubTab === "categories" && (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 text-left">
           {/* Add Category Form Column */}
-          {canWrite && (<div className="bg-slate-950/60 border border-slate-800 rounded-xl p-5 space-y-4 h-fit">
-            <h3 className="text-sm font-bold text-slate-200 uppercase tracking-wider font-mono flex items-center gap-2">
+          {canWrite && (<div className="bg-white border border-slate-200 rounded-xl p-5 space-y-4 h-fit">
+            <h3 className="text-sm font-bold text-slate-700 uppercase tracking-wider font-mono flex items-center gap-2">
               <Plus className="h-4 w-4 text-indigo-400" /> Register Category
             </h3>
             <p className="text-xs text-slate-400">Register new category classes to group products systematically in the master inventory.</p>
@@ -865,7 +865,7 @@ DR-IOT-TEMP1,IoT Ambient Temperature Sensor,cat-3,Unit,45,95,20,200,88091100225,
                   placeholder="e.g. Storage Components"
                   value={newCatName}
                   onChange={(e) => setNewCatName(e.target.value)}
-                  className="w-full rounded-lg border border-slate-800 bg-slate-900 p-2.5 text-sm text-white focus:outline-hidden"
+                  className="w-full rounded-lg border border-slate-200 bg-white p-2.5 text-sm text-slate-800 focus:outline-hidden"
                 />
               </div>
               <div>
@@ -875,7 +875,7 @@ DR-IOT-TEMP1,IoT Ambient Temperature Sensor,cat-3,Unit,45,95,20,200,88091100225,
                   placeholder="e.g. STO (Optional)"
                   value={newCatCode}
                   onChange={(e) => setNewCatCode(e.target.value)}
-                  className="w-full rounded-lg border border-slate-800 bg-slate-900 p-2.5 text-sm text-white focus:outline-hidden font-mono"
+                  className="w-full rounded-lg border border-slate-200 bg-white p-2.5 text-sm text-slate-800 focus:outline-hidden font-mono"
                 />
               </div>
               <div>
@@ -884,7 +884,7 @@ DR-IOT-TEMP1,IoT Ambient Temperature Sensor,cat-3,Unit,45,95,20,200,88091100225,
                   placeholder="Provide category description details..."
                   value={newCatDesc}
                   onChange={(e) => setNewCatDesc(e.target.value)}
-                  className="w-full rounded-lg border border-slate-800 bg-slate-900 p-2.5 text-sm text-white focus:outline-hidden min-h-[80px]"
+                  className="w-full rounded-lg border border-slate-200 bg-white p-2.5 text-sm text-slate-800 focus:outline-hidden min-h-[80px]"
                 />
               </div>
               <button
@@ -897,15 +897,15 @@ DR-IOT-TEMP1,IoT Ambient Temperature Sensor,cat-3,Unit,45,95,20,200,88091100225,
           </div>)}
 
           {/* Categories List Column */}
-          <div className="lg:col-span-2 bg-slate-950/60 border border-slate-800 rounded-xl overflow-hidden">
-            <div className="px-5 py-4 border-b border-slate-800 bg-slate-950/30 flex items-center justify-between">
+          <div className="lg:col-span-2 bg-white border border-slate-200 rounded-xl overflow-hidden">
+            <div className="px-5 py-4 border-b border-slate-200 bg-white/30 flex items-center justify-between">
               <h3 className="text-sm font-bold text-slate-300 uppercase tracking-wider font-mono">Active Category Register</h3>
               <span className="text-xs font-mono font-bold text-indigo-400">{categories.length} Categories</span>
             </div>
 
             <div className="overflow-x-auto">
               <table className="min-w-full divide-y divide-slate-800 text-sm">
-                <thead className="bg-slate-950 font-semibold text-slate-300">
+                <thead className="bg-white font-semibold text-slate-300">
                   <tr>
                     <th className="px-5 py-3 text-left">Code</th>
                     <th className="px-5 py-3 text-left">Name</th>
@@ -918,9 +918,9 @@ DR-IOT-TEMP1,IoT Ambient Temperature Sensor,cat-3,Unit,45,95,20,200,88091100225,
                   {categories.map(c => {
                     const count = products.filter(p => p.categoryId === c.id).length;
                     return (
-                      <tr key={c.id} className="hover:bg-slate-900/40 transition-colors">
+                      <tr key={c.id} className="hover:bg-slate-50 transition-colors">
                         <td className="px-5 py-4 font-mono text-xs font-bold text-indigo-400">{c.code}</td>
-                        <td className="px-5 py-4 font-semibold text-white">{c.name}</td>
+                        <td className="px-5 py-4 font-semibold text-slate-800">{c.name}</td>
                         <td className="px-5 py-4 text-xs text-slate-400 truncate max-w-[200px]" title={c.description}>
                           {c.description || <span className="italic text-slate-600">No description provided</span>}
                         </td>
@@ -963,8 +963,8 @@ DR-IOT-TEMP1,IoT Ambient Temperature Sensor,cat-3,Unit,45,95,20,200,88091100225,
       {activeSubTab === "brands" && (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 text-left">
           {/* Add Brand Form Column */}
-          {canWrite && (<div className="bg-slate-950/60 border border-slate-800 rounded-xl p-5 space-y-4 h-fit">
-            <h3 className="text-sm font-bold text-slate-200 uppercase tracking-wider font-mono flex items-center gap-2">
+          {canWrite && (<div className="bg-white border border-slate-200 rounded-xl p-5 space-y-4 h-fit">
+            <h3 className="text-sm font-bold text-slate-700 uppercase tracking-wider font-mono flex items-center gap-2">
               <Plus className="h-4 w-4 text-indigo-400" /> Register Brand
             </h3>
             <p className="text-xs text-slate-400">Register product brands/manufacturers to segment catalog lists accurately.</p>
@@ -987,7 +987,7 @@ DR-IOT-TEMP1,IoT Ambient Temperature Sensor,cat-3,Unit,45,95,20,200,88091100225,
                   placeholder="e.g. Cisco, Dell, Intel"
                   value={newBrandName}
                   onChange={(e) => setNewBrandName(e.target.value)}
-                  className="w-full rounded-lg border border-slate-800 bg-slate-900 p-2.5 text-sm text-white focus:outline-hidden"
+                  className="w-full rounded-lg border border-slate-200 bg-white p-2.5 text-sm text-slate-800 focus:outline-hidden"
                 />
               </div>
               <button
@@ -1000,15 +1000,15 @@ DR-IOT-TEMP1,IoT Ambient Temperature Sensor,cat-3,Unit,45,95,20,200,88091100225,
           </div>)}
 
           {/* Brands List Column */}
-          <div className="lg:col-span-2 bg-slate-950/60 border border-slate-800 rounded-xl overflow-hidden">
-            <div className="px-5 py-4 border-b border-slate-800 bg-slate-950/30 flex items-center justify-between">
+          <div className="lg:col-span-2 bg-white border border-slate-200 rounded-xl overflow-hidden">
+            <div className="px-5 py-4 border-b border-slate-200 bg-white/30 flex items-center justify-between">
               <h3 className="text-sm font-bold text-slate-300 uppercase tracking-wider font-mono">Active Brand Directory</h3>
               <span className="text-xs font-mono font-bold text-indigo-400">{brands.length} Brands</span>
             </div>
 
             <div className="overflow-x-auto">
               <table className="min-w-full divide-y divide-slate-800 text-sm">
-                <thead className="bg-slate-950 font-semibold text-slate-300">
+                <thead className="bg-white font-semibold text-slate-300">
                   <tr>
                     <th className="px-5 py-3 text-left">Brand ID</th>
                     <th className="px-5 py-3 text-left">Brand Name</th>
@@ -1020,9 +1020,9 @@ DR-IOT-TEMP1,IoT Ambient Temperature Sensor,cat-3,Unit,45,95,20,200,88091100225,
                   {brands.map(b => {
                     const count = products.filter(p => p.brandId === b.id).length;
                     return (
-                      <tr key={b.id} className="hover:bg-slate-900/40 transition-colors">
+                      <tr key={b.id} className="hover:bg-slate-50 transition-colors">
                         <td className="px-5 py-4 font-mono text-xs text-indigo-400">{b.id}</td>
-                        <td className="px-5 py-4 font-semibold text-white">{b.name}</td>
+                        <td className="px-5 py-4 font-semibold text-slate-800">{b.name}</td>
                         <td className="px-5 py-4 font-mono text-xs font-bold text-slate-300">{count} SKU(s)</td>
                         <td className="px-5 py-4 text-center">
                           {canWrite && (<button
@@ -1067,8 +1067,8 @@ DR-IOT-TEMP1,IoT Ambient Temperature Sensor,cat-3,Unit,45,95,20,200,88091100225,
               const totalItemsCount = whBatches.reduce((sum, b) => sum + b.quantity, 0);
 
               return (
-                <div key={wh.id} className="bg-slate-950/60 border border-slate-800 rounded-xl p-6 space-y-4 shadow-xs">
-                  <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+                <div key={wh.id} className="bg-white border border-slate-200 rounded-xl p-6 space-y-4 shadow-xs">
+                  <div className="flex items-center justify-between border-b border-slate-200 pb-3">
                     <div>
                       <h3 className="text-base font-bold text-white">{wh.name}</h3>
                       <p className="text-xs text-slate-400 mt-0.5">{wh.location}</p>
@@ -1076,12 +1076,12 @@ DR-IOT-TEMP1,IoT Ambient Temperature Sensor,cat-3,Unit,45,95,20,200,88091100225,
                     <span className="font-mono text-xs bg-indigo-500/10 text-indigo-400 px-2 py-0.5 rounded font-bold uppercase border border-indigo-500/20">{wh.code}</span>
                   </div>
 
-                  <div className="grid grid-cols-2 gap-3 text-center bg-slate-900 p-3 rounded-lg border border-slate-800/60">
+                  <div className="grid grid-cols-2 gap-3 text-center bg-white p-3 rounded-lg border border-slate-200/60">
                     <div className="text-left pl-2">
                       <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider font-mono">Storage Batches</span>
-                      <strong className="block text-lg font-bold text-slate-200 font-mono mt-0.5">{whBatches.length}</strong>
+                      <strong className="block text-lg font-bold text-slate-700 font-mono mt-0.5">{whBatches.length}</strong>
                     </div>
-                    <div className="border-l border-slate-800 text-left pl-4">
+                    <div className="border-l border-slate-200 text-left pl-4">
                       <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider font-mono">Total Quantities</span>
                       <strong className="block text-lg font-bold text-indigo-400 font-mono mt-0.5">{totalItemsCount} units</strong>
                     </div>
@@ -1093,12 +1093,12 @@ DR-IOT-TEMP1,IoT Ambient Temperature Sensor,cat-3,Unit,45,95,20,200,88091100225,
                     {whBatches.map(b => {
                       const prod = products.find(p => p.id === b.productId);
                       return (
-                        <div key={b.id} className="flex items-center justify-between text-xs border border-slate-800/80 bg-slate-900/60 hover:bg-slate-900 p-2.5 rounded-lg">
+                        <div key={b.id} className="flex items-center justify-between text-xs border border-slate-200/80 bg-slate-50 hover:bg-white p-2.5 rounded-lg">
                           <div className="truncate max-w-[200px]">
-                            <span className="font-bold text-slate-200 font-mono text-[10px] mr-1">[{b.batchNumber}]</span>
+                            <span className="font-bold text-slate-700 font-mono text-[10px] mr-1">[{b.batchNumber}]</span>
                             <span className="font-semibold text-slate-300">{prod?.name}</span>
                           </div>
-                          <span className="font-mono font-bold text-slate-100">{b.quantity} qty</span>
+                          <span className="font-mono font-bold text-slate-800">{b.quantity} qty</span>
                         </div>
                       );
                     })}
@@ -1112,15 +1112,15 @@ DR-IOT-TEMP1,IoT Ambient Temperature Sensor,cat-3,Unit,45,95,20,200,88091100225,
 
       {/* TAB: STOCK MOVEMENT LOGS */}
       {activeSubTab === "movements" && (
-        <div className="bg-slate-950/60 border border-slate-800 rounded-xl overflow-hidden shadow-xs text-left">
-          <div className="px-5 py-4 border-b border-slate-800 bg-slate-950/30 flex items-center justify-between">
+        <div className="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-xs text-left">
+          <div className="px-5 py-4 border-b border-slate-200 bg-white/30 flex items-center justify-between">
             <h3 className="text-sm font-bold text-slate-300 uppercase tracking-wider font-mono">Chronological Stock Audit Logs</h3>
             <span className="text-xs font-mono font-bold text-indigo-400">Dynamic Ledger Updates</span>
           </div>
 
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-slate-800 text-sm">
-              <thead className="bg-slate-950 font-semibold text-slate-300">
+              <thead className="bg-white font-semibold text-slate-300">
                 <tr>
                   <th className="px-5 py-3 text-left">Movement Date</th>
                   <th className="px-5 py-3 text-left">Product SKU</th>
@@ -1138,10 +1138,10 @@ DR-IOT-TEMP1,IoT Ambient Temperature Sensor,cat-3,Unit,45,95,20,200,88091100225,
                   const isIN = move.type === "IN";
 
                   return (
-                    <tr key={move.id} className="hover:bg-slate-900/40 transition-colors">
+                    <tr key={move.id} className="hover:bg-slate-50 transition-colors">
                       <td className="px-5 py-4 font-mono text-xs text-slate-400">{new Date(move.timestamp).toLocaleString()}</td>
                       <td className="px-5 py-4">
-                        <div className="font-bold text-slate-100">{product?.name}</div>
+                        <div className="font-bold text-slate-800">{product?.name}</div>
                         <div className="text-[10px] text-indigo-400 font-mono font-bold">{product?.sku}</div>
                       </td>
                       <td className="px-5 py-4 font-bold text-xs uppercase tracking-wide text-slate-300">{move.source}</td>
@@ -1172,10 +1172,10 @@ DR-IOT-TEMP1,IoT Ambient Temperature Sensor,cat-3,Unit,45,95,20,200,88091100225,
          ==================================================================== */}
       {showAddModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-          <div className="w-full max-w-2xl rounded-2xl border border-slate-800 bg-slate-950 p-6 shadow-2xl animate-scaleUp text-left max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+          <div className="w-full max-w-2xl rounded-2xl border border-slate-200 bg-white p-6 shadow-2xl animate-scaleUp text-left max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between border-b border-slate-200 pb-3">
               <h3 className="text-lg font-bold text-white font-mono">Add New Product to Ledger</h3>
-              <button onClick={() => setShowAddModal(false)} className="text-slate-400 hover:text-white">
+              <button onClick={() => setShowAddModal(false)} className="text-slate-400 hover:text-slate-800">
                 <X className="h-5 w-5" />
               </button>
             </div>
@@ -1190,7 +1190,7 @@ DR-IOT-TEMP1,IoT Ambient Temperature Sensor,cat-3,Unit,45,95,20,200,88091100225,
                     value={formName}
                     onChange={(e) => setFormName(e.target.value)}
                     placeholder="e.g. Dell PowerEdge Server"
-                    className="w-full rounded-lg border border-slate-800 bg-slate-900 p-2.5 text-sm text-white focus:outline-hidden"
+                    className="w-full rounded-lg border border-slate-200 bg-white p-2.5 text-sm text-slate-800 focus:outline-hidden"
                   />
                 </div>
                 <div>
@@ -1200,7 +1200,7 @@ DR-IOT-TEMP1,IoT Ambient Temperature Sensor,cat-3,Unit,45,95,20,200,88091100225,
                     required
                     value={formSku}
                     onChange={(e) => setFormSku(e.target.value)}
-                    className="w-full rounded-lg border border-slate-800 bg-slate-900 p-2.5 text-sm text-white focus:outline-hidden font-mono"
+                    className="w-full rounded-lg border border-slate-200 bg-white p-2.5 text-sm text-slate-800 focus:outline-hidden font-mono"
                   />
                 </div>
               </div>
@@ -1227,7 +1227,7 @@ DR-IOT-TEMP1,IoT Ambient Temperature Sensor,cat-3,Unit,45,95,20,200,88091100225,
                   <select
                     value={formCategoryId}
                     onChange={(e) => setFormCategoryId(e.target.value)}
-                    className="w-full rounded-lg border border-slate-800 bg-slate-900 p-2.5 text-sm text-white focus:outline-hidden font-semibold"
+                    className="w-full rounded-lg border border-slate-200 bg-white p-2.5 text-sm text-slate-800 focus:outline-hidden font-semibold"
                   >
                     {categories.length === 0 && <option value="">-- No Categories --</option>}
                     {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
@@ -1241,7 +1241,7 @@ DR-IOT-TEMP1,IoT Ambient Temperature Sensor,cat-3,Unit,45,95,20,200,88091100225,
                     value={formUnit}
                     onChange={(e) => setFormUnit(e.target.value)}
                     placeholder="e.g. Unit, Box, kg"
-                    className="w-full rounded-lg border border-slate-800 bg-slate-900 p-2.5 text-sm text-white focus:outline-hidden"
+                    className="w-full rounded-lg border border-slate-200 bg-white p-2.5 text-sm text-slate-800 focus:outline-hidden"
                   />
                 </div>
                 <div>
@@ -1251,7 +1251,7 @@ DR-IOT-TEMP1,IoT Ambient Temperature Sensor,cat-3,Unit,45,95,20,200,88091100225,
                     value={formOpeningStock}
                     onChange={(e) => setFormOpeningStock(e.target.value)}
                     placeholder="0"
-                    className="w-full rounded-lg border border-slate-800 bg-slate-900 p-2.5 text-sm text-white focus:outline-hidden font-mono"
+                    className="w-full rounded-lg border border-slate-200 bg-white p-2.5 text-sm text-slate-800 focus:outline-hidden font-mono"
                   />
                 </div>
               </div>
@@ -1264,7 +1264,7 @@ DR-IOT-TEMP1,IoT Ambient Temperature Sensor,cat-3,Unit,45,95,20,200,88091100225,
                     required
                     value={formPurchasePrice}
                     onChange={(e) => setFormPurchasePrice(e.target.value)}
-                    className="w-full rounded-lg border border-slate-800 bg-slate-900 p-2.5 text-sm text-white focus:outline-hidden font-mono"
+                    className="w-full rounded-lg border border-slate-200 bg-white p-2.5 text-sm text-slate-800 focus:outline-hidden font-mono"
                   />
                 </div>
                 <div>
@@ -1274,7 +1274,7 @@ DR-IOT-TEMP1,IoT Ambient Temperature Sensor,cat-3,Unit,45,95,20,200,88091100225,
                     required
                     value={formSellingPrice}
                     onChange={(e) => setFormSellingPrice(e.target.value)}
-                    className="w-full rounded-lg border border-slate-800 bg-slate-900 p-2.5 text-sm text-white focus:outline-hidden font-mono"
+                    className="w-full rounded-lg border border-slate-200 bg-white p-2.5 text-sm text-slate-800 focus:outline-hidden font-mono"
                   />
                 </div>
               </div>
@@ -1287,7 +1287,7 @@ DR-IOT-TEMP1,IoT Ambient Temperature Sensor,cat-3,Unit,45,95,20,200,88091100225,
                     value={formHsn}
                     onChange={(e) => setFormHsn(e.target.value)}
                     placeholder="e.g. 84137010"
-                    className="w-full rounded-lg border border-slate-800 bg-slate-900 p-2.5 text-sm text-white focus:outline-hidden font-mono"
+                    className="w-full rounded-lg border border-slate-200 bg-white p-2.5 text-sm text-slate-800 focus:outline-hidden font-mono"
                   />
                 </div>
                 <div>
@@ -1297,16 +1297,16 @@ DR-IOT-TEMP1,IoT Ambient Temperature Sensor,cat-3,Unit,45,95,20,200,88091100225,
                     value={formDescription}
                     onChange={(e) => setFormDescription(e.target.value)}
                     placeholder="Optional notes..."
-                    className="w-full rounded-lg border border-slate-800 bg-slate-900 p-2.5 text-sm text-white focus:outline-hidden"
+                    className="w-full rounded-lg border border-slate-200 bg-white p-2.5 text-sm text-slate-800 focus:outline-hidden"
                   />
                 </div>
               </div>
 
-              <div className="flex justify-end gap-3 pt-3 border-t border-slate-800">
+              <div className="flex justify-end gap-3 pt-3 border-t border-slate-200">
                 <button
                   type="button"
                   onClick={() => setShowAddModal(false)}
-                  className="rounded-lg border border-slate-800 bg-slate-900 px-4 py-2 text-xs font-bold text-slate-300 transition-colors"
+                  className="rounded-lg border border-slate-200 bg-white px-4 py-2 text-xs font-bold text-slate-300 transition-colors"
                 >
                   Cancel
                 </button>
@@ -1327,10 +1327,10 @@ DR-IOT-TEMP1,IoT Ambient Temperature Sensor,cat-3,Unit,45,95,20,200,88091100225,
          ==================================================================== */}
       {showEditModal && productToEdit && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-          <div className="w-full max-w-2xl rounded-2xl border border-slate-800 bg-slate-950 p-6 shadow-2xl animate-scaleUp text-left max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+          <div className="w-full max-w-2xl rounded-2xl border border-slate-200 bg-white p-6 shadow-2xl animate-scaleUp text-left max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between border-b border-slate-200 pb-3">
               <h3 className="text-lg font-bold text-white font-mono">Edit Product Specifications</h3>
-              <button onClick={() => { setShowEditModal(false); setProductToEdit(null); }} className="text-slate-400 hover:text-white">
+              <button onClick={() => { setShowEditModal(false); setProductToEdit(null); }} className="text-slate-400 hover:text-slate-800">
                 <X className="h-5 w-5" />
               </button>
             </div>
@@ -1344,7 +1344,7 @@ DR-IOT-TEMP1,IoT Ambient Temperature Sensor,cat-3,Unit,45,95,20,200,88091100225,
                     required
                     value={formName}
                     onChange={(e) => setFormName(e.target.value)}
-                    className="w-full rounded-lg border border-slate-800 bg-slate-900 p-2.5 text-sm text-white focus:outline-hidden"
+                    className="w-full rounded-lg border border-slate-200 bg-white p-2.5 text-sm text-slate-800 focus:outline-hidden"
                   />
                 </div>
                 <div>
@@ -1354,7 +1354,7 @@ DR-IOT-TEMP1,IoT Ambient Temperature Sensor,cat-3,Unit,45,95,20,200,88091100225,
                     required
                     value={formSku}
                     onChange={(e) => setFormSku(e.target.value)}
-                    className="w-full rounded-lg border border-slate-800 bg-slate-900 p-2.5 text-sm text-white focus:outline-hidden font-mono"
+                    className="w-full rounded-lg border border-slate-200 bg-white p-2.5 text-sm text-slate-800 focus:outline-hidden font-mono"
                   />
                 </div>
               </div>
@@ -1381,7 +1381,7 @@ DR-IOT-TEMP1,IoT Ambient Temperature Sensor,cat-3,Unit,45,95,20,200,88091100225,
                   <select
                     value={formCategoryId}
                     onChange={(e) => setFormCategoryId(e.target.value)}
-                    className="w-full rounded-lg border border-slate-800 bg-slate-900 p-2.5 text-sm text-white focus:outline-hidden font-semibold"
+                    className="w-full rounded-lg border border-slate-200 bg-white p-2.5 text-sm text-slate-800 focus:outline-hidden font-semibold"
                   >
                     {categories.length === 0 && <option value="">-- No Categories --</option>}
                     {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
@@ -1394,12 +1394,12 @@ DR-IOT-TEMP1,IoT Ambient Temperature Sensor,cat-3,Unit,45,95,20,200,88091100225,
                     required
                     value={formUnit}
                     onChange={(e) => setFormUnit(e.target.value)}
-                    className="w-full rounded-lg border border-slate-800 bg-slate-900 p-2.5 text-sm text-white focus:outline-hidden"
+                    className="w-full rounded-lg border border-slate-200 bg-white p-2.5 text-sm text-slate-800 focus:outline-hidden"
                   />
                 </div>
                 <div>
                   <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1 font-mono">Current Stock</label>
-                  <div className="w-full rounded-lg border border-slate-700 bg-slate-800/60 p-2.5 text-sm font-mono font-bold flex items-center gap-2">
+                  <div className="w-full rounded-lg border border-slate-200 bg-slate-100/60 p-2.5 text-sm font-mono font-bold flex items-center gap-2">
                     {(() => {
                       const bs = batchStocks.find(b => b.productId === productToEdit?.id);
                       const qty = bs?.quantity ?? 0;
@@ -1425,7 +1425,7 @@ DR-IOT-TEMP1,IoT Ambient Temperature Sensor,cat-3,Unit,45,95,20,200,88091100225,
                     required
                     value={formPurchasePrice}
                     onChange={(e) => setFormPurchasePrice(e.target.value)}
-                    className="w-full rounded-lg border border-slate-800 bg-slate-900 p-2.5 text-sm text-white focus:outline-hidden font-mono"
+                    className="w-full rounded-lg border border-slate-200 bg-white p-2.5 text-sm text-slate-800 focus:outline-hidden font-mono"
                   />
                 </div>
                 <div>
@@ -1435,7 +1435,7 @@ DR-IOT-TEMP1,IoT Ambient Temperature Sensor,cat-3,Unit,45,95,20,200,88091100225,
                     required
                     value={formSellingPrice}
                     onChange={(e) => setFormSellingPrice(e.target.value)}
-                    className="w-full rounded-lg border border-slate-800 bg-slate-900 p-2.5 text-sm text-white focus:outline-hidden font-mono"
+                    className="w-full rounded-lg border border-slate-200 bg-white p-2.5 text-sm text-slate-800 focus:outline-hidden font-mono"
                   />
                 </div>
               </div>
@@ -1448,7 +1448,7 @@ DR-IOT-TEMP1,IoT Ambient Temperature Sensor,cat-3,Unit,45,95,20,200,88091100225,
                     value={formHsn}
                     onChange={(e) => setFormHsn(e.target.value)}
                     placeholder="e.g. 84137010"
-                    className="w-full rounded-lg border border-slate-800 bg-slate-900 p-2.5 text-sm text-white focus:outline-hidden font-mono"
+                    className="w-full rounded-lg border border-slate-200 bg-white p-2.5 text-sm text-slate-800 focus:outline-hidden font-mono"
                   />
                 </div>
                 <div>
@@ -1458,16 +1458,16 @@ DR-IOT-TEMP1,IoT Ambient Temperature Sensor,cat-3,Unit,45,95,20,200,88091100225,
                     value={formDescription}
                     onChange={(e) => setFormDescription(e.target.value)}
                     placeholder="Optional notes..."
-                    className="w-full rounded-lg border border-slate-800 bg-slate-900 p-2.5 text-sm text-white focus:outline-hidden"
+                    className="w-full rounded-lg border border-slate-200 bg-white p-2.5 text-sm text-slate-800 focus:outline-hidden"
                   />
                 </div>
               </div>
 
-              <div className="flex justify-end gap-3 pt-3 border-t border-slate-800">
+              <div className="flex justify-end gap-3 pt-3 border-t border-slate-200">
                 <button
                   type="button"
                   onClick={() => { setShowEditModal(false); setProductToEdit(null); }}
-                  className="rounded-lg border border-slate-800 bg-slate-900 px-4 py-2 text-xs font-bold text-slate-300 transition-colors"
+                  className="rounded-lg border border-slate-200 bg-white px-4 py-2 text-xs font-bold text-slate-300 transition-colors"
                 >
                   Cancel
                 </button>
@@ -1488,13 +1488,13 @@ DR-IOT-TEMP1,IoT Ambient Temperature Sensor,cat-3,Unit,45,95,20,200,88091100225,
          ==================================================================== */}
       {showImportModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-          <div className="w-full max-w-2xl rounded-2xl border border-slate-800 bg-slate-950 p-6 shadow-2xl animate-scaleUp text-left max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+          <div className="w-full max-w-2xl rounded-2xl border border-slate-200 bg-white p-6 shadow-2xl animate-scaleUp text-left max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between border-b border-slate-200 pb-3">
               <h3 className="text-lg font-bold text-white font-mono flex items-center gap-2">
                 <Upload className="h-5 w-5 text-indigo-400" />
                 <span>Bulk Import Products Catalog</span>
               </h3>
-              <button onClick={() => setShowImportModal(false)} className="text-slate-400 hover:text-white">
+              <button onClick={() => setShowImportModal(false)} className="text-slate-400 hover:text-slate-800">
                 <X className="h-5 w-5" />
               </button>
             </div>
@@ -1507,12 +1507,12 @@ DR-IOT-TEMP1,IoT Ambient Temperature Sensor,cat-3,Unit,45,95,20,200,88091100225,
             )}
 
             <form onSubmit={handleImportCSV} className="mt-4 space-y-4">
-              <div className="bg-slate-900/60 border border-slate-800/80 rounded-xl p-4 text-xs text-slate-400 space-y-1">
-                <span className="font-bold text-slate-200 block uppercase font-mono tracking-wider">Required Header & Row structure:</span>
-                <code className="block bg-slate-950 p-2 rounded text-indigo-300 font-mono mt-1 overflow-x-auto text-[10px]">
+              <div className="bg-slate-50 border border-slate-200/80 rounded-xl p-4 text-xs text-slate-400 space-y-1">
+                <span className="font-bold text-slate-700 block uppercase font-mono tracking-wider">Required Header & Row structure:</span>
+                <code className="block bg-white p-2 rounded text-indigo-300 font-mono mt-1 overflow-x-auto text-[10px]">
                   sku,name,categoryId,unit,purchasePrice,sellingPrice,minStock,maxStock,barcode,qrCode,description
                 </code>
-                <p className="pt-2">Note: Category mapping matches standard keys (<code className="text-slate-200">cat-1</code> to <code className="text-slate-200">cat-4</code>) or text.</p>
+                <p className="pt-2">Note: Category mapping matches standard keys (<code className="text-slate-700">cat-1</code> to <code className="text-slate-700">cat-4</code>) or text.</p>
               </div>
 
               <div className="flex justify-between items-center">
@@ -1532,14 +1532,14 @@ DR-IOT-TEMP1,IoT Ambient Temperature Sensor,cat-3,Unit,45,95,20,200,88091100225,
                 value={csvTextInput}
                 onChange={(e) => setCsvTextInput(e.target.value)}
                 placeholder="sku,name,categoryId,unit,purchasePrice,sellingPrice,minStock,maxStock,barcode,qrCode,description&#10;DR-NET-92,My New Switch,cat-1,Unit,1200,1950,5,100,8809110,QR-NET-92,Premium switch"
-                className="w-full rounded-lg border border-slate-800 bg-slate-900 p-3 text-xs text-slate-100 font-mono placeholder-slate-600 focus:outline-hidden focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
+                className="w-full rounded-lg border border-slate-200 bg-white p-3 text-xs text-slate-800 font-mono placeholder-slate-600 focus:outline-hidden focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
               />
 
-              <div className="flex justify-end gap-3 pt-3 border-t border-slate-800">
+              <div className="flex justify-end gap-3 pt-3 border-t border-slate-200">
                 <button
                   type="button"
                   onClick={() => setShowImportModal(false)}
-                  className="rounded-lg border border-slate-800 bg-slate-900 px-4 py-2 text-xs font-bold text-slate-300 transition-colors"
+                  className="rounded-lg border border-slate-200 bg-white px-4 py-2 text-xs font-bold text-slate-300 transition-colors"
                 >
                   Cancel
                 </button>
@@ -1557,3 +1557,4 @@ DR-IOT-TEMP1,IoT Ambient Temperature Sensor,cat-3,Unit,45,95,20,200,88091100225,
     </div>
   );
 }
+

@@ -66,9 +66,9 @@ export default function HRAttendancePanel({ employees, departments }: HRAttendan
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 text-left">
       {/* PUNCH DESK */}
-      <div className="bg-slate-950/40 border border-slate-800 rounded-xl p-5 space-y-4 flex flex-col justify-between">
+      <div className="bg-slate-50 border border-slate-200 rounded-xl p-5 space-y-4 flex flex-col justify-between">
         <div className="space-y-3">
-          <div className="flex items-center gap-2 border-b border-slate-800 pb-3">
+          <div className="flex items-center gap-2 border-b border-slate-200 pb-3">
             <Clock className="h-5 w-5 text-indigo-400" />
             <h3 className="font-bold text-sm text-white font-mono uppercase tracking-wider">Dynamic Punch Terminal</h3>
           </div>
@@ -81,7 +81,7 @@ export default function HRAttendancePanel({ employees, departments }: HRAttendan
             <select
               value={simEmployeeId}
               onChange={(e) => setSimEmployeeId(e.target.value)}
-              className="w-full rounded-lg border border-slate-800 bg-slate-900 p-2 text-white font-semibold focus:outline-none"
+              className="w-full rounded-lg border border-slate-200 bg-white p-2 text-white font-semibold focus:outline-none"
             >
               <option value="">— Select Officer —</option>
               {employees.map(e => (
@@ -101,7 +101,7 @@ export default function HRAttendancePanel({ employees, departments }: HRAttendan
             </button>
             <button
               onClick={handlePunchOut}
-              className="w-full rounded-lg border border-slate-800 bg-slate-900 hover:bg-slate-850 py-2.5 text-slate-400 hover:text-white text-center cursor-pointer transition-all font-mono"
+              className="w-full rounded-lg border border-slate-200 bg-white hover:bg-slate-850 py-2.5 text-slate-400 hover:text-slate-800 text-center cursor-pointer transition-all font-mono"
             >
               PUNCH OUT
             </button>
@@ -113,8 +113,8 @@ export default function HRAttendancePanel({ employees, departments }: HRAttendan
       </div>
 
       {/* TODAY LOGS DIRECTORY */}
-      <div className="lg:col-span-2 bg-slate-950/40 border border-slate-800 rounded-xl p-5 space-y-4">
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-slate-800 pb-3">
+      <div className="lg:col-span-2 bg-slate-50 border border-slate-200 rounded-xl p-5 space-y-4">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-slate-200 pb-3">
           <div className="flex items-center gap-3">
             <h3 className="font-bold text-sm text-white font-mono uppercase tracking-wider">Roster Attendance logs</h3>
             <button onClick={async () => {
@@ -133,7 +133,7 @@ export default function HRAttendancePanel({ employees, departments }: HRAttendan
               XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(rows), "Attendance");
               XLSX.writeFile(wb, `Attendance_${new Date().toISOString().slice(0,10)}.xlsx`);
               toast.success("Exported", "Attendance sheet downloaded");
-            }} className="flex items-center gap-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg px-2.5 py-1 text-xs font-bold cursor-pointer border border-slate-700">
+            }} className="flex items-center gap-1.5 bg-slate-100 hover:bg-slate-700 text-slate-300 rounded-lg px-2.5 py-1 text-xs font-bold cursor-pointer border border-slate-200">
               <Download className="h-3 w-3" /> Export
             </button>
           </div>
@@ -144,7 +144,7 @@ export default function HRAttendancePanel({ employees, departments }: HRAttendan
               placeholder="Search logs..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full rounded-md border border-slate-800 bg-slate-900 pl-8 pr-3 py-1 text-xs text-white focus:outline-none font-medium"
+              className="w-full rounded-md border border-slate-200 bg-white pl-8 pr-3 py-1 text-xs text-white focus:outline-none font-medium"
             />
           </div>
         </div>
@@ -155,11 +155,11 @@ export default function HRAttendancePanel({ employees, departments }: HRAttendan
             const dept = departments.find(d => d.id === emp.departmentId);
 
             return (
-              <div key={emp.id} className="flex items-center justify-between p-3 bg-slate-900/40 border border-slate-850 rounded-lg text-xs hover:border-slate-800 transition-colors">
+              <div key={emp.id} className="flex items-center justify-between p-3 bg-slate-50 border border-slate-850 rounded-lg text-xs hover:border-slate-200 transition-colors">
                 <div className="flex items-center gap-2">
                   <UserCheck className={`h-4.5 w-4.5 shrink-0 ${punch ? "text-emerald-400" : "text-slate-500"}`} />
                   <div>
-                    <strong className="text-slate-200 block font-bold">{emp.name}</strong>
+                    <strong className="text-slate-700 block font-bold">{emp.name}</strong>
                     <span className="text-[10px] text-slate-500 font-mono font-bold block">{dept?.name || "Corporate"} · {emp.employeeCode}</span>
                   </div>
                 </div>
@@ -181,3 +181,5 @@ export default function HRAttendancePanel({ employees, departments }: HRAttendan
     </div>
   );
 }
+
+

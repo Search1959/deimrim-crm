@@ -1,4 +1,4 @@
-import { toast } from "../../utils/toast";
+﻿import { toast } from "../../utils/toast";
 import React, { useState, useEffect } from "react";
 import { Wallet, Check, Printer, Eye, X, Calculator, Edit3, Search, Settings, Info, Download } from "lucide-react";
 import { Employee, Company, formatINR } from "../../types";
@@ -187,7 +187,7 @@ export default function HRPayrollPanel({ employees, companyId, company, onSalary
           { label: "Disbursed (This Month)",   value: totalDisbursed,  color: "emerald", Icon: Check },
           { label: "Outstanding Liabilities",  value: totalPending,    color: "amber",  Icon: Wallet },
         ].map(({ label, value, color, Icon }) => (
-          <div key={label} className="bg-slate-900/40 border border-slate-800 rounded-xl p-4 flex items-center gap-3">
+          <div key={label} className="bg-slate-50 border border-slate-200 rounded-xl p-4 flex items-center gap-3">
             <div className={`p-2 bg-${color}-500/10 text-${color}-400 rounded-lg shrink-0`}>
               <Icon className="h-5 w-5" />
             </div>
@@ -202,8 +202,8 @@ export default function HRPayrollPanel({ employees, companyId, company, onSalary
       </div>
 
       {/* Table header controls */}
-      <div className="bg-slate-950/40 border border-slate-800 rounded-xl overflow-hidden shadow-xs">
-        <div className="px-5 py-4 border-b border-slate-800 bg-slate-950/40 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+      <div className="bg-slate-50 border border-slate-200 rounded-xl overflow-hidden shadow-xs">
+        <div className="px-5 py-4 border-b border-slate-200 bg-slate-50 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
           <div>
             <h3 className="text-sm font-bold text-slate-300 uppercase tracking-wider font-mono">Monthly Payroll Ledger</h3>
             <p className="text-[11px] text-slate-500 mt-0.5">Salaries auto-populated from Active Employees. Adjust allowances, bonuses, and tax overrides per staff.</p>
@@ -216,13 +216,13 @@ export default function HRPayrollPanel({ employees, companyId, company, onSalary
                 value={searchQuery}
                 onChange={e => setSearchQuery(e.target.value)}
                 placeholder="Search staff..."
-                className="pl-7 pr-3 py-1.5 text-xs bg-slate-900 border border-slate-800 rounded-lg text-slate-200 focus:outline-none focus:border-indigo-500 w-36"
+                className="pl-7 pr-3 py-1.5 text-xs bg-white border border-slate-200 rounded-lg text-slate-700 focus:outline-none focus:border-indigo-500 w-36"
               />
             </div>
             <select
               value={payslipMonth}
               onChange={e => setPayslipMonth(e.target.value)}
-              className="rounded-lg border border-slate-800 bg-slate-900 px-3 py-1.5 text-xs text-white font-semibold focus:outline-none"
+              className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs text-white font-semibold focus:outline-none"
             >
               {monthOptions.map(m => <option key={m} value={m}>{m}</option>)}
             </select>
@@ -253,15 +253,15 @@ export default function HRPayrollPanel({ employees, companyId, company, onSalary
               XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(rows), "Salary Register");
               XLSX.writeFile(wb, `Salary_Register_${payslipMonth.replace(" ","_")}.xlsx`);
               toast.success("Exported", "Salary register downloaded");
-            }} className="flex items-center gap-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 px-3 py-1.5 text-xs font-bold cursor-pointer transition-all">
+            }} className="flex items-center gap-1.5 rounded-lg bg-slate-100 hover:bg-slate-700 border border-slate-200 text-slate-300 px-3 py-1.5 text-xs font-bold cursor-pointer transition-all">
               <Download className="h-3.5 w-3.5" /> Export Register
             </button>
           </div>
         </div>
 
         <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-slate-800/60 text-sm">
-            <thead className="bg-slate-950 font-bold text-slate-300">
+          <table className="min-w-full divide-y divide-slate-100/60 text-sm">
+            <thead className="bg-white font-bold text-slate-300">
               <tr>
                 <th className="px-5 py-3 text-left">Staff Member</th>
                 <th className="px-5 py-3 text-left">Basic Salary</th>
@@ -272,7 +272,7 @@ export default function HRPayrollPanel({ employees, companyId, company, onSalary
                 <th className="px-5 py-3 text-right">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-800/40 text-slate-300">
+            <tbody className="divide-y divide-slate-100/40 text-slate-300">
               {filtered.length === 0 && (
                 <tr>
                   <td colSpan={7} className="py-8 text-center text-slate-500 text-xs font-mono">
@@ -284,9 +284,9 @@ export default function HRPayrollPanel({ employees, companyId, company, onSalary
                 const calc = getCalc(emp);
                 const isPaid = payrollStatus[emp.id] === "paid";
                 return (
-                  <tr key={emp.id} className="hover:bg-slate-900/20 transition-all">
+                  <tr key={emp.id} className="hover:bg-slate-50 transition-all">
                     <td className="px-5 py-4">
-                      <div className="font-bold text-slate-200">{emp.name}</div>
+                      <div className="font-bold text-slate-700">{emp.name}</div>
                       <div className="text-[10px] text-slate-500 font-mono font-bold mt-0.5">{emp.employeeCode}</div>
                     </td>
                     <td className="px-5 py-4 font-mono font-semibold">{formatINR(emp.salary)}</td>
@@ -321,7 +321,7 @@ export default function HRPayrollPanel({ employees, companyId, company, onSalary
                         </button>
                         <button
                           onClick={() => setSelectedEmpForSlip(emp)}
-                          className="rounded bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-300 p-1 cursor-pointer transition-all"
+                          className="rounded bg-white hover:bg-slate-100 border border-slate-200 text-slate-300 p-1 cursor-pointer transition-all"
                           title="View Payslip"
                         >
                           <Eye className="h-3.5 w-3.5" />
@@ -350,18 +350,18 @@ export default function HRPayrollPanel({ employees, companyId, company, onSalary
         if (!emp) return null;
         return (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-            <form onSubmit={handleSaveAdj} className="w-full max-w-md rounded-2xl border border-slate-800 bg-slate-950 p-6 shadow-2xl animate-scaleUp text-left space-y-4">
-              <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+            <form onSubmit={handleSaveAdj} className="w-full max-w-md rounded-2xl border border-slate-200 bg-white p-6 shadow-2xl animate-scaleUp text-left space-y-4">
+              <div className="flex items-center justify-between border-b border-slate-200 pb-3">
                 <div>
                   <h3 className="font-bold text-sm text-white font-mono uppercase tracking-wider">Adjust Compensation</h3>
                   <p className="text-[10px] text-slate-500 mt-0.5">{emp.name} — {emp.employeeCode}</p>
                 </div>
-                <button type="button" onClick={() => setShowAdjModal(false)} className="p-1 text-slate-400 hover:text-white rounded bg-slate-900 border border-slate-800 cursor-pointer">
+                <button type="button" onClick={() => setShowAdjModal(false)} className="p-1 text-slate-400 hover:text-slate-800 rounded bg-white border border-slate-200 cursor-pointer">
                   <X className="h-4 w-4" />
                 </button>
               </div>
 
-              <div className="bg-slate-900/40 p-2.5 rounded border border-slate-800 font-mono text-[11px] text-slate-400">
+              <div className="bg-slate-50 p-2.5 rounded border border-slate-200 font-mono text-[11px] text-slate-400">
                 Base Salary: <strong className="text-white">{formatINR(emp.salary)}</strong>
               </div>
 
@@ -378,14 +378,14 @@ export default function HRPayrollPanel({ employees, companyId, company, onSalary
                       type="number" min="0"
                       value={val as string}
                       onChange={e => (setter as React.Dispatch<React.SetStateAction<string>>)(e.target.value)}
-                      className="w-full rounded border border-slate-800 bg-slate-900 p-2 text-white font-mono focus:outline-none focus:border-indigo-500"
+                      className="w-full rounded border border-slate-200 bg-white p-2 text-white font-mono focus:outline-none focus:border-indigo-500"
                     />
                   </div>
                 ))}
               </div>
 
-              <div className="flex justify-end gap-2 pt-2 border-t border-slate-800">
-                <button type="button" onClick={() => setShowAdjModal(false)} className="rounded bg-slate-900 border border-slate-800 text-slate-400 hover:text-white px-3 py-1.5 text-xs font-bold cursor-pointer">Cancel</button>
+              <div className="flex justify-end gap-2 pt-2 border-t border-slate-200">
+                <button type="button" onClick={() => setShowAdjModal(false)} className="rounded bg-white border border-slate-200 text-slate-400 hover:text-slate-800 px-3 py-1.5 text-xs font-bold cursor-pointer">Cancel</button>
                 <button type="submit" className="rounded bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-1.5 text-xs font-bold cursor-pointer">Save Changes</button>
               </div>
             </form>
@@ -396,21 +396,21 @@ export default function HRPayrollPanel({ employees, companyId, company, onSalary
       {/* TAX CONFIG MODAL */}
       {showTaxConfig && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-          <div className="w-full max-w-lg rounded-2xl border border-slate-800 bg-slate-950 p-6 shadow-2xl text-left space-y-5 max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+          <div className="w-full max-w-lg rounded-2xl border border-slate-200 bg-white p-6 shadow-2xl text-left space-y-5 max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between border-b border-slate-200 pb-3">
               <div>
                 <h3 className="font-bold text-sm text-white font-mono uppercase tracking-wider flex items-center gap-2">
                   <Settings className="h-4 w-4 text-amber-400" /> Statutory Tax Configuration
                 </h3>
                 <p className="text-[10px] text-slate-500 mt-0.5">Update when government rules change. Rates are saved and applied to all future payroll calculations.</p>
               </div>
-              <button onClick={() => setShowTaxConfig(false)} className="p-1 text-slate-400 hover:text-white rounded bg-slate-900 border border-slate-800 cursor-pointer">
+              <button onClick={() => setShowTaxConfig(false)} className="p-1 text-slate-400 hover:text-slate-800 rounded bg-white border border-slate-200 cursor-pointer">
                 <X className="h-4 w-4" />
               </button>
             </div>
 
             {/* EPF */}
-            <div className="bg-slate-900/50 border border-slate-800 rounded-xl p-4 space-y-3">
+            <div className="bg-slate-500 border border-slate-200 rounded-xl p-4 space-y-3">
               <h4 className="text-[11px] font-extrabold text-indigo-400 uppercase tracking-wider font-mono">EPF — Employee Provident Fund</h4>
               <div className="flex items-center gap-3">
                 <label className="text-xs text-slate-400 w-48 shrink-0">Employee Contribution Rate (%)</label>
@@ -418,13 +418,13 @@ export default function HRPayrollPanel({ employees, companyId, company, onSalary
                   type="number" min="0" max="100" step="0.01"
                   value={taxForm.epfPct}
                   onChange={e => setTaxForm(f => ({ ...f, epfPct: parseFloat(e.target.value) || 0 }))}
-                  className="flex-1 rounded border border-slate-700 bg-slate-950 px-2.5 py-1.5 text-white text-xs font-mono focus:outline-none focus:border-indigo-500"
+                  className="flex-1 rounded border border-slate-200 bg-white px-2.5 py-1.5 text-white text-xs font-mono focus:outline-none focus:border-indigo-500"
                 />
               </div>
             </div>
 
             {/* ESIC */}
-            <div className="bg-slate-900/50 border border-slate-800 rounded-xl p-4 space-y-3">
+            <div className="bg-slate-500 border border-slate-200 rounded-xl p-4 space-y-3">
               <h4 className="text-[11px] font-extrabold text-blue-400 uppercase tracking-wider font-mono">ESIC — Employee State Insurance</h4>
               <div className="flex items-center gap-3">
                 <label className="text-xs text-slate-400 w-48 shrink-0">Employee Contribution Rate (%)</label>
@@ -432,7 +432,7 @@ export default function HRPayrollPanel({ employees, companyId, company, onSalary
                   type="number" min="0" max="100" step="0.01"
                   value={taxForm.esicPct}
                   onChange={e => setTaxForm(f => ({ ...f, esicPct: parseFloat(e.target.value) || 0 }))}
-                  className="flex-1 rounded border border-slate-700 bg-slate-950 px-2.5 py-1.5 text-white text-xs font-mono focus:outline-none focus:border-indigo-500"
+                  className="flex-1 rounded border border-slate-200 bg-white px-2.5 py-1.5 text-white text-xs font-mono focus:outline-none focus:border-indigo-500"
                 />
               </div>
               <div className="flex items-center gap-3">
@@ -441,13 +441,13 @@ export default function HRPayrollPanel({ employees, companyId, company, onSalary
                   type="number" min="0"
                   value={taxForm.esicCeiling}
                   onChange={e => setTaxForm(f => ({ ...f, esicCeiling: parseFloat(e.target.value) || 0 }))}
-                  className="flex-1 rounded border border-slate-700 bg-slate-950 px-2.5 py-1.5 text-white text-xs font-mono focus:outline-none focus:border-indigo-500"
+                  className="flex-1 rounded border border-slate-200 bg-white px-2.5 py-1.5 text-white text-xs font-mono focus:outline-none focus:border-indigo-500"
                 />
               </div>
             </div>
 
             {/* Professional Tax */}
-            <div className="bg-slate-900/50 border border-slate-800 rounded-xl p-4 space-y-3">
+            <div className="bg-slate-500 border border-slate-200 rounded-xl p-4 space-y-3">
               <h4 className="text-[11px] font-extrabold text-purple-400 uppercase tracking-wider font-mono">PT — Professional Tax</h4>
               <div className="flex items-center gap-3">
                 <label className="text-xs text-slate-400 w-48 shrink-0">Fixed Monthly Amount (₹)</label>
@@ -455,7 +455,7 @@ export default function HRPayrollPanel({ employees, companyId, company, onSalary
                   type="number" min="0"
                   value={taxForm.ptAmount}
                   onChange={e => setTaxForm(f => ({ ...f, ptAmount: parseFloat(e.target.value) || 0 }))}
-                  className="flex-1 rounded border border-slate-700 bg-slate-950 px-2.5 py-1.5 text-white text-xs font-mono focus:outline-none focus:border-indigo-500"
+                  className="flex-1 rounded border border-slate-200 bg-white px-2.5 py-1.5 text-white text-xs font-mono focus:outline-none focus:border-indigo-500"
                 />
               </div>
               <div className="flex items-center gap-3">
@@ -464,13 +464,13 @@ export default function HRPayrollPanel({ employees, companyId, company, onSalary
                   type="number" min="0"
                   value={taxForm.ptThreshold}
                   onChange={e => setTaxForm(f => ({ ...f, ptThreshold: parseFloat(e.target.value) || 0 }))}
-                  className="flex-1 rounded border border-slate-700 bg-slate-950 px-2.5 py-1.5 text-white text-xs font-mono focus:outline-none focus:border-indigo-500"
+                  className="flex-1 rounded border border-slate-200 bg-white px-2.5 py-1.5 text-white text-xs font-mono focus:outline-none focus:border-indigo-500"
                 />
               </div>
             </div>
 
             {/* TDS Slabs */}
-            <div className="bg-slate-900/50 border border-slate-800 rounded-xl p-4 space-y-3">
+            <div className="bg-slate-500 border border-slate-200 rounded-xl p-4 space-y-3">
               <h4 className="text-[11px] font-extrabold text-red-400 uppercase tracking-wider font-mono flex items-center gap-1.5">
                 TDS — Income Tax Slabs
                 <span className="text-[9px] text-slate-500 font-normal normal-case">(highest matching slab applies)</span>
@@ -489,7 +489,7 @@ export default function HRPayrollPanel({ employees, companyId, company, onSalary
                         slabs[i] = { ...slabs[i], above: parseFloat(e.target.value) || 0 };
                         return { ...f, tdsSlabs: slabs };
                       })}
-                      className="w-28 rounded border border-slate-700 bg-slate-950 px-2 py-1.5 text-white text-xs font-mono focus:outline-none focus:border-red-500"
+                      className="w-28 rounded border border-slate-200 bg-white px-2 py-1.5 text-white text-xs font-mono focus:outline-none focus:border-red-500"
                     />
                   )}
                   {i === taxForm.tdsSlabs.length - 1 && <span className="w-28 text-xs text-slate-600 font-mono px-2">—</span>}
@@ -502,7 +502,7 @@ export default function HRPayrollPanel({ employees, companyId, company, onSalary
                       slabs[i] = { ...slabs[i], pct: parseFloat(e.target.value) || 0 };
                       return { ...f, tdsSlabs: slabs };
                     })}
-                    className="w-20 rounded border border-slate-700 bg-slate-950 px-2 py-1.5 text-white text-xs font-mono focus:outline-none focus:border-red-500"
+                    className="w-20 rounded border border-slate-200 bg-white px-2 py-1.5 text-white text-xs font-mono focus:outline-none focus:border-red-500"
                   />
                   <span className="text-xs text-slate-600">%</span>
                 </div>
@@ -512,7 +512,7 @@ export default function HRPayrollPanel({ employees, companyId, company, onSalary
               </div>
             </div>
 
-            <div className="flex items-center justify-between pt-2 border-t border-slate-800">
+            <div className="flex items-center justify-between pt-2 border-t border-slate-200">
               <button
                 onClick={() => { setTaxForm({ ...DEFAULT_TAX }); }}
                 className="text-xs text-slate-500 hover:text-amber-400 underline cursor-pointer"
@@ -520,7 +520,7 @@ export default function HRPayrollPanel({ employees, companyId, company, onSalary
                 Reset to Defaults
               </button>
               <div className="flex gap-2">
-                <button onClick={() => setShowTaxConfig(false)} className="rounded bg-slate-900 border border-slate-800 text-slate-400 hover:text-white px-3 py-1.5 text-xs font-bold cursor-pointer">Cancel</button>
+                <button onClick={() => setShowTaxConfig(false)} className="rounded bg-white border border-slate-200 text-slate-400 hover:text-slate-800 px-3 py-1.5 text-xs font-bold cursor-pointer">Cancel</button>
                 <button
                   onClick={() => { saveTaxConfig(taxForm); setShowTaxConfig(false); toast.success("Tax Config Saved", "New rates will apply to all payroll calculations."); }}
                   className="rounded bg-amber-600 hover:bg-amber-500 text-white px-4 py-1.5 text-xs font-bold cursor-pointer"
@@ -674,10 +674,10 @@ export default function HRPayrollPanel({ employees, companyId, company, onSalary
 
         return (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-            <div className="w-full max-w-2xl rounded-2xl border border-slate-800 bg-slate-950 p-6 shadow-2xl animate-scaleUp text-left space-y-4 max-h-[90vh] overflow-y-auto">
-              <div className="border-b border-slate-800 pb-2.5 flex items-center justify-between">
+            <div className="w-full max-w-2xl rounded-2xl border border-slate-200 bg-white p-6 shadow-2xl animate-scaleUp text-left space-y-4 max-h-[90vh] overflow-y-auto">
+              <div className="border-b border-slate-200 pb-2.5 flex items-center justify-between">
                 <span className="text-xs font-bold text-indigo-400 font-mono uppercase tracking-widest">Salary Payslip — {payslipMonth}</span>
-                <button onClick={() => setSelectedEmpForSlip(null)} className="p-1 text-slate-400 hover:text-white rounded bg-slate-900 border border-slate-800 cursor-pointer">
+                <button onClick={() => setSelectedEmpForSlip(null)} className="p-1 text-slate-400 hover:text-slate-800 rounded bg-white border border-slate-200 cursor-pointer">
                   <X className="h-4 w-4" />
                 </button>
               </div>
@@ -783,7 +783,7 @@ export default function HRPayrollPanel({ employees, companyId, company, onSalary
                     win.focus();
                     setTimeout(() => { win.print(); }, 500);
                   }}
-                  className="rounded-lg border border-slate-800 bg-slate-900 px-3.5 py-1.5 text-xs font-bold text-slate-300 hover:text-white flex items-center gap-1.5 cursor-pointer"
+                  className="rounded-lg border border-slate-200 bg-white px-3.5 py-1.5 text-xs font-bold text-slate-300 hover:text-slate-800 flex items-center gap-1.5 cursor-pointer"
                 >
                   <Printer className="h-4 w-4" /> Print Slip
                 </button>
@@ -795,3 +795,5 @@ export default function HRPayrollPanel({ employees, companyId, company, onSalary
     </div>
   );
 }
+
+

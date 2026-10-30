@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+﻿import React, { useState, useEffect } from "react";
 import { CheckCircle2, XCircle, AlertTriangle, Info, X } from "lucide-react";
 import { toast as toastEmitter, ToastItem } from "../utils/toast";
 
@@ -37,7 +37,7 @@ export default function ToastContainer() {
       {toasts.map(t => (
         <div
           key={t.id}
-          className="relative bg-slate-900 border border-slate-700 rounded-xl shadow-2xl overflow-hidden pointer-events-auto animate-fadeIn"
+          className="relative bg-white border border-slate-200 rounded-xl shadow-2xl overflow-hidden pointer-events-auto animate-fadeIn"
         >
           {/* Progress bar */}
           <div
@@ -54,7 +54,7 @@ export default function ToastContainer() {
             </div>
             <button
               onClick={() => setToasts(prev => prev.filter(x => x.id !== t.id))}
-              className="text-slate-500 hover:text-slate-200 transition-colors shrink-0 cursor-pointer"
+              className="text-slate-500 hover:text-slate-700 transition-colors shrink-0 cursor-pointer"
             >
               <X className="h-3.5 w-3.5" />
             </button>
@@ -70,3 +70,4 @@ export default function ToastContainer() {
     </div>
   );
 }
+

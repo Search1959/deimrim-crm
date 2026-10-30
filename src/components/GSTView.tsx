@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+﻿import React, { useState } from "react";
 import {
   FileSpreadsheet, Brain, Bell, Settings, BarChart3, FileText,
   CheckCircle2, AlertCircle, Clock, Send, ChevronRight, Shield, Calculator
@@ -107,9 +107,9 @@ function GSTCalculator() {
     navigator.clipboard.writeText(lines.join("\n")).then(() => { setCopied(true); setTimeout(() => setCopied(false), 2000); });
   };
 
-  const inputCls = "w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2.5 text-sm text-white focus:outline-none focus:border-emerald-500 transition-colors";
+  const inputCls = "w-full bg-white border border-slate-200 rounded-lg px-3 py-2.5 text-sm text-slate-800 focus:outline-none focus:border-emerald-500 transition-colors";
   const ResultRow = ({ label, value, highlight = false }: { label: string; value: string; highlight?: boolean }) => (
-    <div className={`flex items-center justify-between py-2.5 border-b border-slate-800 last:border-0 ${highlight ? "text-white font-black" : "text-slate-400"}`}>
+    <div className={`flex items-center justify-between py-2.5 border-b border-slate-200 last:border-0 ${highlight ? "text-white font-black" : "text-slate-400"}`}>
       <span className="text-sm">{label}</span>
       <span className={`font-mono text-sm ${highlight ? "text-emerald-400 text-base" : ""}`}>{value}</span>
     </div>
@@ -127,10 +127,10 @@ function GSTCalculator() {
       <div className="grid grid-cols-2 gap-3">
         <div>
           <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider font-mono block mb-1.5">Mode</label>
-          <div className="flex rounded-lg overflow-hidden border border-slate-700">
+          <div className="flex rounded-lg overflow-hidden border border-slate-200">
             {(["forward", "reverse"] as const).map(m => (
               <button key={m} type="button" onClick={() => setMode(m)}
-                className={`flex-1 py-2 text-xs font-bold transition-all cursor-pointer ${mode === m ? "bg-emerald-600 text-white" : "bg-slate-900 text-slate-400 hover:text-white"}`}>
+                className={`flex-1 py-2 text-xs font-bold transition-all cursor-pointer ${mode === m ? "bg-emerald-600 text-white" : "bg-white text-slate-400 hover:text-slate-800"}`}>
                 {m === "forward" ? "➕ Add GST" : "➖ Extract GST"}
               </button>
             ))}
@@ -138,10 +138,10 @@ function GSTCalculator() {
         </div>
         <div>
           <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider font-mono block mb-1.5">Supply Type</label>
-          <div className="flex rounded-lg overflow-hidden border border-slate-700">
+          <div className="flex rounded-lg overflow-hidden border border-slate-200">
             {(["intra", "inter"] as const).map(t => (
               <button key={t} type="button" onClick={() => setSupplyType(t)}
-                className={`flex-1 py-2 text-xs font-bold transition-all cursor-pointer ${supplyType === t ? "bg-indigo-600 text-white" : "bg-slate-900 text-slate-400 hover:text-white"}`}>
+                className={`flex-1 py-2 text-xs font-bold transition-all cursor-pointer ${supplyType === t ? "bg-indigo-600 text-white" : "bg-white text-slate-400 hover:text-slate-800"}`}>
                 {t === "intra" ? "Intra-State" : "Inter-State"}
               </button>
             ))}
@@ -155,7 +155,7 @@ function GSTCalculator() {
         <div className="flex flex-wrap gap-1.5">
           {GST_RATES.map(r => (
             <button key={r} type="button" onClick={() => setGstRate(r)}
-              className={`px-3 py-1.5 rounded-lg text-xs font-bold border transition-all cursor-pointer ${gstRate === r ? "bg-emerald-600 border-emerald-500 text-white" : "bg-slate-900 border-slate-700 text-slate-400 hover:border-slate-500 hover:text-white"}`}>
+              className={`px-3 py-1.5 rounded-lg text-xs font-bold border transition-all cursor-pointer ${gstRate === r ? "bg-emerald-600 border-emerald-500 text-white" : "bg-white border-slate-200 text-slate-400 hover:border-slate-500 hover:text-slate-800"}`}>
               {r}%
             </button>
           ))}
@@ -176,7 +176,7 @@ function GSTCalculator() {
         </div>
       )}
 
-      <div className="bg-slate-950/60 border border-slate-700 rounded-xl p-4 space-y-0.5">
+      <div className="bg-white border border-slate-200 rounded-xl p-4 space-y-0.5">
         <div className="flex items-center justify-between mb-3">
           <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider font-mono">Breakdown</span>
           <button onClick={copyResult} className="text-xs text-emerald-400 hover:text-emerald-300 border border-emerald-500/30 px-2.5 py-1 rounded-lg cursor-pointer transition-all">
@@ -348,7 +348,7 @@ export default function GSTView({ invoices, customers, transactions, company }: 
                 { label: "SGST",                val: formatINR(sgst),     color: "indigo",  icon: FileSpreadsheet },
                 { label: "B2B Invoices",         val: b2bInvoices.length,  color: "amber",   icon: FileText },
               ].map(k => (
-                <div key={k.label} className="bg-slate-950/40 border border-slate-800 rounded-xl p-4 space-y-2">
+                <div key={k.label} className="bg-slate-50 border border-slate-200 rounded-xl p-4 space-y-2">
                   <div className={`p-1.5 bg-${k.color}-500/10 text-${k.color}-400 rounded-lg w-fit`}>
                     <k.icon className="h-3.5 w-3.5" />
                   </div>
@@ -359,8 +359,8 @@ export default function GSTView({ invoices, customers, transactions, company }: 
             </div>
 
             {/* Returns status */}
-            <div className="bg-slate-950/40 border border-slate-800 rounded-xl overflow-hidden">
-              <div className="px-5 py-3 border-b border-slate-800">
+            <div className="bg-slate-50 border border-slate-200 rounded-xl overflow-hidden">
+              <div className="px-5 py-3 border-b border-slate-200">
                 <p className="text-xs font-bold text-slate-400 uppercase tracking-widest font-mono">Return Filing Status — {periodLabel(period)}</p>
               </div>
               <div className="divide-y divide-slate-800/50">
@@ -390,8 +390,8 @@ export default function GSTView({ invoices, customers, transactions, company }: 
             </h2>
 
             {/* B2B Table 4A */}
-            <div className="bg-slate-950/40 border border-slate-800 rounded-xl overflow-hidden">
-              <div className="px-5 py-3 border-b border-slate-800 flex items-center justify-between">
+            <div className="bg-slate-50 border border-slate-200 rounded-xl overflow-hidden">
+              <div className="px-5 py-3 border-b border-slate-200 flex items-center justify-between">
                 <p className="text-xs font-bold text-slate-400 uppercase tracking-widest font-mono">Table 4A — B2B Invoices ({b2bInvoices.length})</p>
                 <span className="text-[9px] text-emerald-400 font-bold bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded uppercase">Registered Buyers</span>
               </div>
@@ -400,7 +400,7 @@ export default function GSTView({ invoices, customers, transactions, company }: 
                 : (
                   <div className="overflow-x-auto">
                     <table className="min-w-full text-xs divide-y divide-slate-800/60">
-                      <thead className="bg-slate-900/60">
+                      <thead className="bg-slate-50">
                         <tr>{["Invoice No.", "Buyer GSTIN", "Buyer Name", "Taxable", "CGST", "SGST", "Total"].map(h => (
                           <th key={h} className="px-4 py-2 text-left text-[9px] font-bold text-slate-500 uppercase tracking-wider font-mono">{h}</th>
                         ))}</tr>
@@ -410,7 +410,7 @@ export default function GSTView({ invoices, customers, transactions, company }: 
                           const cust = customers.find(c => c.id === inv.customerId);
                           const cg = inv.cgst || inv.taxAmount / 2 || 0;
                           return (
-                            <tr key={inv.id} className="hover:bg-slate-900/30">
+                            <tr key={inv.id} className="hover:bg-white/30">
                               <td className="px-4 py-2 font-mono text-indigo-400">{inv.invoiceNumber}</td>
                               <td className="px-4 py-2 font-mono text-slate-300">{inv.buyerGSTIN}</td>
                               <td className="px-4 py-2 text-slate-300">{cust?.name || inv.buyerName || "—"}</td>
@@ -428,17 +428,17 @@ export default function GSTView({ invoices, customers, transactions, company }: 
             </div>
 
             {/* B2C Table 7 */}
-            <div className="bg-slate-950/40 border border-slate-800 rounded-xl overflow-hidden">
-              <div className="px-5 py-3 border-b border-slate-800 flex items-center justify-between">
+            <div className="bg-slate-50 border border-slate-200 rounded-xl overflow-hidden">
+              <div className="px-5 py-3 border-b border-slate-200 flex items-center justify-between">
                 <p className="text-xs font-bold text-slate-400 uppercase tracking-widest font-mono">Table 7 — B2C Invoices ({b2cInvoices.length})</p>
-                <span className="text-[9px] text-slate-400 font-bold bg-slate-500/10 border border-slate-700 px-2 py-0.5 rounded uppercase">Unregistered Buyers</span>
+                <span className="text-[9px] text-slate-400 font-bold bg-slate-500/10 border border-slate-200 px-2 py-0.5 rounded uppercase">Unregistered Buyers</span>
               </div>
               {b2cInvoices.length === 0
                 ? <p className="px-5 py-6 text-xs text-slate-500 text-center">No B2C invoices this period.</p>
                 : (
                   <div className="overflow-x-auto">
                     <table className="min-w-full text-xs divide-y divide-slate-800/60">
-                      <thead className="bg-slate-900/60">
+                      <thead className="bg-slate-50">
                         <tr>{["Invoice No.", "Customer", "Taxable", "GST Rate", "Tax", "Total"].map(h => (
                           <th key={h} className="px-4 py-2 text-left text-[9px] font-bold text-slate-500 uppercase tracking-wider font-mono">{h}</th>
                         ))}</tr>
@@ -448,7 +448,7 @@ export default function GSTView({ invoices, customers, transactions, company }: 
                           const cust = customers.find(c => c.id === inv.customerId);
                           const avgRate = inv.items.length > 0 ? (inv.items.reduce((s, i) => s + (i.gstPct || 18), 0) / inv.items.length) : 18;
                           return (
-                            <tr key={inv.id} className="hover:bg-slate-900/30">
+                            <tr key={inv.id} className="hover:bg-white/30">
                               <td className="px-4 py-2 font-mono text-indigo-400">{inv.invoiceNumber}</td>
                               <td className="px-4 py-2 text-slate-300">{cust?.name || "Walk-in"}</td>
                               <td className="px-4 py-2 text-emerald-400 font-mono">{formatINR(inv.subtotal)}</td>
@@ -475,8 +475,8 @@ export default function GSTView({ invoices, customers, transactions, company }: 
             <p className="text-xs text-slate-400">Period: {periodLabel(period)} · Auto-computed from Sales CRM invoices</p>
 
             {/* Table 3.1 */}
-            <div className="bg-slate-950/40 border border-slate-800 rounded-xl overflow-hidden">
-              <div className="px-5 py-3 border-b border-slate-800">
+            <div className="bg-slate-50 border border-slate-200 rounded-xl overflow-hidden">
+              <div className="px-5 py-3 border-b border-slate-200">
                 <p className="text-xs font-bold text-slate-300 uppercase tracking-widest font-mono">3.1 — Details of Outward Supplies and Inward Supplies Liable to Reverse Charge</p>
               </div>
               <div className="divide-y divide-slate-800/50">
@@ -505,8 +505,8 @@ export default function GSTView({ invoices, customers, transactions, company }: 
             </div>
 
             {/* Table 4 ITC */}
-            <div className="bg-slate-950/40 border border-slate-800 rounded-xl overflow-hidden">
-              <div className="px-5 py-3 border-b border-slate-800">
+            <div className="bg-slate-50 border border-slate-200 rounded-xl overflow-hidden">
+              <div className="px-5 py-3 border-b border-slate-200">
                 <p className="text-xs font-bold text-slate-300 uppercase tracking-widest font-mono">4 — Eligible ITC</p>
               </div>
               <div className="px-5 py-4 text-xs text-slate-400">
@@ -548,8 +548,8 @@ export default function GSTView({ invoices, customers, transactions, company }: 
             <h2 className="text-base font-black text-white uppercase tracking-tight flex items-center gap-2">
               <Shield className="h-5 w-5 text-emerald-400" /> HSN / SAC Summary
             </h2>
-            <div className="bg-slate-950/40 border border-slate-800 rounded-xl overflow-hidden">
-              <div className="px-5 py-3 border-b border-slate-800">
+            <div className="bg-slate-50 border border-slate-200 rounded-xl overflow-hidden">
+              <div className="px-5 py-3 border-b border-slate-200">
                 <p className="text-xs font-bold text-slate-400 uppercase tracking-widest font-mono">Table 12 — HSN-wise Outward Supplies</p>
               </div>
               {Object.keys(hsnMap).length === 0
@@ -557,14 +557,14 @@ export default function GSTView({ invoices, customers, transactions, company }: 
                 : (
                   <div className="overflow-x-auto">
                     <table className="min-w-full text-xs divide-y divide-slate-800/60">
-                      <thead className="bg-slate-900/60">
+                      <thead className="bg-slate-50">
                         <tr>{["HSN/SAC", "Total Qty", "Taxable Value", "GST Amount"].map(h => (
                           <th key={h} className="px-4 py-2 text-left text-[9px] font-bold text-slate-500 uppercase tracking-wider font-mono">{h}</th>
                         ))}</tr>
                       </thead>
                       <tbody className="divide-y divide-slate-800/40">
                         {Object.entries(hsnMap).map(([code, data]) => (
-                          <tr key={code} className="hover:bg-slate-900/30">
+                          <tr key={code} className="hover:bg-white/30">
                             <td className="px-4 py-2 font-mono text-indigo-400">{code}</td>
                             <td className="px-4 py-2 text-slate-300">{data.count}</td>
                             <td className="px-4 py-2 text-emerald-400 font-mono">{formatINR(data.taxable)}</td>
@@ -588,12 +588,12 @@ export default function GSTView({ invoices, customers, transactions, company }: 
             <h2 className="text-base font-black text-white uppercase tracking-tight flex items-center gap-2">
               <Brain className="h-5 w-5 text-emerald-400" /> AI GST Assistant
             </h2>
-            <div className="bg-slate-950/40 border border-slate-800 rounded-2xl overflow-hidden flex flex-col" style={{ height: "420px" }}>
+            <div className="bg-slate-50 border border-slate-200 rounded-2xl overflow-hidden flex flex-col" style={{ height: "420px" }}>
               <div className="flex-1 overflow-y-auto p-5 space-y-3">
                 {aiHistory.map((msg, i) => (
                   <div key={i} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
                     <div className={`max-w-[85%] px-4 py-2.5 rounded-xl text-xs leading-relaxed whitespace-pre-line ${
-                      msg.role === "user" ? "bg-emerald-700 text-white" : "bg-slate-800 text-slate-200"
+                      msg.role === "user" ? "bg-emerald-700 text-white" : "bg-slate-100 text-slate-700"
                     }`}>
                       {msg.text.replace(/\*\*(.*?)\*\*/g, "$1")}
                     </div>
@@ -603,7 +603,7 @@ export default function GSTView({ invoices, customers, transactions, company }: 
               <div className="px-4 pb-2 flex flex-wrap gap-1.5">
                 {quickPrompts.map(p => (
                   <button key={p} onClick={() => setAiInput(p)}
-                    className="text-[9px] px-2 py-1 bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 rounded-full cursor-pointer transition-all">
+                    className="text-[9px] px-2 py-1 bg-slate-100 hover:bg-slate-700 border border-slate-200 text-slate-300 rounded-full cursor-pointer transition-all">
                     {p}
                   </button>
                 ))}
@@ -612,7 +612,7 @@ export default function GSTView({ invoices, customers, transactions, company }: 
                 <input value={aiInput} onChange={e => setAiInput(e.target.value)}
                   onKeyDown={e => e.key === "Enter" && handleAiSend()}
                   placeholder="Ask anything about GST, filing, compliance..."
-                  className="flex-1 bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-emerald-500 transition-colors" />
+                  className="flex-1 bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-emerald-500 transition-colors" />
                 <button onClick={handleAiSend}
                   className="px-3 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl cursor-pointer transition-all">
                   <Send className="h-3.5 w-3.5" />
@@ -663,14 +663,14 @@ export default function GSTView({ invoices, customers, transactions, company }: 
             <h2 className="text-base font-black text-white uppercase tracking-tight flex items-center gap-2">
               <Settings className="h-5 w-5 text-emerald-400" /> GST Settings
             </h2>
-            <div className="bg-slate-950/40 border border-slate-800 rounded-2xl p-6 space-y-5">
+            <div className="bg-slate-50 border border-slate-200 rounded-2xl p-6 space-y-5">
               <div>
                 <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider font-mono block mb-1.5">GSTIN</label>
                 <input value={gstin} onChange={e => setGstin(e.target.value.toUpperCase())}
                   placeholder="e.g. 19AABCU9683R1ZM"
                   maxLength={15}
-                  className={`w-full bg-slate-900 border rounded-lg px-3 py-2.5 text-sm text-white font-mono focus:outline-none transition-colors ${
-                    gstin.length === 15 ? (gstinValid ? "border-emerald-500" : "border-red-500") : "border-slate-800 focus:border-emerald-500"
+                  className={`w-full bg-white border rounded-lg px-3 py-2.5 text-sm text-white font-mono focus:outline-none transition-colors ${
+                    gstin.length === 15 ? (gstinValid ? "border-emerald-500" : "border-red-500") : "border-slate-200 focus:border-emerald-500"
                   }`} />
                 {gstin.length === 15 && (
                   <p className={`text-[10px] mt-1 ${gstinValid ? "text-emerald-400" : "text-red-400"}`}>
@@ -682,18 +682,18 @@ export default function GSTView({ invoices, customers, transactions, company }: 
                 <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider font-mono block mb-1.5">Legal Business Name</label>
                 <input value={legalName} onChange={e => setLegalName(e.target.value)}
                   placeholder="As on GST certificate"
-                  className="w-full bg-slate-900 border border-slate-800 rounded-lg px-3 py-2.5 text-xs text-white focus:outline-none focus:border-emerald-500" />
+                  className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2.5 text-xs text-white focus:outline-none focus:border-emerald-500" />
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider font-mono block mb-1.5">State Code</label>
                   <input value={stateCode} onChange={e => setStateCode(e.target.value)}
                     placeholder="e.g. 19 (West Bengal)"
-                    className="w-full bg-slate-900 border border-slate-800 rounded-lg px-3 py-2.5 text-xs text-white focus:outline-none focus:border-emerald-500" />
+                    className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2.5 text-xs text-white focus:outline-none focus:border-emerald-500" />
                 </div>
                 <div>
                   <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider font-mono block mb-1.5">Return Frequency</label>
-                  <select className="w-full bg-slate-900 border border-slate-800 rounded-lg px-3 py-2.5 text-xs text-white focus:outline-none focus:border-emerald-500">
+                  <select className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2.5 text-xs text-white focus:outline-none focus:border-emerald-500">
                     <option>Monthly</option>
                     <option>Quarterly</option>
                   </select>
@@ -711,3 +711,4 @@ export default function GSTView({ invoices, customers, transactions, company }: 
     </div>
   );
 }
+

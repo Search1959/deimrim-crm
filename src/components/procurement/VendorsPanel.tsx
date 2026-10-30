@@ -137,7 +137,7 @@ export default function VendorsPanel({ suppliers, onAddSupplier, onDeleteSupplie
   return (
     <div className="space-y-4">
       {/* Control row */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 bg-slate-950/40 border border-slate-800 rounded-xl p-4">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 bg-slate-50 border border-slate-200 rounded-xl p-4">
         <div className="relative flex-1 max-w-md">
           <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-500" />
           <input
@@ -145,15 +145,15 @@ export default function VendorsPanel({ suppliers, onAddSupplier, onDeleteSupplie
             placeholder="Search Vendor directory..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full bg-slate-900 border border-slate-800 rounded-lg pl-8.5 pr-3 py-1.5 text-xs text-slate-200 focus:outline-hidden focus:border-indigo-500 font-semibold"
+            className="w-full bg-white border border-slate-200 rounded-lg pl-8.5 pr-3 py-1.5 text-xs text-slate-700 focus:outline-hidden focus:border-indigo-500 font-semibold"
           />
         </div>
         <div className="flex items-center gap-2 flex-wrap">
-          <button onClick={handleExport} className="flex items-center gap-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg px-3 py-1.5 text-xs font-bold transition-all cursor-pointer border border-slate-700">
+          <button onClick={handleExport} className="flex items-center gap-1.5 bg-slate-100 hover:bg-slate-700 text-slate-300 rounded-lg px-3 py-1.5 text-xs font-bold transition-all cursor-pointer border border-slate-200">
             <Download className="h-3.5 w-3.5" />
             <span>Export</span>
           </button>
-          <label className="flex items-center gap-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg px-3 py-1.5 text-xs font-bold transition-all cursor-pointer border border-slate-700">
+          <label className="flex items-center gap-1.5 bg-slate-100 hover:bg-slate-700 text-slate-300 rounded-lg px-3 py-1.5 text-xs font-bold transition-all cursor-pointer border border-slate-200">
             <Upload className="h-3.5 w-3.5" />
             <span>Import</span>
             <input type="file" accept=".xlsx,.xls,.csv" className="hidden" onChange={handleImport} />
@@ -168,7 +168,7 @@ export default function VendorsPanel({ suppliers, onAddSupplier, onDeleteSupplie
       {/* Vendors Grid layout */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {filtered.map(sup => (
-          <div key={sup.id} className="bg-slate-900/40 border border-slate-800 rounded-xl p-4 flex flex-col justify-between space-y-3">
+          <div key={sup.id} className="bg-slate-50 border border-slate-200 rounded-xl p-4 flex flex-col justify-between space-y-3">
             <div className="flex items-start justify-between">
               <div>
                 <span className="font-mono text-[9px] text-indigo-400 font-bold">{sup.code}</span>
@@ -179,7 +179,7 @@ export default function VendorsPanel({ suppliers, onAddSupplier, onDeleteSupplie
               </span>
             </div>
 
-            <div className="space-y-1 text-[10px] text-slate-400 border-t border-slate-800/60 pt-2 font-semibold">
+            <div className="space-y-1 text-[10px] text-slate-400 border-t border-slate-200/60 pt-2 font-semibold">
               <div className="flex items-center gap-1.5">
                 <Mail className="h-3 w-3 text-indigo-400" />
                 <span>{sup.email}</span>
@@ -194,7 +194,7 @@ export default function VendorsPanel({ suppliers, onAddSupplier, onDeleteSupplie
               </div>
             </div>
 
-            <div className="border-t border-slate-800/60 pt-2 space-y-1.5">
+            <div className="border-t border-slate-200/60 pt-2 space-y-1.5">
               <div className="flex justify-between items-center text-[9px] text-slate-500">
                 <span>Compliance:</span>
                 <span className="text-slate-300 font-bold font-mono">GSTIN: {sup.taxId || "Pending Verification"}</span>
@@ -206,7 +206,7 @@ export default function VendorsPanel({ suppliers, onAddSupplier, onDeleteSupplie
               </div>
             </div>
 
-            <div className="flex justify-between items-center border-t border-slate-800/60 pt-2">
+            <div className="flex justify-between items-center border-t border-slate-200/60 pt-2">
               <div className="flex items-center gap-1 text-[9px] text-emerald-500 font-bold uppercase font-mono">
                 <ShieldCheck className="h-3.5 w-3.5" />
                 <span>Verified Vendor</span>
@@ -233,19 +233,19 @@ export default function VendorsPanel({ suppliers, onAddSupplier, onDeleteSupplie
         <div className="fixed inset-0 z-50 flex items-start md:items-center justify-center bg-black/60 backdrop-blur-xs p-2 md:p-4 overflow-y-auto">
           <form
             onSubmit={handleCreateVendor}
-            className="w-full max-w-md rounded-xl border border-slate-800 bg-slate-950 p-4 md:p-5 shadow-2xl text-left space-y-4 my-2 md:my-8 animate-scaleUp"
+            className="w-full max-w-md rounded-xl border border-slate-200 bg-white p-4 md:p-5 shadow-2xl text-left space-y-4 my-2 md:my-8 animate-scaleUp"
           >
-            <div className="border-b border-slate-800 pb-2 flex items-center justify-between">
+            <div className="border-b border-slate-200 pb-2 flex items-center justify-between">
               <div className="flex items-center gap-1.5 text-indigo-400">
                 <ShieldCheck className="h-4 w-4" />
-                <h3 className="text-sm font-bold text-white uppercase tracking-wider font-mono">
+                <h3 className="text-sm font-bold text-slate-800 uppercase tracking-wider font-mono">
                   Add New Vendor Profile
                 </h3>
               </div>
               <button 
                 type="button" 
                 onClick={() => { setShowAddModal(false); }} 
-                className="text-slate-400 hover:text-white font-bold"
+                className="text-slate-400 hover:text-slate-800 font-bold"
               >
                 ×
               </button>
@@ -261,7 +261,7 @@ export default function VendorsPanel({ suppliers, onAddSupplier, onDeleteSupplie
                     placeholder="Company Legal Entity"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                    className="w-full bg-slate-900 border border-slate-800 rounded-lg p-2 text-xs text-white focus:outline-hidden focus:border-indigo-500 font-semibold"
+                    className="w-full bg-white border border-slate-200 rounded-lg p-2 text-xs text-white focus:outline-hidden focus:border-indigo-500 font-semibold"
                   />
                 </div>
                 <div>
@@ -272,7 +272,7 @@ export default function VendorsPanel({ suppliers, onAddSupplier, onDeleteSupplie
                     placeholder="e.g. SUP-1002"
                     value={code}
                     onChange={(e) => setCode(e.target.value)}
-                    className="w-full bg-slate-900 border border-slate-800 rounded-lg p-2 text-xs text-white focus:outline-hidden focus:border-indigo-500 font-mono font-bold"
+                    className="w-full bg-white border border-slate-200 rounded-lg p-2 text-xs text-white focus:outline-hidden focus:border-indigo-500 font-mono font-bold"
                   />
                 </div>
               </div>
@@ -286,7 +286,7 @@ export default function VendorsPanel({ suppliers, onAddSupplier, onDeleteSupplie
                     placeholder="sales@vendor.com"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="w-full bg-slate-900 border border-slate-800 rounded-lg p-2 text-xs text-white focus:outline-hidden focus:border-indigo-500 font-semibold"
+                    className="w-full bg-white border border-slate-200 rounded-lg p-2 text-xs text-white focus:outline-hidden focus:border-indigo-500 font-semibold"
                   />
                 </div>
                 <div>
@@ -297,7 +297,7 @@ export default function VendorsPanel({ suppliers, onAddSupplier, onDeleteSupplie
                     placeholder="Name of SPOC"
                     value={contactPerson}
                     onChange={(e) => setContactPerson(e.target.value)}
-                    className="w-full bg-slate-900 border border-slate-800 rounded-lg p-2 text-xs text-white focus:outline-hidden focus:border-indigo-500 font-semibold"
+                    className="w-full bg-white border border-slate-200 rounded-lg p-2 text-xs text-white focus:outline-hidden focus:border-indigo-500 font-semibold"
                   />
                 </div>
               </div>
@@ -310,7 +310,7 @@ export default function VendorsPanel({ suppliers, onAddSupplier, onDeleteSupplie
                     placeholder="+91 XXXXX XXXXX"
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
-                    className="w-full bg-slate-900 border border-slate-800 rounded-lg p-2 text-xs text-white focus:outline-hidden font-mono"
+                    className="w-full bg-white border border-slate-200 rounded-lg p-2 text-xs text-white focus:outline-hidden font-mono"
                   />
                 </div>
                 <div>
@@ -321,7 +321,7 @@ export default function VendorsPanel({ suppliers, onAddSupplier, onDeleteSupplie
                     placeholder="30"
                     value={creditDays}
                     onChange={(e) => setCreditDays(Number(e.target.value))}
-                    className="w-full bg-slate-900 border border-slate-800 rounded-lg p-2 text-xs text-white focus:outline-hidden font-mono font-bold"
+                    className="w-full bg-white border border-slate-200 rounded-lg p-2 text-xs text-white focus:outline-hidden font-mono font-bold"
                   />
                 </div>
               </div>
@@ -333,12 +333,12 @@ export default function VendorsPanel({ suppliers, onAddSupplier, onDeleteSupplie
                   placeholder="Street, State, PIN..."
                   value={address}
                   onChange={(e) => setAddress(e.target.value)}
-                  className="w-full bg-slate-900 border border-slate-800 rounded-lg p-2 text-xs text-slate-200 focus:outline-hidden"
+                  className="w-full bg-white border border-slate-200 rounded-lg p-2 text-xs text-slate-700 focus:outline-hidden"
                 />
               </div>
 
               {/* Compliance Segment */}
-              <div className="border-t border-slate-800/80 pt-2">
+              <div className="border-t border-slate-200/80 pt-2">
                 <span className="block text-[10px] font-bold text-indigo-400 uppercase tracking-widest font-mono mb-2">Compliance Verification</span>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div>
@@ -348,7 +348,7 @@ export default function VendorsPanel({ suppliers, onAddSupplier, onDeleteSupplie
                       placeholder="15-character GSTIN"
                       value={gstin}
                       onChange={(e) => setGstin(e.target.value)}
-                      className="w-full bg-slate-900 border border-slate-800 rounded-lg p-2 text-xs text-white focus:outline-hidden font-mono font-bold uppercase"
+                      className="w-full bg-white border border-slate-200 rounded-lg p-2 text-xs text-white focus:outline-hidden font-mono font-bold uppercase"
                     />
                   </div>
                   <div>
@@ -358,14 +358,14 @@ export default function VendorsPanel({ suppliers, onAddSupplier, onDeleteSupplie
                       placeholder="10-character PAN"
                       value={pan}
                       onChange={(e) => setPan(e.target.value)}
-                      className="w-full bg-slate-900 border border-slate-800 rounded-lg p-2 text-xs text-white focus:outline-hidden font-mono font-bold uppercase"
+                      className="w-full bg-white border border-slate-200 rounded-lg p-2 text-xs text-white focus:outline-hidden font-mono font-bold uppercase"
                     />
                   </div>
                 </div>
               </div>
 
               {/* Bank Transfers */}
-              <div className="border-t border-slate-800/80 pt-2">
+              <div className="border-t border-slate-200/80 pt-2">
                 <span className="block text-[10px] font-bold text-indigo-400 uppercase tracking-widest font-mono mb-2">Bank Remittance Accounts</span>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div>
@@ -375,7 +375,7 @@ export default function VendorsPanel({ suppliers, onAddSupplier, onDeleteSupplie
                       placeholder="Beneficiary Name"
                       value={accountName}
                       onChange={(e) => setAccountName(e.target.value)}
-                      className="w-full bg-slate-900 border border-slate-800 rounded-lg p-2 text-xs text-white focus:outline-hidden"
+                      className="w-full bg-white border border-slate-200 rounded-lg p-2 text-xs text-white focus:outline-hidden"
                     />
                   </div>
                   <div>
@@ -385,7 +385,7 @@ export default function VendorsPanel({ suppliers, onAddSupplier, onDeleteSupplie
                       placeholder="A/c No."
                       value={accountNumber}
                       onChange={(e) => setAccountNumber(e.target.value)}
-                      className="w-full bg-slate-900 border border-slate-800 rounded-lg p-2 text-xs text-white focus:outline-hidden font-mono"
+                      className="w-full bg-white border border-slate-200 rounded-lg p-2 text-xs text-white focus:outline-hidden font-mono"
                     />
                   </div>
                 </div>
@@ -397,7 +397,7 @@ export default function VendorsPanel({ suppliers, onAddSupplier, onDeleteSupplie
                       placeholder="11-digit IFSC"
                       value={ifsc}
                       onChange={(e) => setIfsc(e.target.value)}
-                      className="w-full bg-slate-900 border border-slate-800 rounded-lg p-2 text-xs text-white focus:outline-hidden font-mono font-bold uppercase"
+                      className="w-full bg-white border border-slate-200 rounded-lg p-2 text-xs text-white focus:outline-hidden font-mono font-bold uppercase"
                     />
                   </div>
                   <div>
@@ -407,18 +407,18 @@ export default function VendorsPanel({ suppliers, onAddSupplier, onDeleteSupplie
                       placeholder="e.g. HDFC Bank, Salt Lake"
                       value={bankNameBranch}
                       onChange={(e) => setBankNameBranch(e.target.value)}
-                      className="w-full bg-slate-900 border border-slate-800 rounded-lg p-2 text-xs text-white focus:outline-hidden"
+                      className="w-full bg-white border border-slate-200 rounded-lg p-2 text-xs text-white focus:outline-hidden"
                     />
                   </div>
                 </div>
               </div>
             </div>
 
-            <div className="flex justify-end gap-2.5 pt-3 border-t border-slate-800/80 text-xs">
+            <div className="flex justify-end gap-2.5 pt-3 border-t border-slate-200/80 text-xs">
               <button
                 type="button"
                 onClick={() => { setShowAddModal(false); }}
-                className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg font-bold transition-all cursor-pointer"
+                className="px-4 py-2 bg-slate-100 hover:bg-slate-700 text-slate-300 rounded-lg font-bold transition-all cursor-pointer"
               >
                 Cancel
               </button>
@@ -436,3 +436,5 @@ export default function VendorsPanel({ suppliers, onAddSupplier, onDeleteSupplie
     </div>
   );
 }
+
+

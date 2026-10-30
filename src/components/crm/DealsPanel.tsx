@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+﻿import React, { useState, useEffect } from "react";
 import { Plus, Search, Edit, Trash2, ShieldAlert, Award, Eye } from "lucide-react";
 import { Deal, Lead, formatINR } from "../../types";
 
@@ -166,7 +166,7 @@ export default function DealsPanel({ leads, companyId, isDemo }: DealsPanelProps
     <div className="space-y-4">
       {/* Top Banner metrics */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <div className="bg-slate-900/60 border border-slate-800 rounded-xl p-4 flex items-center justify-between">
+        <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 flex items-center justify-between">
           <div>
             <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block font-mono">Active Deals Pipeline</span>
             <span className="text-2xl font-bold text-white font-mono mt-0.5 block">{activeDeals} deals</span>
@@ -175,7 +175,7 @@ export default function DealsPanel({ leads, companyId, isDemo }: DealsPanelProps
             <ShieldAlert className="h-5 w-5" />
           </div>
         </div>
-        <div className="bg-slate-900/60 border border-slate-800 rounded-xl p-4 flex items-center justify-between">
+        <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 flex items-center justify-between">
           <div>
             <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block font-mono">Total Cumulative Value</span>
             <span className="text-2xl font-bold text-indigo-400 font-mono mt-0.5 block">{formatINR(totalValue)}</span>
@@ -187,7 +187,7 @@ export default function DealsPanel({ leads, companyId, isDemo }: DealsPanelProps
       </div>
 
       {/* Control row */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 bg-slate-950/40 border border-slate-800 rounded-xl p-4">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 bg-slate-50 border border-slate-200 rounded-xl p-4">
         <div className="relative flex-1 max-w-md">
           <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-500" />
           <input
@@ -195,7 +195,7 @@ export default function DealsPanel({ leads, companyId, isDemo }: DealsPanelProps
             placeholder="Search deals..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full bg-slate-900 border border-slate-800 rounded-lg pl-8.5 pr-3 py-1.5 text-xs text-slate-200 focus:outline-hidden focus:border-indigo-500 font-semibold"
+            className="w-full bg-white border border-slate-200 rounded-lg pl-8.5 pr-3 py-1.5 text-xs text-slate-700 focus:outline-hidden focus:border-indigo-500 font-semibold"
           />
         </div>
         <button
@@ -216,7 +216,7 @@ export default function DealsPanel({ leads, companyId, isDemo }: DealsPanelProps
             className={`px-2.5 py-1 rounded-md border transition-all shrink-0 cursor-pointer ${
               stageFilter === st
                 ? "bg-indigo-600/10 border-indigo-500/40 text-indigo-300"
-                : "bg-slate-900/60 border-slate-800 text-slate-400 hover:border-slate-700 hover:text-slate-200"
+                : "bg-slate-50 border-slate-200 text-slate-400 hover:border-slate-200 hover:text-slate-700"
             }`}
           >
             {st}
@@ -225,9 +225,9 @@ export default function DealsPanel({ leads, companyId, isDemo }: DealsPanelProps
       </div>
 
       {/* Table */}
-      <div className="bg-slate-950/40 border border-slate-800 rounded-xl overflow-hidden shadow-xs">
-        <table className="min-w-full divide-y divide-slate-800 text-xs">
-          <thead className="bg-slate-950 text-slate-300 font-semibold text-left">
+      <div className="bg-slate-50 border border-slate-200 rounded-xl overflow-hidden shadow-xs">
+        <table className="min-w-full divide-y divide-slate-100 text-xs">
+          <thead className="bg-white text-slate-300 font-semibold text-left">
             <tr>
               <th className="px-4 py-3">Deal Title</th>
               <th className="px-4 py-3">Linked Lead</th>
@@ -238,7 +238,7 @@ export default function DealsPanel({ leads, companyId, isDemo }: DealsPanelProps
               <th className="px-4 py-3 text-right">Actions</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-slate-800/60 text-slate-300">
+          <tbody className="divide-y divide-slate-100/60 text-slate-300">
             {filteredDeals.length === 0 ? (
               <tr>
                 <td colSpan={7} className="px-4 py-8 text-center text-slate-500 font-mono">
@@ -247,7 +247,7 @@ export default function DealsPanel({ leads, companyId, isDemo }: DealsPanelProps
               </tr>
             ) : (
               filteredDeals.map(d => (
-                <tr key={d.id} className="hover:bg-slate-900/40 transition-colors">
+                <tr key={d.id} className="hover:bg-slate-50 transition-colors">
                   <td className="px-4 py-3">
                     <div className="font-bold text-white leading-snug">{d.title}</div>
                     {d.notes && <div className="text-[10px] text-slate-400 mt-0.5 truncate max-w-xs">{d.notes}</div>}
@@ -265,7 +265,7 @@ export default function DealsPanel({ leads, companyId, isDemo }: DealsPanelProps
                   </td>
                   <td className="px-4 py-3 font-mono">
                     <div className="flex items-center gap-2">
-                      <div className="w-12 bg-slate-800 rounded-full h-1.5">
+                      <div className="w-12 bg-slate-100 rounded-full h-1.5">
                         <div 
                           className="bg-indigo-500 h-1.5 rounded-full" 
                           style={{ width: `${d.probability}%` }}
@@ -279,14 +279,14 @@ export default function DealsPanel({ leads, companyId, isDemo }: DealsPanelProps
                     <div className="flex items-center justify-end gap-1.5">
                       <button
                         onClick={() => setViewingDeal(d)}
-                        className="p-1 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded transition-all cursor-pointer"
+                        className="p-1 bg-slate-100 hover:bg-slate-700 text-slate-300 rounded transition-all cursor-pointer"
                         title="View Deal"
                       >
                         <Eye className="h-3.5 w-3.5" />
                       </button>
                       <button
                         onClick={() => handleOpenEdit(d)}
-                        className="p-1 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded transition-all cursor-pointer"
+                        className="p-1 bg-slate-100 hover:bg-slate-700 text-slate-300 rounded transition-all cursor-pointer"
                         title="Edit Deal"
                       >
                         <Edit className="h-3.5 w-3.5" />
@@ -312,16 +312,16 @@ export default function DealsPanel({ leads, companyId, isDemo }: DealsPanelProps
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 overflow-y-auto">
           <form 
             onSubmit={editingDeal ? handleSaveEdit : handleSaveDeal}
-            className="w-full max-w-lg rounded-xl border border-slate-800 bg-slate-950 p-5 shadow-2xl text-left space-y-4 my-8"
+            className="w-full max-w-lg rounded-xl border border-slate-200 bg-white p-5 shadow-2xl text-left space-y-4 my-8"
           >
-            <div className="border-b border-slate-800 pb-2 flex items-center justify-between">
-              <h3 className="text-sm font-bold text-white uppercase tracking-wider font-mono">
+            <div className="border-b border-slate-200 pb-2 flex items-center justify-between">
+              <h3 className="text-sm font-bold text-slate-800 uppercase tracking-wider font-mono">
                 {editingDeal ? "Edit Deal" : "Add Deal"}
               </h3>
               <button 
                 type="button" 
                 onClick={() => { setShowAddModal(false); setEditingDeal(null); }} 
-                className="text-slate-400 hover:text-white font-bold"
+                className="text-slate-400 hover:text-slate-800 font-bold"
               >
                 ×
               </button>
@@ -336,7 +336,7 @@ export default function DealsPanel({ leads, companyId, isDemo }: DealsPanelProps
                   placeholder="e.g. Enterprise SLA Software Integration"
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
-                  className="w-full bg-slate-900 border border-slate-800 rounded-lg p-2 text-xs text-white focus:outline-hidden focus:border-indigo-500 font-semibold"
+                  className="w-full bg-white border border-slate-200 rounded-lg p-2 text-xs text-white focus:outline-hidden focus:border-indigo-500 font-semibold"
                 />
               </div>
 
@@ -346,7 +346,7 @@ export default function DealsPanel({ leads, companyId, isDemo }: DealsPanelProps
                   <select
                     value={leadId}
                     onChange={(e) => setLeadId(e.target.value)}
-                    className="w-full bg-slate-900 border border-slate-800 rounded-lg p-2 text-xs text-white focus:outline-hidden focus:border-indigo-500 font-semibold"
+                    className="w-full bg-white border border-slate-200 rounded-lg p-2 text-xs text-white focus:outline-hidden focus:border-indigo-500 font-semibold"
                   >
                     <option value="">— None —</option>
                     {leads.map(l => (
@@ -362,7 +362,7 @@ export default function DealsPanel({ leads, companyId, isDemo }: DealsPanelProps
                     placeholder="0.00"
                     value={value}
                     onChange={(e) => setValue(e.target.value)}
-                    className="w-full bg-slate-900 border border-slate-800 rounded-lg p-2 text-xs text-white font-mono focus:outline-hidden focus:border-indigo-500"
+                    className="w-full bg-white border border-slate-200 rounded-lg p-2 text-xs text-white font-mono focus:outline-hidden focus:border-indigo-500"
                   />
                 </div>
               </div>
@@ -373,7 +373,7 @@ export default function DealsPanel({ leads, companyId, isDemo }: DealsPanelProps
                   <select
                     value={stage}
                     onChange={(e) => setStage(e.target.value as Deal["stage"])}
-                    className="w-full bg-slate-900 border border-slate-800 rounded-lg p-2 text-xs text-white focus:outline-hidden focus:border-indigo-500 font-semibold"
+                    className="w-full bg-white border border-slate-200 rounded-lg p-2 text-xs text-white focus:outline-hidden focus:border-indigo-500 font-semibold"
                   >
                     <option value="Proposal">Proposal</option>
                     <option value="Negotiation">Negotiation</option>
@@ -390,7 +390,7 @@ export default function DealsPanel({ leads, companyId, isDemo }: DealsPanelProps
                     max="100"
                     value={probability}
                     onChange={(e) => setProbability(Number(e.target.value))}
-                    className="w-full bg-slate-900 border border-slate-800 rounded-lg p-2 text-xs text-white font-mono focus:outline-hidden focus:border-indigo-500"
+                    className="w-full bg-white border border-slate-200 rounded-lg p-2 text-xs text-white font-mono focus:outline-hidden focus:border-indigo-500"
                   />
                 </div>
               </div>
@@ -401,7 +401,7 @@ export default function DealsPanel({ leads, companyId, isDemo }: DealsPanelProps
                   type="date"
                   value={closeDate}
                   onChange={(e) => setCloseDate(e.target.value)}
-                  className="w-full bg-slate-900 border border-slate-800 rounded-lg p-2 text-xs text-white focus:outline-hidden focus:border-indigo-500 font-semibold"
+                  className="w-full bg-white border border-slate-200 rounded-lg p-2 text-xs text-white focus:outline-hidden focus:border-indigo-500 font-semibold"
                 />
               </div>
 
@@ -412,16 +412,16 @@ export default function DealsPanel({ leads, companyId, isDemo }: DealsPanelProps
                   placeholder="Key timeline milestones, client feedback, next demo..."
                   value={notes}
                   onChange={(e) => setNotes(e.target.value)}
-                  className="w-full bg-slate-900 border border-slate-800 rounded-lg p-2 text-xs text-white focus:outline-hidden"
+                  className="w-full bg-white border border-slate-200 rounded-lg p-2 text-xs text-white focus:outline-hidden"
                 ></textarea>
               </div>
             </div>
 
-            <div className="flex justify-end gap-2.5 pt-3 border-t border-slate-800/80">
+            <div className="flex justify-end gap-2.5 pt-3 border-t border-slate-200/80">
               <button
                 type="button"
                 onClick={() => { setShowAddModal(false); setEditingDeal(null); }}
-                className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-xs font-bold transition-all cursor-pointer"
+                className="px-3 py-1.5 bg-slate-100 hover:bg-slate-700 text-slate-300 rounded-lg text-xs font-bold transition-all cursor-pointer"
               >
                 Cancel
               </button>
@@ -439,22 +439,22 @@ export default function DealsPanel({ leads, companyId, isDemo }: DealsPanelProps
       {/* Viewing Deal Details Modal */}
       {viewingDeal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4">
-          <div className="w-full max-w-lg rounded-xl border border-slate-800 bg-slate-950 p-6 shadow-2xl text-left space-y-4">
-            <div className="border-b border-slate-800 pb-2 flex items-center justify-between">
+          <div className="w-full max-w-lg rounded-xl border border-slate-200 bg-white p-6 shadow-2xl text-left space-y-4">
+            <div className="border-b border-slate-200 pb-2 flex items-center justify-between">
               <span className="font-mono text-xs font-bold text-indigo-400">Deal Details</span>
-              <button type="button" onClick={() => setViewingDeal(null)} className="text-slate-400 hover:text-white font-bold">×</button>
+              <button type="button" onClick={() => setViewingDeal(null)} className="text-slate-400 hover:text-slate-800 font-bold">×</button>
             </div>
 
             <div className="space-y-3 text-xs">
               <div>
                 <span className="block text-[9px] font-bold uppercase tracking-wider font-mono text-slate-400">Deal Title</span>
-                <strong className="text-slate-200 text-sm">{viewingDeal.title}</strong>
+                <strong className="text-slate-700 text-sm">{viewingDeal.title}</strong>
               </div>
 
-              <div className="grid grid-cols-2 gap-2 text-slate-400 border-b border-slate-900 pb-2 font-semibold">
+              <div className="grid grid-cols-2 gap-2 text-slate-400 border-b border-slate-100 pb-2 font-semibold">
                 <div>
                   <span className="block text-[9px] font-bold uppercase tracking-wider font-mono">Linked Lead</span>
-                  <strong className="text-slate-200">{viewingDeal.leadTitle || "—"}</strong>
+                  <strong className="text-slate-700">{viewingDeal.leadTitle || "—"}</strong>
                 </div>
                 <div>
                   <span className="block text-[9px] font-bold uppercase tracking-wider font-mono">Deal Value</span>
@@ -462,7 +462,7 @@ export default function DealsPanel({ leads, companyId, isDemo }: DealsPanelProps
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-2 text-slate-400 border-b border-slate-900 pb-2 font-semibold">
+              <div className="grid grid-cols-2 gap-2 text-slate-400 border-b border-slate-100 pb-2 font-semibold">
                 <div>
                   <span className="block text-[9px] font-bold uppercase tracking-wider font-mono">Sales Stage</span>
                   <span className="inline-flex items-center mt-1 px-1.5 py-0.5 rounded text-[9px] font-bold uppercase bg-amber-500/10 text-amber-400 border border-amber-500/20">
@@ -475,30 +475,30 @@ export default function DealsPanel({ leads, companyId, isDemo }: DealsPanelProps
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-2 text-slate-400 border-b border-slate-900 pb-2 font-semibold">
+              <div className="grid grid-cols-2 gap-2 text-slate-400 border-b border-slate-100 pb-2 font-semibold">
                 <div>
                   <span className="block text-[9px] font-bold uppercase tracking-wider font-mono">Expected Close Date</span>
-                  <strong className="text-slate-200">{viewingDeal.expectedCloseDate || "—"}</strong>
+                  <strong className="text-slate-700">{viewingDeal.expectedCloseDate || "—"}</strong>
                 </div>
                 <div>
                   <span className="block text-[9px] font-bold uppercase tracking-wider font-mono">Created On</span>
-                  <strong className="text-slate-200">{viewingDeal.createdAt || "—"}</strong>
+                  <strong className="text-slate-700">{viewingDeal.createdAt || "—"}</strong>
                 </div>
               </div>
 
               {viewingDeal.notes && (
-                <div className="p-2.5 bg-slate-900/40 rounded-lg border border-slate-850 text-slate-400 text-[10px] space-y-1">
+                <div className="p-2.5 bg-slate-50 rounded-lg border border-slate-850 text-slate-400 text-[10px] space-y-1">
                   <strong className="text-slate-300">Timeline & Operational Notes:</strong>
                   <p>{viewingDeal.notes}</p>
                 </div>
               )}
             </div>
 
-            <div className="flex justify-end pt-2 border-t border-slate-800/80">
+            <div className="flex justify-end pt-2 border-t border-slate-200/80">
               <button
                 type="button"
                 onClick={() => setViewingDeal(null)}
-                className="px-4 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-xs font-bold cursor-pointer"
+                className="px-4 py-1.5 bg-slate-100 hover:bg-slate-700 text-slate-300 rounded-lg text-xs font-bold cursor-pointer"
               >
                 Close
               </button>
@@ -509,3 +509,5 @@ export default function DealsPanel({ leads, companyId, isDemo }: DealsPanelProps
     </div>
   );
 }
+
+

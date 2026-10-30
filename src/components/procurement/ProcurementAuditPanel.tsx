@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+﻿import React, { useState, useEffect } from "react";
 import { Search, Shield, RefreshCw, AlertCircle, FileSpreadsheet } from "lucide-react";
 
 interface AuditLog {
@@ -95,7 +95,7 @@ export default function ProcurementAuditPanel({ companyId }: ProcurementAuditPan
   return (
     <div className="space-y-4">
       {/* Search and control bar */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-slate-950/40 border border-slate-800 rounded-xl p-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-slate-50 border border-slate-200 rounded-xl p-4">
         <div className="relative flex-1 max-w-md">
           <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-500" />
           <input
@@ -103,14 +103,14 @@ export default function ProcurementAuditPanel({ companyId }: ProcurementAuditPan
             placeholder="Search audit trail logs (user, description, module)..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full bg-slate-900 border border-slate-800 rounded-lg pl-8.5 pr-3 py-1.5 text-xs text-slate-200 focus:outline-hidden focus:border-indigo-500 font-semibold"
+            className="w-full bg-white border border-slate-200 rounded-lg pl-8.5 pr-3 py-1.5 text-xs text-slate-700 focus:outline-hidden focus:border-indigo-500 font-semibold"
           />
         </div>
         
         <div className="flex items-center gap-2">
           <button
             onClick={loadLogs}
-            className="p-1.5 bg-slate-900 border border-slate-800 rounded-lg text-slate-400 hover:text-white transition-colors cursor-pointer"
+            className="p-1.5 bg-white border border-slate-200 rounded-lg text-slate-400 hover:text-slate-800 transition-colors cursor-pointer"
             title="Refresh logs ledger"
           >
             <RefreshCw className="h-3.5 w-3.5" />
@@ -134,10 +134,10 @@ export default function ProcurementAuditPanel({ companyId }: ProcurementAuditPan
       </div>
 
       {/* Audit Log Table */}
-      <div className="bg-slate-950/60 border border-slate-800 rounded-xl overflow-hidden shadow-xs">
+      <div className="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-xs">
         <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-slate-800 text-xs">
-            <thead className="bg-slate-950 text-slate-300 font-semibold uppercase font-mono tracking-wider">
+          <table className="min-w-full divide-y divide-slate-100 text-xs">
+            <thead className="bg-white text-slate-300 font-semibold uppercase font-mono tracking-wider">
               <tr>
                 <th className="px-5 py-3 text-left">Timestamp</th>
                 <th className="px-5 py-3 text-left">User Profile</th>
@@ -147,14 +147,14 @@ export default function ProcurementAuditPanel({ companyId }: ProcurementAuditPan
                 <th className="px-5 py-3 text-right">IP Routing Address</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-800/60 text-slate-300 font-semibold">
+            <tbody className="divide-y divide-slate-100/60 text-slate-300 font-semibold">
               {filtered.map(l => (
-                <tr key={l.id} className="hover:bg-slate-900/40 transition-colors">
+                <tr key={l.id} className="hover:bg-slate-50 transition-colors">
                   <td className="px-5 py-4 font-mono text-slate-400 text-[11px]">
                     {new Date(l.timestamp).toLocaleString()}
                   </td>
                   <td className="px-5 py-4">
-                    <div className="font-bold text-slate-200">{l.userName}</div>
+                    <div className="font-bold text-slate-700">{l.userName}</div>
                     <div className="text-[9px] text-slate-500 font-mono tracking-wider">{l.userRole}</div>
                   </td>
                   <td className="px-5 py-4">
@@ -169,7 +169,7 @@ export default function ProcurementAuditPanel({ companyId }: ProcurementAuditPan
                   <td className="px-5 py-4 text-slate-300 font-mono text-[10px] uppercase">
                     {l.module.replace("_", " ")}
                   </td>
-                  <td className="px-5 py-4 text-slate-200 leading-relaxed text-xs">
+                  <td className="px-5 py-4 text-slate-700 leading-relaxed text-xs">
                     {l.details}
                   </td>
                   <td className="px-5 py-4 text-right font-mono text-slate-500 text-[11px]">
@@ -191,3 +191,5 @@ export default function ProcurementAuditPanel({ companyId }: ProcurementAuditPan
     </div>
   );
 }
+
+

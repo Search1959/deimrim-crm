@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+﻿import React, { useState, useRef, useEffect } from "react";
 import { FileCheck, Plus, X, IndianRupee, CreditCard, ChevronDown, ChevronUp, Upload, Printer, Eye, Camera } from "lucide-react";
 import { Supplier, PurchaseOrder, VendorInvoice, BillPayment, Product, BatchStock, formatINR } from "../../types";
 import { toast } from "../../utils/toast";
@@ -756,7 +756,7 @@ export default function VendorBillsPanel({
     <div className="space-y-4">
 
       {/* Header */}
-      <div className="bg-slate-950/40 border border-slate-800 rounded-xl p-4 flex items-center justify-between flex-wrap gap-3">
+      <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 flex items-center justify-between flex-wrap gap-3">
         <div className="flex items-center gap-2">
           <FileCheck className="h-4 w-4 text-indigo-400" />
           <div>
@@ -828,7 +828,7 @@ export default function VendorBillsPanel({
       {isMobile && bills.length > 0 && (
         <div className="space-y-3">
           {bills.map(b => (
-            <div key={b.id} className="bg-slate-900 border border-slate-800 rounded-2xl p-4 space-y-3">
+            <div key={b.id} className="bg-white border border-slate-200 rounded-2xl p-4 space-y-3">
               {/* Top row: bill no + status */}
               <div className="flex items-start justify-between gap-2">
                 <div>
@@ -846,15 +846,15 @@ export default function VendorBillsPanel({
               </div>
               {/* Amounts */}
               <div className="grid grid-cols-3 gap-2 text-center">
-                <div className="bg-slate-800/60 rounded-xl p-2">
+                <div className="bg-slate-100/60 rounded-xl p-2">
                   <p className="text-[9px] text-slate-500 uppercase font-bold">Bill</p>
-                  <p className="text-xs font-bold text-slate-200 font-mono">{formatINR(b.totalAmount)}</p>
+                  <p className="text-xs font-bold text-slate-700 font-mono">{formatINR(b.totalAmount)}</p>
                 </div>
                 <div className="bg-emerald-900/20 rounded-xl p-2">
                   <p className="text-[9px] text-emerald-600 uppercase font-bold">Paid</p>
                   <p className="text-xs font-bold text-emerald-400 font-mono">{formatINR(b.paidAmount)}</p>
                 </div>
-                <div className={`rounded-xl p-2 ${b.balanceAmount > 0 ? "bg-red-900/20" : "bg-slate-800/40"}`}>
+                <div className={`rounded-xl p-2 ${b.balanceAmount > 0 ? "bg-red-900/20" : "bg-slate-100/40"}`}>
                   <p className="text-[9px] text-red-500 uppercase font-bold">Balance</p>
                   <p className={`text-xs font-bold font-mono ${b.balanceAmount > 0 ? "text-red-400" : "text-slate-500"}`}>{formatINR(b.balanceAmount)}</p>
                 </div>
@@ -873,7 +873,7 @@ export default function VendorBillsPanel({
                   <Eye className="w-3.5 h-3.5" /> View
                 </button>
                 <button onClick={() => printBill(b, companyName)}
-                  className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-slate-800 text-slate-300 text-xs font-bold active:bg-slate-700">
+                  className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-slate-100 text-slate-300 text-xs font-bold active:bg-slate-700">
                   <Printer className="w-3.5 h-3.5" /> Print
                 </button>
                 {b.status !== "Paid" && (
@@ -898,9 +898,9 @@ export default function VendorBillsPanel({
       )}
 
       {/* Bills table (desktop only) */}
-      <div className={`bg-slate-950/60 border border-slate-800 rounded-xl overflow-hidden ${isMobile ? "hidden" : ""}`}>
-        <table className="min-w-full divide-y divide-slate-800 text-xs">
-          <thead className="bg-slate-950 text-slate-300 font-semibold uppercase font-mono tracking-wider">
+      <div className={`bg-white border border-slate-200 rounded-xl overflow-hidden ${isMobile ? "hidden" : ""}`}>
+        <table className="min-w-full divide-y divide-slate-100 text-xs">
+          <thead className="bg-white text-slate-300 font-semibold uppercase font-mono tracking-wider">
             <tr>
               <th className="px-4 py-3 text-left">Bill No.</th>
               <th className="px-4 py-3 text-left">Vendor</th>
@@ -913,7 +913,7 @@ export default function VendorBillsPanel({
               <th className="px-4 py-3 text-left">Actions</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-slate-800/60 text-slate-300">
+          <tbody className="divide-y divide-slate-100/60 text-slate-300">
             {bills.length === 0 ? (
               <tr>
                 <td colSpan={9} className="px-5 py-10 text-center text-slate-500">
@@ -922,12 +922,12 @@ export default function VendorBillsPanel({
               </tr>
             ) : bills.map(b => (
               <React.Fragment key={b.id}>
-                <tr className="hover:bg-slate-900/40 transition-colors">
+                <tr className="hover:bg-slate-50 transition-colors">
                   <td className="px-4 py-3 font-bold text-indigo-400 font-mono">{b.billNumber}</td>
-                  <td className="px-4 py-3 font-semibold text-slate-100">{b.supplierName}</td>
+                  <td className="px-4 py-3 font-semibold text-slate-800">{b.supplierName}</td>
                   <td className="px-4 py-3 font-mono text-slate-400">{b.invoiceDate || "—"}</td>
                   <td className="px-4 py-3 font-mono text-slate-400">{b.dueDate}</td>
-                  <td className="px-4 py-3 text-right font-bold font-mono text-slate-200">{formatINR(b.totalAmount)}</td>
+                  <td className="px-4 py-3 text-right font-bold font-mono text-slate-700">{formatINR(b.totalAmount)}</td>
                   <td className="px-4 py-3 text-right font-mono text-emerald-400">{formatINR(b.paidAmount)}</td>
                   <td className={`px-4 py-3 text-right font-bold font-mono ${b.balanceAmount > 0 ? "text-red-400" : "text-slate-500"}`}>
                     {formatINR(b.balanceAmount)}
@@ -961,7 +961,7 @@ export default function VendorBillsPanel({
                       <button
                         onClick={() => printBill(b, companyName)}
                         title="Print Invoice"
-                        className="flex items-center gap-1 px-2 py-1 rounded-md bg-slate-800 hover:bg-slate-700 text-slate-300 text-[10px] font-bold transition-colors cursor-pointer"
+                        className="flex items-center gap-1 px-2 py-1 rounded-md bg-slate-100 hover:bg-slate-700 text-slate-300 text-[10px] font-bold transition-colors cursor-pointer"
                       >
                         <Printer className="w-3 h-3" />
                       </button>
@@ -988,7 +988,7 @@ export default function VendorBillsPanel({
                       {b.payments.length > 0 && (
                         <button
                           onClick={() => setExpandedBillId(expandedBillId === b.id ? null : b.id)}
-                          className="flex items-center gap-1 px-2 py-1 rounded-md bg-slate-800 hover:bg-slate-700 text-slate-400 text-[10px] font-bold transition-colors cursor-pointer"
+                          className="flex items-center gap-1 px-2 py-1 rounded-md bg-slate-100 hover:bg-slate-700 text-slate-400 text-[10px] font-bold transition-colors cursor-pointer"
                         >
                           {expandedBillId === b.id ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
                           {b.payments.length}
@@ -1000,11 +1000,11 @@ export default function VendorBillsPanel({
 
                 {expandedBillId === b.id && b.payments.length > 0 && (
                   <tr>
-                    <td colSpan={9} className="bg-slate-900/60 px-6 py-3">
+                    <td colSpan={9} className="bg-slate-50 px-6 py-3">
                       <p className="text-[10px] font-bold text-slate-400 uppercase font-mono mb-2">Payment History</p>
                       <div className="space-y-1.5">
                         {b.payments.map(p => (
-                          <div key={p.id} className="flex items-center gap-4 text-[10px] border-b border-slate-800/50 pb-1.5">
+                          <div key={p.id} className="flex items-center gap-4 text-[10px] border-b border-slate-200/50 pb-1.5">
                             <span className="font-mono text-slate-400">{p.date}</span>
                             <span className="font-bold text-emerald-400 font-mono">{formatINR(p.amount)}</span>
                             <span className="text-slate-300">{p.mode}</span>
@@ -1025,9 +1025,9 @@ export default function VendorBillsPanel({
       {/* View Bill Modal */}
       {viewingBill && (
         <div className="fixed inset-0 z-50 flex items-start md:items-center justify-center bg-black/70 backdrop-blur-sm p-2 md:p-4 overflow-y-auto">
-          <div className="w-full max-w-4xl rounded-2xl border border-slate-700 bg-slate-950 shadow-2xl my-2 md:my-8">
+          <div className="w-full max-w-4xl rounded-2xl border border-slate-200 bg-white shadow-2xl my-2 md:my-8">
             {/* Modal header */}
-            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-800">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200">
               <div className="flex items-center gap-3">
                 <FileCheck className="h-5 w-5 text-indigo-400" />
                 <div>
@@ -1038,18 +1038,18 @@ export default function VendorBillsPanel({
               <div className="flex items-center gap-2">
                 <button
                   onClick={() => printBill(viewingBill, companyName)}
-                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-bold cursor-pointer"
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-700 text-slate-300 text-xs font-bold cursor-pointer"
                 >
                   <Printer className="w-3.5 h-3.5" /> Print
                 </button>
-                <button onClick={() => setViewingBill(null)} className="text-slate-400 hover:text-white cursor-pointer">
+                <button onClick={() => setViewingBill(null)} className="text-slate-400 hover:text-slate-800 cursor-pointer">
                   <X className="w-5 h-5" />
                 </button>
               </div>
             </div>
 
             {/* Bill info */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 px-6 py-4 border-b border-slate-800">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 px-6 py-4 border-b border-slate-200">
               {[
                 { label: "Supplier", value: viewingBill.supplierName },
                 { label: "Invoice No.", value: viewingBill.billNumber },
@@ -1069,19 +1069,19 @@ export default function VendorBillsPanel({
               {viewingBill.items && viewingBill.items.length > 0 ? (
                 <table className="min-w-full text-xs border-collapse">
                   <thead>
-                    <tr className="bg-slate-900 text-slate-400 uppercase font-mono text-[10px]">
-                      <th className="px-2 py-2 border border-slate-800 text-center w-8">Sl.</th>
-                      <th className="px-2 py-2 border border-slate-800 text-left">Description</th>
-                      <th className="px-2 py-2 border border-slate-800 text-center w-20">HSN</th>
-                      <th className="px-2 py-2 border border-slate-800 text-center w-20">Batch</th>
-                      <th className="px-2 py-2 border border-slate-800 text-center w-16">Exp Dt</th>
-                      <th className="px-2 py-2 border border-slate-800 text-right w-20">MRP</th>
-                      <th className="px-2 py-2 border border-slate-800 text-center w-12">Qty</th>
-                      <th className="px-2 py-2 border border-slate-800 text-center w-12">Free</th>
-                      <th className="px-2 py-2 border border-slate-800 text-right w-20">Rate</th>
-                      <th className="px-2 py-2 border border-slate-800 text-center w-16">Disc%</th>
-                      <th className="px-2 py-2 border border-slate-800 text-center w-14">GST%</th>
-                      <th className="px-2 py-2 border border-slate-800 text-right w-24">Amount</th>
+                    <tr className="bg-white text-slate-400 uppercase font-mono text-[10px]">
+                      <th className="px-2 py-2 border border-slate-200 text-center w-8">Sl.</th>
+                      <th className="px-2 py-2 border border-slate-200 text-left">Description</th>
+                      <th className="px-2 py-2 border border-slate-200 text-center w-20">HSN</th>
+                      <th className="px-2 py-2 border border-slate-200 text-center w-20">Batch</th>
+                      <th className="px-2 py-2 border border-slate-200 text-center w-16">Exp Dt</th>
+                      <th className="px-2 py-2 border border-slate-200 text-right w-20">MRP</th>
+                      <th className="px-2 py-2 border border-slate-200 text-center w-12">Qty</th>
+                      <th className="px-2 py-2 border border-slate-200 text-center w-12">Free</th>
+                      <th className="px-2 py-2 border border-slate-200 text-right w-20">Rate</th>
+                      <th className="px-2 py-2 border border-slate-200 text-center w-16">Disc%</th>
+                      <th className="px-2 py-2 border border-slate-200 text-center w-14">GST%</th>
+                      <th className="px-2 py-2 border border-slate-200 text-right w-24">Amount</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -1093,27 +1093,27 @@ export default function VendorBillsPanel({
                       const disc   = parseFloat((it as any).discount) || 0;
                       const gstPct = parseFloat((it as any).gstPct) || 0;
                       return (
-                        <tr key={i} className="border-b border-slate-800 hover:bg-slate-900/40 text-[11px]">
-                          <td className="px-2 py-1.5 border border-slate-800 text-center text-slate-400">{i + 1}</td>
-                          <td className="px-2 py-1.5 border border-slate-800 text-slate-200">{it.description}</td>
-                          <td className="px-2 py-1.5 border border-slate-800 text-center text-slate-400 font-mono">{it.hsn || "—"}</td>
-                          <td className="px-2 py-1.5 border border-slate-800 text-center text-cyan-400 font-mono">{batch}</td>
-                          <td className="px-2 py-1.5 border border-slate-800 text-center text-slate-300">{expiry}</td>
-                          <td className="px-2 py-1.5 border border-slate-800 text-right font-mono text-slate-300">{mrp > 0 ? mrp.toFixed(2) : "—"}</td>
-                          <td className="px-2 py-1.5 border border-slate-800 text-center font-bold text-white">{it.quantity}</td>
-                          <td className="px-2 py-1.5 border border-slate-800 text-center text-emerald-400">{free > 0 ? free : "—"}</td>
-                          <td className="px-2 py-1.5 border border-slate-800 text-right font-mono text-slate-300">{it.rate.toFixed(2)}</td>
-                          <td className="px-2 py-1.5 border border-slate-800 text-center text-amber-400">{disc > 0 ? disc.toFixed(2) + "%" : "—"}</td>
-                          <td className="px-2 py-1.5 border border-slate-800 text-center text-violet-400">{gstPct > 0 ? gstPct + "%" : "0%"}</td>
-                          <td className="px-2 py-1.5 border border-slate-800 text-right font-bold font-mono text-white">{it.amount.toLocaleString("en-IN", { minimumFractionDigits: 2 })}</td>
+                        <tr key={i} className="border-b border-slate-200 hover:bg-slate-50 text-[11px]">
+                          <td className="px-2 py-1.5 border border-slate-200 text-center text-slate-400">{i + 1}</td>
+                          <td className="px-2 py-1.5 border border-slate-200 text-slate-700">{it.description}</td>
+                          <td className="px-2 py-1.5 border border-slate-200 text-center text-slate-400 font-mono">{it.hsn || "—"}</td>
+                          <td className="px-2 py-1.5 border border-slate-200 text-center text-cyan-400 font-mono">{batch}</td>
+                          <td className="px-2 py-1.5 border border-slate-200 text-center text-slate-300">{expiry}</td>
+                          <td className="px-2 py-1.5 border border-slate-200 text-right font-mono text-slate-300">{mrp > 0 ? mrp.toFixed(2) : "—"}</td>
+                          <td className="px-2 py-1.5 border border-slate-200 text-center font-bold text-white">{it.quantity}</td>
+                          <td className="px-2 py-1.5 border border-slate-200 text-center text-emerald-400">{free > 0 ? free : "—"}</td>
+                          <td className="px-2 py-1.5 border border-slate-200 text-right font-mono text-slate-300">{it.rate.toFixed(2)}</td>
+                          <td className="px-2 py-1.5 border border-slate-200 text-center text-amber-400">{disc > 0 ? disc.toFixed(2) + "%" : "—"}</td>
+                          <td className="px-2 py-1.5 border border-slate-200 text-center text-violet-400">{gstPct > 0 ? gstPct + "%" : "0%"}</td>
+                          <td className="px-2 py-1.5 border border-slate-200 text-right font-bold font-mono text-white">{it.amount.toLocaleString("en-IN", { minimumFractionDigits: 2 })}</td>
                         </tr>
                       );
                     })}
                   </tbody>
                   <tfoot>
-                    <tr className="bg-slate-900/60">
-                      <td colSpan={11} className="px-3 py-2 border border-slate-800 text-right text-slate-400 font-bold">Sub Total</td>
-                      <td className="px-3 py-2 border border-slate-800 text-right font-bold font-mono text-slate-200">{viewingBill.amountBeforeGst.toLocaleString("en-IN", { minimumFractionDigits: 2 })}</td>
+                    <tr className="bg-slate-50">
+                      <td colSpan={11} className="px-3 py-2 border border-slate-200 text-right text-slate-400 font-bold">Sub Total</td>
+                      <td className="px-3 py-2 border border-slate-200 text-right font-bold font-mono text-slate-700">{viewingBill.amountBeforeGst.toLocaleString("en-IN", { minimumFractionDigits: 2 })}</td>
                     </tr>
                     {(() => {
                       const gstAmt = viewingBill.totalAmount - viewingBill.amountBeforeGst;
@@ -1122,27 +1122,27 @@ export default function VendorBillsPanel({
                       if (viewingBill.gstType === "IGST") {
                         return (
                           <tr>
-                            <td colSpan={11} className="px-3 py-2 border border-slate-800 text-right text-slate-400">IGST @ {gstRate}%</td>
-                            <td className="px-3 py-2 border border-slate-800 text-right font-mono text-amber-400">{gstAmt.toLocaleString("en-IN", { minimumFractionDigits: 2 })}</td>
+                            <td colSpan={11} className="px-3 py-2 border border-slate-200 text-right text-slate-400">IGST @ {gstRate}%</td>
+                            <td className="px-3 py-2 border border-slate-200 text-right font-mono text-amber-400">{gstAmt.toLocaleString("en-IN", { minimumFractionDigits: 2 })}</td>
                           </tr>
                         );
                       }
                       return (
                         <>
                           <tr>
-                            <td colSpan={11} className="px-3 py-2 border border-slate-800 text-right text-slate-400">CGST @ {gstRate / 2}%</td>
-                            <td className="px-3 py-2 border border-slate-800 text-right font-mono text-amber-400">{halfGst.toLocaleString("en-IN", { minimumFractionDigits: 2 })}</td>
+                            <td colSpan={11} className="px-3 py-2 border border-slate-200 text-right text-slate-400">CGST @ {gstRate / 2}%</td>
+                            <td className="px-3 py-2 border border-slate-200 text-right font-mono text-amber-400">{halfGst.toLocaleString("en-IN", { minimumFractionDigits: 2 })}</td>
                           </tr>
                           <tr>
-                            <td colSpan={11} className="px-3 py-2 border border-slate-800 text-right text-slate-400">SGST @ {gstRate / 2}%</td>
-                            <td className="px-3 py-2 border border-slate-800 text-right font-mono text-amber-400">{halfGst.toLocaleString("en-IN", { minimumFractionDigits: 2 })}</td>
+                            <td colSpan={11} className="px-3 py-2 border border-slate-200 text-right text-slate-400">SGST @ {gstRate / 2}%</td>
+                            <td className="px-3 py-2 border border-slate-200 text-right font-mono text-amber-400">{halfGst.toLocaleString("en-IN", { minimumFractionDigits: 2 })}</td>
                           </tr>
                         </>
                       );
                     })()}
                     <tr className="bg-indigo-950/40">
-                      <td colSpan={11} className="px-3 py-2.5 border border-slate-700 text-right font-bold text-white text-sm">Grand Total</td>
-                      <td className="px-3 py-2.5 border border-slate-700 text-right font-bold font-mono text-indigo-300 text-sm">{formatINR(viewingBill.totalAmount)}</td>
+                      <td colSpan={11} className="px-3 py-2.5 border border-slate-200 text-right font-bold text-white text-sm">Grand Total</td>
+                      <td className="px-3 py-2.5 border border-slate-200 text-right font-bold font-mono text-indigo-300 text-sm">{formatINR(viewingBill.totalAmount)}</td>
                     </tr>
                   </tfoot>
                 </table>
@@ -1152,13 +1152,13 @@ export default function VendorBillsPanel({
             </div>
 
             {/* Payment summary */}
-            <div className="grid grid-cols-3 gap-4 px-6 py-4 border-t border-slate-800">
+            <div className="grid grid-cols-3 gap-4 px-6 py-4 border-t border-slate-200">
               {[
-                { label: "Bill Total", value: formatINR(viewingBill.totalAmount), color: "text-slate-200" },
+                { label: "Bill Total", value: formatINR(viewingBill.totalAmount), color: "text-slate-700" },
                 { label: "Paid", value: formatINR(viewingBill.paidAmount), color: "text-emerald-400" },
                 { label: "Balance", value: formatINR(viewingBill.balanceAmount), color: viewingBill.balanceAmount > 0 ? "text-red-400" : "text-slate-500" },
               ].map(f => (
-                <div key={f.label} className="bg-slate-900 rounded-lg p-3 text-center">
+                <div key={f.label} className="bg-white rounded-lg p-3 text-center">
                   <p className="text-[10px] text-slate-500 uppercase font-mono mb-1">{f.label}</p>
                   <p className={`text-sm font-bold font-mono ${f.color}`}>{f.value}</p>
                 </div>
@@ -1171,13 +1171,13 @@ export default function VendorBillsPanel({
       {/* Camera Capture Modal */}
       {showCamera && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
-          <div className="w-full max-w-lg rounded-2xl border border-slate-700 bg-slate-950 shadow-2xl overflow-hidden">
-            <div className="flex items-center justify-between px-5 py-3 border-b border-slate-800">
+          <div className="w-full max-w-lg rounded-2xl border border-slate-200 bg-white shadow-2xl overflow-hidden">
+            <div className="flex items-center justify-between px-5 py-3 border-b border-slate-200">
               <h3 className="text-sm font-bold text-white font-mono">📷 Scan Purchase Bill</h3>
               <div className="flex items-center gap-2">
                 <button onClick={() => { setCameraFacing(f => f === "environment" ? "user" : "environment"); }}
-                  className="text-[10px] text-slate-400 hover:text-white border border-slate-700 rounded px-2 py-1 cursor-pointer">🔄 Flip</button>
-                <button onClick={() => { stopCamera(); setShowCamera(false); }} className="text-slate-400 hover:text-white cursor-pointer">✕</button>
+                  className="text-[10px] text-slate-400 hover:text-slate-800 border border-slate-200 rounded px-2 py-1 cursor-pointer">🔄 Flip</button>
+                <button onClick={() => { stopCamera(); setShowCamera(false); }} className="text-slate-400 hover:text-slate-800 cursor-pointer">✕</button>
               </div>
             </div>
             <div className="relative bg-black">
@@ -1203,8 +1203,8 @@ export default function VendorBillsPanel({
       {/* Record Bill Modal */}
       {showBillForm && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-          <div className="w-full max-w-4xl rounded-2xl border border-slate-800 bg-slate-950 shadow-2xl max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between border-b border-slate-800 px-6 py-4 sticky top-0 bg-slate-950 z-10">
+          <div className="w-full max-w-4xl rounded-2xl border border-slate-200 bg-white shadow-2xl max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between border-b border-slate-200 px-6 py-4 sticky top-0 bg-white z-10">
               <h3 className="text-sm font-bold text-white font-mono">Record Purchase Bill</h3>
               <div className="flex items-center gap-2">
                 <input ref={scanInputRef} type="file" accept="image/*,application/pdf" className="hidden"
@@ -1215,23 +1215,23 @@ export default function VendorBillsPanel({
                     {scanning ? "⏳ Scanning…" : "📷 Scan Bill ▾"}
                   </button>
                   {showScanMenu && (
-                    <div className="absolute right-0 top-full mt-1 z-50 w-52 rounded-xl border border-slate-700 bg-slate-900 shadow-2xl overflow-hidden">
+                    <div className="absolute right-0 top-full mt-1 z-50 w-52 rounded-xl border border-slate-200 bg-white shadow-2xl overflow-hidden">
                       <button type="button" onClick={() => { setShowScanMenu(false); setCameraFacing("environment"); setShowCamera(true); }}
-                        className="w-full flex items-center gap-2 px-4 py-3 text-xs text-white hover:bg-slate-800 cursor-pointer text-left">
+                        className="w-full flex items-center gap-2 px-4 py-3 text-xs text-white hover:bg-slate-100 cursor-pointer text-left">
                         📷 <span><span className="font-bold">Rear Camera</span><br/><span className="text-slate-400">Mobile rear / desktop webcam</span></span>
                       </button>
                       <button type="button" onClick={() => { setShowScanMenu(false); setCameraFacing("user"); setShowCamera(true); }}
-                        className="w-full flex items-center gap-2 px-4 py-3 text-xs text-white hover:bg-slate-800 cursor-pointer text-left border-t border-slate-800">
+                        className="w-full flex items-center gap-2 px-4 py-3 text-xs text-white hover:bg-slate-100 cursor-pointer text-left border-t border-slate-200">
                         🤳 <span><span className="font-bold">Front Camera</span><br/><span className="text-slate-400">Selfie / front-facing cam</span></span>
                       </button>
                       <button type="button" onClick={() => { setShowScanMenu(false); scanInputRef.current?.click(); }}
-                        className="w-full flex items-center gap-2 px-4 py-3 text-xs text-white hover:bg-slate-800 cursor-pointer text-left border-t border-slate-800">
+                        className="w-full flex items-center gap-2 px-4 py-3 text-xs text-white hover:bg-slate-100 cursor-pointer text-left border-t border-slate-200">
                         📁 <span><span className="font-bold">Upload File</span><br/><span className="text-slate-400">Photo, scan or PDF</span></span>
                       </button>
                     </div>
                   )}
                 </div>
-                <button type="button" onClick={() => setShowBillForm(false)} className="text-slate-400 hover:text-white cursor-pointer"><X className="w-4 h-4" /></button>
+                <button type="button" onClick={() => setShowBillForm(false)} className="text-slate-400 hover:text-slate-800 cursor-pointer"><X className="w-4 h-4" /></button>
               </div>
             </div>
             <form onSubmit={handleCreateBill} className="p-6 space-y-5">
@@ -1243,7 +1243,7 @@ export default function VendorBillsPanel({
                   <div className="md:col-span-2">
                     <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 font-mono">Supplier *</label>
                     <select required value={formSupplierId} onChange={e => { setFormSupplierId(e.target.value); setFormPoId(""); const sup = suppliers.find(s => s.id === e.target.value); if (sup) setFormSupplierGSTIN(sup.taxId || ""); }}
-                      className="w-full rounded-lg border border-slate-800 bg-slate-900 p-2.5 text-xs text-white focus:outline-none focus:border-indigo-500">
+                      className="w-full rounded-lg border border-slate-200 bg-white p-2.5 text-xs text-white focus:outline-none focus:border-indigo-500">
                       <option value="">-- Select Supplier --</option>
                       {suppliers.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
                     </select>
@@ -1251,27 +1251,27 @@ export default function VendorBillsPanel({
                   <div>
                     <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 font-mono">Supplier GSTIN</label>
                     <input value={formSupplierGSTIN} onChange={e => setFormSupplierGSTIN(e.target.value)} placeholder="15-digit GSTIN"
-                      className="w-full rounded-lg border border-slate-800 bg-slate-900 p-2.5 text-xs text-white font-mono focus:outline-none focus:border-indigo-500" />
+                      className="w-full rounded-lg border border-slate-200 bg-white p-2.5 text-xs text-white font-mono focus:outline-none focus:border-indigo-500" />
                   </div>
                   <div>
                     <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 font-mono">Bill / Invoice No *</label>
                     <input required value={formBillNumber} onChange={e => setFormBillNumber(e.target.value)} placeholder="e.g. INV/2025/001"
-                      className="w-full rounded-lg border border-slate-800 bg-slate-900 p-2.5 text-xs text-white font-mono focus:outline-none focus:border-indigo-500" />
+                      className="w-full rounded-lg border border-slate-200 bg-white p-2.5 text-xs text-white font-mono focus:outline-none focus:border-indigo-500" />
                   </div>
                   <div>
                     <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 font-mono">Invoice Date</label>
                     <input type="date" value={formInvoiceDate} onChange={e => setFormInvoiceDate(e.target.value)}
-                      className="w-full rounded-lg border border-slate-800 bg-slate-900 p-2.5 text-xs text-white font-mono focus:outline-none" />
+                      className="w-full rounded-lg border border-slate-200 bg-white p-2.5 text-xs text-white font-mono focus:outline-none" />
                   </div>
                   <div>
                     <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 font-mono">Due Date</label>
                     <input type="date" value={formDueDate} onChange={e => setFormDueDate(e.target.value)}
-                      className="w-full rounded-lg border border-slate-800 bg-slate-900 p-2.5 text-xs text-white font-mono focus:outline-none" />
+                      className="w-full rounded-lg border border-slate-200 bg-white p-2.5 text-xs text-white font-mono focus:outline-none" />
                   </div>
                   <div>
                     <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 font-mono">Challan No</label>
                     <input value={formChallanNo} onChange={e => setFormChallanNo(e.target.value)} placeholder="Challan / DC No"
-                      className="w-full rounded-lg border border-slate-800 bg-slate-900 p-2.5 text-xs text-white font-mono focus:outline-none" />
+                      className="w-full rounded-lg border border-slate-200 bg-white p-2.5 text-xs text-white font-mono focus:outline-none" />
                   </div>
                   <div>
                     <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 font-mono">Link to PO (Optional)</label>
@@ -1297,7 +1297,7 @@ export default function VendorBillsPanel({
                         }
                       }
                     }}
-                      className="w-full rounded-lg border border-slate-800 bg-slate-900 p-2.5 text-xs text-white focus:outline-none font-mono">
+                      className="w-full rounded-lg border border-slate-200 bg-white p-2.5 text-xs text-white focus:outline-none font-mono">
                       <option value="">-- No PO Link --</option>
                       {supplierPOs.map(po => <option key={po.id} value={po.id}>{po.poNumber}</option>)}
                     </select>
@@ -1305,7 +1305,7 @@ export default function VendorBillsPanel({
                   <div>
                     <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 font-mono">Status</label>
                     <select value={formStatus} onChange={e => setFormStatus(e.target.value as VendorInvoice["status"])}
-                      className="w-full rounded-lg border border-slate-800 bg-slate-900 p-2.5 text-xs text-white focus:outline-none">
+                      className="w-full rounded-lg border border-slate-200 bg-white p-2.5 text-xs text-white focus:outline-none">
                       <option>Draft</option><option>Pending Payment</option><option>Partially Paid</option><option>Paid</option>
                     </select>
                   </div>
@@ -1319,24 +1319,24 @@ export default function VendorBillsPanel({
                   <div>
                     <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 font-mono">e-Way Bill No</label>
                     <input value={formEWayBillNo} onChange={e => setFormEWayBillNo(e.target.value)} placeholder="12-digit EWB"
-                      className="w-full rounded-lg border border-slate-800 bg-slate-900 p-2.5 text-xs text-white font-mono focus:outline-none focus:border-amber-500" />
+                      className="w-full rounded-lg border border-slate-200 bg-white p-2.5 text-xs text-white font-mono focus:outline-none focus:border-amber-500" />
                   </div>
                   <div>
                     <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 font-mono">Transport Mode</label>
                     <select value={formTransportMode} onChange={e => setFormTransportMode(e.target.value)}
-                      className="w-full rounded-lg border border-slate-800 bg-slate-900 p-2.5 text-xs text-white focus:outline-none">
+                      className="w-full rounded-lg border border-slate-200 bg-white p-2.5 text-xs text-white focus:outline-none">
                       <option>Road</option><option>Rail</option><option>Air</option><option>Ship</option>
                     </select>
                   </div>
                   <div>
                     <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 font-mono">Vehicle Number</label>
                     <input value={formVehicleNo} onChange={e => setFormVehicleNo(e.target.value.toUpperCase())} placeholder="WB12AB1234"
-                      className="w-full rounded-lg border border-slate-800 bg-slate-900 p-2.5 text-xs text-white font-mono uppercase focus:outline-none" />
+                      className="w-full rounded-lg border border-slate-200 bg-white p-2.5 text-xs text-white font-mono uppercase focus:outline-none" />
                   </div>
                   <div>
                     <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 font-mono">Narration</label>
                     <input value={formNarration} onChange={e => setFormNarration(e.target.value)} placeholder="Optional remarks"
-                      className="w-full rounded-lg border border-slate-800 bg-slate-900 p-2.5 text-xs text-white focus:outline-none" />
+                      className="w-full rounded-lg border border-slate-200 bg-white p-2.5 text-xs text-white focus:outline-none" />
                   </div>
                 </div>
               </div>
@@ -1358,9 +1358,9 @@ export default function VendorBillsPanel({
                 </div>
 
                 {useLineItems ? (
-                  <div className="overflow-x-auto rounded-lg border border-slate-800">
+                  <div className="overflow-x-auto rounded-lg border border-slate-200">
                     <table className="min-w-full text-xs">
-                      <thead className="bg-slate-900 text-slate-400 uppercase font-mono text-[9px]">
+                      <thead className="bg-white text-slate-400 uppercase font-mono text-[9px]">
                         <tr>
                           <th className="px-1 py-2 text-left w-8">#</th>
                           <th className="px-2 py-2 text-left min-w-[150px]">Description *</th>
@@ -1389,7 +1389,7 @@ export default function VendorBillsPanel({
                           const upd = (field: keyof typeof line) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) =>
                             setFormLines(prev => prev.map((l, i) => i === idx ? { ...l, [field]: e.target.value } : l));
                           return (
-                            <tr key={line.id} className="border-t border-slate-800">
+                            <tr key={line.id} className="border-t border-slate-200">
                               <td className="px-1 py-1 text-slate-500 text-center text-[10px]">{idx + 1}</td>
                               <td className="px-1 py-1">
                                 <select value={line.description} onChange={e => {
@@ -1403,7 +1403,7 @@ export default function VendorBillsPanel({
                                     rate: prod ? String(prod.sellingPrice ?? prod.costPrice ?? l.rate) : l.rate,
                                     gstPct: prod?.gstRate ? String(prod.gstRate) : l.gstPct,
                                   } : l));
-                                }} className="w-full bg-slate-800 rounded px-1 py-1 text-white focus:outline-none focus:ring-1 focus:ring-indigo-500 text-xs">
+                                }} className="w-full bg-slate-100 rounded px-1 py-1 text-white focus:outline-none focus:ring-1 focus:ring-indigo-500 text-xs">
                                   <option value="">-- Product --</option>
                                   {products.map(p => <option key={p.id} value={p.name}>{p.name}</option>)}
                                   <option value={line.description && !products.find(p => p.name === line.description) ? line.description : "__manual__"}>✏ Manual</option>
@@ -1413,22 +1413,22 @@ export default function VendorBillsPanel({
                                     className="w-full bg-slate-700 rounded px-1 py-1 text-white focus:outline-none focus:ring-1 focus:ring-indigo-500 text-xs mt-1" placeholder="Description..." autoFocus />
                                 )}
                               </td>
-                              <td className="px-1 py-1"><input value={line.hsn} onChange={upd("hsn")} className="w-full bg-slate-800 rounded px-1 py-1 text-white font-mono focus:outline-none text-[10px]" placeholder="HSN" /></td>
-                              <td className="px-1 py-1"><input value={line.pack} onChange={upd("pack")} className="w-full bg-slate-800 rounded px-1 py-1 text-white focus:outline-none text-[10px]" placeholder="e.g. 10×10" /></td>
-                              <td className="px-1 py-1"><input type="number" value={line.qty} onChange={upd("qty")} className="w-full bg-slate-800 rounded px-1 py-1 text-white text-center font-mono focus:outline-none text-[10px]" /></td>
-                              <td className="px-1 py-1"><input type="number" value={line.free} onChange={upd("free")} className="w-full bg-slate-800 rounded px-1 py-1 text-white text-center font-mono focus:outline-none text-[10px]" placeholder="0" /></td>
+                              <td className="px-1 py-1"><input value={line.hsn} onChange={upd("hsn")} className="w-full bg-slate-100 rounded px-1 py-1 text-white font-mono focus:outline-none text-[10px]" placeholder="HSN" /></td>
+                              <td className="px-1 py-1"><input value={line.pack} onChange={upd("pack")} className="w-full bg-slate-100 rounded px-1 py-1 text-white focus:outline-none text-[10px]" placeholder="e.g. 10×10" /></td>
+                              <td className="px-1 py-1"><input type="number" value={line.qty} onChange={upd("qty")} className="w-full bg-slate-100 rounded px-1 py-1 text-white text-center font-mono focus:outline-none text-[10px]" /></td>
+                              <td className="px-1 py-1"><input type="number" value={line.free} onChange={upd("free")} className="w-full bg-slate-100 rounded px-1 py-1 text-white text-center font-mono focus:outline-none text-[10px]" placeholder="0" /></td>
                               <td className="px-1 py-1">
-                                <select value={line.unit} onChange={upd("unit")} className="w-full bg-slate-800 rounded px-1 py-1 text-white focus:outline-none text-[10px]">
+                                <select value={line.unit} onChange={upd("unit")} className="w-full bg-slate-100 rounded px-1 py-1 text-white focus:outline-none text-[10px]">
                                   {["Nos","Pcs","Set","Kg","Ltr","Mtr","Box","Bag","Strip","Botl","Amp","Vial"].map(u => <option key={u}>{u}</option>)}
                                 </select>
                               </td>
-                              <td className="px-1 py-1"><input value={line.batch} onChange={upd("batch")} className="w-full bg-slate-800 rounded px-1 py-1 text-white font-mono focus:outline-none text-[10px]" placeholder="Batch" /></td>
-                              <td className="px-1 py-1"><input value={line.expiryDate} onChange={upd("expiryDate")} className="w-full bg-slate-800 rounded px-1 py-1 text-white font-mono focus:outline-none text-[10px]" placeholder="MM/YY" /></td>
-                              <td className="px-1 py-1"><input type="number" value={line.mrp} onChange={upd("mrp")} className="w-full bg-slate-800 rounded px-1 py-1 text-white text-right font-mono focus:outline-none text-[10px]" placeholder="MRP" /></td>
-                              <td className="px-1 py-1"><input type="number" value={line.rate} onChange={upd("rate")} className="w-full bg-slate-800 rounded px-1 py-1 text-white text-right font-mono focus:outline-none text-[10px]" placeholder="0.00" /></td>
-                              <td className="px-1 py-1"><input type="number" value={line.discount} onChange={upd("discount")} className="w-full bg-slate-800 rounded px-1 py-1 text-white text-center font-mono focus:outline-none text-[10px]" placeholder="0" /></td>
+                              <td className="px-1 py-1"><input value={line.batch} onChange={upd("batch")} className="w-full bg-slate-100 rounded px-1 py-1 text-white font-mono focus:outline-none text-[10px]" placeholder="Batch" /></td>
+                              <td className="px-1 py-1"><input value={line.expiryDate} onChange={upd("expiryDate")} className="w-full bg-slate-100 rounded px-1 py-1 text-white font-mono focus:outline-none text-[10px]" placeholder="MM/YY" /></td>
+                              <td className="px-1 py-1"><input type="number" value={line.mrp} onChange={upd("mrp")} className="w-full bg-slate-100 rounded px-1 py-1 text-white text-right font-mono focus:outline-none text-[10px]" placeholder="MRP" /></td>
+                              <td className="px-1 py-1"><input type="number" value={line.rate} onChange={upd("rate")} className="w-full bg-slate-100 rounded px-1 py-1 text-white text-right font-mono focus:outline-none text-[10px]" placeholder="0.00" /></td>
+                              <td className="px-1 py-1"><input type="number" value={line.discount} onChange={upd("discount")} className="w-full bg-slate-100 rounded px-1 py-1 text-white text-center font-mono focus:outline-none text-[10px]" placeholder="0" /></td>
                               <td className="px-1 py-1">
-                                <select value={line.gstPct} onChange={upd("gstPct")} className="w-full bg-slate-800 rounded px-1 py-1 text-white focus:outline-none text-[10px]">
+                                <select value={line.gstPct} onChange={upd("gstPct")} className="w-full bg-slate-100 rounded px-1 py-1 text-white focus:outline-none text-[10px]">
                                   {["0","5","12","18","28"].map(r => <option key={r} value={r}>{r}%</option>)}
                                 </select>
                               </td>
@@ -1442,7 +1442,7 @@ export default function VendorBillsPanel({
                           );
                         })}
                       </tbody>
-                      <tfoot className="bg-slate-900/60 text-[10px] font-mono">
+                      <tfoot className="bg-slate-50 text-[10px] font-mono">
                         {(() => {
                           const validLines = formLines.filter(l => l.description && l.rate);
                           const gross    = validLines.reduce((s, l) => s + (parseFloat(l.qty)||0)*(parseFloat(l.rate)||0), 0);
@@ -1451,7 +1451,7 @@ export default function VendorBillsPanel({
                           const gstTotal = validLines.reduce((s, l) => { const amt = (parseFloat(l.qty)||0)*(parseFloat(l.rate)||0)*(1-(parseFloat(l.discount)||0)/100); return s + amt*(parseFloat(l.gstPct)||0)/100; }, 0);
                           const grand = subtotal + gstTotal;
                           return (<>
-                            <tr><td colSpan={13} className="px-3 py-1.5 text-right text-slate-400 border-t border-slate-700">Taxable Amount</td><td colSpan={2} className="px-3 py-1.5 text-right text-slate-200 border-t border-slate-700">{subtotal.toLocaleString("en-IN",{minimumFractionDigits:2})}</td></tr>
+                            <tr><td colSpan={13} className="px-3 py-1.5 text-right text-slate-400 border-t border-slate-200">Taxable Amount</td><td colSpan={2} className="px-3 py-1.5 text-right text-slate-700 border-t border-slate-200">{subtotal.toLocaleString("en-IN",{minimumFractionDigits:2})}</td></tr>
                             <tr><td colSpan={13} className="px-3 py-1.5 text-right text-slate-400">GST</td><td colSpan={2} className="px-3 py-1.5 text-right text-amber-400">{gstTotal.toLocaleString("en-IN",{minimumFractionDigits:2})}</td></tr>
                             <tr><td colSpan={13} className="px-3 py-2 text-right font-bold text-white">Grand Total</td><td colSpan={2} className="px-3 py-2 text-right font-bold text-emerald-400 text-sm">{formatINR(grand)}</td></tr>
                           </>);
@@ -1464,26 +1464,26 @@ export default function VendorBillsPanel({
                     <div>
                       <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 font-mono">Taxable Amount *</label>
                       <input required type="number" value={formAmount} onChange={e => setFormAmount(e.target.value)} placeholder="0"
-                        className="w-full rounded-lg border border-slate-800 bg-slate-900 p-2.5 text-xs text-white font-mono focus:outline-none focus:border-indigo-500" />
+                        className="w-full rounded-lg border border-slate-200 bg-white p-2.5 text-xs text-white font-mono focus:outline-none focus:border-indigo-500" />
                     </div>
                     <div>
                       <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 font-mono">GST %</label>
                       <select value={formGstRate} onChange={e => setFormGstRate(e.target.value)}
-                        className="w-full rounded-lg border border-slate-800 bg-slate-900 p-2.5 text-xs text-white focus:outline-none">
+                        className="w-full rounded-lg border border-slate-200 bg-white p-2.5 text-xs text-white focus:outline-none">
                         {["0","5","12","18","28"].map(r => <option key={r} value={r}>{r}%</option>)}
                       </select>
                     </div>
                     <div>
                       <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 font-mono">Total</label>
-                      <div className="w-full rounded-lg border border-slate-700 bg-slate-800/60 p-2.5 text-xs font-bold font-mono text-emerald-400">{formatINR(totalAmount)}</div>
+                      <div className="w-full rounded-lg border border-slate-200 bg-slate-100/60 p-2.5 text-xs font-bold font-mono text-emerald-400">{formatINR(totalAmount)}</div>
                     </div>
                   </div>
                 )}
               </div>
 
-              <div className="flex justify-end gap-3 pt-3 border-t border-slate-800">
+              <div className="flex justify-end gap-3 pt-3 border-t border-slate-200">
                 <button type="button" onClick={() => setShowBillForm(false)}
-                  className="rounded-lg border border-slate-700 bg-slate-900 px-4 py-2 text-xs font-bold text-slate-300 cursor-pointer">Cancel</button>
+                  className="rounded-lg border border-slate-200 bg-white px-4 py-2 text-xs font-bold text-slate-300 cursor-pointer">Cancel</button>
                 <button type="submit"
                   className="rounded-lg bg-indigo-600 hover:bg-indigo-500 px-5 py-2 text-xs font-bold text-white transition-colors cursor-pointer">Save Purchase Bill</button>
               </div>
@@ -1495,21 +1495,21 @@ export default function VendorBillsPanel({
       {/* Record Payment Modal */}
       {payingBillId && payingBill && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-          <div className="w-full max-w-md rounded-2xl border border-slate-800 bg-slate-950 p-6 shadow-2xl">
-            <div className="flex items-center justify-between border-b border-slate-800 pb-3 mb-4">
+          <div className="w-full max-w-md rounded-2xl border border-slate-200 bg-white p-6 shadow-2xl">
+            <div className="flex items-center justify-between border-b border-slate-200 pb-3 mb-4">
               <div>
                 <h3 className="text-sm font-bold text-white font-mono">Record Payment</h3>
                 <p className="text-[10px] text-slate-400 mt-0.5">{payingBill.supplierName} · Bill {payingBill.billNumber}</p>
               </div>
-              <button onClick={() => setPayingBillId(null)} className="text-slate-400 hover:text-white cursor-pointer"><X className="w-4 h-4" /></button>
+              <button onClick={() => setPayingBillId(null)} className="text-slate-400 hover:text-slate-800 cursor-pointer"><X className="w-4 h-4" /></button>
             </div>
             <div className="grid grid-cols-3 gap-2 mb-4">
               {[
-                { label: "Bill Total", value: formatINR(payingBill.totalAmount), color: "text-slate-200" },
+                { label: "Bill Total", value: formatINR(payingBill.totalAmount), color: "text-slate-700" },
                 { label: "Already Paid", value: formatINR(payingBill.paidAmount), color: "text-emerald-400" },
                 { label: "Balance Due", value: formatINR(payingBill.balanceAmount), color: "text-red-400" },
               ].map(item => (
-                <div key={item.label} className="bg-slate-900 rounded-lg p-2.5 text-center">
+                <div key={item.label} className="bg-white rounded-lg p-2.5 text-center">
                   <p className="text-[9px] text-slate-500 uppercase font-mono">{item.label}</p>
                   <p className={`text-xs font-bold font-mono mt-0.5 ${item.color}`}>{item.value}</p>
                 </div>
@@ -1520,36 +1520,36 @@ export default function VendorBillsPanel({
                 <div>
                   <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 font-mono">Amount Paid *</label>
                   <input required type="number" value={payAmount} onChange={e => setPayAmount(e.target.value)}
-                    className="w-full rounded-lg border border-slate-800 bg-slate-900 p-2.5 text-xs text-white focus:outline-none focus:border-emerald-500 font-mono" />
+                    className="w-full rounded-lg border border-slate-200 bg-white p-2.5 text-xs text-white focus:outline-none focus:border-emerald-500 font-mono" />
                 </div>
                 <div>
                   <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 font-mono">Payment Date</label>
                   <input type="date" value={payDate} onChange={e => setPayDate(e.target.value)}
-                    className="w-full rounded-lg border border-slate-800 bg-slate-900 p-2.5 text-xs text-white focus:outline-none font-mono" />
+                    className="w-full rounded-lg border border-slate-200 bg-white p-2.5 text-xs text-white focus:outline-none font-mono" />
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 font-mono">Payment Mode</label>
                   <select value={payMode} onChange={e => setPayMode(e.target.value as BillPayment["mode"])}
-                    className="w-full rounded-lg border border-slate-800 bg-slate-900 p-2.5 text-xs text-white focus:outline-none">
+                    className="w-full rounded-lg border border-slate-200 bg-white p-2.5 text-xs text-white focus:outline-none">
                     <option>Cash</option><option>Bank Transfer</option><option>Cheque</option><option>UPI</option>
                   </select>
                 </div>
                 <div>
                   <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 font-mono">Ref / Cheque No.</label>
                   <input value={payRef} onChange={e => setPayRef(e.target.value)} placeholder="Optional"
-                    className="w-full rounded-lg border border-slate-800 bg-slate-900 p-2.5 text-xs text-white focus:outline-none font-mono" />
+                    className="w-full rounded-lg border border-slate-200 bg-white p-2.5 text-xs text-white focus:outline-none font-mono" />
                 </div>
               </div>
               <div>
                 <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 font-mono">Remarks</label>
                 <input value={payRemarks} onChange={e => setPayRemarks(e.target.value)} placeholder="Optional notes"
-                  className="w-full rounded-lg border border-slate-800 bg-slate-900 p-2.5 text-xs text-white focus:outline-none" />
+                  className="w-full rounded-lg border border-slate-200 bg-white p-2.5 text-xs text-white focus:outline-none" />
               </div>
-              <div className="flex justify-end gap-3 pt-2 border-t border-slate-800">
+              <div className="flex justify-end gap-3 pt-2 border-t border-slate-200">
                 <button type="button" onClick={() => setPayingBillId(null)}
-                  className="rounded-lg border border-slate-700 bg-slate-900 px-4 py-2 text-xs font-bold text-slate-300 cursor-pointer">Cancel</button>
+                  className="rounded-lg border border-slate-200 bg-white px-4 py-2 text-xs font-bold text-slate-300 cursor-pointer">Cancel</button>
                 <button type="submit"
                   className="flex items-center gap-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 px-4 py-2 text-xs font-bold text-white transition-colors cursor-pointer">
                   <IndianRupee className="w-3 h-3" /> Record Payment
@@ -1562,3 +1562,5 @@ export default function VendorBillsPanel({
     </div>
   );
 }
+
+

@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+﻿import React, { useMemo } from "react";
 import {
   Users2, Calendar, Wallet, Clock, CheckCircle, AlertCircle,
   TrendingUp, Gift, Briefcase, Target, UserCheck, PartyPopper,
@@ -291,3 +291,5 @@ export default function HRDashboardPanel({
     </div>
   );
 }
+
+

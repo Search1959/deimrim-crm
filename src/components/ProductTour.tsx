@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Product Tour — guided walkthrough overlay shown after first login.
  * Like realestate demo.php's flash message, but interactive step-by-step.
  */
@@ -79,10 +79,10 @@ export default function ProductTour({ onDone }: Props) {
 
   return (
     <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
-      <div className="w-full max-w-sm rounded-3xl bg-slate-950 border border-slate-800 shadow-2xl overflow-hidden">
+      <div className="w-full max-w-sm rounded-3xl bg-white border border-slate-200 shadow-2xl overflow-hidden">
 
         {/* Progress bar */}
-        <div className="h-1 bg-slate-800">
+        <div className="h-1 bg-slate-100">
           <div
             className="h-1 bg-indigo-500 transition-all duration-500"
             style={{ width: `${((step + 1) / STEPS.length) * 100}%` }}
@@ -94,14 +94,14 @@ export default function ProductTour({ onDone }: Props) {
           <span className="text-[10px] font-bold text-slate-500 font-mono uppercase tracking-widest">
             Product Tour · {step + 1} / {STEPS.length}
           </span>
-          <button onClick={onDone} className="text-slate-500 hover:text-white p-1">
+          <button onClick={onDone} className="text-slate-500 hover:text-slate-800 p-1">
             <X className="h-4 w-4" />
           </button>
         </div>
 
         {/* Step content */}
         <div className="px-6 pb-6 pt-4 flex flex-col items-center text-center">
-          <div className={`h-16 w-16 rounded-2xl bg-slate-900 border border-slate-800 flex items-center justify-center mb-5`}>
+          <div className={`h-16 w-16 rounded-2xl bg-white border border-slate-200 flex items-center justify-center mb-5`}>
             <Icon className={`h-8 w-8 ${current.color}`} />
           </div>
           <h2 className="text-lg font-extrabold text-white mb-3">{current.title}</h2>
@@ -121,7 +121,7 @@ export default function ProductTour({ onDone }: Props) {
         <div className="flex gap-3 px-6 pb-6">
           {step > 0 && (
             <button onClick={() => setStep(s => s - 1)}
-              className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl border border-slate-700 text-slate-300 hover:bg-slate-800 text-sm font-semibold transition-all">
+              className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl border border-slate-200 text-slate-300 hover:bg-slate-100 text-sm font-semibold transition-all">
               <ArrowLeft className="h-4 w-4" /> Back
             </button>
           )}
@@ -144,3 +144,5 @@ export default function ProductTour({ onDone }: Props) {
     </div>
   );
 }
+
+

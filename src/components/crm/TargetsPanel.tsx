@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+﻿import React, { useState, useEffect } from "react";
 import { Plus, Award, Activity, Calendar } from "lucide-react";
 import { SalesTarget, formatINR } from "../../types";
 
@@ -55,7 +55,7 @@ export default function TargetsPanel({ companyId }: { companyId: string }) {
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between border-b border-slate-800 pb-2">
+      <div className="flex items-center justify-between border-b border-slate-200 pb-2">
         <h3 className="text-xs font-bold text-slate-300 uppercase tracking-wider font-mono">Team Sales Quotas & Progress</h3>
         <button
           onClick={handleOpenAdd}
@@ -70,10 +70,10 @@ export default function TargetsPanel({ companyId }: { companyId: string }) {
         {targets.map(t => {
           const pct = Math.min(100, Math.round((t.achievedAmount / t.targetAmount) * 100)) || 0;
           return (
-            <div key={t.id} className="bg-slate-900/40 border border-slate-800 rounded-xl p-4 space-y-3">
-              <div className="flex justify-between items-start border-b border-slate-800/80 pb-2">
+            <div key={t.id} className="bg-slate-50 border border-slate-200 rounded-xl p-4 space-y-3">
+              <div className="flex justify-between items-start border-b border-slate-200/80 pb-2">
                 <div>
-                  <div className="font-bold text-slate-100 font-mono text-sm">{t.period}</div>
+                  <div className="font-bold text-slate-800 font-mono text-sm">{t.period}</div>
                   <div className="text-[10px] text-slate-400 font-semibold">{t.assignedTo}</div>
                 </div>
                 <div className="text-right">
@@ -87,7 +87,7 @@ export default function TargetsPanel({ companyId }: { companyId: string }) {
                   <span>Achieved: {formatINR(t.achievedAmount)}</span>
                   <span>Target: {formatINR(t.targetAmount)}</span>
                 </div>
-                <div className="w-full bg-slate-800 rounded-full h-2">
+                <div className="w-full bg-slate-100 rounded-full h-2">
                   <div 
                     className="bg-indigo-500 h-2 rounded-full transition-all"
                     style={{ width: `${pct}%` }}
@@ -104,11 +104,11 @@ export default function TargetsPanel({ companyId }: { companyId: string }) {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4">
           <form 
             onSubmit={handleSaveTarget}
-            className="w-full max-w-sm rounded-xl border border-slate-800 bg-slate-950 p-5 shadow-2xl text-left space-y-4 animate-scaleUp"
+            className="w-full max-w-sm rounded-xl border border-slate-200 bg-white p-5 shadow-2xl text-left space-y-4 animate-scaleUp"
           >
-            <div className="border-b border-slate-800 pb-2 flex items-center justify-between">
-              <h3 className="text-sm font-bold text-white uppercase tracking-wider font-mono">Set Target</h3>
-              <button type="button" onClick={() => setShowAddModal(false)} className="text-slate-400 hover:text-white font-bold">×</button>
+            <div className="border-b border-slate-200 pb-2 flex items-center justify-between">
+              <h3 className="text-sm font-bold text-slate-800 uppercase tracking-wider font-mono">Set Target</h3>
+              <button type="button" onClick={() => setShowAddModal(false)} className="text-slate-400 hover:text-slate-800 font-bold">×</button>
             </div>
 
             <div className="space-y-3">
@@ -120,7 +120,7 @@ export default function TargetsPanel({ companyId }: { companyId: string }) {
                   placeholder="e.g. July 2026, Q3 FY26"
                   value={period}
                   onChange={(e) => setPeriod(e.target.value)}
-                  className="w-full bg-slate-900 border border-slate-800 rounded-lg p-2 text-xs text-white font-mono focus:outline-hidden focus:border-indigo-500"
+                  className="w-full bg-white border border-slate-200 rounded-lg p-2 text-xs text-white font-mono focus:outline-hidden focus:border-indigo-500"
                 />
               </div>
 
@@ -133,7 +133,7 @@ export default function TargetsPanel({ companyId }: { companyId: string }) {
                     placeholder="0.00"
                     value={targetAmount}
                     onChange={(e) => setTargetAmount(e.target.value)}
-                    className="w-full bg-slate-900 border border-slate-800 rounded-lg p-2 text-xs text-white font-mono focus:outline-hidden focus:border-indigo-500"
+                    className="w-full bg-white border border-slate-200 rounded-lg p-2 text-xs text-white font-mono focus:outline-hidden focus:border-indigo-500"
                   />
                 </div>
                 <div>
@@ -143,7 +143,7 @@ export default function TargetsPanel({ companyId }: { companyId: string }) {
                     placeholder="0.00"
                     value={achievedAmount}
                     onChange={(e) => setAchievedAmount(e.target.value)}
-                    className="w-full bg-slate-900 border border-slate-800 rounded-lg p-2 text-xs text-white font-mono focus:outline-hidden focus:border-indigo-500"
+                    className="w-full bg-white border border-slate-200 rounded-lg p-2 text-xs text-white font-mono focus:outline-hidden focus:border-indigo-500"
                   />
                 </div>
               </div>
@@ -155,16 +155,16 @@ export default function TargetsPanel({ companyId }: { companyId: string }) {
                   placeholder="e.g. Kolkata Regional Office"
                   value={assignedTo}
                   onChange={(e) => setAssignedTo(e.target.value)}
-                  className="w-full bg-slate-900 border border-slate-800 rounded-lg p-2 text-xs text-white focus:outline-hidden focus:border-indigo-500 font-semibold"
+                  className="w-full bg-white border border-slate-200 rounded-lg p-2 text-xs text-white focus:outline-hidden focus:border-indigo-500 font-semibold"
                 />
               </div>
             </div>
 
-            <div className="flex justify-end gap-2.5 pt-3 border-t border-slate-800/80">
+            <div className="flex justify-end gap-2.5 pt-3 border-t border-slate-200/80">
               <button
                 type="button"
                 onClick={() => setShowAddModal(false)}
-                className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-xs font-bold transition-all cursor-pointer"
+                className="px-3 py-1.5 bg-slate-100 hover:bg-slate-700 text-slate-300 rounded-lg text-xs font-bold transition-all cursor-pointer"
               >
                 Cancel
               </button>
@@ -181,3 +181,5 @@ export default function TargetsPanel({ companyId }: { companyId: string }) {
     </div>
   );
 }
+
+

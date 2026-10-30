@@ -1,4 +1,4 @@
-import { toast } from "../../utils/toast";
+﻿import { toast } from "../../utils/toast";
 import React, { useState, useRef, useEffect } from "react";
 import { Plus, Search, Trash2, Check, ShoppingBag, Eye, PackageCheck, X, Upload } from "lucide-react";
 import { PurchaseOrder, Supplier, Product, BatchStock, formatINR } from "../../types";
@@ -75,7 +75,7 @@ function ProductCombobox({
     <div ref={ref} className="relative w-full">
       <div
         onClick={() => { setOpen(o => !o); setQuery(""); }}
-        className="w-full bg-slate-950 border border-slate-800 rounded p-1 text-[10px] text-white cursor-pointer flex items-center justify-between gap-1 min-h-[26px]"
+        className="w-full bg-white border border-slate-200 rounded p-1 text-[10px] text-white cursor-pointer flex items-center justify-between gap-1 min-h-[26px]"
       >
         <span className={selected ? "text-white" : "text-slate-500"}>
           {selected ? selected.name : "-- Select Product --"}
@@ -83,14 +83,14 @@ function ProductCombobox({
         <span className="text-slate-600 text-[8px]">▼</span>
       </div>
       {open && (
-        <div className="absolute z-50 left-0 top-full mt-0.5 w-72 bg-slate-950 border border-slate-700 rounded-lg shadow-2xl overflow-hidden">
-          <div className="p-1.5 border-b border-slate-800">
+        <div className="absolute z-50 left-0 top-full mt-0.5 w-72 bg-white border border-slate-200 rounded-lg shadow-2xl overflow-hidden">
+          <div className="p-1.5 border-b border-slate-200">
             <input
               autoFocus
               value={query}
               onChange={e => setQuery(e.target.value)}
               placeholder="Search by name or HSN…"
-              className="w-full bg-slate-900 border border-slate-700 rounded px-2 py-1 text-[10px] text-white outline-none"
+              className="w-full bg-white border border-slate-200 rounded px-2 py-1 text-[10px] text-white outline-none"
             />
           </div>
           <div className="max-h-52 overflow-y-auto">
@@ -108,10 +108,10 @@ function ProductCombobox({
                 <div
                   key={p.id}
                   onClick={() => { onChange(p.id); setOpen(false); setQuery(""); }}
-                  className={`flex items-center justify-between px-2.5 py-2 cursor-pointer hover:bg-slate-800 text-[10px] ${p.id === value ? "bg-indigo-900/30" : ""}`}
+                  className={`flex items-center justify-between px-2.5 py-2 cursor-pointer hover:bg-slate-100 text-[10px] ${p.id === value ? "bg-indigo-900/30" : ""}`}
                 >
                   <div className="flex-1 min-w-0">
-                    <div className="text-slate-100 truncate">{p.name}</div>
+                    <div className="text-slate-800 truncate">{p.name}</div>
                     {hsn && <div className="text-slate-500 font-mono text-[9px]">HSN: {hsn}</div>}
                   </div>
                   <span className={`ml-2 font-mono font-bold shrink-0 ${stock === 0 ? "text-red-400" : "text-emerald-400"}`}>
@@ -150,7 +150,7 @@ function VendorCombobox({ suppliers, value, onChange }: { suppliers: Supplier[];
     <div ref={ref} className="relative w-full">
       <div
         onClick={() => { setOpen(o => !o); setQuery(""); }}
-        className="w-full bg-slate-900 border border-slate-800 rounded-lg p-2 text-xs text-white cursor-pointer flex items-center justify-between gap-1 min-h-[34px] focus:border-indigo-500"
+        className="w-full bg-white border border-slate-200 rounded-lg p-2 text-xs text-white cursor-pointer flex items-center justify-between gap-1 min-h-[34px] focus:border-indigo-500"
       >
         <span className={selected ? "text-white font-semibold" : "text-slate-500"}>
           {selected ? `${selected.name} (${selected.code})` : "-- Select Vendor --"}
@@ -158,14 +158,14 @@ function VendorCombobox({ suppliers, value, onChange }: { suppliers: Supplier[];
         <span className="text-slate-600 text-[9px]">▼</span>
       </div>
       {open && (
-        <div className="absolute z-50 left-0 top-full mt-0.5 w-full bg-slate-950 border border-slate-700 rounded-lg shadow-2xl overflow-hidden">
-          <div className="p-1.5 border-b border-slate-800">
+        <div className="absolute z-50 left-0 top-full mt-0.5 w-full bg-white border border-slate-200 rounded-lg shadow-2xl overflow-hidden">
+          <div className="p-1.5 border-b border-slate-200">
             <input
               autoFocus
               value={query}
               onChange={e => setQuery(e.target.value)}
               placeholder="Search vendor…"
-              className="w-full bg-slate-900 border border-slate-700 rounded px-2 py-1 text-xs text-white outline-none"
+              className="w-full bg-white border border-slate-200 rounded px-2 py-1 text-xs text-white outline-none"
             />
           </div>
           <div className="max-h-44 overflow-y-auto">
@@ -174,7 +174,7 @@ function VendorCombobox({ suppliers, value, onChange }: { suppliers: Supplier[];
               <div
                 key={s.id}
                 onClick={() => { onChange(s.id); setOpen(false); setQuery(""); }}
-                className={`px-3 py-2 cursor-pointer hover:bg-slate-800 text-xs ${s.id === value ? "bg-indigo-900/30 text-indigo-300" : "text-slate-100"}`}
+                className={`px-3 py-2 cursor-pointer hover:bg-slate-100 text-xs ${s.id === value ? "bg-indigo-900/30 text-indigo-300" : "text-slate-800"}`}
               >
                 <span className="font-semibold">{s.name}</span>
                 <span className="text-slate-400 ml-1 text-[10px]">({s.code})</span>
@@ -480,7 +480,7 @@ export default function OrdersPanel({
   return (
     <div className="space-y-4">
       {/* Control row */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 bg-slate-950/40 border border-slate-800 rounded-xl p-4">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 bg-slate-50 border border-slate-200 rounded-xl p-4">
         <div className="relative flex-1 max-w-md">
           <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-500" />
           <input
@@ -488,7 +488,7 @@ export default function OrdersPanel({
             placeholder="Search by PO# or vendor..."
             value={searchQuery}
             onChange={e => setSearchQuery(e.target.value)}
-            className="w-full bg-slate-900 border border-slate-800 rounded-lg pl-8 pr-3 py-1.5 text-xs text-slate-200 focus:outline-none focus:border-indigo-500 font-semibold"
+            className="w-full bg-white border border-slate-200 rounded-lg pl-8 pr-3 py-1.5 text-xs text-slate-700 focus:outline-none focus:border-indigo-500 font-semibold"
           />
         </div>
         <button
@@ -509,7 +509,7 @@ export default function OrdersPanel({
             className={`px-2.5 py-1 rounded-md border transition-all shrink-0 cursor-pointer ${
               statusFilter === s
                 ? "bg-indigo-600/10 border-indigo-500/40 text-indigo-300"
-                : "bg-slate-900/60 border-slate-800 text-slate-400 hover:border-slate-700 hover:text-slate-200"
+                : "bg-slate-50 border-slate-200 text-slate-400 hover:border-slate-200 hover:text-slate-700"
             }`}
           >
             {s.toUpperCase()}
@@ -518,10 +518,10 @@ export default function OrdersPanel({
       </div>
 
       {/* Table */}
-      <div className="bg-slate-950/60 border border-slate-800 rounded-xl overflow-hidden">
+      <div className="bg-white border border-slate-200 rounded-xl overflow-hidden">
         <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-slate-800 text-xs">
-            <thead className="bg-slate-950 text-slate-300 font-semibold uppercase font-mono tracking-wider">
+          <table className="min-w-full divide-y divide-slate-100 text-xs">
+            <thead className="bg-white text-slate-300 font-semibold uppercase font-mono tracking-wider">
               <tr>
                 <th className="px-5 py-3 text-left">PO Number</th>
                 <th className="px-5 py-3 text-left">Vendor</th>
@@ -532,7 +532,7 @@ export default function OrdersPanel({
                 <th className="px-5 py-3 text-right">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-800/60 text-slate-300">
+            <tbody className="divide-y divide-slate-100/60 text-slate-300">
               {filtered.length === 0 ? (
                 <tr>
                   <td colSpan={7} className="px-5 py-8 text-center text-slate-500">
@@ -542,28 +542,28 @@ export default function OrdersPanel({
               ) : filtered.map(po => {
                 const supplier = suppliers.find(s => s.id === po.supplierId);
                 return (
-                  <tr key={po.id} className="hover:bg-slate-900/40 transition-colors">
+                  <tr key={po.id} className="hover:bg-slate-50 transition-colors">
                     <td className="px-5 py-4 font-bold text-indigo-400 font-mono">{po.poNumber}</td>
                     <td className="px-5 py-4">
-                      <div className="font-bold text-slate-100">{supplier?.name ?? "Unknown Vendor"}</div>
+                      <div className="font-bold text-slate-800">{supplier?.name ?? "Unknown Vendor"}</div>
                       <div className="text-[10px] text-slate-400 font-mono">{supplier?.code ?? "—"}</div>
                     </td>
                     <td className="px-5 py-4 font-mono text-slate-400">{new Date(po.createdAt).toLocaleDateString()}</td>
                     <td className="px-5 py-4 font-mono text-slate-400">{po.deliveryDate ?? "Not set"}</td>
-                    <td className="px-5 py-4 font-bold font-mono text-slate-200">{formatINR(po.totalAmount)}</td>
+                    <td className="px-5 py-4 font-bold font-mono text-slate-700">{formatINR(po.totalAmount)}</td>
                     <td className="px-5 py-4">
                       <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wide border ${
                         po.status === "completed" ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20" :
                         po.status === "approved"  ? "bg-indigo-500/10 text-indigo-400 border-indigo-500/20" :
                         po.status === "cancelled" ? "bg-red-500/10 text-red-400 border-red-500/20" :
-                        "bg-slate-800 text-slate-400 border-slate-700"
+                        "bg-slate-100 text-slate-400 border-slate-200"
                       }`}>
                         {po.status}
                       </span>
                     </td>
                     <td className="px-5 py-4 text-right">
                       <div className="flex items-center justify-end gap-1.5">
-                        <button onClick={() => setSelectedOrderView(po)} className="rounded-lg p-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 transition-colors cursor-pointer" title="View PO">
+                        <button onClick={() => setSelectedOrderView(po)} className="rounded-lg p-1.5 bg-slate-100 hover:bg-slate-700 text-slate-300 transition-colors cursor-pointer" title="View PO">
                           <Eye className="h-3.5 w-3.5" />
                         </button>
                         {po.status === "draft" && (
@@ -592,10 +592,10 @@ export default function OrdersPanel({
       {/* View PO Modal */}
       {selectedOrderView && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-          <div className="w-full max-w-md rounded-xl border border-slate-800 bg-slate-950 p-5 shadow-2xl space-y-4">
-            <div className="border-b border-slate-800 pb-2 flex items-center justify-between">
+          <div className="w-full max-w-md rounded-xl border border-slate-200 bg-white p-5 shadow-2xl space-y-4">
+            <div className="border-b border-slate-200 pb-2 flex items-center justify-between">
               <h3 className="text-sm font-bold text-white font-mono">{selectedOrderView.poNumber}</h3>
-              <button onClick={() => setSelectedOrderView(null)} className="text-slate-400 hover:text-white cursor-pointer"><X className="h-4 w-4" /></button>
+              <button onClick={() => setSelectedOrderView(null)} className="text-slate-400 hover:text-slate-800 cursor-pointer"><X className="h-4 w-4" /></button>
             </div>
             <div className="space-y-3 text-xs">
               <div className="grid grid-cols-2 gap-2 text-slate-300">
@@ -604,13 +604,13 @@ export default function OrdersPanel({
                 <div>Created: <span className="text-white font-semibold">{new Date(selectedOrderView.createdAt).toLocaleDateString()}</span></div>
                 <div>Delivery: <span className="text-white font-semibold">{selectedOrderView.deliveryDate ?? "Not set"}</span></div>
               </div>
-              <div className="border-t border-slate-800 pt-2 space-y-1">
+              <div className="border-t border-slate-200 pt-2 space-y-1">
                 <div className="text-[10px] font-bold text-indigo-400 uppercase font-mono mb-1">Line Items</div>
                 {selectedOrderView.items.map((it, idx) => {
                   const prod = products.find(p => p.id === it.productId);
                   const stock = getStock(it.productId, batchStocks);
                   return (
-                    <div key={idx} className="bg-slate-900 border border-slate-800 p-2 rounded flex justify-between">
+                    <div key={idx} className="bg-white border border-slate-200 p-2 rounded flex justify-between">
                       <div>
                         <div className="text-white font-bold">{prod?.name ?? it.productId}</div>
                         <div className="text-slate-400 text-[10px]">Rate: {formatINR(it.unitPrice)} · Stock: <span className={stock === 0 ? "text-red-400" : "text-emerald-400"}>{stock}</span></div>
@@ -620,7 +620,7 @@ export default function OrdersPanel({
                   );
                 })}
               </div>
-              <div className="border-t border-slate-800 pt-2 text-right">
+              <div className="border-t border-slate-200 pt-2 text-right">
                 <span className="text-slate-500 block text-[10px]">Grand Total (incl. GST)</span>
                 <strong className="text-base text-white font-mono">{formatINR(selectedOrderView.totalAmount)}</strong>
               </div>
@@ -634,7 +634,7 @@ export default function OrdersPanel({
                   <PackageCheck className="h-3.5 w-3.5" /> Receive Stock into Inventory
                 </button>
               )}
-              <button onClick={() => setSelectedOrderView(null)} className="px-4 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-xs cursor-pointer">Close</button>
+              <button onClick={() => setSelectedOrderView(null)} className="px-4 py-1.5 bg-slate-100 hover:bg-slate-700 text-slate-300 rounded-lg text-xs cursor-pointer">Close</button>
             </div>
           </div>
         </div>
@@ -645,14 +645,14 @@ export default function OrdersPanel({
         <div className="fixed inset-0 z-50 flex items-start md:items-center justify-center bg-black/60 backdrop-blur-sm p-2 md:p-4 overflow-y-auto">
           <form
             onSubmit={handleCreatePO}
-            className="w-full max-w-lg rounded-xl border border-slate-800 bg-slate-950 p-4 md:p-5 shadow-2xl space-y-4 my-2 md:my-8"
+            className="w-full max-w-lg rounded-xl border border-slate-200 bg-white p-4 md:p-5 shadow-2xl space-y-4 my-2 md:my-8"
           >
-            <div className="border-b border-slate-800 pb-2 flex items-center justify-between">
+            <div className="border-b border-slate-200 pb-2 flex items-center justify-between">
               <div className="flex items-center gap-1.5 text-indigo-400">
                 <ShoppingBag className="h-4 w-4" />
                 <h3 className="text-sm font-bold text-white font-mono">Create Purchase Order</h3>
               </div>
-              <button type="button" onClick={() => setShowAddModal(false)} className="text-slate-400 hover:text-white cursor-pointer"><X className="h-4 w-4" /></button>
+              <button type="button" onClick={() => setShowAddModal(false)} className="text-slate-400 hover:text-slate-800 cursor-pointer"><X className="h-4 w-4" /></button>
             </div>
 
             <div className="space-y-3 text-xs max-h-[70vh] overflow-y-auto pr-1">
@@ -666,9 +666,9 @@ export default function OrdersPanel({
               </div>
 
               {/* Line Items */}
-              <div className="border border-slate-800 rounded-lg overflow-visible bg-slate-900/60">
+              <div className="border border-slate-200 rounded-lg overflow-visible bg-slate-50">
                 {/* Mobile: stacked cards */}
-                <div className="md:hidden divide-y divide-slate-800/60">
+                <div className="md:hidden divide-y divide-slate-100/60">
                   {lineItems.map((item, idx) => (
                     <div key={idx} className="p-2.5 space-y-2">
                       <div className="flex items-center justify-between gap-1">
@@ -699,7 +699,7 @@ export default function OrdersPanel({
                             type="number" min={1} required
                             value={item.quantity}
                             onChange={e => handleLineChange(idx, "quantity", Number(e.target.value))}
-                            className="w-full text-center bg-slate-950 border border-slate-800 rounded p-1.5 text-xs text-white font-mono"
+                            className="w-full text-center bg-white border border-slate-200 rounded p-1.5 text-xs text-white font-mono"
                           />
                         </div>
                         <div>
@@ -708,7 +708,7 @@ export default function OrdersPanel({
                             type="number" min={0} required
                             value={item.unitPrice}
                             onChange={e => handleLineChange(idx, "unitPrice", Number(e.target.value))}
-                            className="w-full text-right bg-slate-950 border border-slate-800 rounded p-1.5 text-xs text-white font-mono"
+                            className="w-full text-right bg-white border border-slate-200 rounded p-1.5 text-xs text-white font-mono"
                           />
                         </div>
                       </div>
@@ -720,7 +720,7 @@ export default function OrdersPanel({
                 </div>
                 {/* Desktop: table */}
                 <table className="hidden md:table min-w-full text-[10px]">
-                  <thead className="bg-slate-950 text-slate-400 font-mono font-bold uppercase tracking-wider border-b border-slate-800">
+                  <thead className="bg-white text-slate-400 font-mono font-bold uppercase tracking-wider border-b border-slate-200">
                     <tr>
                       <th className="px-2 py-1.5 text-left">Product (Stock)</th>
                       <th className="px-2 py-1.5 text-center w-14">Qty</th>
@@ -729,7 +729,7 @@ export default function OrdersPanel({
                       <th className="px-2 py-1.5 w-5"></th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-slate-800/60">
+                  <tbody className="divide-y divide-slate-100/60">
                     {lineItems.map((item, idx) => (
                       <tr key={idx}>
                         <td className="px-2 py-1.5 overflow-visible">
@@ -745,7 +745,7 @@ export default function OrdersPanel({
                             type="number" min={1} required
                             value={item.quantity}
                             onChange={e => handleLineChange(idx, "quantity", Number(e.target.value))}
-                            className="w-full text-center bg-slate-950 border border-slate-800 rounded p-1 text-[10px] text-white font-mono"
+                            className="w-full text-center bg-white border border-slate-200 rounded p-1 text-[10px] text-white font-mono"
                           />
                         </td>
                         <td className="px-2 py-1.5">
@@ -753,7 +753,7 @@ export default function OrdersPanel({
                             type="number" min={0} required
                             value={item.unitPrice}
                             onChange={e => handleLineChange(idx, "unitPrice", Number(e.target.value))}
-                            className="w-full text-right bg-slate-950 border border-slate-800 rounded p-1 text-[10px] text-white font-mono"
+                            className="w-full text-right bg-white border border-slate-200 rounded p-1 text-[10px] text-white font-mono"
                           />
                         </td>
                         <td className="px-2 py-1.5 text-right font-mono font-bold text-slate-300">
@@ -776,7 +776,7 @@ export default function OrdersPanel({
                 </table>
 
                 {/* Footer: Add item + totals */}
-                <div className="bg-slate-950 p-2 border-t border-slate-800 flex justify-between items-end text-[10px]">
+                <div className="bg-white p-2 border-t border-slate-200 flex justify-between items-end text-[10px]">
                   <button
                     type="button"
                     onClick={() => setLineItems(prev => [...prev, { productId: "", quantity: 1, unitPrice: 0 }])}
@@ -785,18 +785,18 @@ export default function OrdersPanel({
                     + Add Item
                   </button>
                   <div className="text-right space-y-0.5 font-mono font-semibold text-slate-400">
-                    <div>Subtotal: <span className="text-slate-200 font-bold">{formatINR(subtotal)}</span></div>
+                    <div>Subtotal: <span className="text-slate-700 font-bold">{formatINR(subtotal)}</span></div>
                     <div className="flex items-center justify-end gap-1">
                       GST (
                       <input
                         type="number" min={0} max={100}
                         value={gstPct}
                         onChange={e => setGstPct(Number(e.target.value))}
-                        className="w-10 text-center bg-slate-900 border border-slate-700 rounded px-1 py-0.5 text-[10px] text-white font-mono outline-none"
+                        className="w-10 text-center bg-white border border-slate-200 rounded px-1 py-0.5 text-[10px] text-white font-mono outline-none"
                       />
-                      %): <span className="text-slate-200 font-bold">{formatINR(gstAmount)}</span>
+                      %): <span className="text-slate-700 font-bold">{formatINR(gstAmount)}</span>
                     </div>
-                    <div className="text-indigo-400 text-xs border-t border-slate-800 pt-0.5">
+                    <div className="text-indigo-400 text-xs border-t border-slate-200 pt-0.5">
                       Grand Total: <span className="font-bold">{formatINR(grandTotal)}</span>
                     </div>
                   </div>
@@ -812,7 +812,7 @@ export default function OrdersPanel({
                     placeholder="e.g. INV-2024-001"
                     value={supplierInvoiceNo}
                     onChange={e => setSupplierInvoiceNo(e.target.value)}
-                    className="w-full bg-slate-900 border border-slate-800 rounded-lg p-2 text-xs text-white focus:outline-none focus:border-indigo-500 font-mono"
+                    className="w-full bg-white border border-slate-200 rounded-lg p-2 text-xs text-white focus:outline-none focus:border-indigo-500 font-mono"
                   />
                 </div>
                 <div>
@@ -821,7 +821,7 @@ export default function OrdersPanel({
                     type="date"
                     value={supplierInvoiceDate}
                     onChange={e => setSupplierInvoiceDate(e.target.value)}
-                    className="w-full bg-slate-900 border border-slate-800 rounded-lg p-2 text-xs text-white focus:outline-none focus:border-indigo-500 font-mono"
+                    className="w-full bg-white border border-slate-200 rounded-lg p-2 text-xs text-white focus:outline-none focus:border-indigo-500 font-mono"
                   />
                 </div>
               </div>
@@ -833,7 +833,7 @@ export default function OrdersPanel({
                   type="date"
                   value={deliveryDate}
                   onChange={e => setDeliveryDate(e.target.value)}
-                  className="w-full bg-slate-900 border border-slate-800 rounded-lg p-2 text-xs text-white focus:outline-none focus:border-indigo-500 font-mono"
+                  className="w-full bg-white border border-slate-200 rounded-lg p-2 text-xs text-white focus:outline-none focus:border-indigo-500 font-mono"
                 />
               </div>
 
@@ -845,13 +845,13 @@ export default function OrdersPanel({
                   placeholder="Optional instructions or remarks..."
                   value={notes}
                   onChange={e => setNotes(e.target.value)}
-                  className="w-full bg-slate-900 border border-slate-800 rounded-lg p-2 text-xs text-slate-200 focus:outline-none"
+                  className="w-full bg-white border border-slate-200 rounded-lg p-2 text-xs text-slate-700 focus:outline-none"
                 />
               </div>
             </div>
 
-            <div className="flex justify-end gap-2.5 pt-3 border-t border-slate-800 text-xs">
-              <button type="button" onClick={() => setShowAddModal(false)} className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg font-bold cursor-pointer">
+            <div className="flex justify-end gap-2.5 pt-3 border-t border-slate-200 text-xs">
+              <button type="button" onClick={() => setShowAddModal(false)} className="px-4 py-2 bg-slate-100 hover:bg-slate-700 text-slate-300 rounded-lg font-bold cursor-pointer">
                 Cancel
               </button>
               <button type="submit" className="px-5 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg font-bold cursor-pointer">
@@ -864,3 +864,5 @@ export default function OrdersPanel({
     </div>
   );
 }
+
+

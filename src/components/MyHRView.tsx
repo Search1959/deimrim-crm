@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+﻿import React, { useState, useEffect, useCallback } from "react";
 import {
   Clock, CheckCircle2, LogOut, Calendar, FileText, Wallet,
   Target, MapPin, ChevronRight, Plus, AlertCircle, TrendingUp, Building2
@@ -158,7 +158,7 @@ export default function MyHRView({
   return (
     <div className="flex-1 overflow-y-auto bg-slate-50">
       {/* ── Employee Banner Card ── */}
-      <div data-theme="dark" className="bg-gradient-to-r from-slate-950 via-slate-900 to-indigo-950 text-white px-6 pt-6 pb-4 shadow">
+      <div  className="bg-gradient-to-r from-slate-950 via-slate-900 to-indigo-950 text-white px-6 pt-6 pb-4 shadow">
         <div className="max-w-4xl mx-auto">
           <p className="text-xs font-mono text-slate-400 tracking-widest uppercase mb-1">
             {emp?.employeeCode ?? "EMP-—"} · {desig?.name ?? currentUser.name.split(" ")[0]}
@@ -561,3 +561,5 @@ export default function MyHRView({
     </div>
   );
 }
+
+

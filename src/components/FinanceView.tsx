@@ -819,7 +819,7 @@ Office Ergonomic Chairs,AST-CH-99,Furniture,1200,1050,12`;
               {isFinanceManager && (
                 <button
                   onClick={() => setShowAddTx(!showAddTx)}
-                  className="flex items-center gap-1 rounded-lg bg-indigo-600 hover:bg-indigo-500 px-3 py-1.5 text-xs font-semibold text-white transition-colors"
+                  className="flex items-center gap-1 rounded-lg bg-indigo-600 hover:bg-indigo-500 px-3 py-1.5 text-xs font-semibold text-slate-800 transition-colors"
                 >
                   <Plus className="h-3.5 w-3.5" />
                   <span>Log Transaction</span>
@@ -844,10 +844,10 @@ Office Ergonomic Chairs,AST-CH-99,Furniture,1200,1050,12`;
 
           {/* ADD TRANSACTION LOG */}
           {showAddTx && (
-            <form onSubmit={handleCreateTx} className="bg-slate-950 border border-slate-800 rounded-xl p-5 grid grid-cols-1 md:grid-cols-4 gap-4">
-              <div className="md:col-span-4 border-b border-slate-800 pb-2 flex items-center justify-between">
+            <form onSubmit={handleCreateTx} className="bg-white border border-slate-200 rounded-xl p-5 grid grid-cols-1 md:grid-cols-4 gap-4">
+              <div className="md:col-span-4 border-b border-slate-200 pb-2 flex items-center justify-between">
                 <h4 className="font-bold text-sm text-white font-mono">Post Double-Entry Ledger Entry</h4>
-                <button type="button" onClick={() => setShowAddTx(false)} className="text-slate-400 hover:text-white">
+                <button type="button" onClick={() => setShowAddTx(false)} className="text-slate-400 hover:text-slate-800">
                   <X className="h-4 w-4" />
                 </button>
               </div>
@@ -863,7 +863,7 @@ Office Ergonomic Chairs,AST-CH-99,Furniture,1200,1050,12`;
                       category: categories[type as "INCOME" | "EXPENSE"][0],
                     }));
                   }}
-                  className="w-full rounded-lg border border-slate-800 bg-slate-900 p-2 text-sm text-white focus:outline-hidden font-semibold"
+                  className="w-full rounded-lg border border-slate-200 bg-white p-2 text-sm text-slate-800 focus:outline-hidden font-semibold"
                 >
                   <option value="EXPENSE">EXPENSE (Outflow)</option>
                   <option value="INCOME">INCOME (Inflow)</option>
@@ -874,7 +874,7 @@ Office Ergonomic Chairs,AST-CH-99,Furniture,1200,1050,12`;
                 <select
                   value={newTx.category}
                   onChange={(e) => setNewTx(prev => ({ ...prev, category: e.target.value }))}
-                  className="w-full rounded-lg border border-slate-800 bg-slate-900 p-2 text-sm text-white focus:outline-hidden font-semibold"
+                  className="w-full rounded-lg border border-slate-200 bg-white p-2 text-sm text-slate-800 focus:outline-hidden font-semibold"
                 >
                   {categories[newTx.type as "INCOME" | "EXPENSE"].map(cat => (
                     <option key={cat} value={cat}>{cat}</option>
@@ -889,7 +889,7 @@ Office Ergonomic Chairs,AST-CH-99,Furniture,1200,1050,12`;
                   required
                   value={newTx.amount}
                   onChange={(e) => setNewTx(prev => ({ ...prev, amount: e.target.value }))}
-                  className="w-full rounded-lg border border-slate-800 bg-slate-900 p-2 text-sm text-white focus:outline-hidden font-mono"
+                  className="w-full rounded-lg border border-slate-200 bg-white p-2 text-sm text-slate-800 focus:outline-hidden font-mono"
                 />
               </div>
               <div>
@@ -897,7 +897,7 @@ Office Ergonomic Chairs,AST-CH-99,Furniture,1200,1050,12`;
                 <select
                   value={newTx.paymentMethod}
                   onChange={(e) => setNewTx(prev => ({ ...prev, paymentMethod: e.target.value }))}
-                  className="w-full rounded-lg border border-slate-800 bg-slate-900 p-2 text-sm text-white focus:outline-hidden font-semibold"
+                  className="w-full rounded-lg border border-slate-200 bg-white p-2 text-sm text-slate-800 focus:outline-hidden font-semibold"
                 >
                   <option value="BANK">Bank Account Transfer</option>
                   <option value="CASH">Petty Cash</option>
@@ -913,7 +913,7 @@ Office Ergonomic Chairs,AST-CH-99,Furniture,1200,1050,12`;
                   value={newTx.description}
                   onChange={(e) => setNewTx(prev => ({ ...prev, description: e.target.value }))}
                   placeholder="EX: Direct payment of office utility power bills"
-                  className="w-full rounded-lg border border-slate-800 bg-slate-900 p-2 text-sm text-white focus:outline-hidden"
+                  className="w-full rounded-lg border border-slate-200 bg-white p-2 text-sm text-slate-800 focus:outline-hidden"
                 />
               </div>
               <div className="md:col-span-4 text-right">
@@ -927,10 +927,10 @@ Office Ergonomic Chairs,AST-CH-99,Furniture,1200,1050,12`;
           {/* EDIT TRANSACTION MODAL */}
           {txToEdit && (
             <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-              <form onSubmit={handleSaveTxEdit} className="w-full max-w-md rounded-2xl border border-slate-800 bg-slate-950 p-6 shadow-2xl animate-scaleUp text-left space-y-4">
-                <div className="border-b border-slate-800 pb-2 flex items-center justify-between">
+              <form onSubmit={handleSaveTxEdit} className="w-full max-w-md rounded-2xl border border-slate-200 bg-white p-6 shadow-2xl animate-scaleUp text-left space-y-4">
+                <div className="border-b border-slate-200 pb-2 flex items-center justify-between">
                   <h4 className="font-bold text-base text-white font-mono">Edit Ledger Log</h4>
-                  <button type="button" onClick={() => setTxToEdit(null)} className="text-slate-400 hover:text-white">
+                  <button type="button" onClick={() => setTxToEdit(null)} className="text-slate-400 hover:text-slate-800">
                     <X className="h-5 w-5" />
                   </button>
                 </div>
@@ -942,7 +942,7 @@ Office Ergonomic Chairs,AST-CH-99,Furniture,1200,1050,12`;
                       const type = e.target.value as "INCOME" | "EXPENSE";
                       setTxToEdit({ ...txToEdit, type, category: categories[type][0] });
                     }}
-                    className="w-full rounded-lg border border-slate-800 bg-slate-900 p-2 text-sm text-white focus:outline-hidden font-semibold"
+                    className="w-full rounded-lg border border-slate-200 bg-white p-2 text-sm text-slate-800 focus:outline-hidden font-semibold"
                   >
                     <option value="EXPENSE">EXPENSE</option>
                     <option value="INCOME">INCOME</option>
@@ -953,7 +953,7 @@ Office Ergonomic Chairs,AST-CH-99,Furniture,1200,1050,12`;
                   <select
                     value={txToEdit.category}
                     onChange={(e) => setTxToEdit({ ...txToEdit, category: e.target.value })}
-                    className="w-full rounded-lg border border-slate-800 bg-slate-900 p-2 text-sm text-white focus:outline-hidden font-semibold"
+                    className="w-full rounded-lg border border-slate-200 bg-white p-2 text-sm text-slate-800 focus:outline-hidden font-semibold"
                   >
                     {categories[txToEdit.type].map(cat => (
                       <option key={cat} value={cat}>{cat}</option>
@@ -967,7 +967,7 @@ Office Ergonomic Chairs,AST-CH-99,Furniture,1200,1050,12`;
                     required
                     value={txToEdit.amount}
                     onChange={(e) => setTxToEdit({ ...txToEdit, amount: Number(e.target.value) })}
-                    className="w-full rounded-lg border border-slate-800 bg-slate-900 p-2 text-sm text-white focus:outline-hidden font-mono"
+                    className="w-full rounded-lg border border-slate-200 bg-white p-2 text-sm text-slate-800 focus:outline-hidden font-mono"
                   />
                 </div>
                 <div>
@@ -975,7 +975,7 @@ Office Ergonomic Chairs,AST-CH-99,Furniture,1200,1050,12`;
                   <select
                     value={txToEdit.paymentMethod}
                     onChange={(e) => setTxToEdit({ ...txToEdit, paymentMethod: e.target.value as any })}
-                    className="w-full rounded-lg border border-slate-800 bg-slate-900 p-2 text-sm text-white focus:outline-hidden font-semibold"
+                    className="w-full rounded-lg border border-slate-200 bg-white p-2 text-sm text-slate-800 focus:outline-hidden font-semibold"
                   >
                     <option value="BANK">BANK</option>
                     <option value="CASH">CASH</option>
@@ -990,14 +990,14 @@ Office Ergonomic Chairs,AST-CH-99,Furniture,1200,1050,12`;
                     required
                     value={txToEdit.description}
                     onChange={(e) => setTxToEdit({ ...txToEdit, description: e.target.value })}
-                    className="w-full rounded-lg border border-slate-800 bg-slate-900 p-2 text-sm text-white focus:outline-hidden"
+                    className="w-full rounded-lg border border-slate-200 bg-white p-2 text-sm text-slate-800 focus:outline-hidden"
                   />
                 </div>
-                <div className="flex justify-end gap-3 pt-3 border-t border-slate-800">
+                <div className="flex justify-end gap-3 pt-3 border-t border-slate-200">
                   <button
                     type="button"
                     onClick={() => setTxToEdit(null)}
-                    className="rounded-lg border border-slate-800 bg-slate-900 px-4 py-2 text-xs font-bold text-slate-300"
+                    className="rounded-lg border border-slate-200 bg-white px-4 py-2 text-xs font-bold text-slate-300"
                   >
                     Cancel
                   </button>
@@ -1010,10 +1010,10 @@ Office Ergonomic Chairs,AST-CH-99,Furniture,1200,1050,12`;
           )}
 
           {/* TRANSACTIONS TABLE */}
-          <div className="bg-slate-950/60 border border-slate-800 rounded-xl overflow-hidden shadow-xs">
+          <div className="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-xs">
             <div className="overflow-x-auto">
               <table className="min-w-full divide-y divide-slate-800 text-sm">
-                <thead className="bg-slate-950 text-slate-300 font-semibold">
+                <thead className="bg-white text-slate-300 font-semibold">
                   <tr>
                     <th className="px-5 py-3 text-left">Posting Date</th>
                     <th className="px-5 py-3 text-left">Category / Node</th>
@@ -1029,9 +1029,9 @@ Office Ergonomic Chairs,AST-CH-99,Furniture,1200,1050,12`;
                     const isIncome = t.type === "INCOME";
                     const isAuto = t._source === "invoice" || t._source === "bill";
                     return (
-                      <tr key={t.id} className="hover:bg-slate-900/40 transition-colors">
+                      <tr key={t.id} className="hover:bg-slate-50 transition-colors">
                         <td className="px-5 py-4 font-mono text-xs text-slate-400">{t.date}</td>
-                        <td className="px-5 py-4 text-xs font-bold text-slate-200 uppercase tracking-wide">
+                        <td className="px-5 py-4 text-xs font-bold text-slate-700 uppercase tracking-wide">
                           {t.category}
                           {isAuto && (
                             <span className={`ml-1.5 px-1.5 py-0.5 rounded text-[9px] font-bold uppercase ${
@@ -1061,7 +1061,7 @@ Office Ergonomic Chairs,AST-CH-99,Furniture,1200,1050,12`;
                             <div className="flex items-center justify-end gap-1.5">
                               <button
                                 onClick={() => setTxToEdit(t)}
-                                className="rounded p-1 bg-slate-800 hover:bg-slate-700 text-slate-300 transition-colors"
+                                className="rounded p-1 bg-slate-100 hover:bg-slate-700 text-slate-300 transition-colors"
                                 title="Edit Entry"
                               >
                                 <Edit className="h-3.5 w-3.5" />
@@ -1088,8 +1088,8 @@ Office Ergonomic Chairs,AST-CH-99,Furniture,1200,1050,12`;
 
       {/* SUB-TAB: AUTOMATED PROFIT & LOSS WORKSHEET */}
       {activeSubTab === "pl" && (
-        <div className="bg-slate-950/60 border border-slate-800 rounded-xl p-6 shadow-xs space-y-6 text-left max-w-3xl mx-auto">
-          <div className="border-b border-slate-800 pb-3 text-center">
+        <div className="bg-white border border-slate-200 rounded-xl p-6 shadow-xs space-y-6 text-left max-w-3xl mx-auto">
+          <div className="border-b border-slate-200 pb-3 text-center">
             <span className="text-[10px] font-bold text-indigo-400 font-mono tracking-widest uppercase">P&L Financial Statement</span>
             <h3 className="text-xl font-bold text-white mt-1 font-mono">Interim Statement of Profit & Loss</h3>
             <p className="text-xs text-slate-400 mt-0.5">Automated aggregation of billed revenue & business operations expenditure nodes.</p>
@@ -1097,7 +1097,7 @@ Office Ergonomic Chairs,AST-CH-99,Furniture,1200,1050,12`;
 
           <div className="space-y-4">
             {/* 1. Operating Revenue */}
-            <div className="border-b border-slate-800 pb-2">
+            <div className="border-b border-slate-200 pb-2">
               <div className="flex items-center justify-between text-sm font-bold text-white">
                 <span className="uppercase tracking-wider font-mono">A. Operating Revenues (Inflow)</span>
                 <span className="font-mono text-emerald-400">+{formatINR(combinedLedger.filter(t => t._source === "invoice").reduce((s, t) => s + t.amount, 0))}</span>
@@ -1113,7 +1113,7 @@ Office Ergonomic Chairs,AST-CH-99,Furniture,1200,1050,12`;
             </div>
 
             {/* 2. COGS & Purchases */}
-            <div className="border-b border-slate-800 pb-2">
+            <div className="border-b border-slate-200 pb-2">
               <div className="flex items-center justify-between text-sm font-bold text-white">
                 <span className="uppercase tracking-wider font-mono">B. Cost of Goods Sold (COGS)</span>
                 <span className="font-mono text-rose-400">
@@ -1131,7 +1131,7 @@ Office Ergonomic Chairs,AST-CH-99,Furniture,1200,1050,12`;
             </div>
 
             {/* 3. Operational expenditures */}
-            <div className="border-b border-slate-800 pb-2">
+            <div className="border-b border-slate-200 pb-2">
               <div className="flex items-center justify-between text-sm font-bold text-white">
                 <span className="uppercase tracking-wider font-mono">C. Operating Overheads (Expenses)</span>
                 <span className="font-mono text-rose-400">
@@ -1149,7 +1149,7 @@ Office Ergonomic Chairs,AST-CH-99,Furniture,1200,1050,12`;
             </div>
 
             {/* 4. Net Profit summarize */}
-            <div className="bg-slate-900 p-4 rounded-xl border border-slate-800 flex items-center justify-between text-sm">
+            <div className="bg-white p-4 rounded-xl border border-slate-200 flex items-center justify-between text-sm">
               <div>
                 <strong className="text-white uppercase block tracking-wider text-xs font-mono font-bold">Dynamic Net Profit Margin</strong>
                 <span className="text-[10px] text-slate-500 font-semibold uppercase font-mono mt-0.5">Calculated automatically</span>
@@ -1182,7 +1182,7 @@ Office Ergonomic Chairs,AST-CH-99,Furniture,1200,1050,12`;
           </div>
 
           {/* Date Range */}
-          <div className="bg-slate-950/60 border border-slate-800 rounded-xl p-5 space-y-4">
+          <div className="bg-white border border-slate-200 rounded-xl p-5 space-y-4">
             <h4 className="text-xs font-bold text-slate-300 uppercase tracking-wider font-mono">Select Date Range</h4>
             <div className="grid grid-cols-2 gap-4">
               <div>
@@ -1191,7 +1191,7 @@ Office Ergonomic Chairs,AST-CH-99,Furniture,1200,1050,12`;
                   type="date"
                   value={tallyFrom}
                   onChange={e => setTallyFrom(e.target.value)}
-                  className="w-full rounded-lg border border-slate-700 bg-slate-900 p-2.5 text-sm text-white font-mono focus:outline-none focus:border-emerald-600"
+                  className="w-full rounded-lg border border-slate-200 bg-white p-2.5 text-sm text-white font-mono focus:outline-none focus:border-emerald-600"
                 />
               </div>
               <div>
@@ -1200,7 +1200,7 @@ Office Ergonomic Chairs,AST-CH-99,Furniture,1200,1050,12`;
                   type="date"
                   value={tallyTo}
                   onChange={e => setTallyTo(e.target.value)}
-                  className="w-full rounded-lg border border-slate-700 bg-slate-900 p-2.5 text-sm text-white font-mono focus:outline-none focus:border-emerald-600"
+                  className="w-full rounded-lg border border-slate-200 bg-white p-2.5 text-sm text-white font-mono focus:outline-none focus:border-emerald-600"
                 />
               </div>
             </div>
@@ -1215,7 +1215,7 @@ Office Ergonomic Chairs,AST-CH-99,Furniture,1200,1050,12`;
                 <button
                   key={r.label}
                   onClick={() => { setTallyFrom(r.from); setTallyTo(r.to); }}
-                  className="px-3 py-1 rounded-md text-xs font-semibold border border-slate-700 text-slate-300 hover:border-emerald-600 hover:text-emerald-400 transition-colors"
+                  className="px-3 py-1 rounded-md text-xs font-semibold border border-slate-200 text-slate-300 hover:border-emerald-600 hover:text-emerald-400 transition-colors"
                 >
                   {r.label}
                 </button>
@@ -1224,7 +1224,7 @@ Office Ergonomic Chairs,AST-CH-99,Furniture,1200,1050,12`;
           </div>
 
           {/* What to include */}
-          <div className="bg-slate-950/60 border border-slate-800 rounded-xl p-5 space-y-3">
+          <div className="bg-white border border-slate-200 rounded-xl p-5 space-y-3">
             <h4 className="text-xs font-bold text-slate-300 uppercase tracking-wider font-mono">Include in Export</h4>
             {[
               { key: "inv", label: "Sales Invoices", desc: "Creates Sales Vouchers in Tally", state: tallyIncInvoices, set: setTallyIncInvoices,
@@ -1238,7 +1238,7 @@ Office Ergonomic Chairs,AST-CH-99,Furniture,1200,1050,12`;
               { key: "receipts", label: "Customer Receipts", desc: "Creates Receipt Vouchers in Tally when customer pays you", state: tallyIncReceipts, set: setTallyIncReceipts,
                 count: salesPayments.filter(p => p.paymentDate >= tallyFrom && p.paymentDate <= tallyTo).length },
             ].map(item => (
-              <label key={item.key} className="flex items-center gap-3 cursor-pointer group p-3 rounded-lg hover:bg-slate-900 transition-colors">
+              <label key={item.key} className="flex items-center gap-3 cursor-pointer group p-3 rounded-lg hover:bg-white transition-colors">
                 <input
                   type="checkbox"
                   checked={item.state}
@@ -1247,9 +1247,9 @@ Office Ergonomic Chairs,AST-CH-99,Furniture,1200,1050,12`;
                 />
                 <div className="flex-1">
                   <div className="flex items-center gap-2">
-                    <span className="text-sm font-semibold text-white">{item.label}</span>
+                    <span className="text-sm font-semibold text-slate-800">{item.label}</span>
                     {item.count !== null && (
-                      <span className={`text-xs font-mono px-2 py-0.5 rounded-full ${item.count > 0 ? "bg-emerald-900/50 text-emerald-400" : "bg-slate-800 text-slate-500"}`}>
+                      <span className={`text-xs font-mono px-2 py-0.5 rounded-full ${item.count > 0 ? "bg-emerald-900/50 text-emerald-400" : "bg-slate-100 text-slate-500"}`}>
                         {item.count} record{item.count !== 1 ? "s" : ""}
                       </span>
                     )}
@@ -1268,7 +1268,7 @@ Office Ergonomic Chairs,AST-CH-99,Furniture,1200,1050,12`;
             const recCount = salesPayments.filter(p => p.paymentDate >= tallyFrom && p.paymentDate <= tallyTo).length;
             const total = (tallyIncInvoices ? invCount : 0) + (tallyIncPOs ? poCount : 0) + (tallyIncPayments ? payCount : 0) + (tallyIncReceipts ? recCount : 0);
             return (
-              <div className="bg-slate-950/60 border border-emerald-800/40 rounded-xl p-5 flex items-center justify-between gap-4 flex-wrap">
+              <div className="bg-white border border-emerald-800/40 rounded-xl p-5 flex items-center justify-between gap-4 flex-wrap">
                 <div>
                   <p className="text-xs text-slate-400 font-mono mb-1">Ready to export</p>
                   <p className="text-sm font-bold text-white">
@@ -1299,7 +1299,7 @@ Office Ergonomic Chairs,AST-CH-99,Furniture,1200,1050,12`;
           })()}
 
           {/* What XML contains */}
-          <div className="bg-slate-900/60 border border-slate-800 rounded-xl p-5">
+          <div className="bg-slate-50 border border-slate-200 rounded-xl p-5">
             <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider font-mono mb-3">What This XML File Contains</h4>
             <div className="space-y-2">
               {[
@@ -1307,7 +1307,7 @@ Office Ergonomic Chairs,AST-CH-99,Furniture,1200,1050,12`;
                 { icon: "🧾", title: "Sales Vouchers", desc: "One Sales Voucher per OMS invoice — with party name, taxable amount, CGST and SGST split" },
                 { icon: "📦", title: "Purchase Vouchers", desc: "One Purchase Voucher per confirmed PO — with supplier name and GST input credit entry" },
               ].map(item => (
-                <div key={item.title} className="flex items-start gap-3 p-3 rounded-lg bg-slate-800/40">
+                <div key={item.title} className="flex items-start gap-3 p-3 rounded-lg bg-slate-100/40">
                   <span className="text-lg">{item.icon}</span>
                   <div>
                     <p className="text-xs font-bold text-white">{item.title}</p>
@@ -1316,13 +1316,13 @@ Office Ergonomic Chairs,AST-CH-99,Furniture,1200,1050,12`;
                 </div>
               ))}
             </div>
-            <p className="text-xs text-emerald-400 font-semibold mt-3 border-t border-slate-700 pt-3">
+            <p className="text-xs text-emerald-400 font-semibold mt-3 border-t border-slate-200 pt-3">
               ✅ Accountant downloads once a month → imports in Tally in 30 seconds → no retyping
             </p>
           </div>
 
           {/* How to import instructions */}
-          <div className="bg-slate-900/60 border border-slate-800 rounded-xl p-5">
+          <div className="bg-slate-50 border border-slate-200 rounded-xl p-5">
             <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider font-mono mb-3">How to Import in Tally</h4>
             <ol className="space-y-2">
               {[
@@ -1352,7 +1352,7 @@ Office Ergonomic Chairs,AST-CH-99,Furniture,1200,1050,12`;
               {isFinanceManager && (
                 <button
                   onClick={() => setShowAddAsset(!showAddAsset)}
-                  className="flex items-center gap-1 rounded-lg bg-indigo-600 hover:bg-indigo-500 px-3 py-1.5 text-xs font-semibold text-white transition-colors"
+                  className="flex items-center gap-1 rounded-lg bg-indigo-600 hover:bg-indigo-500 px-3 py-1.5 text-xs font-semibold text-slate-800 transition-colors"
                 >
                   <Plus className="h-3.5 w-3.5" />
                   <span>Log Capital Asset</span>
@@ -1377,10 +1377,10 @@ Office Ergonomic Chairs,AST-CH-99,Furniture,1200,1050,12`;
 
           {/* ADD CAPITAL ASSET */}
           {showAddAsset && (
-            <form onSubmit={handleCreateAsset} className="bg-slate-950 border border-slate-800 rounded-xl p-5 grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="md:col-span-3 border-b border-slate-800 pb-2 flex items-center justify-between">
+            <form onSubmit={handleCreateAsset} className="bg-white border border-slate-200 rounded-xl p-5 grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="md:col-span-3 border-b border-slate-200 pb-2 flex items-center justify-between">
                 <h4 className="font-bold text-sm text-white font-mono">Register physical Asset Entry</h4>
-                <button type="button" onClick={() => setShowAddAsset(false)} className="text-slate-400 hover:text-white">
+                <button type="button" onClick={() => setShowAddAsset(false)} className="text-slate-400 hover:text-slate-800">
                   <X className="h-4 w-4" />
                 </button>
               </div>
@@ -1391,7 +1391,7 @@ Office Ergonomic Chairs,AST-CH-99,Furniture,1200,1050,12`;
                   required
                   value={newAssetForm.name}
                   onChange={(e) => setNewAssetForm(prev => ({ ...prev, name: e.target.value }))}
-                  className="w-full rounded-lg border border-slate-800 bg-slate-900 p-2 text-sm text-white focus:outline-hidden"
+                  className="w-full rounded-lg border border-slate-200 bg-white p-2 text-sm text-slate-800 focus:outline-hidden"
                 />
               </div>
               <div>
@@ -1401,7 +1401,7 @@ Office Ergonomic Chairs,AST-CH-99,Furniture,1200,1050,12`;
                   placeholder="EX: AST-MBP-01"
                   value={newAssetForm.code}
                   onChange={(e) => setNewAssetForm(prev => ({ ...prev, code: e.target.value }))}
-                  className="w-full rounded-lg border border-slate-800 bg-slate-900 p-2 text-sm text-white focus:outline-hidden font-mono"
+                  className="w-full rounded-lg border border-slate-200 bg-white p-2 text-sm text-slate-800 focus:outline-hidden font-mono"
                 />
               </div>
               <div>
@@ -1409,7 +1409,7 @@ Office Ergonomic Chairs,AST-CH-99,Furniture,1200,1050,12`;
                 <select
                   value={newAssetForm.category}
                   onChange={(e) => setNewAssetForm(prev => ({ ...prev, category: e.target.value }))}
-                  className="w-full rounded-lg border border-slate-800 bg-slate-900 p-2 text-sm text-white focus:outline-hidden font-semibold"
+                  className="w-full rounded-lg border border-slate-200 bg-white p-2 text-sm text-slate-800 focus:outline-hidden font-semibold"
                 >
                   <option value="Hardware">Hardware & Electronics</option>
                   <option value="Furniture">Office Furniture</option>
@@ -1424,7 +1424,7 @@ Office Ergonomic Chairs,AST-CH-99,Furniture,1200,1050,12`;
                   required
                   value={newAssetForm.purchaseValue}
                   onChange={(e) => setNewAssetForm(prev => ({ ...prev, purchaseValue: e.target.value }))}
-                  className="w-full rounded-lg border border-slate-800 bg-slate-900 p-2 text-sm text-white focus:outline-hidden font-mono"
+                  className="w-full rounded-lg border border-slate-200 bg-white p-2 text-sm text-slate-800 focus:outline-hidden font-mono"
                 />
               </div>
               <div>
@@ -1434,7 +1434,7 @@ Office Ergonomic Chairs,AST-CH-99,Furniture,1200,1050,12`;
                   placeholder="Leave blank to match cost"
                   value={newAssetForm.currentValue}
                   onChange={(e) => setNewAssetForm(prev => ({ ...prev, currentValue: e.target.value }))}
-                  className="w-full rounded-lg border border-slate-800 bg-slate-900 p-2 text-sm text-white focus:outline-hidden font-mono"
+                  className="w-full rounded-lg border border-slate-200 bg-white p-2 text-sm text-slate-800 focus:outline-hidden font-mono"
                 />
               </div>
               <div>
@@ -1443,7 +1443,7 @@ Office Ergonomic Chairs,AST-CH-99,Furniture,1200,1050,12`;
                   type="number"
                   value={newAssetForm.depreciationRate}
                   onChange={(e) => setNewAssetForm(prev => ({ ...prev, depreciationRate: e.target.value }))}
-                  className="w-full rounded-lg border border-slate-800 bg-slate-900 p-2 text-sm text-white focus:outline-hidden font-mono"
+                  className="w-full rounded-lg border border-slate-200 bg-white p-2 text-sm text-slate-800 focus:outline-hidden font-mono"
                 />
               </div>
               <div className="md:col-span-3 text-right">
@@ -1457,10 +1457,10 @@ Office Ergonomic Chairs,AST-CH-99,Furniture,1200,1050,12`;
           {/* EDIT ASSET MODAL */}
           {assetToEdit && (
             <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-              <form onSubmit={handleSaveAssetEdit} className="w-full max-w-md rounded-2xl border border-slate-800 bg-slate-950 p-6 shadow-2xl animate-scaleUp text-left space-y-4">
-                <div className="border-b border-slate-800 pb-2 flex items-center justify-between">
+              <form onSubmit={handleSaveAssetEdit} className="w-full max-w-md rounded-2xl border border-slate-200 bg-white p-6 shadow-2xl animate-scaleUp text-left space-y-4">
+                <div className="border-b border-slate-200 pb-2 flex items-center justify-between">
                   <h4 className="font-bold text-base text-white font-mono">Edit Capital Asset Profile</h4>
-                  <button type="button" onClick={() => setAssetToEdit(null)} className="text-slate-400 hover:text-white">
+                  <button type="button" onClick={() => setAssetToEdit(null)} className="text-slate-400 hover:text-slate-800">
                     <X className="h-5 w-5" />
                   </button>
                 </div>
@@ -1471,7 +1471,7 @@ Office Ergonomic Chairs,AST-CH-99,Furniture,1200,1050,12`;
                     required
                     value={assetToEdit.name}
                     onChange={(e) => setAssetToEdit({ ...assetToEdit, name: e.target.value })}
-                    className="w-full rounded-lg border border-slate-800 bg-slate-900 p-2 text-sm text-white focus:outline-hidden"
+                    className="w-full rounded-lg border border-slate-200 bg-white p-2 text-sm text-slate-800 focus:outline-hidden"
                   />
                 </div>
                 <div>
@@ -1479,7 +1479,7 @@ Office Ergonomic Chairs,AST-CH-99,Furniture,1200,1050,12`;
                   <select
                     value={assetToEdit.category}
                     onChange={(e) => setAssetToEdit({ ...assetToEdit, category: e.target.value })}
-                    className="w-full rounded-lg border border-slate-800 bg-slate-900 p-2 text-sm text-white focus:outline-hidden font-semibold"
+                    className="w-full rounded-lg border border-slate-200 bg-white p-2 text-sm text-slate-800 focus:outline-hidden font-semibold"
                   >
                     <option value="Hardware">Hardware & Electronics</option>
                     <option value="Furniture">Office Furniture</option>
@@ -1495,7 +1495,7 @@ Office Ergonomic Chairs,AST-CH-99,Furniture,1200,1050,12`;
                       required
                       value={assetToEdit.purchaseValue}
                       onChange={(e) => setAssetToEdit({ ...assetToEdit, purchaseValue: Number(e.target.value) })}
-                      className="w-full rounded-lg border border-slate-800 bg-slate-900 p-2 text-sm text-white focus:outline-hidden font-mono"
+                      className="w-full rounded-lg border border-slate-200 bg-white p-2 text-sm text-slate-800 focus:outline-hidden font-mono"
                     />
                   </div>
                   <div>
@@ -1505,7 +1505,7 @@ Office Ergonomic Chairs,AST-CH-99,Furniture,1200,1050,12`;
                       required
                       value={assetToEdit.currentValue}
                       onChange={(e) => setAssetToEdit({ ...assetToEdit, currentValue: Number(e.target.value) })}
-                      className="w-full rounded-lg border border-slate-800 bg-slate-900 p-2 text-sm text-white focus:outline-hidden font-mono"
+                      className="w-full rounded-lg border border-slate-200 bg-white p-2 text-sm text-slate-800 focus:outline-hidden font-mono"
                     />
                   </div>
                 </div>
@@ -1515,14 +1515,14 @@ Office Ergonomic Chairs,AST-CH-99,Furniture,1200,1050,12`;
                     type="number"
                     value={assetToEdit.depreciationRate}
                     onChange={(e) => setAssetToEdit({ ...assetToEdit, depreciationRate: Number(e.target.value) })}
-                    className="w-full rounded-lg border border-slate-800 bg-slate-900 p-2 text-sm text-white focus:outline-hidden font-mono"
+                    className="w-full rounded-lg border border-slate-200 bg-white p-2 text-sm text-slate-800 focus:outline-hidden font-mono"
                   />
                 </div>
-                <div className="flex justify-end gap-3 pt-3 border-t border-slate-800">
+                <div className="flex justify-end gap-3 pt-3 border-t border-slate-200">
                   <button
                     type="button"
                     onClick={() => setAssetToEdit(null)}
-                    className="rounded-lg border border-slate-800 bg-slate-900 px-4 py-2 text-xs font-bold text-slate-300"
+                    className="rounded-lg border border-slate-200 bg-white px-4 py-2 text-xs font-bold text-slate-300"
                   >
                     Cancel
                   </button>
@@ -1537,21 +1537,21 @@ Office Ergonomic Chairs,AST-CH-99,Furniture,1200,1050,12`;
           {/* ASSETS GRID */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {activeAssets.map(a => (
-              <div key={a.id} className="bg-slate-950/60 border border-slate-800 rounded-xl p-5 space-y-3.5 shadow-xs relative">
-                <div className="flex items-center justify-between border-b border-slate-800/80 pb-2">
+              <div key={a.id} className="bg-white border border-slate-200 rounded-xl p-5 space-y-3.5 shadow-xs relative">
+                <div className="flex items-center justify-between border-b border-slate-200/80 pb-2">
                   <div>
-                    <h4 className="font-bold text-slate-200 text-sm">{a.name}</h4>
+                    <h4 className="font-bold text-slate-700 text-sm">{a.name}</h4>
                     <span className="text-[10px] text-slate-400 font-mono font-bold uppercase">{a.code}</span>
                   </div>
                   <span className="text-[9px] bg-indigo-500/10 text-indigo-400 px-1.5 py-0.5 rounded font-bold uppercase border border-indigo-500/20">{a.category}</span>
                 </div>
 
                 <div className="grid grid-cols-2 gap-2 text-center text-xs">
-                  <div className="bg-slate-900 p-2 rounded text-left border border-slate-850">
+                  <div className="bg-white p-2 rounded text-left border border-slate-850">
                     <span className="text-[9px] text-slate-500 font-bold uppercase block">Acquired Cost</span>
                     <strong className="font-mono text-slate-300">{formatINR(a.purchaseValue)}</strong>
                   </div>
-                  <div className="bg-slate-900 p-2 rounded text-left border border-slate-850">
+                  <div className="bg-white p-2 rounded text-left border border-slate-850">
                     <span className="text-[9px] text-slate-500 font-bold uppercase block">Book Value</span>
                     <strong className="font-mono text-indigo-400">{formatINR(a.currentValue)}</strong>
                   </div>
@@ -1565,10 +1565,10 @@ Office Ergonomic Chairs,AST-CH-99,Furniture,1200,1050,12`;
                   </span>
                 </div>
 
-                <div className="flex justify-end gap-1.5 pt-2 border-t border-slate-800/40">
+                <div className="flex justify-end gap-1.5 pt-2 border-t border-slate-200/40">
                   <button
                     onClick={() => setAssetToEdit(a)}
-                    className="rounded p-1 bg-slate-800 hover:bg-slate-700 text-slate-300 transition-colors"
+                    className="rounded p-1 bg-slate-100 hover:bg-slate-700 text-slate-300 transition-colors"
                     title="Edit profile"
                   >
                     <Edit className="h-3.5 w-3.5" />
@@ -1649,11 +1649,11 @@ Office Ergonomic Chairs,AST-CH-99,Furniture,1200,1050,12`;
             {/* Summary row */}
             <div className="grid grid-cols-3 gap-3">
               {[
-                { label: "Total Clients", value: clientData.length, color: "text-slate-200" },
+                { label: "Total Clients", value: clientData.length, color: "text-slate-700" },
                 { label: "Total Outstanding", value: formatINR(totalOutstanding), color: "text-amber-400" },
                 { label: "Overdue Clients", value: overdueClients, color: overdueClients > 0 ? "text-red-400" : "text-emerald-400" },
               ].map(s => (
-                <div key={s.label} className="bg-slate-950/60 border border-slate-800 rounded-xl p-4">
+                <div key={s.label} className="bg-white border border-slate-200 rounded-xl p-4">
                   <div className="text-[10px] font-bold text-slate-500 uppercase tracking-widest font-mono">{s.label}</div>
                   <div className={`text-xl font-bold font-mono mt-1 ${s.color}`}>{s.value}</div>
                 </div>
@@ -1661,14 +1661,14 @@ Office Ergonomic Chairs,AST-CH-99,Furniture,1200,1050,12`;
             </div>
 
             {/* Search */}
-            <div className="flex items-center gap-2 bg-slate-950/40 border border-slate-800 rounded-xl p-3">
+            <div className="flex items-center gap-2 bg-slate-50 border border-slate-200 rounded-xl p-3">
               <span className="text-slate-500 text-sm">🔍</span>
               <input
                 type="text"
                 placeholder="Search client by name, phone, email…"
                 value={clientLedgerSearch}
                 onChange={e => setClientLedgerSearch(e.target.value)}
-                className="flex-1 bg-transparent text-sm text-white placeholder:text-slate-600 focus:outline-none"
+                className="flex-1 bg-transparent text-sm text-slate-800 placeholder:text-slate-600 focus:outline-none"
               />
             </div>
 
@@ -1682,7 +1682,7 @@ Office Ergonomic Chairs,AST-CH-99,Furniture,1200,1050,12`;
                 const hasOverdue = aging.d30 + aging.d60 + aging.d90 > 0;
 
                 return (
-                  <div key={c.id} className={`border rounded-xl overflow-hidden transition-all ${hasOverdue ? "border-red-500/30" : outstanding > 0 ? "border-amber-500/20" : "border-slate-800"} bg-slate-950/50`}>
+                  <div key={c.id} className={`border rounded-xl overflow-hidden transition-all ${hasOverdue ? "border-red-500/30" : outstanding > 0 ? "border-amber-500/20" : "border-slate-200"} bg-white/50`}>
                     {/* Client header row */}
                     <div className="flex items-center gap-3 p-4 cursor-pointer" onClick={() => setExpandedClient(isExpanded ? null : c.id)}>
                       {/* Avatar */}
@@ -1691,7 +1691,7 @@ Office Ergonomic Chairs,AST-CH-99,Furniture,1200,1050,12`;
                       </div>
                       {/* Name + phone */}
                       <div className="flex-1 min-w-0">
-                        <div className="font-semibold text-white text-sm truncate">{c.name}</div>
+                        <div className="font-semibold text-slate-800 text-sm truncate">{c.name}</div>
                         <div className="text-[11px] text-slate-500 font-mono">{c.phone || "—"} · {c.email || "—"}</div>
                       </div>
                       {/* Financials */}
@@ -1723,15 +1723,15 @@ Office Ergonomic Chairs,AST-CH-99,Furniture,1200,1050,12`;
 
                     {/* Expanded: invoice table */}
                     {isExpanded && (
-                      <div className="border-t border-slate-800 bg-slate-900/40 p-4 space-y-3">
+                      <div className="border-t border-slate-200 bg-slate-50 p-4 space-y-3">
                         {/* Totals bar */}
                         <div className="grid grid-cols-3 gap-3 text-center">
                           {[
-                            { label: "Total Billed", val: formatINR(totalBilled), color: "text-slate-200" },
+                            { label: "Total Billed", val: formatINR(totalBilled), color: "text-slate-700" },
                             { label: "Total Paid", val: formatINR(totalPaid), color: "text-emerald-400" },
                             { label: "Balance Due", val: formatINR(outstanding), color: outstanding > 0 ? "text-amber-400" : "text-emerald-400" },
                           ].map(s => (
-                            <div key={s.label} className="bg-slate-800/40 rounded-lg p-2">
+                            <div key={s.label} className="bg-slate-100/40 rounded-lg p-2">
                               <div className="text-[9px] text-slate-500 uppercase font-mono">{s.label}</div>
                               <div className={`text-sm font-bold font-mono ${s.color}`}>{s.val}</div>
                             </div>
@@ -1745,7 +1745,7 @@ Office Ergonomic Chairs,AST-CH-99,Furniture,1200,1050,12`;
                           <div className="overflow-x-auto">
                             <table className="w-full text-xs">
                               <thead>
-                                <tr className="text-slate-500 font-mono uppercase text-[10px] border-b border-slate-800">
+                                <tr className="text-slate-500 font-mono uppercase text-[10px] border-b border-slate-200">
                                   <th className="text-left py-2 pr-3">Invoice #</th>
                                   <th className="text-left py-2 pr-3">Due Date</th>
                                   <th className="text-right py-2 pr-3">Billed</th>
@@ -1763,7 +1763,7 @@ Office Ergonomic Chairs,AST-CH-99,Furniture,1200,1050,12`;
                                   const daysOverdue = Math.floor((new Date().getTime() - new Date(inv.dueDate).getTime()) / 86400000);
                                   const isLate = balForInv > 0 && daysOverdue > 0;
                                   return (
-                                    <tr key={inv.id} className="border-b border-slate-800/50 hover:bg-slate-800/30">
+                                    <tr key={inv.id} className="border-b border-slate-200/50 hover:bg-slate-100/30">
                                       <td className="py-2 pr-3 font-mono text-indigo-400 font-semibold">{inv.invoiceNumber}</td>
                                       <td className={`py-2 pr-3 font-mono text-xs ${isLate ? "text-red-400" : "text-slate-400"}`}>
                                         {inv.dueDate}{isLate && <span className="ml-1 text-[9px]">({daysOverdue}d late)</span>}
@@ -1812,13 +1812,13 @@ Office Ergonomic Chairs,AST-CH-99,Furniture,1200,1050,12`;
       {/* IMPORT TX MODAL */}
       {showImportTxModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-          <div className="w-full max-w-lg rounded-2xl border border-slate-800 bg-slate-950 p-6 shadow-2xl animate-scaleUp text-left space-y-4">
-            <div className="border-b border-slate-800 pb-2 flex items-center justify-between">
+          <div className="w-full max-w-lg rounded-2xl border border-slate-200 bg-white p-6 shadow-2xl animate-scaleUp text-left space-y-4">
+            <div className="border-b border-slate-200 pb-2 flex items-center justify-between">
               <h4 className="font-bold text-base text-white font-mono flex items-center gap-1">
                 <Upload className="h-4 w-4 text-indigo-400" />
                 <span>Bulk Import Ledger Transactions</span>
               </h4>
-              <button onClick={() => setShowImportTxModal(false)} className="text-slate-400 hover:text-white">
+              <button onClick={() => setShowImportTxModal(false)} className="text-slate-400 hover:text-slate-800">
                 <X className="h-5 w-5" />
               </button>
             </div>
@@ -1827,9 +1827,9 @@ Office Ergonomic Chairs,AST-CH-99,Furniture,1200,1050,12`;
                 {importNotification}
               </div>
             )}
-            <div className="text-xs text-slate-400 space-y-1 bg-slate-900 p-3 rounded-lg border border-slate-800">
+            <div className="text-xs text-slate-400 space-y-1 bg-white p-3 rounded-lg border border-slate-200">
               <span className="font-bold text-slate-300 font-mono">Format:</span>
-              <code className="block bg-slate-950 p-1.5 rounded text-indigo-300 overflow-x-auto text-[10px]">
+              <code className="block bg-white p-1.5 rounded text-indigo-300 overflow-x-auto text-[10px]">
                 type,category,amount,paymentMethod,description
               </code>
             </div>
@@ -1844,13 +1844,13 @@ Office Ergonomic Chairs,AST-CH-99,Furniture,1200,1050,12`;
               value={csvTextInput}
               onChange={(e) => setCsvTextInput(e.target.value)}
               placeholder="type,category,amount,paymentMethod,description"
-              className="w-full rounded-lg border border-slate-800 bg-slate-900 p-2.5 text-xs text-white font-mono focus:outline-hidden"
+              className="w-full rounded-lg border border-slate-200 bg-white p-2.5 text-xs text-white font-mono focus:outline-hidden"
             />
-            <div className="flex justify-end gap-3 pt-3 border-t border-slate-800">
+            <div className="flex justify-end gap-3 pt-3 border-t border-slate-200">
               <button
                 type="button"
                 onClick={() => setShowImportTxModal(false)}
-                className="rounded-lg border border-slate-800 bg-slate-900 px-4 py-2 text-xs font-bold text-slate-300"
+                className="rounded-lg border border-slate-200 bg-white px-4 py-2 text-xs font-bold text-slate-300"
               >
                 Cancel
               </button>
@@ -1865,13 +1865,13 @@ Office Ergonomic Chairs,AST-CH-99,Furniture,1200,1050,12`;
       {/* IMPORT ASSETS MODAL */}
       {showImportAssetsModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-          <div className="w-full max-w-lg rounded-2xl border border-slate-800 bg-slate-950 p-6 shadow-2xl animate-scaleUp text-left space-y-4">
-            <div className="border-b border-slate-800 pb-2 flex items-center justify-between">
+          <div className="w-full max-w-lg rounded-2xl border border-slate-200 bg-white p-6 shadow-2xl animate-scaleUp text-left space-y-4">
+            <div className="border-b border-slate-200 pb-2 flex items-center justify-between">
               <h4 className="font-bold text-base text-white font-mono flex items-center gap-1">
                 <Upload className="h-4 w-4 text-indigo-400" />
                 <span>Bulk Import Capital Assets Registry</span>
               </h4>
-              <button onClick={() => setShowImportAssetsModal(false)} className="text-slate-400 hover:text-white">
+              <button onClick={() => setShowImportAssetsModal(false)} className="text-slate-400 hover:text-slate-800">
                 <X className="h-5 w-5" />
               </button>
             </div>
@@ -1880,9 +1880,9 @@ Office Ergonomic Chairs,AST-CH-99,Furniture,1200,1050,12`;
                 {importNotification}
               </div>
             )}
-            <div className="text-xs text-slate-400 space-y-1 bg-slate-900 p-3 rounded-lg border border-slate-800">
+            <div className="text-xs text-slate-400 space-y-1 bg-white p-3 rounded-lg border border-slate-200">
               <span className="font-bold text-slate-300 font-mono">Format:</span>
-              <code className="block bg-slate-950 p-1.5 rounded text-indigo-300 overflow-x-auto text-[10px]">
+              <code className="block bg-white p-1.5 rounded text-indigo-300 overflow-x-auto text-[10px]">
                 name,code,category,purchaseValue,currentValue,depreciationRate
               </code>
             </div>
@@ -1897,13 +1897,13 @@ Office Ergonomic Chairs,AST-CH-99,Furniture,1200,1050,12`;
               value={csvTextInput}
               onChange={(e) => setCsvTextInput(e.target.value)}
               placeholder="name,code,category,purchaseValue,currentValue,depreciationRate"
-              className="w-full rounded-lg border border-slate-800 bg-slate-900 p-2.5 text-xs text-white font-mono focus:outline-hidden"
+              className="w-full rounded-lg border border-slate-200 bg-white p-2.5 text-xs text-white font-mono focus:outline-hidden"
             />
-            <div className="flex justify-end gap-3 pt-3 border-t border-slate-800">
+            <div className="flex justify-end gap-3 pt-3 border-t border-slate-200">
               <button
                 type="button"
                 onClick={() => setShowImportAssetsModal(false)}
-                className="rounded-lg border border-slate-800 bg-slate-900 px-4 py-2 text-xs font-bold text-slate-300"
+                className="rounded-lg border border-slate-200 bg-white px-4 py-2 text-xs font-bold text-slate-300"
               >
                 Cancel
               </button>
@@ -1917,3 +1917,4 @@ Office Ergonomic Chairs,AST-CH-99,Furniture,1200,1050,12`;
     </div>
   );
 }
+

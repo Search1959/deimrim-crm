@@ -1,4 +1,4 @@
-/**
+﻿/**
  * @license
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -111,7 +111,7 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
       kpis: [
         { label: "Active Tenants", val: "14", sub: "Companies", color: "text-white" },
         { label: "SSL Routing",    val: "100%", sub: "Active",  color: "text-emerald-400" },
-        { label: "DB Schemas",     val: "14",   sub: "Isolated",color: "text-sky-400" },
+        { label: "DB Schemas",     val: "14",   sub: "Isolated",color: "text-indigo-500" },
         { label: "API Webhooks",   val: "2",    sub: "Active",  color: "text-violet-400" },
       ],
       rows: [
@@ -128,7 +128,7 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
       title: "Lead Pipeline & Customer Revenue Tracker",
       kpis: [
         { label: "Pipeline Value",  val: "₹18.4L", sub: "Total",   color: "text-white" },
-        { label: "Qualified Leads", val: "32",      sub: "Contacts",color: "text-sky-400" },
+        { label: "Qualified Leads", val: "32",      sub: "Contacts",color: "text-indigo-500" },
         { label: "Proposals Out",   val: "12",      sub: "Active",  color: "text-amber-400" },
         { label: "Closed-Won",      val: "15",      sub: "Deals",   color: "text-emerald-400" },
       ],
@@ -146,7 +146,7 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
       title: "Batch Stocks, Rack Codes & FIFO Depletion",
       kpis: [
         { label: "Warehouses",   val: "4",       sub: "Yards",   color: "text-white" },
-        { label: "Product SKUs", val: "140",     sub: "Items",   color: "text-sky-400" },
+        { label: "Product SKUs", val: "140",     sub: "Items",   color: "text-indigo-500" },
         { label: "Low Stock",    val: "2",       sub: "Alerts",  color: "text-red-400" },
         { label: "Batch Value",  val: "₹8.2L",  sub: "On Hand", color: "text-emerald-400" },
       ],
@@ -165,7 +165,7 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
       kpis: [
         { label: "Total Staff",   val: "48",  sub: "Employees", color: "text-white" },
         { label: "Present Today", val: "92%", sub: "Clocked-In",color: "text-emerald-400" },
-        { label: "On Leave",      val: "3",   sub: "Approved",  color: "text-sky-400" },
+        { label: "On Leave",      val: "3",   sub: "Approved",  color: "text-indigo-500" },
         { label: "Open Positions",val: "2",   sub: "Pending",   color: "text-amber-400" },
       ],
       rows: [
@@ -384,34 +384,34 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
   const CurrentFlowIcon = flowNodeDetails[activeFlowNode]?.icon || Workflow;
 
   // ── Sky-blue input / button class helpers ─────────────────────────────────
-  const inputCls = "w-full bg-slate-800/70 border border-slate-700 rounded-lg px-3.5 py-2.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-sky-500/60 focus:ring-1 focus:ring-sky-500/20 font-mono";
-  const btnSky = "w-full py-2.5 bg-sky-500 hover:bg-sky-400 active:bg-sky-600 text-white font-bold text-xs rounded-lg flex items-center justify-center gap-2 cursor-pointer font-mono tracking-wider uppercase transition-all shadow-lg shadow-sky-500/20";
+  const inputCls = "w-full bg-slate-50 border border-slate-200 rounded-lg px-3.5 py-2.5 text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:border-indigo-300 focus:ring-1 focus:ring-indigo-200 font-mono";
+  const btnSky = "w-full py-2.5 bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-700 text-white font-bold text-xs rounded-lg flex items-center justify-center gap-2 cursor-pointer font-mono tracking-wider uppercase transition-all shadow-lg shadow-indigo-200";
 
   return (
-    <div data-theme="dark" className="min-h-screen w-full bg-[#0f172a] text-slate-100 flex flex-col overflow-x-hidden font-sans">
+    <div  className="min-h-screen w-full bg-white text-slate-800 flex flex-col overflow-x-hidden font-sans">
 
       {/* ── NAV ───────────────────────────────────────────────────────────── */}
-      <header className="sticky top-0 z-30 border-b border-slate-800 bg-[#0f172a]/90 backdrop-blur-sm px-4 md:px-8 py-3 flex items-center justify-between">
+      <header className="sticky top-0 z-30 border-b border-slate-100 bg-white/95 backdrop-blur-sm shadow-sm px-4 md:px-8 py-3 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-sky-500 text-white shadow-md shadow-sky-500/30">
+          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-indigo-600 text-white shadow-md shadow-sky-500/30">
             <Building2 className="h-5 w-5" />
           </div>
           <div>
-            <h1 className="text-sm font-bold text-white tracking-wider uppercase leading-none font-mono">DEINRIM OMS</h1>
-            <span className="text-[9px] text-sky-400 uppercase tracking-widest font-mono">Enterprise v2.0</span>
+            <h1 className="text-sm font-bold text-slate-900 tracking-wider uppercase leading-none font-mono">DEINRIM OMS</h1>
+            <span className="text-[9px] text-indigo-500 uppercase tracking-widest font-mono">Enterprise v2.0</span>
           </div>
         </div>
-        <nav className="hidden md:flex items-center gap-6 text-xs text-slate-400 font-semibold">
-          <a href="#modules" className="hover:text-sky-400 transition-colors">Modules</a>
-          <a href="#industries" className="hover:text-sky-400 transition-colors">Industries</a>
-          <a href="#pricing" className="hover:text-sky-400 transition-colors">Pricing</a>
-          <a href="#faq" className="hover:text-sky-400 transition-colors">FAQ</a>
+        <nav className="hidden md:flex items-center gap-6 text-xs text-slate-600 font-semibold">
+          <a href="#modules" className="hover:text-indigo-600 transition-colors">Modules</a>
+          <a href="#industries" className="hover:text-indigo-600 transition-colors">Industries</a>
+          <a href="#pricing" className="hover:text-indigo-600 transition-colors">Pricing</a>
+          <a href="#faq" className="hover:text-indigo-600 transition-colors">FAQ</a>
         </nav>
         <div className="flex items-center gap-2">
-          <button onClick={() => openModal("login")} className="px-4 py-2 border border-slate-700 hover:border-sky-500/40 text-slate-300 hover:text-sky-400 text-xs font-bold rounded-lg transition-all cursor-pointer flex items-center gap-1.5">
+          <button onClick={() => openModal("login")} className="px-4 py-2 border border-slate-200 hover:border-indigo-300 text-slate-600 hover:text-indigo-600 text-xs font-bold rounded-lg transition-all cursor-pointer flex items-center gap-1.5">
             <LogIn className="h-3.5 w-3.5" /> Login
           </button>
-          <button onClick={() => openModal("register")} className="px-4 py-2 bg-sky-500 hover:bg-sky-400 text-white text-xs font-bold rounded-lg transition-all cursor-pointer flex items-center gap-1.5 shadow-md shadow-sky-500/20">
+          <button onClick={() => openModal("register")} className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold rounded-lg transition-all cursor-pointer flex items-center gap-1.5 shadow-sm">
             <UserPlus className="h-3.5 w-3.5" /> Create Account
           </button>
         </div>
@@ -423,22 +423,22 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
 
           {/* LEFT — copy */}
           <div className="space-y-6 text-left">
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold bg-sky-500/10 text-sky-400 border border-sky-500/20 font-mono tracking-wide uppercase">
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold bg-indigo-50 text-indigo-600 border border-indigo-200 font-mono tracking-wide uppercase">
               <Sparkles className="h-3 w-3" /> Enterprise Business Operating System
             </div>
-            <h2 className="text-4xl md:text-5xl font-extrabold text-white tracking-tight leading-[1.1]">
+            <h2 className="text-4xl md:text-5xl font-extrabold text-slate-900 tracking-tight leading-[1.1]">
               One Platform to Run<br />
-              <span className="text-sky-400">Your Entire Organization</span>
+              <span className="text-indigo-600">Your Entire Organization</span>
             </h2>
-            <p className="text-slate-400 text-sm md:text-base leading-relaxed max-w-lg">
+            <p className="text-slate-500 text-sm md:text-base leading-relaxed max-w-lg">
               CRM · Inventory · Purchase · HR · Finance · GST — all linked under one secure, multi-tenant workspace. Built and supported from Kolkata by Apex7tech
             </p>
             <div className="flex flex-wrap items-center gap-3">
-              <button onClick={() => openModal("register")} className="px-6 py-3 bg-sky-500 hover:bg-sky-400 text-white font-bold text-xs rounded-xl transition-all shadow-lg shadow-sky-500/20 flex items-center gap-1.5 cursor-pointer">
+              <button onClick={() => openModal("register")} className="px-6 py-3 bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs rounded-xl transition-all shadow-md flex items-center gap-1.5 cursor-pointer">
                 <UserPlus className="h-3.5 w-3.5" /> Create Free Account
               </button>
-              <button onClick={() => openModal("admin-demo")} className="px-6 py-3 bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 font-bold text-xs rounded-xl transition-all flex items-center gap-1.5 cursor-pointer">
-                <Zap className="h-3.5 w-3.5 text-sky-400" /> Try Live Demo
+              <button onClick={() => openModal("admin-demo")} className="px-6 py-3 bg-slate-50 hover:bg-slate-100 text-slate-700 border border-slate-200 font-bold text-xs rounded-xl transition-all flex items-center gap-1.5 cursor-pointer">
+                <Zap className="h-3.5 w-3.5 text-indigo-500" /> Try Live Demo
               </button>
               <a href="https://wa.me/919836130393?text=I'm%20interested%20in%20a%20DEINRIM%20360%20demo" target="_blank" rel="noreferrer" className="px-6 py-3 bg-emerald-600/10 hover:bg-emerald-600/20 text-emerald-400 border border-emerald-500/30 font-bold text-xs rounded-xl transition-all flex items-center gap-1.5">
                 💬 WhatsApp <ExternalLink className="h-3 w-3" />
@@ -446,7 +446,7 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
             </div>
             <div className="flex flex-wrap items-center gap-4 pt-1 text-[10px] font-mono text-slate-500 font-bold uppercase">
               <span className="flex items-center gap-1"><Check className="h-3.5 w-3.5 text-emerald-500" /> SSL Secure</span>
-              <span className="flex items-center gap-1"><Check className="h-3.5 w-3.5 text-sky-500" /> Cloud Hosted</span>
+              <span className="flex items-center gap-1"><Check className="h-3.5 w-3.5 text-indigo-500" /> Cloud Hosted</span>
               <span className="flex items-center gap-1"><Check className="h-3.5 w-3.5 text-violet-400" /> Mobile Ready</span>
               <span className="flex items-center gap-1"><Check className="h-3.5 w-3.5 text-amber-400" /> Zero Demo Data</span>
             </div>
@@ -455,15 +455,15 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
           {/* RIGHT — dashboard slideshow */}
           <div className="relative">
             {/* glow behind card */}
-            <div className="absolute -inset-4 bg-sky-500/5 rounded-3xl blur-2xl pointer-events-none" />
+            <div className="absolute -inset-4 bg-indigo-600/5 rounded-3xl blur-2xl pointer-events-none" />
 
             {/* slide card */}
             <div
-              className="relative rounded-2xl border border-slate-700/80 bg-[#0d1829] overflow-hidden shadow-2xl shadow-sky-900/20"
+              className="relative rounded-2xl border border-slate-200/80 bg-slate-800 overflow-hidden shadow-2xl shadow-indigo-100"
               style={{ transition: "opacity 0.15s ease", opacity: heroAnim ? 1 : 0 }}
             >
               {/* top bar */}
-              <div className="flex items-center justify-between px-4 py-2.5 bg-slate-900/80 border-b border-slate-800">
+              <div className="flex items-center justify-between px-4 py-2.5 bg-white/80 border-b border-slate-200">
                 <div className="flex items-center gap-1.5">
                   <span className="h-2.5 w-2.5 rounded-full bg-red-500/70"></span>
                   <span className="h-2.5 w-2.5 rounded-full bg-amber-500/70"></span>
@@ -474,12 +474,12 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
               </div>
 
               {/* module label strip */}
-              <div className="flex gap-1 px-3 py-2 bg-slate-950/60 border-b border-slate-800/60 overflow-x-auto">
+              <div className="flex gap-1 px-3 py-2 bg-white border-b border-slate-200/60 overflow-x-auto">
                 {heroSlides.map((s, i) => (
                   <button
                     key={s.id}
                     onClick={() => { if (slideTimer.current) clearInterval(slideTimer.current); goToSlide(i); }}
-                    className={`shrink-0 px-2.5 py-1 rounded text-[9px] font-bold font-mono transition-all cursor-pointer ${i === heroSlide ? "bg-sky-600 text-white" : "text-slate-500 hover:text-slate-300"}`}
+                    className={`shrink-0 px-2.5 py-1 rounded text-[9px] font-bold font-mono transition-all cursor-pointer ${i === heroSlide ? "bg-indigo-600 text-white" : "text-slate-400 hover:text-slate-700"}`}
                   >
                     {s.label}
                   </button>
@@ -491,16 +491,16 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
                 {/* header */}
                 <div className="flex items-center justify-between">
                   <div>
-                    <span className="text-[9px] text-sky-400 font-mono font-bold tracking-widest uppercase">{heroSlides[heroSlide].tag}</span>
+                    <span className="text-[9px] text-indigo-500 font-mono font-bold tracking-widest uppercase">{heroSlides[heroSlide].tag}</span>
                     <h4 className="text-sm font-extrabold text-white mt-0.5 leading-tight">{heroSlides[heroSlide].title}</h4>
                   </div>
-                  <span className="text-[9px] bg-sky-500/10 text-sky-400 border border-sky-500/20 px-2 py-0.5 rounded-full font-mono font-bold shrink-0">MODULE ACTIVE</span>
+                  <span className="text-[9px] bg-indigo-50 text-indigo-600 border border-indigo-200 px-2 py-0.5 rounded-full font-mono font-bold shrink-0">MODULE ACTIVE</span>
                 </div>
 
                 {/* KPI row */}
                 <div className="grid grid-cols-4 gap-2">
                   {heroSlides[heroSlide].kpis.map((kpi, i) => (
-                    <div key={i} className="bg-slate-900/70 rounded-lg p-2 border border-slate-800/60 text-center">
+                    <div key={i} className="bg-white/70 rounded-lg p-2 border border-slate-200/60 text-center">
                       <div className={`text-base font-black ${kpi.color} leading-none`}>{kpi.val}</div>
                       <div className="text-[8px] text-slate-500 font-mono mt-0.5 leading-tight">{kpi.label}</div>
                       <div className="text-[8px] text-slate-600 font-mono">{kpi.sub}</div>
@@ -512,10 +512,10 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
                 <div className="space-y-1.5">
                   <div className="text-[8px] text-slate-600 font-mono font-bold uppercase tracking-wider">Recent Entries</div>
                   {heroSlides[heroSlide].rows.map((row, i) => (
-                    <div key={i} className="flex items-center justify-between bg-slate-900/50 rounded-lg px-3 py-2 border border-slate-800/50">
-                      <span className="text-[10px] font-bold text-slate-200 truncate max-w-[45%]">{row[0]}</span>
+                    <div key={i} className="flex items-center justify-between bg-white/50 rounded-lg px-3 py-2 border border-slate-200/50">
+                      <span className="text-[10px] font-bold text-slate-700 truncate max-w-[45%]">{row[0]}</span>
                       <span className="text-[9px] text-slate-500 font-mono truncate mx-1">{row[1]}</span>
-                      <span className="text-[9px] text-sky-400 font-mono font-bold shrink-0">{row[2]}</span>
+                      <span className="text-[9px] text-indigo-500 font-mono font-bold shrink-0">{row[2]}</span>
                     </div>
                   ))}
                 </div>
@@ -524,7 +524,7 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
                 <div className="pt-1 space-y-1.5">
                   <div className="flex gap-1">
                     {heroSlides.map((_, i) => (
-                      <div key={i} className={`h-0.5 flex-1 rounded-full transition-all duration-300 ${i === heroSlide ? "bg-sky-500" : "bg-slate-800"}`} />
+                      <div key={i} className={`h-0.5 flex-1 rounded-full transition-all duration-300 ${i === heroSlide ? "bg-indigo-600" : "bg-slate-100"}`} />
                     ))}
                   </div>
                   <div className="flex items-center justify-between">
@@ -536,7 +536,7 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
             </div>
 
             {/* floating badge bottom-right */}
-            <div className="absolute -bottom-3 -right-3 bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 shadow-xl flex items-center gap-2">
+            <div className="absolute -bottom-3 -right-3 bg-white border border-slate-200 rounded-xl px-3 py-2 shadow-xl flex items-center gap-2">
               <div className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse"></div>
               <span className="text-[10px] font-mono font-bold text-slate-300">Live on deinrim360.in</span>
             </div>
@@ -547,7 +547,7 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
       {/* ── MODULES GRID ──────────────────────────────────────────────────── */}
       <section id="modules" className="w-full max-w-6xl mx-auto px-4 md:px-8 pb-16 space-y-6">
         <div className="text-center space-y-1">
-          <span className="text-[10px] uppercase font-bold tracking-widest text-sky-400 font-mono">Unified Features</span>
+          <span className="text-[10px] uppercase font-bold tracking-widest text-indigo-500 font-mono">Unified Features</span>
           <h3 className="text-2xl font-extrabold text-white">9 Production-Ready Modules</h3>
           <p className="text-xs text-slate-400 max-w-xl mx-auto">All fully linked — one entry propagates across inventory, finance, CRM and HR automatically.</p>
         </div>
@@ -565,11 +565,11 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
           ].map((mod, idx) => {
             const Icon = mod.icon;
             return (
-              <div key={idx} className="bg-slate-900/60 p-5 rounded-2xl border border-slate-800 hover:border-sky-500/30 transition-all relative overflow-hidden">
+              <div key={idx} className="bg-slate-50 p-5 rounded-2xl border border-slate-200 hover:border-sky-500/30 transition-all relative overflow-hidden">
                 <div className="absolute top-0 right-0 h-1 w-16 bg-gradient-to-r from-sky-500 to-blue-500"></div>
                 <div className="flex items-center gap-2 mb-2">
-                  <div className="p-1.5 bg-sky-500/10 rounded-lg border border-sky-500/20">
-                    <Icon className="h-4 w-4 text-sky-400" />
+                  <div className="p-1.5 bg-indigo-600/10 rounded-lg border border-indigo-200">
+                    <Icon className="h-4 w-4 text-indigo-500" />
                   </div>
                   <h4 className="text-xs font-bold text-sky-300 uppercase tracking-wide font-mono">{mod.name}</h4>
                 </div>
@@ -583,16 +583,16 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
 
       {/* ── FLOW DIAGRAM ──────────────────────────────────────────────────── */}
       <section className="w-full max-w-6xl mx-auto px-4 md:px-8 pb-16">
-        <div className="bg-slate-900/60 rounded-2xl p-6 border border-slate-800 shadow-xl space-y-6">
+        <div className="bg-slate-50 rounded-2xl p-6 border border-slate-200 shadow-xl space-y-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <Workflow className="h-5 w-5 text-sky-400" />
-              <h3 className="text-md font-bold text-slate-100">Interactive Working Method Flow</h3>
+              <Workflow className="h-5 w-5 text-indigo-500" />
+              <h3 className="text-md font-bold text-slate-800">Interactive Working Method Flow</h3>
             </div>
-            <span className="text-[10px] font-mono text-slate-400 bg-slate-800 px-2 py-0.5 rounded-full uppercase">Click nodes to trace</span>
+            <span className="text-[10px] font-mono text-slate-400 bg-slate-100 px-2 py-0.5 rounded-full uppercase">Click nodes to trace</span>
           </div>
           <div className="relative py-4">
-            <div className="absolute top-1/2 left-0 right-0 h-0.5 bg-slate-800 -translate-y-1/2 z-0 hidden sm:block"></div>
+            <div className="absolute top-1/2 left-0 right-0 h-0.5 bg-slate-100 -translate-y-1/2 z-0 hidden sm:block"></div>
             <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 relative z-10">
               {Object.entries(flowNodeDetails).map(([key, node]) => {
                 const Icon = node.icon;
@@ -600,10 +600,10 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
                 return (
                   <button key={key} onClick={() => setActiveFlowNode(key)}
                     className={`flex flex-col items-center p-3 rounded-xl border text-center transition-all ${
-                      isActive ? "bg-sky-600/20 border-sky-500 text-white shadow-lg shadow-sky-500/10" : "bg-slate-900 border-slate-800/80 text-slate-400 hover:border-slate-700 hover:text-slate-200"
+                      isActive ? "bg-indigo-700/20 border-sky-500 text-white shadow-lg shadow-sky-500/10" : "bg-white border-slate-200/80 text-slate-400 hover:border-slate-200 hover:text-slate-700"
                     } ${key === "finance" ? "col-span-2 sm:col-span-1" : ""}`}
                   >
-                    <div className={`p-2 rounded-lg mb-2 ${isActive ? "bg-sky-500 text-white" : "bg-slate-800"}`}>
+                    <div className={`p-2 rounded-lg mb-2 ${isActive ? "bg-indigo-600 text-white" : "bg-slate-100"}`}>
                       <Icon className="h-4 w-4" />
                     </div>
                     <span className="text-xs font-bold font-mono">{node.title.split(".")[0]}. {node.title.split(".")[1]?.split("(")[0]?.trim()}</span>
@@ -613,9 +613,9 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
             </div>
           </div>
           {activeFlowNode && (
-            <div className="bg-slate-900 rounded-xl p-5 border border-slate-800">
+            <div className="bg-white rounded-xl p-5 border border-slate-200">
               <div className="flex items-start gap-4">
-                <div className="p-3 bg-sky-500/10 rounded-xl text-sky-400 border border-sky-500/20">
+                <div className="p-3 bg-indigo-600/10 rounded-xl text-indigo-500 border border-indigo-200">
                   <CurrentFlowIcon className="h-6 w-6" />
                 </div>
                 <div className="space-y-3 flex-1 text-sm">
@@ -630,7 +630,7 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
                       <p className="text-slate-400 text-xs mt-0.5 leading-relaxed">{flowNodeDetails[activeFlowNode].databaseEffect}</p>
                     </div>
                     <div>
-                      <span className="text-[10px] uppercase font-bold tracking-wider text-sky-400 block font-mono">Automated Next Step</span>
+                      <span className="text-[10px] uppercase font-bold tracking-wider text-indigo-500 block font-mono">Automated Next Step</span>
                       <p className="text-slate-400 text-xs mt-0.5 leading-relaxed">{flowNodeDetails[activeFlowNode].nextStep}</p>
                     </div>
                   </div>
@@ -644,7 +644,7 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
       {/* ── INDUSTRIES ────────────────────────────────────────────────────── */}
       <section id="industries" className="w-full max-w-6xl mx-auto px-4 md:px-8 pb-16 space-y-6">
         <div className="text-center space-y-1">
-          <span className="text-[10px] uppercase font-bold tracking-widest text-sky-400 font-mono">Target Sectors</span>
+          <span className="text-[10px] uppercase font-bold tracking-widest text-indigo-500 font-mono">Target Sectors</span>
           <h3 className="text-2xl font-extrabold text-white">Designed for Versatile Organizations</h3>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -656,7 +656,7 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
             { title: "💻 Coworking Spaces",        desc: "Multi-tenant logins, resource allocation, monthly subscription tracking, and corporate desk occupancy." },
             { title: "🏭 Manufacturing Plants",    desc: "Raw material mapping, batch codes, GRN processing, and equipment maintenance scheduling." },
           ].map((item, idx) => (
-            <div key={idx} className="bg-slate-900/40 p-5 rounded-2xl border border-slate-800 hover:border-sky-500/20 transition-all space-y-2">
+            <div key={idx} className="bg-slate-50 p-5 rounded-2xl border border-slate-200 hover:border-indigo-200 transition-all space-y-2">
               <h4 className="text-sm font-bold text-white">{item.title}</h4>
               <p className="text-xs text-slate-400 leading-relaxed">{item.desc}</p>
             </div>
@@ -666,12 +666,12 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
 
       {/* ── TRUST HUB ─────────────────────────────────────────────────────── */}
       <section className="w-full max-w-6xl mx-auto px-4 md:px-8 pb-16">
-        <div className="bg-slate-900/60 rounded-2xl p-6 border border-slate-800 shadow-xl space-y-6">
+        <div className="bg-slate-50 rounded-2xl p-6 border border-slate-200 shadow-xl space-y-6">
           <div className="space-y-1 text-center">
-            <span className="text-[10px] uppercase font-bold tracking-widest text-sky-400 font-mono">Platform Trust</span>
+            <span className="text-[10px] uppercase font-bold tracking-widest text-indigo-500 font-mono">Platform Trust</span>
             <h3 className="text-xl font-extrabold text-white">Enterprise Transparency Hub</h3>
           </div>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-2 bg-slate-900/50 p-1 rounded-xl border border-slate-800">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-2 bg-white/50 p-1 rounded-xl border border-slate-200">
             {([
               { id: "about",     icon: HeartHandshake, label: "Company & Trust" },
               { id: "tech",      icon: Server,         label: "Tech Specs" },
@@ -681,27 +681,27 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
               const Icon = tab.icon;
               return (
                 <button key={tab.id} onClick={() => setActiveReviewTab(tab.id)}
-                  className={`flex items-center justify-center gap-1.5 py-2 px-2 rounded-lg text-xs font-bold transition-all cursor-pointer ${activeReviewTab === tab.id ? "bg-sky-600 text-white shadow-md" : "text-slate-400 hover:text-slate-200"}`}
+                  className={`flex items-center justify-center gap-1.5 py-2 px-2 rounded-lg text-xs font-bold transition-all cursor-pointer ${activeReviewTab === tab.id ? "bg-indigo-700 text-white shadow-md" : "text-slate-400 hover:text-slate-700"}`}
                 >
                   <Icon className="h-3.5 w-3.5" /> {tab.label}
                 </button>
               );
             })}
           </div>
-          <div className="bg-slate-900/40 rounded-xl p-5 border border-slate-800/80 text-sm">
+          <div className="bg-slate-50 rounded-xl p-5 border border-slate-200/80 text-sm">
             {activeReviewTab === "about" && (
               <div className="space-y-4 text-left">
-                <div className="flex items-center gap-2 pb-2 border-b border-slate-800/60"><History className="h-4 w-4 text-sky-400" /><h4 className="text-xs font-bold uppercase tracking-wider text-white">Corporate Heritage & High-Touch Support</h4></div>
+                <div className="flex items-center gap-2 pb-2 border-b border-slate-200/60"><History className="h-4 w-4 text-indigo-500" /><h4 className="text-xs font-bold uppercase tracking-wider text-white">Corporate Heritage & High-Touch Support</h4></div>
                 <p className="text-xs text-slate-300">Operated by <strong className="text-white">Apex7tech</strong>, incorporated in Kolkata, WB, India. Engineering custom SaaS enterprise software since 2018, scaling from a regional consultancy to managing high-performance multi-tenant platforms.</p>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs font-mono">
-                  <div className="bg-slate-950/45 p-3 rounded-lg border border-slate-800"><span className="text-[10px] text-sky-400 uppercase tracking-widest font-bold">Priority Support SLA</span><p className="text-slate-300 mt-1 font-sans">2-hour response time for critical issues. Standard tickets resolved within 12-24 hours via dedicated email and callback.</p></div>
-                  <div className="bg-slate-950/45 p-3 rounded-lg border border-slate-800"><span className="text-[10px] text-orange-400 uppercase tracking-widest font-bold">Active Customer Retention</span><p className="text-slate-300 mt-1 font-sans">Serving 140+ active business tenants in South Asia with zero telemetry loss incidents since inception.</p></div>
+                  <div className="bg-white/45 p-3 rounded-lg border border-slate-200"><span className="text-[10px] text-indigo-500 uppercase tracking-widest font-bold">Priority Support SLA</span><p className="text-slate-300 mt-1 font-sans">2-hour response time for critical issues. Standard tickets resolved within 12-24 hours via dedicated email and callback.</p></div>
+                  <div className="bg-white/45 p-3 rounded-lg border border-slate-200"><span className="text-[10px] text-orange-400 uppercase tracking-widest font-bold">Active Customer Retention</span><p className="text-slate-300 mt-1 font-sans">Serving 140+ active business tenants in South Asia with zero telemetry loss incidents since inception.</p></div>
                 </div>
               </div>
             )}
             {activeReviewTab === "tech" && (
               <div className="space-y-4 text-left">
-                <div className="flex items-center gap-2 pb-2 border-b border-slate-800/60"><Code className="h-4 w-4 text-sky-400" /><h4 className="text-xs font-bold uppercase tracking-wider text-white">Technical Specifications & Data Sovereignty</h4></div>
+                <div className="flex items-center gap-2 pb-2 border-b border-slate-200/60"><Code className="h-4 w-4 text-indigo-500" /><h4 className="text-xs font-bold uppercase tracking-wider text-white">Technical Specifications & Data Sovereignty</h4></div>
                 <div className="grid grid-cols-2 gap-3.5 text-xs">
                   {[
                     { label: "DATABASE LAYER",        text: "Strictly partitioned schemas on high-performance relational MySQL, preventing cross-tenant leakage." },
@@ -709,14 +709,14 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
                     { label: "SECURITY ENCRYPTION",   text: "256-Bit SSL/TLS in-transit encryption and AES-256 rest encryption on cloud storage blocks." },
                     { label: "DISASTER BACKUP",       text: "Automated snapshots every 6 hours, replicated across redundant physical availability zones." },
                   ].map((item, i) => (
-                    <div key={i} className="space-y-1"><span className="text-[10px] font-mono text-sky-400 block font-bold">{item.label}</span><p className="text-slate-300 text-xs">{item.text}</p></div>
+                    <div key={i} className="space-y-1"><span className="text-[10px] font-mono text-indigo-500 block font-bold">{item.label}</span><p className="text-slate-300 text-xs">{item.text}</p></div>
                   ))}
                 </div>
               </div>
             )}
             {activeReviewTab === "reseller" && (
               <div className="space-y-4 text-left">
-                <div className="flex items-center gap-2 pb-2 border-b border-slate-800/60"><Building2 className="h-4 w-4 text-sky-400" /><h4 className="text-xs font-bold uppercase tracking-wider text-white">White-Label Partner Program</h4></div>
+                <div className="flex items-center gap-2 pb-2 border-b border-slate-200/60"><Building2 className="h-4 w-4 text-indigo-500" /><h4 className="text-xs font-bold uppercase tracking-wider text-white">White-Label Partner Program</h4></div>
                 <p className="text-xs text-slate-300">Create a recurring high-margin SaaS revenue channel. We charge you a wholesale flat rate, letting you keep 100% of the customer margins.</p>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-center">
                   {[
@@ -724,8 +724,8 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
                     { label: "2. Custom Domain Mapping", text: "Point your domain (e.g., erp.yourbrand.com) via standard CNAME records mapped instantly." },
                     { label: "3. Custom Pricing Margin", text: "You pay wholesale ₹500/tenant/month. Bill your customers ₹2,000–₹5,000 per month." },
                   ].map((item, i) => (
-                    <div key={i} className="bg-slate-950/40 p-3 rounded-lg border border-slate-800 text-left space-y-1">
-                      <span className="text-sky-400 font-bold text-xs">{item.label}</span>
+                    <div key={i} className="bg-slate-50 p-3 rounded-lg border border-slate-200 text-left space-y-1">
+                      <span className="text-indigo-500 font-bold text-xs">{item.label}</span>
                       <p className="text-[10px] text-slate-400 leading-normal">{item.text}</p>
                     </div>
                   ))}
@@ -734,15 +734,15 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
             )}
             {activeReviewTab === "templates" && (
               <div className="space-y-4 text-left">
-                <div className="flex items-center gap-2 pb-2 border-b border-slate-800/60"><CheckCircle2 className="h-4 w-4 text-sky-400" /><h4 className="text-xs font-bold uppercase tracking-wider text-white">One-Click Setup Industry Templates</h4></div>
+                <div className="flex items-center gap-2 pb-2 border-b border-slate-200/60"><CheckCircle2 className="h-4 w-4 text-indigo-500" /><h4 className="text-xs font-bold uppercase tracking-wider text-white">One-Click Setup Industry Templates</h4></div>
                 <p className="text-xs text-slate-300">When provisioning a new tenant, select an industry preset to seed standard master records instantly — zero manual configuration.</p>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5 text-xs font-mono">
                   {[
                     { emoji: "🏭", name: "Manufacturing Preset", text: "Preloads raw materials, production racks, assembly employee codes, and depreciation ledger maps." },
                     { emoji: "📦", name: "Wholesaling & Retail Preset", text: "Preloads barcode formats, product batches, supplier categories, and margin ledgers." },
                   ].map((item, i) => (
-                    <div key={i} className="bg-slate-950/45 p-3 rounded-lg border border-slate-800 flex gap-2.5 items-start">
-                      <span className="bg-sky-500/10 text-sky-400 p-1 rounded font-bold text-xs shrink-0">{item.emoji}</span>
+                    <div key={i} className="bg-white/45 p-3 rounded-lg border border-slate-200 flex gap-2.5 items-start">
+                      <span className="bg-indigo-600/10 text-indigo-500 p-1 rounded font-bold text-xs shrink-0">{item.emoji}</span>
                       <div><span className="text-white font-bold text-[11px] block">{item.name}</span><p className="text-slate-400 text-[10px] mt-0.5 font-sans leading-normal">{item.text}</p></div>
                     </div>
                   ))}
@@ -755,13 +755,13 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
 
       {/* ── DASHBOARD MOCKUPS ─────────────────────────────────────────────── */}
       <section className="w-full max-w-6xl mx-auto px-4 md:px-8 pb-16">
-        <div className="bg-slate-900/80 rounded-2xl p-6 md:p-8 border border-sky-500/10 shadow-2xl space-y-6 text-left">
+        <div className="bg-white/80 rounded-2xl p-6 md:p-8 border border-sky-500/10 shadow-2xl space-y-6 text-left">
           <div className="space-y-2 text-center">
-            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded bg-sky-500/10 text-sky-400 font-mono text-[10px] font-bold uppercase tracking-wider">Interactive UI Previews</span>
+            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded bg-indigo-600/10 text-indigo-500 font-mono text-[10px] font-bold uppercase tracking-wider">Interactive UI Previews</span>
             <h3 className="text-xl font-extrabold text-white">Inspect Our Multi-Tenant Workspace</h3>
             <p className="text-xs text-slate-400">Click tabs to switch between department portals and trace operations.</p>
           </div>
-          <div className="flex flex-wrap gap-2 border-b border-slate-800 pb-3">
+          <div className="flex flex-wrap gap-2 border-b border-slate-200 pb-3">
             {[
               { id: "admin", label: "🛡️ Admin Control Room" },
               { id: "crm", label: "📈 CRM Sales Pipeline" },
@@ -770,73 +770,73 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
               { id: "purchases", label: "🛍️ Procurement (PO)" },
             ].map(tab => (
               <button key={tab.id} onClick={() => setActiveScreenshotTab(tab.id as any)}
-                className={`px-3 py-2 rounded-lg text-xs font-bold transition-all cursor-pointer ${activeScreenshotTab === tab.id ? "bg-sky-600 text-white shadow-md" : "bg-slate-900 text-slate-400 hover:text-slate-200"}`}
+                className={`px-3 py-2 rounded-lg text-xs font-bold transition-all cursor-pointer ${activeScreenshotTab === tab.id ? "bg-indigo-700 text-white shadow-md" : "bg-white text-slate-400 hover:text-slate-700"}`}
               >
                 {tab.label}
               </button>
             ))}
           </div>
-          <div className="bg-slate-900/60 rounded-xl p-5 border border-slate-800/80 min-h-[280px]">
+          <div className="bg-slate-50 rounded-xl p-5 border border-slate-200/80 min-h-[280px]">
             {activeScreenshotTab === "admin" && (
               <div className="space-y-4">
-                <div className="flex items-center justify-between pb-3 border-b border-slate-800/60">
-                  <div><span className="text-[10px] text-sky-400 font-mono font-bold">SYSTEM ADMIN PORTAL</span><h4 className="text-sm font-extrabold text-white">Root Configuration & Tenant Management</h4></div>
+                <div className="flex items-center justify-between pb-3 border-b border-slate-200/60">
+                  <div><span className="text-[10px] text-indigo-500 font-mono font-bold">SYSTEM ADMIN PORTAL</span><h4 className="text-sm font-extrabold text-white">Root Configuration & Tenant Management</h4></div>
                   <span className="text-[10px] bg-emerald-500/10 text-emerald-400 px-2.5 py-0.5 rounded font-mono font-bold">LIVE</span>
                 </div>
                 <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-                  {[["Active Tenants","14 Companies","text-white"],["Isolated Schemas","14 Partitioned","text-sky-400"],["SSL Routing","100% Active","text-emerald-400"],["API Webhooks","2 Active","text-violet-400"]].map(([label,val,cls],i)=>(
-                    <div key={i} className="bg-slate-950/40 p-3 rounded-lg border border-slate-800"><span className="text-[10px] text-slate-500 uppercase tracking-widest font-mono">{label}</span><p className={`text-lg font-black mt-0.5 ${cls}`}>{val}</p></div>
+                  {[["Active Tenants","14 Companies","text-white"],["Isolated Schemas","14 Partitioned","text-indigo-500"],["SSL Routing","100% Active","text-emerald-400"],["API Webhooks","2 Active","text-violet-400"]].map(([label,val,cls],i)=>(
+                    <div key={i} className="bg-slate-50 p-3 rounded-lg border border-slate-200"><span className="text-[10px] text-slate-500 uppercase tracking-widest font-mono">{label}</span><p className={`text-lg font-black mt-0.5 ${cls}`}>{val}</p></div>
                   ))}
                 </div>
                 <div className="space-y-2"><span className="text-[10px] font-mono font-bold text-slate-400 uppercase block">Registered Tenant Instances</span>
                   {[["🏢 Apex Distribution Group","erp.apexdist.com (Active)"],["🏥 West Bengal Healthcare","portal.wbhealthcare.in (Active)"],["🏬 Kolkata Retail Corp","default.deinrim360.in"]].map(([name,cname],i)=>(
-                    <div key={i} className="bg-slate-950/30 p-2 rounded-lg border border-slate-800 flex justify-between items-center text-xs"><span className="font-bold text-slate-200">{name}</span><span className="text-sky-400 font-mono text-[10px]">{cname}</span></div>
+                    <div key={i} className="bg-white/30 p-2 rounded-lg border border-slate-200 flex justify-between items-center text-xs"><span className="font-bold text-slate-700">{name}</span><span className="text-indigo-500 font-mono text-[10px]">{cname}</span></div>
                   ))}
                 </div>
               </div>
             )}
             {activeScreenshotTab === "crm" && (
               <div className="space-y-4">
-                <div className="flex items-center justify-between pb-3 border-b border-slate-800/60"><div><span className="text-[10px] text-sky-400 font-mono font-bold">CRM & SALES MODULE</span><h4 className="text-sm font-extrabold text-white">Pipeline Stage and Lead Tracker</h4></div><span className="text-[10px] bg-sky-500/10 text-sky-400 px-2.5 py-0.5 rounded font-mono font-bold">REVENUE ENGINE</span></div>
+                <div className="flex items-center justify-between pb-3 border-b border-slate-200/60"><div><span className="text-[10px] text-indigo-500 font-mono font-bold">CRM & SALES MODULE</span><h4 className="text-sm font-extrabold text-white">Pipeline Stage and Lead Tracker</h4></div><span className="text-[10px] bg-indigo-600/10 text-indigo-500 px-2.5 py-0.5 rounded font-mono font-bold">REVENUE ENGINE</span></div>
                 <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-                  {[["Pipeline Value","₹18,40,000","text-white"],["Qualified Contacts","32 Contacts","text-sky-400"],["Proposals Out","12 Active","text-orange-400"],["Closed-Won","15 Deals","text-emerald-400"]].map(([label,val,cls],i)=>(
-                    <div key={i} className="bg-slate-950/40 p-3 rounded-lg border border-slate-800"><span className="text-[10px] text-slate-500 uppercase tracking-widest font-mono">{label}</span><p className={`text-lg font-black mt-0.5 ${cls}`}>{val}</p></div>
+                  {[["Pipeline Value","₹18,40,000","text-white"],["Qualified Contacts","32 Contacts","text-indigo-500"],["Proposals Out","12 Active","text-orange-400"],["Closed-Won","15 Deals","text-emerald-400"]].map(([label,val,cls],i)=>(
+                    <div key={i} className="bg-slate-50 p-3 rounded-lg border border-slate-200"><span className="text-[10px] text-slate-500 uppercase tracking-widest font-mono">{label}</span><p className={`text-lg font-black mt-0.5 ${cls}`}>{val}</p></div>
                   ))}
                 </div>
                 <div className="grid grid-cols-4 gap-2">
-                  {[["PROSPECT (8)","text-slate-400","Kolkata Medical Inc."],["QUALIFIED (6)","text-sky-400","Bengal Steel Spares"],["PROPOSAL (4)","text-amber-400","Starlight Edu"],["WON (15)","text-emerald-400","Apex Logistics"]].map(([stage,cls,company],i)=>(
-                    <div key={i} className="bg-slate-950/40 p-2.5 rounded-lg border border-slate-800 text-left space-y-1"><span className={`text-[9px] font-bold ${cls} font-mono block`}>{stage}</span><div className="bg-slate-900 p-1.5 rounded text-[10px] border border-slate-800 text-slate-200">{company}</div></div>
+                  {[["PROSPECT (8)","text-slate-400","Kolkata Medical Inc."],["QUALIFIED (6)","text-indigo-500","Bengal Steel Spares"],["PROPOSAL (4)","text-amber-400","Starlight Edu"],["WON (15)","text-emerald-400","Apex Logistics"]].map(([stage,cls,company],i)=>(
+                    <div key={i} className="bg-slate-50 p-2.5 rounded-lg border border-slate-200 text-left space-y-1"><span className={`text-[9px] font-bold ${cls} font-mono block`}>{stage}</span><div className="bg-white p-1.5 rounded text-[10px] border border-slate-200 text-slate-700">{company}</div></div>
                   ))}
                 </div>
               </div>
             )}
             {activeScreenshotTab === "inventory" && (
               <div className="space-y-4">
-                <div className="flex items-center justify-between pb-3 border-b border-slate-800/60"><div><span className="text-[10px] text-sky-400 font-mono font-bold">INVENTORY MANAGEMENT</span><h4 className="text-sm font-extrabold text-white">Stock Levels, Batch Codes & Rack Assignments</h4></div><span className="text-[10px] bg-amber-500/10 text-amber-400 px-2.5 py-0.5 rounded font-mono font-bold">FIFO COMPLIANT</span></div>
+                <div className="flex items-center justify-between pb-3 border-b border-slate-200/60"><div><span className="text-[10px] text-indigo-500 font-mono font-bold">INVENTORY MANAGEMENT</span><h4 className="text-sm font-extrabold text-white">Stock Levels, Batch Codes & Rack Assignments</h4></div><span className="text-[10px] bg-amber-500/10 text-amber-400 px-2.5 py-0.5 rounded font-mono font-bold">FIFO COMPLIANT</span></div>
                 <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-                  {[["Warehouses","4 Yards","text-white"],["Product SKUs","140 SKUs","text-sky-400"],["Low Stock","2 Warnings","text-red-400"],["Batch Value","₹8,20,400","text-emerald-400"]].map(([label,val,cls],i)=>(
-                    <div key={i} className="bg-slate-950/40 p-3 rounded-lg border border-slate-800"><span className="text-[10px] text-slate-500 uppercase tracking-widest font-mono">{label}</span><p className={`text-lg font-black mt-0.5 ${cls}`}>{val}</p></div>
+                  {[["Warehouses","4 Yards","text-white"],["Product SKUs","140 SKUs","text-indigo-500"],["Low Stock","2 Warnings","text-red-400"],["Batch Value","₹8,20,400","text-emerald-400"]].map(([label,val,cls],i)=>(
+                    <div key={i} className="bg-slate-50 p-3 rounded-lg border border-slate-200"><span className="text-[10px] text-slate-500 uppercase tracking-widest font-mono">{label}</span><p className={`text-lg font-black mt-0.5 ${cls}`}>{val}</p></div>
                   ))}
                 </div>
-                <div className="overflow-x-auto"><table className="w-full text-left font-mono border-collapse text-xs"><thead><tr className="border-b border-slate-800 text-[10px] text-slate-500"><th className="py-1">PRODUCT / SKU</th><th className="py-1">BATCH NO</th><th className="py-1">RACK</th><th className="py-1">STOCK</th><th className="py-1 text-right">STATUS</th></tr></thead><tbody className="divide-y divide-slate-800/40">
-                  <tr><td className="py-1.5 text-slate-200 font-sans font-bold">Industrial Steel Coils</td><td className="py-1.5 text-slate-400">#ST-2026-09A</td><td className="py-1.5 text-slate-400">Rack A-2</td><td className="py-1.5 text-slate-200">420 Units</td><td className="py-1.5 text-right text-emerald-400">In Stock</td></tr>
-                  <tr><td className="py-1.5 text-slate-200 font-sans font-bold">Copper Tubes 15mm</td><td className="py-1.5 text-slate-400">#CU-2026-11C</td><td className="py-1.5 text-slate-400">Rack B-12</td><td className="py-1.5 text-slate-200">12 Units</td><td className="py-1.5 text-right text-rose-400">Low Stock</td></tr>
-                  <tr><td className="py-1.5 text-slate-200 font-sans font-bold">High Tensile Bolts (100)</td><td className="py-1.5 text-slate-400">#BT-2026-04B</td><td className="py-1.5 text-slate-400">Rack D-4</td><td className="py-1.5 text-slate-200">1,500 Packs</td><td className="py-1.5 text-right text-emerald-400">In Stock</td></tr>
+                <div className="overflow-x-auto"><table className="w-full text-left font-mono border-collapse text-xs"><thead><tr className="border-b border-slate-200 text-[10px] text-slate-500"><th className="py-1">PRODUCT / SKU</th><th className="py-1">BATCH NO</th><th className="py-1">RACK</th><th className="py-1">STOCK</th><th className="py-1 text-right">STATUS</th></tr></thead><tbody className="divide-y divide-slate-800/40">
+                  <tr><td className="py-1.5 text-slate-700 font-sans font-bold">Industrial Steel Coils</td><td className="py-1.5 text-slate-400">#ST-2026-09A</td><td className="py-1.5 text-slate-400">Rack A-2</td><td className="py-1.5 text-slate-700">420 Units</td><td className="py-1.5 text-right text-emerald-400">In Stock</td></tr>
+                  <tr><td className="py-1.5 text-slate-700 font-sans font-bold">Copper Tubes 15mm</td><td className="py-1.5 text-slate-400">#CU-2026-11C</td><td className="py-1.5 text-slate-400">Rack B-12</td><td className="py-1.5 text-slate-700">12 Units</td><td className="py-1.5 text-right text-rose-400">Low Stock</td></tr>
+                  <tr><td className="py-1.5 text-slate-700 font-sans font-bold">High Tensile Bolts (100)</td><td className="py-1.5 text-slate-400">#BT-2026-04B</td><td className="py-1.5 text-slate-400">Rack D-4</td><td className="py-1.5 text-slate-700">1,500 Packs</td><td className="py-1.5 text-right text-emerald-400">In Stock</td></tr>
                 </tbody></table></div>
               </div>
             )}
             {activeScreenshotTab === "hr" && (
               <div className="space-y-4">
-                <div className="flex items-center justify-between pb-3 border-b border-slate-800/60"><div><span className="text-[10px] text-sky-400 font-mono font-bold">HR & EMPLOYEE MANAGEMENT</span><h4 className="text-sm font-extrabold text-white">Staff Rostering, Clock-in & Leave Approvals</h4></div><span className="text-[10px] bg-sky-500/10 text-sky-400 px-2.5 py-0.5 rounded font-mono font-bold">ACTIVE</span></div>
+                <div className="flex items-center justify-between pb-3 border-b border-slate-200/60"><div><span className="text-[10px] text-indigo-500 font-mono font-bold">HR & EMPLOYEE MANAGEMENT</span><h4 className="text-sm font-extrabold text-white">Staff Rostering, Clock-in & Leave Approvals</h4></div><span className="text-[10px] bg-indigo-600/10 text-indigo-500 px-2.5 py-0.5 rounded font-mono font-bold">ACTIVE</span></div>
                 <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-                  {[["Total Staff","48 Employees","text-white"],["Clocked-In Today","92% Present","text-emerald-400"],["Leaves Approved","3 Approved","text-sky-400"],["Roster Status","Active","text-violet-400"]].map(([label,val,cls],i)=>(
-                    <div key={i} className="bg-slate-950/40 p-3 rounded-lg border border-slate-800"><span className="text-[10px] text-slate-500 uppercase tracking-widest font-mono">{label}</span><p className={`text-lg font-black mt-0.5 ${cls}`}>{val}</p></div>
+                  {[["Total Staff","48 Employees","text-white"],["Clocked-In Today","92% Present","text-emerald-400"],["Leaves Approved","3 Approved","text-indigo-500"],["Roster Status","Active","text-violet-400"]].map(([label,val,cls],i)=>(
+                    <div key={i} className="bg-slate-50 p-3 rounded-lg border border-slate-200"><span className="text-[10px] text-slate-500 uppercase tracking-widest font-mono">{label}</span><p className={`text-lg font-black mt-0.5 ${cls}`}>{val}</p></div>
                   ))}
                 </div>
                 <div className="space-y-1.5 text-xs">
                   {[["Amit Sen (ID #002)","HR Administrator","CLOCKED IN (09:12 AM)","emerald"],["Priyanka Roy (ID #014)","Procurement Lead","CLOCKED IN (09:40 AM)","sky"],["Rahul Das (ID #005)","Sales Executive","LEAVE: Annual (2 Days)","amber"]].map(([name,role,status,color],i)=>(
-                    <div key={i} className="bg-slate-950/30 p-2.5 rounded-lg border border-slate-800 flex justify-between items-center">
-                      <div className="flex items-center gap-2"><span className={`h-2 w-2 rounded-full bg-${color}-500`}></span><span className="font-bold text-slate-200">{name}</span><span className="text-slate-500 font-mono text-[10px]">{role}</span></div>
+                    <div key={i} className="bg-white/30 p-2.5 rounded-lg border border-slate-200 flex justify-between items-center">
+                      <div className="flex items-center gap-2"><span className={`h-2 w-2 rounded-full bg-${color}-500`}></span><span className="font-bold text-slate-700">{name}</span><span className="text-slate-500 font-mono text-[10px]">{role}</span></div>
                       <span className={`text-${color}-400 font-bold text-[10px]`}>{status}</span>
                     </div>
                   ))}
@@ -845,15 +845,15 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
             )}
             {activeScreenshotTab === "purchases" && (
               <div className="space-y-4">
-                <div className="flex items-center justify-between pb-3 border-b border-slate-800/60"><div><span className="text-[10px] text-sky-400 font-mono font-bold">PROCUREMENT & PURCHASES</span><h4 className="text-sm font-extrabold text-white">Purchase Orders & Supplier Terms</h4></div><span className="text-[10px] bg-violet-500/10 text-violet-400 px-2.5 py-0.5 rounded font-mono font-bold">COMPLIANCE SECURE</span></div>
+                <div className="flex items-center justify-between pb-3 border-b border-slate-200/60"><div><span className="text-[10px] text-indigo-500 font-mono font-bold">PROCUREMENT & PURCHASES</span><h4 className="text-sm font-extrabold text-white">Purchase Orders & Supplier Terms</h4></div><span className="text-[10px] bg-violet-500/10 text-violet-400 px-2.5 py-0.5 rounded font-mono font-bold">COMPLIANCE SECURE</span></div>
                 <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-                  {[["Requisitions","6 Pending","text-white"],["Supplier Terms","30-Day Credit","text-sky-400"],["Pending Receipts","2 Orders","text-orange-400"],["Auth Limits","₹5,00,000","text-emerald-400"]].map(([label,val,cls],i)=>(
-                    <div key={i} className="bg-slate-950/40 p-3 rounded-lg border border-slate-800"><span className="text-[10px] text-slate-500 uppercase tracking-widest font-mono">{label}</span><p className={`text-lg font-black mt-0.5 ${cls}`}>{val}</p></div>
+                  {[["Requisitions","6 Pending","text-white"],["Supplier Terms","30-Day Credit","text-indigo-500"],["Pending Receipts","2 Orders","text-orange-400"],["Auth Limits","₹5,00,000","text-emerald-400"]].map(([label,val,cls],i)=>(
+                    <div key={i} className="bg-slate-50 p-3 rounded-lg border border-slate-200"><span className="text-[10px] text-slate-500 uppercase tracking-widest font-mono">{label}</span><p className={`text-lg font-black mt-0.5 ${cls}`}>{val}</p></div>
                   ))}
                 </div>
-                <div className="overflow-x-auto"><table className="w-full text-left font-mono border-collapse text-xs"><thead><tr className="border-b border-slate-800 text-[10px] text-slate-500"><th className="py-1">PO CODE</th><th className="py-1">SUPPLIER</th><th className="py-1">VALUE</th><th className="py-1">PAYMENT</th><th className="py-1 text-right">STATUS</th></tr></thead><tbody className="divide-y divide-slate-800/40">
-                  <tr><td className="py-1.5 text-sky-400 font-bold">#PO-2026-004</td><td className="py-1.5 text-slate-200">Bengal Steel Spares</td><td className="py-1.5 text-slate-200">₹1,40,000</td><td className="py-1.5 text-slate-400">30-Day Net</td><td className="py-1.5 text-right text-emerald-400 font-bold">Approved</td></tr>
-                  <tr><td className="py-1.5 text-sky-400 font-bold">#PO-2026-005</td><td className="py-1.5 text-slate-200">Kolkata Packing Yards</td><td className="py-1.5 text-slate-200">₹45,000</td><td className="py-1.5 text-slate-400">15-Day Net</td><td className="py-1.5 text-right text-amber-400 font-bold">Sent</td></tr>
+                <div className="overflow-x-auto"><table className="w-full text-left font-mono border-collapse text-xs"><thead><tr className="border-b border-slate-200 text-[10px] text-slate-500"><th className="py-1">PO CODE</th><th className="py-1">SUPPLIER</th><th className="py-1">VALUE</th><th className="py-1">PAYMENT</th><th className="py-1 text-right">STATUS</th></tr></thead><tbody className="divide-y divide-slate-800/40">
+                  <tr><td className="py-1.5 text-indigo-500 font-bold">#PO-2026-004</td><td className="py-1.5 text-slate-700">Bengal Steel Spares</td><td className="py-1.5 text-slate-700">₹1,40,000</td><td className="py-1.5 text-slate-400">30-Day Net</td><td className="py-1.5 text-right text-emerald-400 font-bold">Approved</td></tr>
+                  <tr><td className="py-1.5 text-indigo-500 font-bold">#PO-2026-005</td><td className="py-1.5 text-slate-700">Kolkata Packing Yards</td><td className="py-1.5 text-slate-700">₹45,000</td><td className="py-1.5 text-slate-400">15-Day Net</td><td className="py-1.5 text-right text-amber-400 font-bold">Sent</td></tr>
                 </tbody></table></div>
               </div>
             )}
@@ -863,13 +863,13 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
 
       {/* ── PRICING ───────────────────────────────────────────────────────── */}
       <section id="pricing" className="w-full max-w-4xl mx-auto px-4 md:px-8 pb-16">
-        <div className="bg-slate-900/50 rounded-2xl p-6 border border-sky-500/10 shadow-xl space-y-5 text-center">
+        <div className="bg-white/50 rounded-2xl p-6 border border-sky-500/10 shadow-xl space-y-5 text-center">
           <div className="space-y-1">
-            <span className="text-[10px] uppercase font-bold tracking-widest text-sky-400 font-mono">Tenant Pricing</span>
+            <span className="text-[10px] uppercase font-bold tracking-widest text-indigo-500 font-mono">Tenant Pricing</span>
             <h3 className="text-xl font-bold text-white">Deinrim OMS Subscription</h3>
             <p className="text-xs text-slate-400 max-w-lg mx-auto">Each registered tenant gets a completely clean database — zero demo data — branded with your company name, logo, and contact details.</p>
           </div>
-          <div className="bg-slate-950/80 p-6 rounded-xl border border-slate-800 inline-block text-center space-y-3 min-w-[200px]">
+          <div className="bg-white p-6 rounded-xl border border-slate-200 inline-block text-center space-y-3 min-w-[200px]">
             <span className="text-[10px] font-mono font-bold tracking-widest text-slate-500 uppercase block">Flat Monthly Charge</span>
             <div><span className="text-4xl font-extrabold text-white">₹500</span><span className="text-xs text-slate-400 ml-1">INR</span></div>
             <span className="text-xs text-slate-500 block">per tenant / month</span>
@@ -879,7 +879,7 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
               <div key={i} className="flex items-center gap-1.5"><Check className="h-3.5 w-3.5 text-emerald-400 shrink-0" />{f}</div>
             ))}
           </div>
-          <button onClick={() => openModal("register")} className="px-8 py-3 bg-sky-500 hover:bg-sky-400 text-white font-bold text-xs rounded-xl transition-all cursor-pointer shadow-lg shadow-sky-500/20">
+          <button onClick={() => openModal("register")} className="px-8 py-3 bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs rounded-xl transition-all cursor-pointer shadow-lg shadow-indigo-200">
             Create Your Account Now →
           </button>
         </div>
@@ -889,7 +889,7 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
       <section className="w-full max-w-6xl mx-auto px-4 md:px-8 pb-16">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 text-left">
           <div className="lg:col-span-7 space-y-6">
-            <div className="space-y-1"><span className="text-[10px] uppercase font-bold tracking-widest text-sky-400 font-mono">Engineering Trust</span><h3 className="text-xl font-extrabold text-white">Why Companies Choose DEINRIM 360</h3></div>
+            <div className="space-y-1"><span className="text-[10px] uppercase font-bold tracking-widest text-indigo-500 font-mono">Engineering Trust</span><h3 className="text-xl font-extrabold text-white">Why Companies Choose DEINRIM 360</h3></div>
             <div className="space-y-4">
               {[
                 { title: "⚡ Reduce Manual Effort & Double Entry", desc: "Inventory movements trigger procurement and CRM entries automatically — no re-keying." },
@@ -898,14 +898,14 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
                 { title: "🇮🇳 Kolkata, West Bengal Local Presence", desc: "High-touch local consultation, rapid deployment, and active SLA backing from our Kolkata team." },
               ].map((point, idx) => (
                 <div key={idx} className="flex gap-3">
-                  <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-sky-500/10 text-sky-400 text-xs font-bold mt-0.5">✓</span>
-                  <div><span className="text-xs font-bold text-slate-100">{point.title}</span><p className="text-[11px] text-slate-400 leading-normal mt-0.5">{point.desc}</p></div>
+                  <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-indigo-600/10 text-indigo-500 text-xs font-bold mt-0.5">✓</span>
+                  <div><span className="text-xs font-bold text-slate-800">{point.title}</span><p className="text-[11px] text-slate-400 leading-normal mt-0.5">{point.desc}</p></div>
                 </div>
               ))}
             </div>
           </div>
           <div className="lg:col-span-5 bg-gradient-to-br from-slate-900 to-sky-950/30 rounded-2xl p-6 border border-sky-500/10 space-y-4">
-            <div><span className="text-[10px] uppercase font-bold tracking-widest text-amber-400 font-mono">Future Roadmap v2.0</span><h3 className="text-md font-bold text-slate-100 mt-1">Coming to Your Workspace</h3></div>
+            <div><span className="text-[10px] uppercase font-bold tracking-widest text-amber-400 font-mono">Future Roadmap v2.0</span><h3 className="text-md font-bold text-slate-800 mt-1">Coming to Your Workspace</h3></div>
             <div className="space-y-2.5 font-mono text-[11px]">
               {[
                 ["📈 Consolidated Finance & Accounting","Q3 2026"],
@@ -914,7 +914,7 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
                 ["📱 Native iOS & Android Apps","Q1 2027"],
                 ["🔔 WhatsApp Automated Alerts","Q2 2027"],
               ].map(([name,status],i)=>(
-                <div key={i} className="flex items-center justify-between p-2 rounded bg-slate-900/60 border border-slate-800">
+                <div key={i} className="flex items-center justify-between p-2 rounded bg-slate-50 border border-slate-200">
                   <span className="text-slate-300 font-sans font-semibold">{name}</span>
                   <span className="text-[9px] bg-amber-500/10 text-amber-400 px-2 py-0.5 rounded shrink-0">{status}</span>
                 </div>
@@ -926,16 +926,16 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
 
       {/* ── CTA BANNER ────────────────────────────────────────────────────── */}
       <section className="w-full max-w-6xl mx-auto px-4 md:px-8 pb-16">
-        <div className="bg-gradient-to-r from-sky-950/80 via-slate-900 to-sky-950/80 rounded-2xl p-6 md:p-8 border border-sky-500/20 text-center space-y-5">
+        <div className="bg-gradient-to-r from-sky-950/80 via-slate-900 to-sky-950/80 rounded-2xl p-6 md:p-8 border border-indigo-200 text-center space-y-5">
           <div className="space-y-2 max-w-2xl mx-auto">
             <h3 className="text-xl font-black text-white">Ready to Digitize Your Organization?</h3>
             <p className="text-xs text-slate-300 leading-relaxed">Unlock operational clarity, eliminate double entry, and secure your company database. Schedule a sandbox demo with our Kolkata engineering desk.</p>
           </div>
           <div className="flex flex-wrap items-center justify-center gap-4">
-            <button onClick={() => openModal("register")} className="px-6 py-3 bg-sky-500 hover:bg-sky-400 text-white font-bold text-xs rounded-xl transition-all cursor-pointer shadow-lg shadow-sky-500/20">
+            <button onClick={() => openModal("register")} className="px-6 py-3 bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs rounded-xl transition-all cursor-pointer shadow-lg shadow-indigo-200">
               ✨ Create Free Account
             </button>
-            <a href="https://wa.me/919836130393?text=I'm%20interested%20in%20a%20DEINRIM%20360%20demo" target="_blank" rel="noreferrer" className="px-6 py-3 bg-slate-900 hover:bg-slate-800 text-emerald-400 border border-slate-700 font-bold text-xs rounded-xl transition-all">
+            <a href="https://wa.me/919836130393?text=I'm%20interested%20in%20a%20DEINRIM%20360%20demo" target="_blank" rel="noreferrer" className="px-6 py-3 bg-white hover:bg-slate-100 text-emerald-400 border border-slate-200 font-bold text-xs rounded-xl transition-all">
               💬 WhatsApp (+91 98361-30393)
             </a>
           </div>
@@ -945,23 +945,23 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
 
       {/* ── FAQ ───────────────────────────────────────────────────────────── */}
       <section id="faq" className="w-full max-w-4xl mx-auto px-4 md:px-8 pb-16">
-        <div className="bg-slate-900/60 rounded-2xl p-6 border border-slate-800 shadow-xl space-y-4">
+        <div className="bg-slate-50 rounded-2xl p-6 border border-slate-200 shadow-xl space-y-4">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-            <div className="flex items-center gap-2"><BookOpen className="h-5 w-5 text-sky-400" /><h3 className="text-md font-bold text-slate-100">Knowledge Base Q&A</h3></div>
-            <div className="relative"><Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-500" /><input type="text" placeholder="Search Q&A..." value={helpSearch} onChange={e => setHelpSearch(e.target.value)} className="bg-slate-900 border border-slate-800 rounded-lg pl-8 pr-3 py-1 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-sky-500 w-full md:w-64 font-semibold" /></div>
+            <div className="flex items-center gap-2"><BookOpen className="h-5 w-5 text-indigo-500" /><h3 className="text-md font-bold text-slate-800">Knowledge Base Q&A</h3></div>
+            <div className="relative"><Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-500" /><input type="text" placeholder="Search Q&A..." value={helpSearch} onChange={e => setHelpSearch(e.target.value)} className="bg-white border border-slate-200 rounded-lg pl-8 pr-3 py-1 text-xs text-slate-700 placeholder-slate-500 focus:outline-none focus:border-sky-500 w-full md:w-64 font-semibold" /></div>
           </div>
           <div className="space-y-2.5 max-h-[500px] overflow-y-auto pr-1">
             {filteredQas.length === 0 ? <div className="text-center py-6 text-slate-500 text-xs">No Q&A articles match your search.</div> : filteredQas.map((item, index) => {
               const isExpanded = expandedQa === index;
               return (
-                <div key={index} className={`rounded-xl border transition-all ${isExpanded ? "bg-slate-900 border-sky-500/40" : "bg-slate-900/45 border-slate-800 hover:border-slate-700"}`}>
+                <div key={index} className={`rounded-xl border transition-all ${isExpanded ? "bg-white border-sky-500/40" : "bg-white/45 border-slate-200 hover:border-slate-200"}`}>
                   <button onClick={() => setExpandedQa(isExpanded ? null : index)} className="w-full text-left px-4 py-3 flex items-center justify-between gap-3 font-semibold">
-                    <span className="text-xs text-slate-200">{item.q}</span>
-                    {isExpanded ? <ChevronDown className="h-4 w-4 text-sky-400 shrink-0" /> : <ChevronRight className="h-4 w-4 text-slate-500 shrink-0" />}
+                    <span className="text-xs text-slate-700">{item.q}</span>
+                    {isExpanded ? <ChevronDown className="h-4 w-4 text-indigo-500 shrink-0" /> : <ChevronRight className="h-4 w-4 text-slate-500 shrink-0" />}
                   </button>
                   {isExpanded && (
-                    <div className="px-4 pb-4 pt-1 border-t border-slate-800/40 text-xs text-slate-400 leading-relaxed">
-                      <p dangerouslySetInnerHTML={{ __html: item.a.replace(/\*\*(.*?)\*\*/g, '<strong class="text-slate-100 font-bold">$1</strong>') }}></p>
+                    <div className="px-4 pb-4 pt-1 border-t border-slate-200/40 text-xs text-slate-400 leading-relaxed">
+                      <p dangerouslySetInnerHTML={{ __html: item.a.replace(/\*\*(.*?)\*\*/g, '<strong class="text-slate-800 font-bold">$1</strong>') }}></p>
                     </div>
                   )}
                 </div>
@@ -969,25 +969,25 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
             })}
           </div>
         </div>
-        <div className="bg-slate-950/40 rounded-xl p-4 border border-slate-800 flex items-start gap-3 mt-4">
-          <Info className="h-5 w-5 text-sky-400 shrink-0 mt-0.5" />
-          <div><span className="text-xs font-bold text-slate-200">Role-Based Access Control Policy</span><p className="text-[11px] text-slate-400 leading-normal mt-1">All business actions validate user role parameters under the RBAC matrix dynamically before committing to the database. System Admin has unrestricted access to edit or delete any record or account without requiring additional approvals.</p></div>
+        <div className="bg-slate-50 rounded-xl p-4 border border-slate-200 flex items-start gap-3 mt-4">
+          <Info className="h-5 w-5 text-indigo-500 shrink-0 mt-0.5" />
+          <div><span className="text-xs font-bold text-slate-700">Role-Based Access Control Policy</span><p className="text-[11px] text-slate-400 leading-normal mt-1">All business actions validate user role parameters under the RBAC matrix dynamically before committing to the database. System Admin has unrestricted access to edit or delete any record or account without requiring additional approvals.</p></div>
         </div>
       </section>
 
       {/* ── FOOTER ────────────────────────────────────────────────────────── */}
-      <footer className="border-t border-slate-800 bg-[#030712] px-6 py-6 text-xs text-slate-400 shrink-0">
+      <footer className="border-t border-slate-200 bg-[#030712] px-6 py-6 text-xs text-slate-400 shrink-0">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 max-w-6xl mx-auto text-left">
           <div className="space-y-1.5">
-            <h4 className="text-[11px] font-extrabold text-sky-400 uppercase tracking-wider font-mono">OPERATED & DEVELOPED BY</h4>
-            <p className="text-slate-200 font-semibold text-sm">Apex7tech</p>
+            <h4 className="text-[11px] font-extrabold text-indigo-500 uppercase tracking-wider font-mono">OPERATED & DEVELOPED BY</h4>
+            <p className="text-slate-700 font-semibold text-sm">Apex7tech</p>
             <p className="text-slate-300">Kolkata, West Bengal (WB), India</p>
             <p className="text-white font-bold text-sm">Corporate: +91 98361-30393</p>
-            <p className="text-slate-500 text-[10px] leading-normal pt-2 border-t border-slate-900 mt-2">DEINRIM OMS v2.0 • Isolated high-performance relational structures with real-time replication.</p>
+            <p className="text-slate-500 text-[10px] leading-normal pt-2 border-t border-slate-100 mt-2">DEINRIM OMS v2.0 • Isolated high-performance relational structures with real-time replication.</p>
           </div>
           <div className="space-y-2">
-            <h4 className="text-[11px] font-extrabold text-sky-400 uppercase tracking-wider font-mono">REGULATORY COMPLIANCE</h4>
-            <div className="flex flex-wrap items-center gap-x-2 gap-y-1.5 text-sky-400 font-bold mt-2 text-[11px]">
+            <h4 className="text-[11px] font-extrabold text-indigo-500 uppercase tracking-wider font-mono">REGULATORY COMPLIANCE</h4>
+            <div className="flex flex-wrap items-center gap-x-2 gap-y-1.5 text-indigo-500 font-bold mt-2 text-[11px]">
               {[["privacy","Privacy Policy"],["terms","Terms of Service"],["support","App Support"]].map(([key,label])=>(
                 <React.Fragment key={key}><button type="button" onClick={() => setActiveFooterModal(key as any)} className="hover:text-sky-300 underline transition-all cursor-pointer">{label}</button><span className="text-slate-700">|</span></React.Fragment>
               ))}
@@ -995,7 +995,7 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
             </div>
           </div>
           <div className="space-y-2">
-            <h4 className="text-[11px] font-extrabold text-sky-400 uppercase tracking-wider font-mono">ENTERPRISE SECURITY</h4>
+            <h4 className="text-[11px] font-extrabold text-indigo-500 uppercase tracking-wider font-mono">ENTERPRISE SECURITY</h4>
             <ul className="space-y-2 text-slate-400 text-xs leading-relaxed">
               <li className="flex items-start gap-2"><span className="text-slate-600 font-mono mt-0.5">•</span><span><strong>Multi-Tenant Isolation:</strong> Company databases are isolated per unique tenant schema. No cross-tenant query execution possible.</span></li>
               <li className="flex items-start gap-2"><span className="text-slate-600 font-mono mt-0.5">•</span><span><strong>Data Sovereignty:</strong> Transactions encrypted using AES-256 standard, backed up every 6 hours on secure containers.</span></li>
@@ -1007,21 +1007,21 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
       {/* ── LOGIN MODAL ───────────────────────────────────────────────────── */}
       {showModal && (
         <div className="fixed inset-0 z-50 flex items-start md:items-center justify-center bg-black/70 backdrop-blur-sm p-2 md:p-4 overflow-y-auto" onClick={(e) => { if (e.target === e.currentTarget) closeModal(); }}>
-          <div className="w-full max-w-md rounded-2xl border border-slate-700 bg-[#0f172a] shadow-2xl overflow-hidden my-4 md:my-0">
+          <div className="w-full max-w-md rounded-2xl border border-slate-200 bg-white shadow-2xl overflow-hidden my-4 md:my-0">
             {/* Top accent */}
             <div className="h-0.5 w-full bg-gradient-to-r from-sky-500 via-blue-400 to-sky-600"></div>
 
             {/* Header */}
-            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-800">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200">
               <div className="flex items-center gap-2.5">
-                <div className="h-8 w-8 rounded-lg bg-sky-500 flex items-center justify-center"><Building2 className="h-4 w-4 text-white" /></div>
+                <div className="h-8 w-8 rounded-lg bg-indigo-600 flex items-center justify-center"><Building2 className="h-4 w-4 text-white" /></div>
                 <div><div className="text-sm font-bold text-white font-mono">DEINRIM OMS</div><div className="text-[10px] text-slate-500 font-mono">Secure Enterprise Portal</div></div>
               </div>
-              <button onClick={closeModal} className="text-slate-400 hover:text-white cursor-pointer"><X className="h-5 w-5" /></button>
+              <button onClick={closeModal} className="text-slate-400 hover:text-slate-800 cursor-pointer"><X className="h-5 w-5" /></button>
             </div>
 
             {/* 3 Tabs */}
-            <div className="flex gap-1 p-3 bg-slate-900/60 border-b border-slate-800">
+            <div className="flex gap-1 p-3 bg-slate-50 border-b border-slate-200">
               {([
                 { id: "login",      label: "Login",         icon: LogIn },
                 { id: "register",   label: "Create Account",icon: UserPlus },
@@ -1030,7 +1030,7 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
                 const Icon = tab.icon;
                 return (
                   <button key={tab.id} onClick={() => setModalTab(tab.id)}
-                    className={`flex-1 flex items-center justify-center gap-1 py-2 rounded-lg text-[11px] font-bold transition-all cursor-pointer font-mono ${modalTab === tab.id ? "bg-sky-500 text-white" : "text-slate-400 hover:text-white hover:bg-slate-800"}`}
+                    className={`flex-1 flex items-center justify-center gap-1 py-2 rounded-lg text-[11px] font-bold transition-all cursor-pointer font-mono ${modalTab === tab.id ? "bg-indigo-600 text-white" : "text-slate-400 hover:text-slate-800 hover:bg-slate-100"}`}
                   >
                     <Icon className="h-3 w-3" />{tab.label}
                   </button>
@@ -1045,11 +1045,11 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
                 <form onSubmit={handleLogin} className="space-y-4">
                   {loginError && <div className="bg-red-500/10 border border-red-500/30 text-red-300 p-3 rounded-lg text-xs flex items-start gap-2"><ShieldAlert className="h-4 w-4 shrink-0 text-red-400 mt-0.5" />{loginError}</div>}
                   <div className="space-y-1.5">
-                    <label className="text-[10px] font-bold text-sky-400/80 font-mono uppercase tracking-widest">Email Address</label>
+                    <label className="text-[10px] font-bold text-indigo-500/80 font-mono uppercase tracking-widest">Email Address</label>
                     <div className="relative"><Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500" /><input type="email" required placeholder="your@company.com" value={email} onChange={e => { setEmail(e.target.value); setLoginError(""); }} className={`${inputCls} pl-10`} /></div>
                   </div>
                   <div className="space-y-1.5">
-                    <label className="text-[10px] font-bold text-sky-400/80 font-mono uppercase tracking-widest">Password</label>
+                    <label className="text-[10px] font-bold text-indigo-500/80 font-mono uppercase tracking-widest">Password</label>
                     <div className="relative"><Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500" /><input type="password" required placeholder="Enter password" value={password} onChange={e => { setPassword(e.target.value); setLoginError(""); }} className={`${inputCls} pl-10`} /></div>
                   </div>
                   <button type="submit" className={btnSky}>Sign In <ArrowRight className="h-3.5 w-3.5" /></button>
@@ -1061,23 +1061,23 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
               {modalTab === "register" && (
                 <form onSubmit={handleRegister} className="space-y-4">
                   {regError && <div className="bg-red-500/10 border border-red-500/30 text-red-300 p-3 rounded-lg text-xs flex items-start gap-2"><ShieldAlert className="h-4 w-4 shrink-0 text-red-400 mt-0.5" />{regError}</div>}
-                  <div className="bg-sky-500/5 border border-sky-500/15 rounded-lg p-3 text-[10px] text-sky-300/80 font-mono">
+                  <div className="bg-indigo-600/5 border border-sky-500/15 rounded-lg p-3 text-[10px] text-sky-300/80 font-mono">
                     Creating an account provisions a <strong className="text-sky-300">clean, isolated company workspace</strong> with zero demo data. You will be the Company Admin.
                   </div>
                   <div className="space-y-1.5">
-                    <label className="text-[10px] font-bold text-sky-400/80 font-mono uppercase tracking-widest">Company Name *</label>
+                    <label className="text-[10px] font-bold text-indigo-500/80 font-mono uppercase tracking-widest">Company Name *</label>
                     <input type="text" required placeholder="Acme Corp Pvt. Ltd." value={regCompany} onChange={e => setRegCompany(e.target.value)} className={inputCls} />
                   </div>
                   <div className="space-y-1.5">
-                    <label className="text-[10px] font-bold text-sky-400/80 font-mono uppercase tracking-widest">Admin Email *</label>
+                    <label className="text-[10px] font-bold text-indigo-500/80 font-mono uppercase tracking-widest">Admin Email *</label>
                     <div className="relative"><Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500" /><input type="email" required placeholder="admin@company.com" value={regEmail} onChange={e => setRegEmail(e.target.value)} className={`${inputCls} pl-10`} /></div>
                   </div>
                   <div className="space-y-1.5">
-                    <label className="text-[10px] font-bold text-sky-400/80 font-mono uppercase tracking-widest">Password *</label>
+                    <label className="text-[10px] font-bold text-indigo-500/80 font-mono uppercase tracking-widest">Password *</label>
                     <div className="relative"><Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500" /><input type="password" required placeholder="Min 6 characters" value={regPassword} onChange={e => setRegPassword(e.target.value)} className={`${inputCls} pl-10`} /></div>
                   </div>
                   <div className="space-y-1.5">
-                    <label className="text-[10px] font-bold text-sky-400/80 font-mono uppercase tracking-widest">Confirm Password *</label>
+                    <label className="text-[10px] font-bold text-indigo-500/80 font-mono uppercase tracking-widest">Confirm Password *</label>
                     <div className="relative"><Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500" /><input type="password" required placeholder="Repeat password" value={regConfirm} onChange={e => setRegConfirm(e.target.value)} className={`${inputCls} pl-10`} /></div>
                   </div>
                   <button type="submit" disabled={regLoading} className={`${btnSky} ${regLoading ? "opacity-70 cursor-not-allowed" : ""}`}>
@@ -1092,9 +1092,9 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
                 <div className="space-y-5">
                   {/* Admin section — requires credentials */}
                   <div className="space-y-3">
-                    <div className="flex items-center gap-2 pb-2 border-b border-slate-800">
-                      <Shield className="h-3.5 w-3.5 text-sky-400" />
-                      <span className="text-[10px] font-bold text-sky-400 uppercase tracking-widest font-mono">System Admin Access</span>
+                    <div className="flex items-center gap-2 pb-2 border-b border-slate-200">
+                      <Shield className="h-3.5 w-3.5 text-indigo-500" />
+                      <span className="text-[10px] font-bold text-indigo-500 uppercase tracking-widest font-mono">System Admin Access</span>
                     </div>
                     <form onSubmit={handleAdminLogin} className="space-y-3">
                       {adminError && <div className="bg-red-500/10 border border-red-500/30 text-red-300 p-2.5 rounded-lg text-xs">{adminError}</div>}
@@ -1106,7 +1106,7 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
 
                   {/* Demo section — instant access */}
                   <div className="space-y-3">
-                    <div className="flex items-center gap-2 pb-2 border-b border-slate-800">
+                    <div className="flex items-center gap-2 pb-2 border-b border-slate-200">
                       <Zap className="h-3.5 w-3.5 text-amber-400" />
                       <span className="text-[10px] font-bold text-amber-400 uppercase tracking-widest font-mono">Quick Demo Access</span>
                     </div>
@@ -1115,7 +1115,7 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
                     </div>
                     <div className="space-y-2">
                       {([
-                        { type: "admin",     label: "Company Admin",     sub: "Full company view (read-write demo)",  dot: "bg-sky-500"     },
+                        { type: "admin",     label: "Company Admin",     sub: "Full company view (read-write demo)",  dot: "bg-indigo-600"     },
                         { type: "sales",     label: "Sales Manager",     sub: "CRM + Sales pipeline only",           dot: "bg-emerald-500" },
                         { type: "hr",        label: "HR Manager",        sub: "HR module + My HR self-service",      dot: "bg-violet-500"  },
                         { type: "finance",   label: "Finance Manager",   sub: "Finance + GST modules",               dot: "bg-amber-500"   },
@@ -1123,11 +1123,11 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
                         { type: "readonly",  label: "Read-Only Observer",sub: "All modules, no write access",        dot: "bg-slate-500"   },
                       ] as const).map(item => (
                         <button key={item.type} onClick={() => handleDemoLogin(item.type)}
-                          className="w-full bg-slate-800/60 hover:bg-slate-700/60 border border-slate-700 hover:border-sky-500/30 rounded-xl px-4 py-3 flex items-center gap-3 text-left cursor-pointer transition-all"
+                          className="w-full bg-slate-100/60 hover:bg-slate-700/60 border border-slate-200 hover:border-sky-500/30 rounded-xl px-4 py-3 flex items-center gap-3 text-left cursor-pointer transition-all"
                         >
                           <div className={`w-2 h-2 rounded-full ${item.dot} shrink-0`}></div>
                           <div className="flex-1">
-                            <div className="text-xs font-bold text-slate-200 font-mono">{item.label}</div>
+                            <div className="text-xs font-bold text-slate-700 font-mono">{item.label}</div>
                             <div className="text-[10px] text-slate-500 font-mono">{item.sub}</div>
                           </div>
                           <ArrowRight className="h-3.5 w-3.5 text-slate-500" />
@@ -1145,12 +1145,12 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
       {/* ── FOOTER MODALS ─────────────────────────────────────────────────── */}
       {activeFooterModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm">
-          <div className="w-full max-w-lg rounded-2xl border border-slate-800 bg-slate-950 p-6 shadow-2xl text-left max-h-[85vh] overflow-y-auto">
-            <div className="flex items-start justify-between border-b border-slate-800 pb-4 mb-4">
+          <div className="w-full max-w-lg rounded-2xl border border-slate-200 bg-white p-6 shadow-2xl text-left max-h-[85vh] overflow-y-auto">
+            <div className="flex items-start justify-between border-b border-slate-200 pb-4 mb-4">
               <div className="flex items-center gap-2">
-                {activeFooterModal === "privacy"  && <Shield className="h-5 w-5 text-sky-400" />}
-                {activeFooterModal === "terms"    && <FileText className="h-5 w-5 text-sky-400" />}
-                {activeFooterModal === "support"  && <BookOpen className="h-5 w-5 text-sky-400" />}
+                {activeFooterModal === "privacy"  && <Shield className="h-5 w-5 text-indigo-500" />}
+                {activeFooterModal === "terms"    && <FileText className="h-5 w-5 text-indigo-500" />}
+                {activeFooterModal === "support"  && <BookOpen className="h-5 w-5 text-indigo-500" />}
                 {activeFooterModal === "deletion" && <AlertTriangle className="h-5 w-5 text-rose-500" />}
                 <h3 className="text-base font-bold text-white">
                   {activeFooterModal === "privacy"  && "Privacy Policy"}
@@ -1159,23 +1159,23 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
                   {activeFooterModal === "deletion" && "Request Data Deletion"}
                 </h3>
               </div>
-              <button onClick={closeFooterModal} className="text-slate-400 hover:text-white"><X className="h-5 w-5" /></button>
+              <button onClick={closeFooterModal} className="text-slate-400 hover:text-slate-800"><X className="h-5 w-5" /></button>
             </div>
             {activeFooterModal === "privacy" && (
               <div className="space-y-4 text-xs text-slate-300 leading-relaxed">
-                <p className="font-semibold text-slate-200">Last Updated: June 28, 2026</p>
+                <p className="font-semibold text-slate-700">Last Updated: June 28, 2026</p>
                 <p>Welcome to <strong>DEINRIM OMS & ERP Enterprise</strong>. We respect your privacy and are committed to protecting business data processed by our platform.</p>
                 {[["1. Multi-Tenant Logical Partitioning","Our software strictly partitions customer databases by organizational identifiers, ensuring no cross-tenant queries can ever leak between corporate workspaces."],["2. Staff Account & RBAC Security","Access is strictly guarded by Role-Based Access Control schemas, verifying user authorization before allowing read or write execution."],["3. Data Security & Encryption","All transactional streams are processed over secure channels with 256-bit TLS encryption and AES-256 rest encryption."],["4. Contact Info","For inquiries: privacy@deinrim.in or +91 98361-30393."]].map(([title,text],i)=>(
-                  <div key={i}><h4 className="font-bold text-sky-400 font-mono uppercase tracking-wider text-[10px]">{title}</h4><p className="mt-1">{text}</p></div>
+                  <div key={i}><h4 className="font-bold text-indigo-500 font-mono uppercase tracking-wider text-[10px]">{title}</h4><p className="mt-1">{text}</p></div>
                 ))}
               </div>
             )}
             {activeFooterModal === "terms" && (
               <div className="space-y-4 text-xs text-slate-300 leading-relaxed">
-                <p className="font-semibold text-slate-200">Last Updated: June 28, 2026</p>
+                <p className="font-semibold text-slate-700">Last Updated: June 28, 2026</p>
                 <p>These Terms of Service govern your access to <strong>DEINRIM OMS & ERP</strong> operated by Apex7tech</p>
                 {[["1. Tenant Account Registration","Tenants must register with valid corporate coordinates. All white-label configurations must comply with terms and not infringe third-party intellectual property."],["2. Operational Correctness","Financial ledgers and inventory records are calculated based on parameters configured by managers. Tenants are ultimately responsible for checking accounting accuracy."],["3. Service Availability (SLA)","DEINRIM OMS is committed to 99.9% uptime SLA. Scheduled maintenance is performed during off-peak hours with prior notification."],["4. Platform Integrity","Unauthorized access, structural reverse engineering, or API endpoint scanning is prohibited."]].map(([title,text],i)=>(
-                  <div key={i}><h4 className="font-bold text-sky-400 font-mono uppercase tracking-wider text-[10px]">{title}</h4><p className="mt-1">{text}</p></div>
+                  <div key={i}><h4 className="font-bold text-indigo-500 font-mono uppercase tracking-wider text-[10px]">{title}</h4><p className="mt-1">{text}</p></div>
                 ))}
               </div>
             )}
@@ -1184,16 +1184,16 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
                 <form onSubmit={e => { e.preventDefault(); setSupportSubmitted(true); }} className="space-y-4 text-xs">
                   <p className="text-slate-400">Fill out this support ticket and our desk will respond within 24 hours.</p>
                   {[["Full Name",supportName,setSupportName,"text","Your Name"],["Registered Email",supportEmail,setSupportEmail,"email","you@example.com"]].map(([label,val,setter,type,ph]: any,i)=>(
-                    <div key={i}><label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 font-mono">{label}</label><input type={type} required value={val} onChange={e => setter(e.target.value)} placeholder={ph} className="w-full rounded-lg border border-slate-800 bg-slate-900 p-2.5 text-sm text-white focus:outline-none" /></div>
+                    <div key={i}><label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 font-mono">{label}</label><input type={type} required value={val} onChange={e => setter(e.target.value)} placeholder={ph} className="w-full rounded-lg border border-slate-200 bg-white p-2.5 text-sm text-slate-800 focus:outline-none" /></div>
                   ))}
-                  <div><label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 font-mono">Support Details</label><textarea required value={supportMessage} onChange={e => setSupportMessage(e.target.value)} rows={4} placeholder="Describe your issue..." className="w-full rounded-lg border border-slate-800 bg-slate-900 p-2.5 text-sm text-white focus:outline-none resize-none" /></div>
-                  <button type="submit" className="w-full rounded-lg bg-sky-600 hover:bg-sky-500 py-2.5 text-xs font-bold text-white flex items-center justify-center gap-1.5 cursor-pointer"><CheckCircle2 className="h-4 w-4" /> Submit Ticket</button>
+                  <div><label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 font-mono">Support Details</label><textarea required value={supportMessage} onChange={e => setSupportMessage(e.target.value)} rows={4} placeholder="Describe your issue..." className="w-full rounded-lg border border-slate-200 bg-white p-2.5 text-sm text-slate-800 focus:outline-none resize-none" /></div>
+                  <button type="submit" className="w-full rounded-lg bg-indigo-700 hover:bg-indigo-600 py-2.5 text-xs font-bold text-white flex items-center justify-center gap-1.5 cursor-pointer"><CheckCircle2 className="h-4 w-4" /> Submit Ticket</button>
                 </form>
               ) : (
                 <div className="text-center py-6 space-y-4">
                   <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-emerald-500/10 text-emerald-400"><CheckCircle2 className="h-8 w-8" /></div>
                   <div><h4 className="text-sm font-bold text-white">Ticket Submitted!</h4><p className="text-xs text-slate-400 max-w-xs mx-auto mt-1">Thank you, {supportName}. Ticket <strong>#OMS-{Math.floor(100000 + Math.random() * 900000)}</strong> is raised.</p></div>
-                  <button onClick={closeFooterModal} className="rounded-lg bg-slate-900 border border-slate-800 px-4 py-2 text-xs font-bold text-white cursor-pointer">Close</button>
+                  <button onClick={closeFooterModal} className="rounded-lg bg-white border border-slate-200 px-4 py-2 text-xs font-bold text-white cursor-pointer">Close</button>
                 </div>
               )
             )}
@@ -1203,9 +1203,9 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
                   <p className="text-slate-400">Request permanent deletion of your DEINRIM OMS account, tenant database, and all uploaded documents.</p>
                   <div className="rounded-lg border border-rose-900/40 bg-rose-950/10 p-3 text-rose-400 flex items-start gap-2.5"><AlertTriangle className="h-5 w-5 shrink-0 mt-0.5" /><div><strong className="block text-white mb-0.5">Warning: Irreversible Operation</strong>This permanently deletes all sales, inventory, purchase history, and payroll records. Cannot be undone.</div></div>
                   {[["Registered Corporate Email",deletionEmail,setDeletionEmail,"email","you@example.com"],["Corporate Phone",deletionPhone,setDeletionPhone,"tel","+91 XXXXX-XXXXX"]].map(([label,val,setter,type,ph]: any,i)=>(
-                    <div key={i}><label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 font-mono">{label}</label><input type={type} required value={val} onChange={e => setter(e.target.value)} placeholder={ph} className="w-full rounded-lg border border-slate-800 bg-slate-900 p-2.5 text-sm text-white focus:outline-none" /></div>
+                    <div key={i}><label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 font-mono">{label}</label><input type={type} required value={val} onChange={e => setter(e.target.value)} placeholder={ph} className="w-full rounded-lg border border-slate-200 bg-white p-2.5 text-sm text-slate-800 focus:outline-none" /></div>
                   ))}
-                  <div><label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 font-mono">Reason for Deletion</label><textarea required value={deletionReason} onChange={e => setDeletionReason(e.target.value)} rows={3} placeholder="Briefly describe why..." className="w-full rounded-lg border border-slate-800 bg-slate-900 p-2.5 text-sm text-white focus:outline-none resize-none" /></div>
+                  <div><label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 font-mono">Reason for Deletion</label><textarea required value={deletionReason} onChange={e => setDeletionReason(e.target.value)} rows={3} placeholder="Briefly describe why..." className="w-full rounded-lg border border-slate-200 bg-white p-2.5 text-sm text-slate-800 focus:outline-none resize-none" /></div>
                   <div className="flex items-start gap-2 pt-1"><input type="checkbox" required id="confirmDel" className="mt-1" /><label htmlFor="confirmDel" className="text-[11px] text-slate-400 leading-normal cursor-pointer">I confirm that I want to schedule all operational histories for absolute deletion.</label></div>
                   <button type="submit" className="w-full rounded-lg bg-rose-600 hover:bg-rose-500 py-2.5 text-xs font-bold text-white flex items-center justify-center gap-1.5 cursor-pointer"><Trash2 className="h-4 w-4" /> Schedule Deletion</button>
                 </form>
@@ -1213,7 +1213,7 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
                 <div className="text-center py-6 space-y-4">
                   <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-rose-500/10 text-rose-400"><Trash2 className="h-8 w-8" /></div>
                   <div><h4 className="text-sm font-bold text-white">Deletion Scheduled</h4><p className="text-xs text-slate-400 max-w-xs mx-auto mt-1">Request for <strong>{deletionEmail}</strong> received. Ticket: <strong>#OMS-DEL-{Math.floor(100000 + Math.random() * 900000)}</strong>. Processing within 14 business days.</p></div>
-                  <button onClick={closeFooterModal} className="rounded-lg bg-slate-900 border border-slate-800 px-4 py-2 text-xs font-bold text-white cursor-pointer">Close</button>
+                  <button onClick={closeFooterModal} className="rounded-lg bg-white border border-slate-200 px-4 py-2 text-xs font-bold text-white cursor-pointer">Close</button>
                 </div>
               )
             )}
@@ -1223,3 +1223,5 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
     </div>
   );
 }
+
+

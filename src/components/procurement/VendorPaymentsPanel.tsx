@@ -198,7 +198,7 @@ export default function VendorPaymentsPanel({ bills }: VendorPaymentsPanelProps)
   return (
     <div className="space-y-4">
       {/* Control row */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 bg-slate-950/40 border border-slate-800 rounded-xl p-4">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 bg-slate-50 border border-slate-200 rounded-xl p-4">
         <div className="relative flex-1 max-w-md">
           <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-500" />
           <input
@@ -206,7 +206,7 @@ export default function VendorPaymentsPanel({ bills }: VendorPaymentsPanelProps)
             placeholder="Search Outward Payments (by txn, supplier)..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full bg-slate-900 border border-slate-800 rounded-lg pl-8.5 pr-3 py-1.5 text-xs text-slate-200 focus:outline-hidden focus:border-indigo-500 font-semibold"
+            className="w-full bg-white border border-slate-200 rounded-lg pl-8.5 pr-3 py-1.5 text-xs text-slate-700 focus:outline-hidden focus:border-indigo-500 font-semibold"
           />
         </div>
         <button
@@ -219,10 +219,10 @@ export default function VendorPaymentsPanel({ bills }: VendorPaymentsPanelProps)
       </div>
 
       {/* Outward Payments Table Grid */}
-      <div className="bg-slate-950/60 border border-slate-800 rounded-xl overflow-hidden shadow-xs">
+      <div className="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-xs">
         <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-slate-800 text-xs">
-            <thead className="bg-slate-950 text-slate-300 font-semibold uppercase font-mono tracking-wider">
+          <table className="min-w-full divide-y divide-slate-100 text-xs">
+            <thead className="bg-white text-slate-300 font-semibold uppercase font-mono tracking-wider">
               <tr>
                 <th className="px-5 py-3 text-left">Transaction ID</th>
                 <th className="px-5 py-3 text-left">Recipient Vendor</th>
@@ -235,11 +235,11 @@ export default function VendorPaymentsPanel({ bills }: VendorPaymentsPanelProps)
                 <th className="px-5 py-3 text-right">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-800/60 text-slate-300">
+            <tbody className="divide-y divide-slate-100/60 text-slate-300">
               {filtered.map(p => (
-                <tr key={p.id} className="hover:bg-slate-900/40 transition-colors">
+                <tr key={p.id} className="hover:bg-slate-50 transition-colors">
                   <td className="px-5 py-4 font-mono text-emerald-400 font-bold">{p.referenceNo}</td>
-                  <td className="px-5 py-4 font-bold text-slate-200">{p.supplierName}</td>
+                  <td className="px-5 py-4 font-bold text-slate-700">{p.supplierName}</td>
                   <td className="px-5 py-4 font-mono font-bold text-indigo-400">{p.invoiceNumber}</td>
                   <td className="px-5 py-4 text-slate-400">{p.payingFrom}</td>
                   <td className="px-5 py-4 text-slate-400">{p.paymentMethod}</td>
@@ -266,19 +266,19 @@ export default function VendorPaymentsPanel({ bills }: VendorPaymentsPanelProps)
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 overflow-y-auto">
           <form 
             onSubmit={handleRecordPayment}
-            className="w-full max-w-md rounded-xl border border-slate-800 bg-slate-950 p-5 shadow-2xl text-left space-y-4 my-8 animate-scaleUp"
+            className="w-full max-w-md rounded-xl border border-slate-200 bg-white p-5 shadow-2xl text-left space-y-4 my-8 animate-scaleUp"
           >
-            <div className="border-b border-slate-800 pb-2 flex items-center justify-between">
+            <div className="border-b border-slate-200 pb-2 flex items-center justify-between">
               <div className="flex items-center gap-1.5 text-indigo-400">
                 <Landmark className="h-4 w-4" />
-                <h3 className="text-sm font-bold text-white uppercase tracking-wider font-mono">
+                <h3 className="text-sm font-bold text-slate-800 uppercase tracking-wider font-mono">
                   Record Outward Payment
                 </h3>
               </div>
               <button 
                 type="button" 
                 onClick={() => { setShowAddModal(false); }} 
-                className="text-slate-400 hover:text-white font-bold"
+                className="text-slate-400 hover:text-slate-800 font-bold"
               >
                 ×
               </button>
@@ -291,7 +291,7 @@ export default function VendorPaymentsPanel({ bills }: VendorPaymentsPanelProps)
                   required
                   value={invoiceId}
                   onChange={(e) => handleInvoiceChange(e.target.value)}
-                  className="w-full bg-slate-900 border border-slate-800 rounded-lg p-2 text-xs text-white focus:outline-hidden"
+                  className="w-full bg-white border border-slate-200 rounded-lg p-2 text-xs text-white focus:outline-hidden"
                 >
                   <option value="">-- Select Bill (Invoice) --</option>
                   {activeBills.map(b => (
@@ -314,7 +314,7 @@ export default function VendorPaymentsPanel({ bills }: VendorPaymentsPanelProps)
                     required
                     value={amount}
                     onChange={(e) => setAmount(Number(e.target.value))}
-                    className="w-full bg-slate-900 border border-slate-800 rounded-lg p-2 text-xs text-white font-mono font-bold focus:outline-hidden"
+                    className="w-full bg-white border border-slate-200 rounded-lg p-2 text-xs text-white font-mono font-bold focus:outline-hidden"
                   />
                 </div>
                 <div>
@@ -324,7 +324,7 @@ export default function VendorPaymentsPanel({ bills }: VendorPaymentsPanelProps)
                     required
                     value={paymentDate}
                     onChange={(e) => setPaymentDate(e.target.value)}
-                    className="w-full bg-slate-900 border border-slate-800 rounded-lg p-2 text-xs text-white font-mono focus:outline-hidden"
+                    className="w-full bg-white border border-slate-200 rounded-lg p-2 text-xs text-white font-mono focus:outline-hidden"
                   />
                 </div>
               </div>
@@ -335,7 +335,7 @@ export default function VendorPaymentsPanel({ bills }: VendorPaymentsPanelProps)
                   <select
                     value={paymentMethod}
                     onChange={(e) => setPaymentMethod(e.target.value)}
-                    className="w-full bg-slate-900 border border-slate-800 rounded-lg p-2 text-xs text-white focus:outline-hidden"
+                    className="w-full bg-white border border-slate-200 rounded-lg p-2 text-xs text-white focus:outline-hidden"
                   >
                     {paymentMethods.map(m => <option key={m} value={m}>{m}</option>)}
                   </select>
@@ -345,7 +345,7 @@ export default function VendorPaymentsPanel({ bills }: VendorPaymentsPanelProps)
                   <select
                     value={payingFrom}
                     onChange={(e) => setPayingFrom(e.target.value)}
-                    className="w-full bg-slate-900 border border-slate-800 rounded-lg p-2 text-xs text-white focus:outline-hidden font-bold"
+                    className="w-full bg-white border border-slate-200 rounded-lg p-2 text-xs text-white focus:outline-hidden font-bold"
                   >
                     {payingAccounts.map(a => <option key={a} value={a}>{a}</option>)}
                   </select>
@@ -361,7 +361,7 @@ export default function VendorPaymentsPanel({ bills }: VendorPaymentsPanelProps)
                     placeholder="e.g. TXN-102947B"
                     value={referenceNo}
                     onChange={(e) => setReferenceNo(e.target.value)}
-                    className="w-full bg-slate-900 border border-slate-800 rounded-lg p-2 text-xs text-white focus:outline-hidden focus:border-indigo-500 font-mono font-bold"
+                    className="w-full bg-white border border-slate-200 rounded-lg p-2 text-xs text-white focus:outline-hidden focus:border-indigo-500 font-mono font-bold"
                   />
                 </div>
                 <div>
@@ -373,7 +373,7 @@ export default function VendorPaymentsPanel({ bills }: VendorPaymentsPanelProps)
                     placeholder="e.g., 2"
                     value={tdsDeducted}
                     onChange={(e) => setTdsDeducted(Number(e.target.value))}
-                    className="w-full bg-slate-900 border border-slate-800 rounded-lg p-2 text-xs text-white font-mono focus:outline-hidden focus:border-indigo-500"
+                    className="w-full bg-white border border-slate-200 rounded-lg p-2 text-xs text-white font-mono focus:outline-hidden focus:border-indigo-500"
                   />
                 </div>
               </div>
@@ -384,7 +384,7 @@ export default function VendorPaymentsPanel({ bills }: VendorPaymentsPanelProps)
                   id="partial"
                   checked={isPartial}
                   onChange={(e) => setIsPartial(e.target.checked)}
-                  className="rounded bg-slate-900 border-slate-800 text-indigo-600 focus:ring-0 cursor-pointer"
+                  className="rounded bg-white border-slate-200 text-indigo-600 focus:ring-0 cursor-pointer"
                 />
                 <label htmlFor="partial" className="text-[10px] font-bold text-slate-400 uppercase tracking-wider cursor-pointer">This is a partial payment</label>
               </div>
@@ -396,13 +396,13 @@ export default function VendorPaymentsPanel({ bills }: VendorPaymentsPanelProps)
                   placeholder="Memo, clearance references..."
                   value={remarks}
                   onChange={(e) => setRemarks(e.target.value)}
-                  className="w-full bg-slate-900 border border-slate-800 rounded-lg p-2 text-xs text-slate-200 focus:outline-hidden"
+                  className="w-full bg-white border border-slate-200 rounded-lg p-2 text-xs text-slate-700 focus:outline-hidden"
                 />
               </div>
 
               <div>
                 <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 font-mono font-bold">Upload Payment Receipt Proof</label>
-                <div className="border border-dashed border-slate-800 rounded-lg p-2 text-center bg-slate-900 hover:border-indigo-500/40 transition-all cursor-pointer relative">
+                <div className="border border-dashed border-slate-200 rounded-lg p-2 text-center bg-white hover:border-indigo-500/40 transition-all cursor-pointer relative">
                   <input
                     type="file"
                     onChange={(e) => {
@@ -419,11 +419,11 @@ export default function VendorPaymentsPanel({ bills }: VendorPaymentsPanelProps)
               </div>
             </div>
 
-            <div className="flex justify-end gap-2.5 pt-3 border-t border-slate-800/80 text-xs">
+            <div className="flex justify-end gap-2.5 pt-3 border-t border-slate-200/80 text-xs">
               <button
                 type="button"
                 onClick={() => { setShowAddModal(false); }}
-                className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg font-bold transition-all cursor-pointer"
+                className="px-4 py-2 bg-slate-100 hover:bg-slate-700 text-slate-300 rounded-lg font-bold transition-all cursor-pointer"
               >
                 Cancel
               </button>
@@ -441,3 +441,5 @@ export default function VendorPaymentsPanel({ bills }: VendorPaymentsPanelProps)
     </div>
   );
 }
+
+

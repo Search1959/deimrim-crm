@@ -176,7 +176,7 @@ export default function RFQPanel({ suppliers, companyId }: RFQPanelProps) {
   return (
     <div className="space-y-4">
       {/* Control row */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 bg-slate-950/40 border border-slate-800 rounded-xl p-4">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 bg-slate-50 border border-slate-200 rounded-xl p-4">
         <div className="relative flex-1 max-w-md">
           <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-500" />
           <input
@@ -184,7 +184,7 @@ export default function RFQPanel({ suppliers, companyId }: RFQPanelProps) {
             placeholder="Search RFQs (by RFQ #, Item)..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full bg-slate-900 border border-slate-800 rounded-lg pl-8.5 pr-3 py-1.5 text-xs text-slate-200 focus:outline-hidden focus:border-indigo-500 font-semibold"
+            className="w-full bg-white border border-slate-200 rounded-lg pl-8.5 pr-3 py-1.5 text-xs text-slate-700 focus:outline-hidden focus:border-indigo-500 font-semibold"
           />
         </div>
         <button
@@ -204,19 +204,19 @@ export default function RFQPanel({ suppliers, companyId }: RFQPanelProps) {
           </div>
         ) : (
           filtered.map(r => (
-            <div key={r.id} className="bg-slate-900/40 border border-slate-800 rounded-xl p-4 flex flex-col justify-between space-y-3">
+            <div key={r.id} className="bg-slate-50 border border-slate-200 rounded-xl p-4 flex flex-col justify-between space-y-3">
               <div className="flex items-start justify-between">
                 <div className="space-y-1">
                   <div className="flex items-center gap-2">
                     <span className="font-mono text-[10px] text-indigo-400 font-bold">{r.rfqNumber}</span>
                     {r.linkedPrNumber && (
-                      <span className="text-[9px] text-slate-500 font-bold font-mono bg-slate-950 px-1 py-0.2 rounded border border-slate-800">PR: {r.linkedPrNumber}</span>
+                      <span className="text-[9px] text-slate-500 font-bold font-mono bg-white px-1 py-0.2 rounded border border-slate-200">PR: {r.linkedPrNumber}</span>
                     )}
                   </div>
                   <strong className="text-white text-xs block leading-snug">{r.title}</strong>
                 </div>
                 <span className={`px-1.5 py-0.5 rounded text-[9px] font-bold uppercase border ${
-                  r.status === "Published" ? "bg-indigo-500/10 text-indigo-400 border-indigo-500/20" : "bg-slate-800 text-slate-400 border-slate-700"
+                  r.status === "Published" ? "bg-indigo-500/10 text-indigo-400 border-indigo-500/20" : "bg-slate-100 text-slate-400 border-slate-200"
                 }`}>
                   {r.status}
                 </span>
@@ -226,9 +226,9 @@ export default function RFQPanel({ suppliers, companyId }: RFQPanelProps) {
                 <p className="text-[10px] text-slate-400 leading-relaxed truncate max-w-sm">{r.description}</p>
               )}
 
-              <div className="space-y-1 text-[10px] text-slate-400 font-semibold border-t border-slate-800/60 pt-2">
-                <div>Material: <span className="text-slate-200">{r.itemName}</span></div>
-                <div>Quantity Requested: <span className="text-slate-200 font-bold">{r.quantity} {r.uom}</span></div>
+              <div className="space-y-1 text-[10px] text-slate-400 font-semibold border-t border-slate-200/60 pt-2">
+                <div>Material: <span className="text-slate-700">{r.itemName}</span></div>
+                <div>Quantity Requested: <span className="text-slate-700 font-bold">{r.quantity} {r.uom}</span></div>
                 <div>Delivery At: <span className="text-slate-300">{r.deliveryLocation}</span></div>
                 <div>Bid Currency: <span className="text-indigo-300 font-mono font-bold">{r.currency}</span></div>
                 
@@ -239,7 +239,7 @@ export default function RFQPanel({ suppliers, companyId }: RFQPanelProps) {
                   </div>
                   <div className="flex flex-wrap gap-1">
                     {r.invitedVendors.map(v => (
-                      <span key={v} className="bg-slate-950/80 border border-slate-800 text-[9px] text-slate-300 px-1.5 py-0.2 rounded font-bold">{v}</span>
+                      <span key={v} className="bg-white border border-slate-200 text-[9px] text-slate-300 px-1.5 py-0.2 rounded font-bold">{v}</span>
                     ))}
                   </div>
                 </div>
@@ -250,7 +250,7 @@ export default function RFQPanel({ suppliers, companyId }: RFQPanelProps) {
                 </div>
               </div>
 
-              <div className="flex items-center justify-end border-t border-slate-800/60 pt-2 mt-1">
+              <div className="flex items-center justify-end border-t border-slate-200/60 pt-2 mt-1">
                 <button
                   onClick={() => handleDelete(r.id)}
                   className="p-1 bg-red-500/10 hover:bg-red-500/20 text-red-400 rounded transition-all cursor-pointer"
@@ -268,19 +268,19 @@ export default function RFQPanel({ suppliers, companyId }: RFQPanelProps) {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 overflow-y-auto">
           <form 
             onSubmit={handleCreateRFQ}
-            className="w-full max-w-md rounded-xl border border-slate-800 bg-slate-950 p-5 shadow-2xl text-left space-y-4 my-8 animate-scaleUp"
+            className="w-full max-w-md rounded-xl border border-slate-200 bg-white p-5 shadow-2xl text-left space-y-4 my-8 animate-scaleUp"
           >
-            <div className="border-b border-slate-800 pb-2 flex items-center justify-between">
+            <div className="border-b border-slate-200 pb-2 flex items-center justify-between">
               <div className="flex items-center gap-1.5 text-indigo-400">
                 <Send className="h-4 w-4" />
-                <h3 className="text-sm font-bold text-white uppercase tracking-wider font-mono">
+                <h3 className="text-sm font-bold text-slate-800 uppercase tracking-wider font-mono">
                   Create RFQ
                 </h3>
               </div>
               <button 
                 type="button" 
                 onClick={() => { setShowAddModal(false); }} 
-                className="text-slate-400 hover:text-white font-bold"
+                className="text-slate-400 hover:text-slate-800 font-bold"
               >
                 ×
               </button>
@@ -295,7 +295,7 @@ export default function RFQPanel({ suppliers, companyId }: RFQPanelProps) {
                   placeholder="Short, descriptive title for this RFQ"
                   value={rfqTitle}
                   onChange={(e) => setRfqTitle(e.target.value)}
-                  className="w-full bg-slate-900 border border-slate-800 rounded-lg p-2 text-xs text-white focus:outline-hidden focus:border-indigo-500 font-semibold"
+                  className="w-full bg-white border border-slate-200 rounded-lg p-2 text-xs text-white focus:outline-hidden focus:border-indigo-500 font-semibold"
                 />
               </div>
 
@@ -304,7 +304,7 @@ export default function RFQPanel({ suppliers, companyId }: RFQPanelProps) {
                 <select
                   value={linkedPrId}
                   onChange={(e) => handleLinkPRChange(e.target.value)}
-                  className="w-full bg-slate-900 border border-slate-800 rounded-lg p-2 text-xs text-white focus:outline-hidden focus:border-indigo-500 font-semibold"
+                  className="w-full bg-white border border-slate-200 rounded-lg p-2 text-xs text-white focus:outline-hidden focus:border-indigo-500 font-semibold"
                 >
                   <option value="">-- Link to PR (optional) --</option>
                   {requisitions.map(pr => <option key={pr.id} value={pr.id}>{pr.prNumber} - {pr.itemTitle}</option>)}
@@ -319,7 +319,7 @@ export default function RFQPanel({ suppliers, companyId }: RFQPanelProps) {
                   placeholder="Describe what you need quoted — include specifications, standards, delivery requirements..."
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
-                  className="w-full bg-slate-900 border border-slate-800 rounded-lg p-2 text-xs text-slate-200 focus:outline-hidden focus:border-indigo-500"
+                  className="w-full bg-white border border-slate-200 rounded-lg p-2 text-xs text-slate-700 focus:outline-hidden focus:border-indigo-500"
                 />
               </div>
 
@@ -332,7 +332,7 @@ export default function RFQPanel({ suppliers, companyId }: RFQPanelProps) {
                     placeholder="Item or service name"
                     value={itemName}
                     onChange={(e) => setItemName(e.target.value)}
-                    className="w-full bg-slate-900 border border-slate-800 rounded-lg p-2 text-xs text-white focus:outline-hidden focus:border-indigo-500 font-semibold"
+                    className="w-full bg-white border border-slate-200 rounded-lg p-2 text-xs text-white focus:outline-hidden focus:border-indigo-500 font-semibold"
                   />
                 </div>
                 <div>
@@ -342,7 +342,7 @@ export default function RFQPanel({ suppliers, companyId }: RFQPanelProps) {
                     required
                     value={responseDeadline}
                     onChange={(e) => setResponseDeadline(e.target.value)}
-                    className="w-full bg-slate-900 border border-slate-800 rounded-lg p-2 text-xs text-white focus:outline-hidden focus:border-indigo-500 font-mono font-bold"
+                    className="w-full bg-white border border-slate-200 rounded-lg p-2 text-xs text-white focus:outline-hidden focus:border-indigo-500 font-mono font-bold"
                   />
                 </div>
               </div>
@@ -356,7 +356,7 @@ export default function RFQPanel({ suppliers, companyId }: RFQPanelProps) {
                     required
                     value={quantity}
                     onChange={(e) => setQuantity(Number(e.target.value))}
-                    className="w-full bg-slate-900 border border-slate-800 rounded-lg p-2 text-xs text-white focus:outline-hidden focus:border-indigo-500 font-mono font-bold"
+                    className="w-full bg-white border border-slate-200 rounded-lg p-2 text-xs text-white focus:outline-hidden focus:border-indigo-500 font-mono font-bold"
                   />
                 </div>
                 <div>
@@ -364,7 +364,7 @@ export default function RFQPanel({ suppliers, companyId }: RFQPanelProps) {
                   <select
                     value={uom}
                     onChange={(e) => setUom(e.target.value)}
-                    className="w-full bg-slate-900 border border-slate-800 rounded-lg p-2 text-xs text-white focus:outline-hidden"
+                    className="w-full bg-white border border-slate-200 rounded-lg p-2 text-xs text-white focus:outline-hidden"
                   >
                     <option value="Nos">Nos</option>
                     <option value="Boxes">Boxes</option>
@@ -383,7 +383,7 @@ export default function RFQPanel({ suppliers, companyId }: RFQPanelProps) {
                     placeholder="City / delivery address"
                     value={deliveryLocation}
                     onChange={(e) => setDeliveryLocation(e.target.value)}
-                    className="w-full bg-slate-900 border border-slate-800 rounded-lg p-2 text-xs text-white focus:outline-hidden focus:border-indigo-500 font-semibold"
+                    className="w-full bg-white border border-slate-200 rounded-lg p-2 text-xs text-white focus:outline-hidden focus:border-indigo-500 font-semibold"
                   />
                 </div>
                 <div>
@@ -391,7 +391,7 @@ export default function RFQPanel({ suppliers, companyId }: RFQPanelProps) {
                   <select
                     value={currency}
                     onChange={(e) => setCurrency(e.target.value)}
-                    className="w-full bg-slate-900 border border-slate-800 rounded-lg p-2 text-xs text-white focus:outline-hidden font-bold"
+                    className="w-full bg-white border border-slate-200 rounded-lg p-2 text-xs text-white focus:outline-hidden font-bold"
                   >
                     <option value="IN INR (₹)">IN INR (₹)</option>
                     <option value="US USD ($)">US USD ($)</option>
@@ -402,14 +402,14 @@ export default function RFQPanel({ suppliers, companyId }: RFQPanelProps) {
 
               <div>
                 <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 font-mono">Invite Vendors * <span className="text-[9px] text-slate-500 capitalize">({selectedVendors.length} selected)</span></label>
-                <div className="bg-slate-900 border border-slate-800 rounded-lg p-3 max-h-28 overflow-y-auto space-y-1.5 font-semibold text-xs text-slate-300">
+                <div className="bg-white border border-slate-200 rounded-lg p-3 max-h-28 overflow-y-auto space-y-1.5 font-semibold text-xs text-slate-300">
                   {suppliers.map(sup => (
-                    <label key={sup.id} className="flex items-center gap-2 cursor-pointer hover:text-white">
+                    <label key={sup.id} className="flex items-center gap-2 cursor-pointer hover:text-slate-800">
                       <input
                         type="checkbox"
                         checked={selectedVendors.includes(sup.name)}
                         onChange={() => handleVendorCheckboxChange(sup.name)}
-                        className="rounded bg-slate-950 border-slate-850 text-indigo-600 focus:ring-0 cursor-pointer"
+                        className="rounded bg-white border-slate-850 text-indigo-600 focus:ring-0 cursor-pointer"
                       />
                       <span>{sup.name} ({sup.code})</span>
                     </label>
@@ -422,7 +422,7 @@ export default function RFQPanel({ suppliers, companyId }: RFQPanelProps) {
 
               <div>
                 <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 font-mono">Attach Technical Specifications</label>
-                <div className="border border-dashed border-slate-800 rounded-lg p-2.5 text-center bg-slate-900 hover:border-indigo-500/40 transition-all cursor-pointer relative">
+                <div className="border border-dashed border-slate-200 rounded-lg p-2.5 text-center bg-white hover:border-indigo-500/40 transition-all cursor-pointer relative">
                   <input
                     type="file"
                     onChange={(e) => {
@@ -439,11 +439,11 @@ export default function RFQPanel({ suppliers, companyId }: RFQPanelProps) {
               </div>
             </div>
 
-            <div className="flex justify-end gap-2.5 pt-3 border-t border-slate-800/80 text-xs">
+            <div className="flex justify-end gap-2.5 pt-3 border-t border-slate-200/80 text-xs">
               <button
                 type="button"
                 onClick={() => { setShowAddModal(false); }}
-                className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg font-bold transition-all cursor-pointer"
+                className="px-4 py-2 bg-slate-100 hover:bg-slate-700 text-slate-300 rounded-lg font-bold transition-all cursor-pointer"
               >
                 Cancel
               </button>
@@ -460,3 +460,5 @@ export default function RFQPanel({ suppliers, companyId }: RFQPanelProps) {
     </div>
   );
 }
+
+

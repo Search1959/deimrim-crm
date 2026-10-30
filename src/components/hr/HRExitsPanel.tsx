@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+﻿import React, { useState } from "react";
 import { LogOut, Plus, X, AlertTriangle, CheckCircle, Clock } from "lucide-react";
 import { Employee } from "../../types";
 
@@ -174,3 +174,5 @@ export default function HRExitsPanel({ employees }: Props) {
     </div>
   );
 }
+
+

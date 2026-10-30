@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+﻿import React, { useState } from "react";
 import { List, Plus, X, Edit2, Trash2 } from "lucide-react";
 
 interface LeaveType {
@@ -161,3 +161,5 @@ export default function HRLeaveTypesPanel() {
     </div>
   );
 }
+
+

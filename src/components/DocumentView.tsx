@@ -1,4 +1,4 @@
-import { toast } from "../utils/toast";
+﻿import { toast } from "../utils/toast";
 /**
  * @license
  * SPDX-License-Identifier: Apache-2.0
@@ -91,12 +91,12 @@ function FileViewerModal({ doc, onClose }: { doc: AppDocument; onClose: () => vo
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4" onClick={onClose}>
-      <div className="w-full max-w-5xl max-h-[92vh] rounded-2xl border border-slate-800 bg-slate-950 shadow-2xl flex flex-col" onClick={e => e.stopPropagation()}>
+      <div className="w-full max-w-5xl max-h-[92vh] rounded-2xl border border-slate-200 bg-white shadow-2xl flex flex-col" onClick={e => e.stopPropagation()}>
 
         {/* Header */}
-        <div className="flex items-center justify-between px-5 py-3.5 border-b border-slate-800 shrink-0">
+        <div className="flex items-center justify-between px-5 py-3.5 border-b border-slate-200 shrink-0">
           <div className="flex items-center gap-2.5 min-w-0">
-            <div className="h-7 w-7 flex items-center justify-center rounded-lg bg-slate-800 shrink-0">
+            <div className="h-7 w-7 flex items-center justify-center rounded-lg bg-slate-100 shrink-0">
               {fileIcon(doc.fileType)}
             </div>
             <div className="min-w-0">
@@ -106,11 +106,11 @@ function FileViewerModal({ doc, onClose }: { doc: AppDocument; onClose: () => vo
           </div>
           <div className="flex items-center gap-2 shrink-0 ml-3">
             <a href={doc.url} download={doc.name}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-700 bg-slate-900 text-xs font-bold text-slate-300 hover:text-emerald-400 hover:border-emerald-500/40 transition-colors" title="Download">
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-200 bg-white text-xs font-bold text-slate-300 hover:text-emerald-400 hover:border-emerald-500/40 transition-colors" title="Download">
               <Download className="h-3.5 w-3.5" /> Download
             </a>
             <button onClick={onClose}
-              className="p-1.5 rounded-lg border border-slate-800 bg-slate-900 text-slate-400 hover:text-white transition-colors cursor-pointer">
+              className="p-1.5 rounded-lg border border-slate-200 bg-white text-slate-400 hover:text-slate-800 transition-colors cursor-pointer">
               <X className="h-4 w-4" />
             </button>
           </div>
@@ -121,7 +121,7 @@ function FileViewerModal({ doc, onClose }: { doc: AppDocument; onClose: () => vo
           {isImg && (
             <div className="flex items-center justify-center p-6 min-h-[400px]">
               <img src={doc.url} alt={doc.name}
-                className="max-w-full max-h-[75vh] rounded-xl object-contain shadow-2xl border border-slate-800" />
+                className="max-w-full max-h-[75vh] rounded-xl object-contain shadow-2xl border border-slate-200" />
             </div>
           )}
 
@@ -139,12 +139,12 @@ function FileViewerModal({ doc, onClose }: { doc: AppDocument; onClose: () => vo
               ) : xlsxRows.length > 0 ? (
                 <>
                   {xlsxSheet && <p className="text-[10px] font-bold text-indigo-400 uppercase tracking-wider mb-2 font-mono">Sheet: {xlsxSheet}</p>}
-                  <div className="overflow-auto max-h-[72vh] rounded-xl border border-slate-800">
+                  <div className="overflow-auto max-h-[72vh] rounded-xl border border-slate-200">
                     <table className="text-xs border-collapse w-max min-w-full">
                       <thead>
                         <tr>
                           {(xlsxRows[0] || []).map((cell, ci) => (
-                            <th key={ci} className="bg-slate-900 border border-slate-700 px-3 py-2 text-left text-slate-300 font-bold font-mono whitespace-nowrap sticky top-0">
+                            <th key={ci} className="bg-white border border-slate-200 px-3 py-2 text-left text-slate-300 font-bold font-mono whitespace-nowrap sticky top-0">
                               {cell ?? ""}
                             </th>
                           ))}
@@ -152,9 +152,9 @@ function FileViewerModal({ doc, onClose }: { doc: AppDocument; onClose: () => vo
                       </thead>
                       <tbody>
                         {xlsxRows.slice(1).map((row, ri) => (
-                          <tr key={ri} className={ri % 2 === 0 ? "bg-slate-950" : "bg-slate-900/40"}>
+                          <tr key={ri} className={ri % 2 === 0 ? "bg-white" : "bg-slate-50"}>
                             {(xlsxRows[0] || []).map((_, ci) => (
-                              <td key={ci} className="border border-slate-800 px-3 py-1.5 text-slate-300 font-mono whitespace-nowrap">
+                              <td key={ci} className="border border-slate-200 px-3 py-1.5 text-slate-300 font-mono whitespace-nowrap">
                                 {row[ci] ?? ""}
                               </td>
                             ))}
@@ -182,7 +182,7 @@ function FileViewerModal({ doc, onClose }: { doc: AppDocument; onClose: () => vo
           {isTxt && (
             <div className="p-4">
               {textContent !== null ? (
-                <pre className="text-xs text-slate-300 font-mono bg-slate-900 rounded-xl p-4 overflow-auto max-h-[72vh] whitespace-pre-wrap border border-slate-800">
+                <pre className="text-xs text-slate-300 font-mono bg-white rounded-xl p-4 overflow-auto max-h-[72vh] whitespace-pre-wrap border border-slate-200">
                   {textContent}
                 </pre>
               ) : (
@@ -193,7 +193,7 @@ function FileViewerModal({ doc, onClose }: { doc: AppDocument; onClose: () => vo
 
           {!isImg && !isPdf && !isXls && !isTxt && (
             <div className="flex flex-col items-center gap-4 py-20 text-center px-6">
-              <div className="p-5 bg-slate-800 rounded-2xl">
+              <div className="p-5 bg-slate-100 rounded-2xl">
                 {fileIcon(doc.fileType)}
               </div>
               <p className="text-slate-300 font-bold text-sm">{doc.fileType} files cannot be previewed in the browser</p>
@@ -364,7 +364,7 @@ export default function DocumentView({
     <div className="flex-1 space-y-5 overflow-y-auto p-6 text-left animate-fadeIn">
 
       {/* Header */}
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between border-b border-slate-700/50 pb-4">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between border-b border-slate-200/50 pb-4">
         <div>
           <h1 className="text-xl font-black text-white tracking-tight">Document Vault</h1>
           <p className="text-xs text-slate-400 mt-0.5">{documents.length} files · {folders.length} folders</p>
@@ -372,7 +372,7 @@ export default function DocumentView({
         <div className="flex items-center gap-2">
           <button
             onClick={() => setRefreshKey(k => k + 1)}
-            className="p-2 rounded-lg border border-slate-700 bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white cursor-pointer transition-all"
+            className="p-2 rounded-lg border border-slate-200 bg-slate-100 hover:bg-slate-700 text-slate-400 hover:text-slate-800 cursor-pointer transition-all"
             title="Reload"
           >
             <RefreshCw className="h-3.5 w-3.5" />
@@ -380,7 +380,7 @@ export default function DocumentView({
           {canWrite && (
             <>
               <button onClick={() => { setShowNewFolder(true); setShowUpload(false); }}
-                className="flex items-center gap-1.5 rounded-lg border border-slate-700 bg-slate-800 hover:bg-slate-700 px-3 py-2 text-xs font-bold text-slate-200 cursor-pointer transition-all">
+                className="flex items-center gap-1.5 rounded-lg border border-slate-200 bg-slate-100 hover:bg-slate-700 px-3 py-2 text-xs font-bold text-slate-700 cursor-pointer transition-all">
                 <FolderPlus className="h-3.5 w-3.5 text-amber-400" /> New Folder
               </button>
               <button onClick={() => { setShowUpload(true); setShowNewFolder(false); }}
@@ -395,14 +395,14 @@ export default function DocumentView({
       {/* Breadcrumb */}
       <div className="flex items-center gap-1 text-xs text-slate-400">
         <button onClick={() => setCurrentFolderId(null)}
-          className="flex items-center gap-1 hover:text-white cursor-pointer transition-colors">
+          className="flex items-center gap-1 hover:text-slate-800 cursor-pointer transition-colors">
           <Home className="h-3.5 w-3.5" /> Root
         </button>
         {breadcrumb.map(f => (
           <React.Fragment key={f.id}>
             <ChevronRight className="h-3 w-3 text-slate-600" />
             <button onClick={() => setCurrentFolderId(f.id)}
-              className="hover:text-white cursor-pointer transition-colors">{f.name}</button>
+              className="hover:text-slate-800 cursor-pointer transition-colors">{f.name}</button>
           </React.Fragment>
         ))}
       </div>
@@ -412,41 +412,41 @@ export default function DocumentView({
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-500" />
         <input value={search} onChange={e => setSearch(e.target.value)}
           placeholder="Search files…"
-          className="w-full bg-slate-900 border border-slate-800 rounded-lg pl-9 pr-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500 transition-colors" />
+          className="w-full bg-white border border-slate-200 rounded-lg pl-9 pr-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500 transition-colors" />
       </div>
 
       {/* New Folder inline */}
       {showNewFolder && (
-        <div className="flex items-center gap-2 bg-slate-900/60 border border-amber-500/30 rounded-xl p-3">
+        <div className="flex items-center gap-2 bg-slate-50 border border-amber-500/30 rounded-xl p-3">
           <Folder className="h-4 w-4 text-amber-400 shrink-0" />
           <input autoFocus value={newFolderName} onChange={e => setNewFolderName(e.target.value)}
             onKeyDown={e => e.key === "Enter" && handleCreateFolder()}
             placeholder="Folder name…"
-            className="flex-1 bg-transparent text-sm text-white focus:outline-none placeholder:text-slate-500" />
+            className="flex-1 bg-transparent text-sm text-slate-800 focus:outline-none placeholder:text-slate-400" />
           <button onClick={handleCreateFolder}
             className="px-3 py-1 bg-amber-500 hover:bg-amber-400 text-white text-xs font-bold rounded-lg cursor-pointer">Create</button>
           <button onClick={() => { setShowNewFolder(false); setNewFolderName(""); }}
-            className="text-slate-500 hover:text-white cursor-pointer"><X className="h-4 w-4" /></button>
+            className="text-slate-500 hover:text-slate-800 cursor-pointer"><X className="h-4 w-4" /></button>
         </div>
       )}
 
       {/* Upload form */}
       {showUpload && (
-        <form onSubmit={handleUpload} className="bg-slate-900/50 border border-indigo-500/20 rounded-xl p-5 space-y-4">
+        <form onSubmit={handleUpload} className="bg-white/50 border border-indigo-500/20 rounded-xl p-5 space-y-4">
           <div className="flex items-center justify-between">
             <p className="text-sm font-bold text-white flex items-center gap-2">
               <UploadCloud className="h-4 w-4 text-indigo-400" /> Upload Files
               {currentFolderId && <span className="text-xs text-slate-400 font-normal">→ {breadcrumb[breadcrumb.length - 1]?.name}</span>}
             </p>
             <button type="button" onClick={() => { setShowUpload(false); setSelectedFiles([]); }}
-              className="text-slate-500 hover:text-white cursor-pointer"><X className="h-4 w-4" /></button>
+              className="text-slate-500 hover:text-slate-800 cursor-pointer"><X className="h-4 w-4" /></button>
           </div>
 
           {/* Drop zone */}
           <div onClick={() => fileInputRef.current?.click()}
-            className="border-2 border-dashed border-slate-700 hover:border-indigo-500 rounded-xl p-8 text-center cursor-pointer transition-colors group">
+            className="border-2 border-dashed border-slate-200 hover:border-indigo-500 rounded-xl p-8 text-center cursor-pointer transition-colors group">
             <UploadCloud className="h-8 w-8 text-slate-600 group-hover:text-indigo-400 mx-auto mb-2 transition-colors" />
-            <p className="text-sm text-slate-400 group-hover:text-slate-200 transition-colors">Click to select files</p>
+            <p className="text-sm text-slate-400 group-hover:text-slate-700 transition-colors">Click to select files</p>
             <p className="text-[10px] text-slate-600 mt-1">PDF, DOCX, XLSX, images — multiple files supported</p>
             <input ref={fileInputRef} type="file" multiple onChange={handleFileChange} className="hidden" />
           </div>
@@ -457,10 +457,10 @@ export default function DocumentView({
               <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">{selectedFiles.length} file{selectedFiles.length > 1 ? "s" : ""} selected</p>
               <div className="max-h-40 overflow-y-auto space-y-1">
                 {selectedFiles.map((f, i) => (
-                  <div key={i} className="flex items-center justify-between bg-slate-800/60 rounded-lg px-3 py-2">
+                  <div key={i} className="flex items-center justify-between bg-slate-100/60 rounded-lg px-3 py-2">
                     <div className="flex items-center gap-2">
                       {fileIcon(f.name.split(".").pop() || "")}
-                      <span className="text-xs text-slate-200 truncate max-w-[240px]">{f.name}</span>
+                      <span className="text-xs text-slate-700 truncate max-w-[240px]">{f.name}</span>
                     </div>
                     <span className="text-[10px] text-slate-500 font-mono shrink-0 ml-2">{formatBytes(f.size)}</span>
                   </div>
@@ -473,7 +473,7 @@ export default function DocumentView({
             <div>
               <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Attach To (optional)</label>
               <select value={attachType} onChange={e => { setAttachType(e.target.value as AppDocument["attachedToType"]); setAttachId(""); }}
-                className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500">
+                className="w-full bg-slate-100 border border-slate-200 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500">
                 <option value="GENERAL">General / No attachment</option>
                 <option value="SUPPLIER">Supplier</option>
                 <option value="CUSTOMER">Customer</option>
@@ -485,7 +485,7 @@ export default function DocumentView({
               <div>
                 <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Record</label>
                 <select value={attachId} onChange={e => setAttachId(e.target.value)}
-                  className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500">
+                  className="w-full bg-slate-100 border border-slate-200 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500">
                   <option value="">— choose —</option>
                   {attachType === "SUPPLIER"  && suppliers.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
                   {attachType === "CUSTOMER"  && customers.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
@@ -498,7 +498,7 @@ export default function DocumentView({
 
           <div className="flex justify-end gap-2">
             <button type="button" onClick={() => { setShowUpload(false); setSelectedFiles([]); }}
-              className="px-4 py-2 text-xs font-bold text-slate-400 hover:text-white cursor-pointer">Cancel</button>
+              className="px-4 py-2 text-xs font-bold text-slate-400 hover:text-slate-800 cursor-pointer">Cancel</button>
             <button type="submit" disabled={uploading}
               className="flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-60 text-white text-xs font-bold rounded-lg cursor-pointer transition-all">
               {uploading ? <><Loader2 className="h-3.5 w-3.5 animate-spin" /> Processing…</> : `Upload ${selectedFiles.length > 0 ? `${selectedFiles.length} File${selectedFiles.length > 1 ? "s" : ""}` : ""}`}
@@ -515,7 +515,7 @@ export default function DocumentView({
             {subFolders.map(f => {
               const fileCount = documents.filter(d => d.folderId === f.id).length;
               return (
-                <div key={f.id} className="group relative bg-slate-900/50 border border-slate-800 hover:border-amber-500/40 rounded-xl p-4 cursor-pointer transition-all"
+                <div key={f.id} className="group relative bg-white/50 border border-slate-200 hover:border-amber-500/40 rounded-xl p-4 cursor-pointer transition-all"
                   onClick={() => setCurrentFolderId(f.id)}>
                   <Folder className="h-8 w-8 text-amber-400 mb-2" />
                   <p className="text-xs font-bold text-white truncate">{f.name}</p>
@@ -539,24 +539,24 @@ export default function DocumentView({
           <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-2">Files</p>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {currentDocs.map(doc => (
-              <div key={doc.id} className="bg-slate-900/40 border border-slate-800 hover:border-slate-600 rounded-xl p-4 space-y-3 transition-colors">
+              <div key={doc.id} className="bg-slate-50 border border-slate-200 hover:border-slate-600 rounded-xl p-4 space-y-3 transition-colors">
                 <div className="flex items-start gap-3">
-                  <div className="h-9 w-9 shrink-0 flex items-center justify-center rounded-lg bg-slate-800">
+                  <div className="h-9 w-9 shrink-0 flex items-center justify-center rounded-lg bg-slate-100">
                     {fileIcon(doc.fileType)}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-xs font-bold text-slate-100 truncate" title={doc.name}>{doc.name}</p>
+                    <p className="text-xs font-bold text-slate-800 truncate" title={doc.name}>{doc.name}</p>
                     <p className="text-[10px] text-slate-500 font-mono mt-0.5">{doc.fileSize} · {doc.fileType}</p>
                   </div>
                 </div>
 
                 {anchorName(doc) && (
-                  <div className="bg-slate-800/40 rounded-lg px-3 py-1.5 text-[10px] text-slate-400">
+                  <div className="bg-slate-100/40 rounded-lg px-3 py-1.5 text-[10px] text-slate-400">
                     📎 {doc.attachedToType} · <span className="text-indigo-400">{anchorName(doc)}</span>
                   </div>
                 )}
 
-                <div className="flex items-center justify-between text-[10px] text-slate-600 border-t border-slate-800 pt-2">
+                <div className="flex items-center justify-between text-[10px] text-slate-600 border-t border-slate-200 pt-2">
                   <span>{doc.uploadedBy} · {new Date(doc.uploadedAt).toLocaleDateString("en-IN")}</span>
                   <div className="flex gap-1">
                     <button onClick={() => setViewingDoc(doc)}
@@ -564,7 +564,7 @@ export default function DocumentView({
                       <Eye className="h-3.5 w-3.5" />
                     </button>
                     <a href={doc.url} download={doc.name}
-                      className="p-1.5 rounded hover:bg-slate-800 text-slate-400 hover:text-emerald-400 transition-colors" title="Download">
+                      className="p-1.5 rounded hover:bg-slate-100 text-slate-400 hover:text-emerald-400 transition-colors" title="Download">
                       <Download className="h-3.5 w-3.5" />
                     </a>
                     {canWrite && (
@@ -603,7 +603,7 @@ export default function DocumentView({
           {canWrite && (
             <div className="flex gap-2 mt-2">
               <button onClick={() => setShowNewFolder(true)}
-                className="flex items-center gap-1.5 px-4 py-2 bg-slate-800 hover:bg-slate-700 border border-slate-700 text-amber-400 text-xs font-bold rounded-xl cursor-pointer transition-all">
+                className="flex items-center gap-1.5 px-4 py-2 bg-slate-100 hover:bg-slate-700 border border-slate-200 text-amber-400 text-xs font-bold rounded-xl cursor-pointer transition-all">
                 <FolderPlus className="h-4 w-4" /> New Folder
               </button>
               <button onClick={() => setShowUpload(true)}
@@ -617,3 +617,5 @@ export default function DocumentView({
     </div>
   );
 }
+
+

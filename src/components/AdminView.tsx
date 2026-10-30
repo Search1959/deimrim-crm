@@ -309,31 +309,31 @@ export default function AdminView({
   };
 
   return (
-    <div data-theme="dark" className="flex-1 space-y-6 overflow-y-auto p-6 text-left">
+    <div  className="flex-1 space-y-6 overflow-y-auto p-6 text-left">
       {/* Title */}
-      <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between border-b border-slate-800 pb-4">
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between border-b border-slate-200 pb-4">
         <div>
           <h1 className="text-2xl font-bold tracking-tight" style={{color:"#0f172a"}}>System Administration</h1>
           <p className="text-sm mt-1" style={{color:"#475569"}}>Configure company profiles, manipulate RBAC permissions, and oversee system security profiles.</p>
         </div>
 
         {/* Dynamic status badges */}
-        <div className="flex gap-4 bg-slate-950 border border-slate-800 p-3 rounded-xl self-start text-xs font-mono">
+        <div className="flex gap-4 bg-white border border-slate-200 p-3 rounded-xl self-start text-xs font-mono">
           <div>
             <span className="text-[10px] text-slate-500 font-bold uppercase block tracking-wider leading-none">WhatsApp API Relay</span>
-            <strong className={`block mt-1 ${company.settings.whatsappEnabled ? "text-emerald-400" : "text-slate-500"}`}>
+            <strong className={`block mt-1 ${company.settings.whatsappEnabled ? "text-emerald-600" : "text-slate-400"}`}>
               {company.settings.whatsappEnabled ? "ACTIVE (SMTP)" : "DISABLED"}
             </strong>
           </div>
-          <div className="border-l border-slate-800 pl-4">
+          <div className="border-l border-slate-200 pl-4">
             <span className="text-[10px] text-slate-500 font-bold uppercase block tracking-wider leading-none">Tenant Branches</span>
-            <strong className="block text-slate-200 font-bold mt-1">{branches.length} Registered</strong>
+            <strong className="block text-slate-700 font-bold mt-1">{branches.length} Registered</strong>
           </div>
         </div>
       </div>
 
       {/* Sub tabs switches */}
-      <div data-theme="dark" className="flex flex-wrap gap-1 bg-[#070d1a] border border-[#1e2d45] p-1 rounded-xl self-start">
+      <div  className="flex flex-wrap gap-1 bg-white border border-slate-200 p-1 rounded-xl self-start">
         {[
           { key: "company",     label: "Company Setup" },
           { key: "permissions", label: "RBAC Permissions" },
@@ -349,7 +349,7 @@ export default function AdminView({
                 ? tab.amber
                   ? "bg-amber-500 text-black shadow"
                   : "bg-indigo-600 text-white shadow"
-                : "text-slate-400 hover:text-white"
+                : "text-slate-400 hover:text-slate-800"
             }`}
           >
             {tab.label}
@@ -361,114 +361,114 @@ export default function AdminView({
       {activeSubTab === "company" && (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 text-left">
           {/* Company details form */}
-          <form onSubmit={handleUpdateCompanyDetails} className="lg:col-span-2 bg-slate-950/60 border border-slate-800 rounded-xl p-6 space-y-5 shadow-xs">
-            <h3 className="text-sm font-bold text-slate-300 uppercase tracking-wider border-b border-slate-800 pb-2 font-mono">Registered Company Settings</h3>
+          <form onSubmit={handleUpdateCompanyDetails} className="lg:col-span-2 bg-white border border-slate-200 rounded-xl p-6 space-y-5 shadow-sm">
+            <h3 className="text-sm font-bold text-slate-500 uppercase tracking-wider border-b border-slate-100 pb-2 font-mono">Registered Company Settings</h3>
 
             {/* Basic Info */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1 font-mono">Entity Legal Name</label>
+                <label className="block text-xs font-semibold text-slate-500 mb-1">Entity Legal Name</label>
                 <input type="text" required disabled={!isSystemAdmin} value={company.name}
                   onChange={(e) => setCompany(prev => ({ ...prev, name: e.target.value }))}
-                  className="w-full rounded-lg border border-slate-800 bg-slate-900 p-2.5 text-sm text-white focus:outline-hidden disabled:opacity-50" />
+                  className="w-full rounded-lg border border-slate-200 bg-white p-2.5 text-sm text-slate-800 focus:outline-hidden disabled:opacity-50" />
               </div>
               <div>
-                <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1 font-mono">GSTIN</label>
+                <label className="block text-xs font-semibold text-slate-500 mb-1">GSTIN</label>
                 <input type="text" value={company.gstin || ""}
                   onChange={(e) => setCompany(prev => ({ ...prev, gstin: e.target.value }))}
                   placeholder="e.g. 19AABCB1234A1ZX"
-                  className="w-full rounded-lg border border-slate-800 bg-slate-900 p-2.5 text-sm text-white font-mono focus:outline-hidden" />
+                  className="w-full rounded-lg border border-slate-200 bg-white p-2.5 text-sm text-slate-800 font-mono focus:outline-hidden" />
               </div>
               <div>
-                <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1 font-mono">State</label>
+                <label className="block text-xs font-semibold text-slate-500 mb-1">State</label>
                 <input type="text" value={company.state || ""}
                   onChange={(e) => setCompany(prev => ({ ...prev, state: e.target.value }))}
                   placeholder="e.g. West Bengal"
-                  className="w-full rounded-lg border border-slate-800 bg-slate-900 p-2.5 text-sm text-white focus:outline-hidden" />
+                  className="w-full rounded-lg border border-slate-200 bg-white p-2.5 text-sm text-slate-800 focus:outline-hidden" />
               </div>
               <div>
-                <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1 font-mono">Phone</label>
+                <label className="block text-xs font-semibold text-slate-500 mb-1">Phone</label>
                 <input type="text" value={company.phone || ""}
                   onChange={(e) => setCompany(prev => ({ ...prev, phone: e.target.value }))}
                   placeholder="+91 98361-30393"
-                  className="w-full rounded-lg border border-slate-800 bg-slate-900 p-2.5 text-sm text-white focus:outline-hidden" />
+                  className="w-full rounded-lg border border-slate-200 bg-white p-2.5 text-sm text-slate-800 focus:outline-hidden" />
               </div>
               <div>
-                <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1 font-mono">Admin Contact Email</label>
+                <label className="block text-xs font-semibold text-slate-500 mb-1">Admin Contact Email</label>
                 <input type="email" disabled={!isSystemAdmin} value={company.email}
                   onChange={(e) => setCompany(prev => ({ ...prev, email: e.target.value }))}
-                  className="w-full rounded-lg border border-slate-800 bg-slate-900 p-2.5 text-sm text-white focus:outline-hidden disabled:opacity-50" />
+                  className="w-full rounded-lg border border-slate-200 bg-white p-2.5 text-sm text-slate-800 focus:outline-hidden disabled:opacity-50" />
               </div>
               <div>
-                <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1 font-mono">Branch Code Identifier</label>
+                <label className="block text-xs font-semibold text-slate-500 mb-1">Branch Code Identifier</label>
                 <input type="text" disabled value={company.code}
-                  className="w-full rounded-lg border border-slate-800 bg-slate-900 p-2.5 text-sm text-slate-500 font-mono disabled:opacity-50" />
+                  className="w-full rounded-lg border border-slate-200 bg-white p-2.5 text-sm text-slate-500 font-mono disabled:opacity-50" />
               </div>
             </div>
 
             {/* Office Address */}
             <div>
-              <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1 font-mono">Office / Billing Address</label>
+              <label className="block text-xs font-semibold text-slate-500 mb-1">Office / Billing Address</label>
               <textarea value={company.address || ""}
                 onChange={(e) => setCompany(prev => ({ ...prev, address: e.target.value }))}
                 rows={2}
                 placeholder="Full office address (appears on GST invoices)"
-                className="w-full rounded-lg border border-slate-800 bg-slate-900 p-2.5 text-sm text-white focus:outline-hidden resize-none" />
+                className="w-full rounded-lg border border-slate-200 bg-white p-2.5 text-sm text-slate-800 focus:outline-hidden resize-none" />
             </div>
 
             {/* Bank Details */}
             <div>
-              <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3 font-mono border-t border-slate-800 pt-4">Bank Details (for Invoice Payment Section)</h4>
+              <h4 className="text-xs font-semibold text-slate-500 mb-3 border-t border-slate-200 pt-4">Bank Details (for Invoice Payment Section)</h4>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1 font-mono">Bank Name</label>
+                  <label className="block text-xs font-semibold text-slate-500 mb-1">Bank Name</label>
                   <input type="text" value={company.bankName || ""}
                     onChange={(e) => setCompany(prev => ({ ...prev, bankName: e.target.value }))}
                     placeholder="e.g. State Bank of India"
-                    className="w-full rounded-lg border border-slate-800 bg-slate-900 p-2.5 text-sm text-white focus:outline-hidden" />
+                    className="w-full rounded-lg border border-slate-200 bg-white p-2.5 text-sm text-slate-800 focus:outline-hidden" />
                 </div>
                 <div>
-                  <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1 font-mono">Account Holder Name</label>
+                  <label className="block text-xs font-semibold text-slate-500 mb-1">Account Holder Name</label>
                   <input type="text" value={company.bankAccountName || ""}
                     onChange={(e) => setCompany(prev => ({ ...prev, bankAccountName: e.target.value }))}
                     placeholder="As on bank records"
-                    className="w-full rounded-lg border border-slate-800 bg-slate-900 p-2.5 text-sm text-white focus:outline-hidden" />
+                    className="w-full rounded-lg border border-slate-200 bg-white p-2.5 text-sm text-slate-800 focus:outline-hidden" />
                 </div>
                 <div>
-                  <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1 font-mono">Account Number</label>
+                  <label className="block text-xs font-semibold text-slate-500 mb-1">Account Number</label>
                   <input type="text" value={company.bankAccountNumber || ""}
                     onChange={(e) => setCompany(prev => ({ ...prev, bankAccountNumber: e.target.value }))}
                     placeholder="Account number"
-                    className="w-full rounded-lg border border-slate-800 bg-slate-900 p-2.5 text-sm text-white font-mono focus:outline-hidden" />
+                    className="w-full rounded-lg border border-slate-200 bg-white p-2.5 text-sm text-slate-800 font-mono focus:outline-hidden" />
                 </div>
                 <div>
-                  <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1 font-mono">IFSC Code</label>
+                  <label className="block text-xs font-semibold text-slate-500 mb-1">IFSC Code</label>
                   <input type="text" value={company.bankIFSC || ""}
                     onChange={(e) => setCompany(prev => ({ ...prev, bankIFSC: e.target.value }))}
                     placeholder="e.g. SBIN0001234"
-                    className="w-full rounded-lg border border-slate-800 bg-slate-900 p-2.5 text-sm text-white font-mono focus:outline-hidden" />
+                    className="w-full rounded-lg border border-slate-200 bg-white p-2.5 text-sm text-slate-800 font-mono focus:outline-hidden" />
                 </div>
                 <div>
-                  <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1 font-mono">Account Type</label>
+                  <label className="block text-xs font-semibold text-slate-500 mb-1">Account Type</label>
                   <select value={company.bankAccountType || "Current"}
                     onChange={(e) => setCompany(prev => ({ ...prev, bankAccountType: e.target.value }))}
-                    className="w-full rounded-lg border border-slate-800 bg-slate-900 p-2.5 text-sm text-white focus:outline-hidden">
+                    className="w-full rounded-lg border border-slate-200 bg-white p-2.5 text-sm text-slate-800 focus:outline-hidden">
                     <option>Current</option><option>Savings</option><option>OD</option>
                   </select>
                 </div>
                 <div className="col-span-full">
-                  <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1 font-mono">UPI ID (optional)</label>
+                  <label className="block text-xs font-semibold text-slate-500 mb-1">UPI ID (optional)</label>
                   <input type="text" value={company.bankUPI || ""}
                     onChange={(e) => setCompany(prev => ({ ...prev, bankUPI: e.target.value }))}
                     placeholder="e.g. business@upi"
-                    className="w-full rounded-lg border border-slate-800 bg-slate-900 p-2.5 text-sm text-white font-mono focus:outline-hidden" />
+                    className="w-full rounded-lg border border-slate-200 bg-white p-2.5 text-sm text-slate-800 font-mono focus:outline-hidden" />
                 </div>
                 <div className="col-span-full">
                   <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 font-mono">UPI QR Code (optional)</label>
                   <div className="flex items-start gap-4">
                     {company.upiQrCode ? (
                       <div className="relative shrink-0">
-                        <img src={company.upiQrCode} alt="UPI QR" className="h-28 w-28 rounded-lg border border-slate-700 object-contain bg-white p-1" />
+                        <img src={company.upiQrCode} alt="UPI QR" className="h-28 w-28 rounded-lg border border-slate-200 object-contain bg-white p-1" />
                         <button
                           type="button"
                           onClick={() => setCompany(prev => ({ ...prev, upiQrCode: "" }))}
@@ -477,7 +477,7 @@ export default function AdminView({
                         >✕</button>
                       </div>
                     ) : (
-                      <label className="flex flex-col items-center justify-center h-28 w-28 rounded-lg border-2 border-dashed border-slate-700 bg-slate-900 cursor-pointer hover:border-indigo-500 hover:bg-slate-800 transition-colors shrink-0">
+                      <label className="flex flex-col items-center justify-center h-28 w-28 rounded-lg border-2 border-dashed border-slate-200 bg-white cursor-pointer hover:border-indigo-500 hover:bg-slate-100 transition-colors shrink-0">
                         <span className="text-2xl text-slate-500">⬆</span>
                         <span className="text-[10px] text-slate-500 mt-1 text-center font-mono leading-tight">Upload QR<br/>PNG / JPG</span>
                         <input type="file" accept="image/png,image/jpeg,image/webp" className="hidden"
@@ -504,51 +504,51 @@ export default function AdminView({
             </div>
 
             {/* e-Invoice GSP Settings */}
-            <div className="border-t border-slate-800 pt-4 space-y-3">
+            <div className="border-t border-slate-200 pt-4 space-y-3">
               <h4 className="text-xs font-bold text-violet-400 uppercase tracking-wider font-mono">e-Invoice GSP Settings</h4>
               <p className="text-[10px] text-slate-500">Required for generating IRN from your GSP (ClearTax, Masters India, IRIS, etc.)</p>
               <div className="grid grid-cols-1 gap-3">
                 <div>
-                  <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1 font-mono">GSP API Base URL</label>
+                  <label className="block text-xs font-semibold text-slate-500 mb-1">GSP API Base URL</label>
                   <input type="text" value={company.gspApiUrl || ""}
                     onChange={(e) => setCompany(prev => ({ ...prev, gspApiUrl: e.target.value }))}
                     placeholder="https://gsp.example.com"
-                    className="w-full rounded-lg border border-slate-800 bg-slate-900 p-2.5 text-sm text-white font-mono focus:outline-hidden" />
+                    className="w-full rounded-lg border border-slate-200 bg-white p-2.5 text-sm text-slate-800 font-mono focus:outline-hidden" />
                 </div>
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1 font-mono">Client ID</label>
+                    <label className="block text-xs font-semibold text-slate-500 mb-1">Client ID</label>
                     <input type="text" value={company.gspClientId || ""}
                       onChange={(e) => setCompany(prev => ({ ...prev, gspClientId: e.target.value }))}
                       placeholder="GSP Client ID"
-                      className="w-full rounded-lg border border-slate-800 bg-slate-900 p-2.5 text-sm text-white font-mono focus:outline-hidden" />
+                      className="w-full rounded-lg border border-slate-200 bg-white p-2.5 text-sm text-slate-800 font-mono focus:outline-hidden" />
                   </div>
                   <div>
-                    <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1 font-mono">Client Secret</label>
+                    <label className="block text-xs font-semibold text-slate-500 mb-1">Client Secret</label>
                     <input type="password" value={company.gspClientSecret || ""}
                       onChange={(e) => setCompany(prev => ({ ...prev, gspClientSecret: e.target.value }))}
                       placeholder="GSP Client Secret"
-                      className="w-full rounded-lg border border-slate-800 bg-slate-900 p-2.5 text-sm text-white font-mono focus:outline-hidden" />
+                      className="w-full rounded-lg border border-slate-200 bg-white p-2.5 text-sm text-slate-800 font-mono focus:outline-hidden" />
                   </div>
                   <div>
-                    <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1 font-mono">GSP Username</label>
+                    <label className="block text-xs font-semibold text-slate-500 mb-1">GSP Username</label>
                     <input type="text" value={company.gspUsername || ""}
                       onChange={(e) => setCompany(prev => ({ ...prev, gspUsername: e.target.value }))}
                       placeholder="GSP portal username"
-                      className="w-full rounded-lg border border-slate-800 bg-slate-900 p-2.5 text-sm text-white font-mono focus:outline-hidden" />
+                      className="w-full rounded-lg border border-slate-200 bg-white p-2.5 text-sm text-slate-800 font-mono focus:outline-hidden" />
                   </div>
                   <div>
-                    <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1 font-mono">GSP Password</label>
+                    <label className="block text-xs font-semibold text-slate-500 mb-1">GSP Password</label>
                     <input type="password" value={company.gspPassword || ""}
                       onChange={(e) => setCompany(prev => ({ ...prev, gspPassword: e.target.value }))}
                       placeholder="GSP portal password"
-                      className="w-full rounded-lg border border-slate-800 bg-slate-900 p-2.5 text-sm text-white font-mono focus:outline-hidden" />
+                      className="w-full rounded-lg border border-slate-200 bg-white p-2.5 text-sm text-slate-800 font-mono focus:outline-hidden" />
                   </div>
                 </div>
               </div>
             </div>
 
-            <div className="text-right border-t border-slate-800 pt-4">
+            <div className="text-right border-t border-slate-200 pt-4">
               <button type="submit"
                 className="inline-flex items-center gap-1.5 rounded-lg bg-indigo-600 px-4 py-2 text-xs font-bold text-white hover:bg-indigo-500 transition-colors">
                 <Save className="h-4 w-4" />
@@ -559,14 +559,14 @@ export default function AdminView({
 
           {/* Integrations toggles & Branch mappings */}
           <div className="space-y-6">
-            <div className="bg-slate-950/60 border border-slate-800 rounded-xl p-6 shadow-xs space-y-4">
-              <h3 className="text-sm font-bold text-slate-300 uppercase tracking-wider border-b border-slate-800 pb-2 font-mono">Operational Integrations</h3>
+            <div className="bg-white border border-slate-200 rounded-xl p-6 shadow-xs space-y-4">
+              <h3 className="text-sm font-bold text-slate-500 uppercase tracking-wider border-b border-slate-100 pb-2 font-mono">Operational Integrations</h3>
               
               <div className="space-y-4 text-xs">
                 {/* WhatsApp */}
                 <div className="flex items-center justify-between">
                   <div>
-                    <strong className="text-slate-200 block font-semibold">WhatsApp API Messenger</strong>
+                    <strong className="text-slate-700 block font-semibold">WhatsApp API Messenger</strong>
                     <span className="text-[10px] text-slate-500 block mt-0.5 font-medium font-mono">Automatic delivery reports notifications</span>
                   </div>
                   <button
@@ -585,7 +585,7 @@ export default function AdminView({
                 {/* Email notifications */}
                 <div className="flex items-center justify-between">
                   <div>
-                    <strong className="text-slate-200 block font-semibold">Email Dispatch (SMTP Relay)</strong>
+                    <strong className="text-slate-700 block font-semibold">Email Dispatch (SMTP Relay)</strong>
                     <span className="text-[10px] text-slate-500 block mt-0.5 font-medium font-mono">PO approvals and client invoices delivery</span>
                   </div>
                   <button
@@ -604,14 +604,14 @@ export default function AdminView({
             </div>
 
             {/* Active branch listings */}
-            <div className="bg-slate-950/60 border border-slate-800 rounded-xl p-6 shadow-xs space-y-4">
-              <h3 className="text-sm font-bold text-slate-300 uppercase tracking-wider border-b border-slate-800 pb-2 font-mono">Multi-Tenant Divisions</h3>
+            <div className="bg-white border border-slate-200 rounded-xl p-6 shadow-xs space-y-4">
+              <h3 className="text-sm font-bold text-slate-500 uppercase tracking-wider border-b border-slate-100 pb-2 font-mono">Multi-Tenant Divisions</h3>
               <div className="space-y-2 text-xs">
                 {branches.map(br => (
-                  <div key={br.id} className="flex items-center gap-2.5 p-2.5 rounded-lg border border-slate-800 bg-slate-900">
+                  <div key={br.id} className="flex items-center gap-2.5 p-2.5 rounded-lg border border-slate-200 bg-white">
                     <Building className="h-4.5 w-4.5 text-indigo-400 shrink-0" />
                     <div className="text-left">
-                      <strong className="font-bold text-slate-200 block">{br.name}</strong>
+                      <strong className="font-bold text-slate-700 block">{br.name}</strong>
                       <span className="text-[10px] font-mono text-slate-400 font-semibold">{br.code}</span>
                     </div>
                   </div>
@@ -624,8 +624,8 @@ export default function AdminView({
 
       {/* SUB-TAB: DYNAMIC RBAC PERMISSION DESK */}
       {activeSubTab === "permissions" && (
-        <div className="bg-slate-950/60 border border-slate-800 rounded-xl p-6 shadow-xs space-y-6 text-left">
-          <div className="border-b border-slate-800 pb-3 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div className="bg-white border border-slate-200 rounded-xl p-6 shadow-xs space-y-6 text-left">
+          <div className="border-b border-slate-200 pb-3 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
             <div>
               <h3 className="text-base font-bold text-slate-300 font-mono">Dynamic Security Matrix (RBAC)</h3>
               <p className="text-xs text-slate-400 mt-0.5">Edit granular action authorizations instantly across the 10 role categories.</p>
@@ -636,7 +636,7 @@ export default function AdminView({
               <select
                 value={selectedPermissionRole}
                 onChange={(e) => setSelectedPermissionRole(e.target.value as UserRole)}
-                className="rounded-lg border border-slate-800 p-2 text-xs font-bold text-indigo-400 bg-slate-900"
+                className="rounded-lg border border-slate-200 p-2 text-xs font-bold text-indigo-400 bg-white"
               >
                 {Object.values(UserRole).map(role => (
                   <option key={role} value={role}>{role}</option>
@@ -646,14 +646,14 @@ export default function AdminView({
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="rounded-xl border border-slate-800 bg-slate-900 p-5 space-y-4">
+            <div className="rounded-xl border border-slate-200 bg-white p-5 space-y-4">
               <span className="text-xs font-bold text-slate-300 uppercase tracking-wider block font-mono">Modify Permission Actions</span>
               
               <div className="space-y-3.5">
                 {["create", "read", "update", "delete", "approve"].map(action => {
                   const isGranted = permissionsMatrix[selectedPermissionRole]?.[action];
                   return (
-                    <div key={action} className="flex items-center justify-between p-2.5 bg-slate-950 border border-slate-850 rounded-lg">
+                    <div key={action} className="flex items-center justify-between p-2.5 bg-white border border-slate-850 rounded-lg">
                       <span className="text-xs font-bold uppercase tracking-wider text-slate-300 font-mono">{action} Action</span>
                       <button
                         onClick={() => {
@@ -708,13 +708,13 @@ export default function AdminView({
         <div className="space-y-6">
           {/* SYSTEM ADMIN SPECIAL PERMISSION FORM */}
           {userRole === UserRole.SYSTEM_ADMIN && (
-            <div className="bg-slate-950/80 border border-indigo-500/20 rounded-xl p-5 md:p-6 shadow-xl space-y-4">
-              <div className="flex items-center gap-2.5 border-b border-slate-800 pb-3">
+            <div className="bg-white border border-indigo-500/20 rounded-xl p-5 md:p-6 shadow-xl space-y-4">
+              <div className="flex items-center gap-2.5 border-b border-slate-200 pb-3">
                 <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-indigo-600/10 text-indigo-400">
                   <UserPlus className="h-4.5 w-4.5" />
                 </div>
                 <div>
-                  <h3 className="text-sm font-bold text-white uppercase tracking-wider font-mono">System Admin Desk: Provision Whitelabel Client Tenant</h3>
+                  <h3 className="text-sm font-bold text-slate-800 uppercase tracking-wider font-mono">System Admin Desk: Provision Whitelabel Client Tenant</h3>
                   <p className="text-xs text-slate-400">Register active clients to start with blank custom workspaces on a flat-rate billing model</p>
                 </div>
               </div>
@@ -723,12 +723,12 @@ export default function AdminView({
                 <div className="bg-emerald-500/10 border border-emerald-500/20 text-emerald-300 p-3.5 rounded-lg text-xs relative flex items-start gap-2 animate-fadeIn">
                   <span className="text-emerald-400 font-bold">✓</span>
                   <div className="flex-1 pr-4">
-                    <p className="font-semibold text-white">Tenant Created Successfully</p>
+                    <p className="font-semibold text-slate-800">Tenant Created Successfully</p>
                     <p className="mt-0.5 leading-relaxed">{successMsg}</p>
                   </div>
                   <button 
                     onClick={() => setSuccessMsg("")} 
-                    className="absolute right-2 top-2 text-slate-400 hover:text-white font-bold"
+                    className="absolute right-2 top-2 text-slate-400 hover:text-slate-800 font-bold"
                   >
                     ×
                   </button>
@@ -746,7 +746,7 @@ export default function AdminView({
                       placeholder="e.g., Rajesh Kumar"
                       value={clientName}
                       onChange={(e) => setClientName(e.target.value)}
-                      className="w-full bg-slate-900 border border-slate-800 rounded-lg px-3 py-2 text-xs text-white placeholder-slate-500 focus:outline-hidden focus:border-indigo-500 font-semibold"
+                      className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-xs text-white placeholder-slate-500 focus:outline-hidden focus:border-indigo-500 font-semibold"
                     />
                   </div>
 
@@ -759,7 +759,7 @@ export default function AdminView({
                       placeholder="e.g., rajesh@kumartech.in"
                       value={clientEmail}
                       onChange={(e) => setClientEmail(e.target.value)}
-                      className="w-full bg-slate-900 border border-slate-800 rounded-lg px-3 py-2 text-xs text-white placeholder-slate-500 focus:outline-hidden focus:border-indigo-500 font-semibold"
+                      className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-xs text-white placeholder-slate-500 focus:outline-hidden focus:border-indigo-500 font-semibold"
                     />
                   </div>
 
@@ -772,7 +772,7 @@ export default function AdminView({
                       placeholder="Default: client123"
                       value={clientPassword}
                       onChange={(e) => setClientPassword(e.target.value)}
-                      className="w-full bg-slate-900 border border-slate-800 rounded-lg px-3 py-2 text-xs text-white placeholder-slate-500 focus:outline-hidden focus:border-indigo-500 font-mono font-semibold"
+                      className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-xs text-white placeholder-slate-500 focus:outline-hidden focus:border-indigo-500 font-mono font-semibold"
                     />
                   </div>
 
@@ -785,7 +785,7 @@ export default function AdminView({
                       placeholder="e.g., Kumar Tech Solutions"
                       value={clientCompanyName}
                       onChange={(e) => setClientCompanyName(e.target.value)}
-                      className="w-full bg-slate-900 border border-slate-800 rounded-lg px-3 py-2 text-xs text-white placeholder-slate-500 focus:outline-hidden focus:border-indigo-500 font-semibold"
+                      className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-xs text-white placeholder-slate-500 focus:outline-hidden focus:border-indigo-500 font-semibold"
                     />
                   </div>
 
@@ -798,13 +798,13 @@ export default function AdminView({
                       placeholder="e.g., KUMAR (3-6 chars)"
                       value={clientCompanyCode}
                       onChange={(e) => setClientCompanyCode(e.target.value)}
-                      className="w-full bg-slate-900 border border-slate-800 rounded-lg px-3 py-2 text-xs text-white placeholder-slate-500 focus:outline-hidden focus:border-indigo-500 font-mono font-bold uppercase"
+                      className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-xs text-white placeholder-slate-500 focus:outline-hidden focus:border-indigo-500 font-mono font-bold uppercase"
                     />
                   </div>
 
                   {/* Existing Company ID (optional) */}
                   <div className="space-y-1.5 col-span-2">
-                    <label className="text-xs font-semibold text-amber-400 font-mono">Existing Company ID <span className="text-slate-500 font-normal">(leave blank for new company — fill to reconnect to existing data)</span></label>
+                    <label className="text-xs font-semibold text-slate-600 font-mono">Existing Company ID <span className="text-slate-500 font-normal">(leave blank for new company — fill to reconnect to existing data)</span></label>
                     <input
                       type="text"
                       placeholder="e.g. comp-1  (only if reconnecting to existing data)"
@@ -821,7 +821,7 @@ export default function AdminView({
                       type="text"
                       disabled
                       value="₹500 INR (Standard Flat Charge)"
-                      className="w-full bg-slate-900/40 border border-slate-800/80 rounded-lg px-3 py-2 text-xs text-slate-400 font-bold"
+                      className="w-full bg-slate-50 border border-slate-200/80 rounded-lg px-3 py-2 text-xs text-slate-400 font-bold"
                     />
                   </div>
                 </div>
@@ -840,13 +840,13 @@ export default function AdminView({
 
           {/* COMPANY ADMIN WORKSPACE STAFF REGISTRATION FORM */}
           {userRole === UserRole.COMPANY_ADMIN && (
-            <div className="bg-slate-950/80 border border-emerald-500/20 rounded-xl p-5 md:p-6 shadow-xl space-y-4">
-              <div className="flex items-center gap-2.5 border-b border-slate-800 pb-3">
+            <div className="bg-white border border-emerald-500/20 rounded-xl p-5 md:p-6 shadow-xl space-y-4">
+              <div className="flex items-center gap-2.5 border-b border-slate-200 pb-3">
                 <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-600/10 text-emerald-400">
                   <UserPlus className="h-4.5 w-4.5" />
                 </div>
                 <div>
-                  <h3 className="text-sm font-bold text-white uppercase tracking-wider font-mono">Workspace Desk: Register Staff Logins</h3>
+                  <h3 className="text-sm font-bold text-slate-800 uppercase tracking-wider font-mono">Workspace Desk: Register Staff Logins</h3>
                   <p className="text-xs text-slate-400">Create custom credentials for your team and operators inside "{company.name}"</p>
                 </div>
               </div>
@@ -855,12 +855,12 @@ export default function AdminView({
                 <div className="bg-emerald-500/10 border border-emerald-500/20 text-emerald-300 p-3.5 rounded-lg text-xs relative flex items-start gap-2 animate-fadeIn">
                   <span className="text-emerald-400 font-bold">✓</span>
                   <div className="flex-1 pr-4">
-                    <p className="font-semibold text-white">Staff Login Provisioned</p>
+                    <p className="font-semibold text-slate-800">Staff Login Provisioned</p>
                     <p className="mt-0.5 leading-relaxed">{staffSuccessMsg}</p>
                   </div>
                   <button 
                     onClick={() => setStaffSuccessMsg("")} 
-                    className="absolute right-2 top-2 text-slate-400 hover:text-white font-bold"
+                    className="absolute right-2 top-2 text-slate-400 hover:text-slate-800 font-bold"
                   >
                     ×
                   </button>
@@ -878,7 +878,7 @@ export default function AdminView({
                       placeholder="e.g., Jane Doe"
                       value={staffName}
                       onChange={(e) => setStaffName(e.target.value)}
-                      className="w-full bg-slate-900 border border-slate-800 rounded-lg px-3 py-2 text-xs text-white placeholder-slate-500 focus:outline-hidden focus:border-emerald-500 font-semibold"
+                      className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-xs text-white placeholder-slate-500 focus:outline-hidden focus:border-emerald-500 font-semibold"
                     />
                   </div>
 
@@ -891,7 +891,7 @@ export default function AdminView({
                       placeholder="e.g., jane@company.com"
                       value={staffEmail}
                       onChange={(e) => setStaffEmail(e.target.value)}
-                      className="w-full bg-slate-900 border border-slate-800 rounded-lg px-3 py-2 text-xs text-white placeholder-slate-500 focus:outline-hidden focus:border-emerald-500 font-semibold"
+                      className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-xs text-white placeholder-slate-500 focus:outline-hidden focus:border-emerald-500 font-semibold"
                     />
                   </div>
 
@@ -904,7 +904,7 @@ export default function AdminView({
                       placeholder="e.g., securepass123"
                       value={staffPassword}
                       onChange={(e) => setStaffPassword(e.target.value)}
-                      className="w-full bg-slate-900 border border-slate-800 rounded-lg px-3 py-2 text-xs text-white placeholder-slate-500 focus:outline-hidden focus:border-emerald-500 font-mono font-semibold"
+                      className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-xs text-white placeholder-slate-500 focus:outline-hidden focus:border-emerald-500 font-mono font-semibold"
                     />
                   </div>
 
@@ -914,7 +914,7 @@ export default function AdminView({
                     <select
                       value={staffRole}
                       onChange={(e) => setStaffRole(e.target.value as UserRole)}
-                      className="w-full bg-slate-900 border border-slate-800 rounded-lg px-3 py-2 text-xs text-white placeholder-slate-500 focus:outline-hidden focus:border-emerald-500 font-mono font-semibold"
+                      className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-xs text-white placeholder-slate-500 focus:outline-hidden focus:border-emerald-500 font-mono font-semibold"
                     >
                       {Object.values(UserRole)
                         .filter(role => role !== UserRole.SYSTEM_ADMIN) // Client can't create global system admins
@@ -938,15 +938,15 @@ export default function AdminView({
             </div>
           )}
 
-          <div className="bg-slate-950/60 border border-slate-800 rounded-xl overflow-hidden shadow-xs">
-            <div className="px-5 py-4 border-b border-slate-800 bg-slate-950 flex items-center justify-between">
+          <div className="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-xs">
+            <div className="px-5 py-4 border-b border-slate-200 bg-white flex items-center justify-between">
               <h3 className="text-sm font-bold text-slate-300 uppercase tracking-wider font-mono">Active System Operator Profiles</h3>
               <span className="text-xs text-slate-500 font-mono">Count: {(userRole === UserRole.SYSTEM_ADMIN ? users : users.filter(u => u.companyId === company.id)).length} logins</span>
             </div>
 
             <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-slate-800 text-sm">
-              <thead className="bg-slate-950 font-semibold text-slate-300 text-left">
+              <thead className="bg-white font-semibold text-slate-300 text-left">
                 <tr>
                   <th className="px-5 py-3">User</th>
                   <th className="px-5 py-3">Email</th>
@@ -957,15 +957,15 @@ export default function AdminView({
               </thead>
               <tbody className="divide-y divide-slate-850 text-slate-300">
                 {(userRole === UserRole.SYSTEM_ADMIN ? users : users.filter(u => u.companyId === company.id)).map(u => (
-                  <tr key={u.id} className="hover:bg-slate-900/40 transition-colors">
+                  <tr key={u.id} className="hover:bg-slate-50 transition-colors">
                     <td className="px-5 py-4">
-                      <div className="font-bold text-slate-200 leading-tight">{u.name}</div>
+                      <div className="font-bold text-slate-700 leading-tight">{u.name}</div>
                       <div className="text-[10px] text-indigo-400 font-mono font-bold uppercase mt-0.5">Tenant: {u.companyId.replace("comp-", "").toUpperCase()}</div>
                     </td>
                     <td className="px-5 py-4 font-mono text-xs text-slate-400">{u.email}</td>
                     <td className="px-5 py-4 font-bold text-xs text-indigo-400">{u.role}</td>
                     <td className="px-5 py-4">
-                      <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wide ${u.status === "active" ? "border border-emerald-500/20 bg-emerald-500/10 text-emerald-400" : "border border-slate-700 bg-slate-800 text-slate-400"}`}>
+                      <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wide ${u.status === "active" ? "border border-emerald-500/20 bg-emerald-500/10 text-emerald-400" : "border border-slate-200 bg-slate-100 text-slate-400"}`}>
                         <span className={`h-1.5 w-1.5 rounded-full ${u.status === "active" ? "bg-emerald-400" : "bg-slate-500"}`}></span>
                         <span>{u.status}</span>
                       </span>
@@ -974,7 +974,7 @@ export default function AdminView({
                       <div className="flex items-center gap-2">
                         <button
                           onClick={() => handleOpenEditUser(u)}
-                          className="flex items-center gap-1 px-2.5 py-1 bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white rounded-lg text-[10px] font-bold cursor-pointer transition-all"
+                          className="flex items-center gap-1 px-2.5 py-1 bg-slate-100 hover:bg-slate-200 text-slate-300 hover:text-slate-800 rounded-lg text-[10px] font-bold cursor-pointer transition-all"
                         >
                           <Edit className="h-3 w-3" /> Edit
                         </button>
@@ -998,38 +998,38 @@ export default function AdminView({
       {/* Edit User Modal */}
       {editingUser && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-          <form onSubmit={handleSaveEditUser} className="w-full max-w-md rounded-xl border border-slate-800 bg-slate-950 p-6 shadow-2xl space-y-4">
-            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+          <form onSubmit={handleSaveEditUser} className="w-full max-w-md rounded-xl border border-slate-200 bg-white p-6 shadow-2xl space-y-4">
+            <div className="flex items-center justify-between border-b border-slate-200 pb-3">
               <div className="flex items-center gap-2">
                 <Edit className="h-4 w-4 text-indigo-400" />
                 <h3 className="text-sm font-bold text-white font-mono">Edit User — {editingUser.name}</h3>
               </div>
-              <button type="button" onClick={() => setEditingUser(null)} className="text-slate-400 hover:text-white font-bold text-lg leading-none cursor-pointer">×</button>
+              <button type="button" onClick={() => setEditingUser(null)} className="text-slate-400 hover:text-slate-800 font-bold text-lg leading-none cursor-pointer">×</button>
             </div>
 
             <div className="space-y-3 text-xs">
               <div>
                 <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 font-mono">Full Name *</label>
                 <input required type="text" value={editName} onChange={e => setEditName(e.target.value)}
-                  className="w-full bg-slate-900 border border-slate-800 rounded-lg p-2 text-xs text-white focus:outline-none focus:border-indigo-500" />
+                  className="w-full bg-white border border-slate-200 rounded-lg p-2 text-xs text-white focus:outline-none focus:border-indigo-500" />
               </div>
               <div>
                 <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 font-mono">Email *</label>
                 <input required type="email" value={editEmail} onChange={e => setEditEmail(e.target.value)}
-                  className="w-full bg-slate-900 border border-slate-800 rounded-lg p-2 text-xs text-white font-mono focus:outline-none focus:border-indigo-500" />
+                  className="w-full bg-white border border-slate-200 rounded-lg p-2 text-xs text-white font-mono focus:outline-none focus:border-indigo-500" />
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 font-mono">Role</label>
                   <select value={editRole} onChange={e => setEditRole(e.target.value as UserRole)}
-                    className="w-full bg-slate-900 border border-slate-800 rounded-lg p-2 text-xs text-white focus:outline-none focus:border-indigo-500">
+                    className="w-full bg-white border border-slate-200 rounded-lg p-2 text-xs text-white focus:outline-none focus:border-indigo-500">
                     {Object.values(UserRole).filter(r => userRole === UserRole.SYSTEM_ADMIN || r !== UserRole.SYSTEM_ADMIN).map(r => <option key={r} value={r}>{r}</option>)}
                   </select>
                 </div>
                 <div>
                   <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 font-mono">Status</label>
                   <select value={editStatus} onChange={e => setEditStatus(e.target.value as "active" | "inactive")}
-                    className="w-full bg-slate-900 border border-slate-800 rounded-lg p-2 text-xs text-white focus:outline-none focus:border-indigo-500">
+                    className="w-full bg-white border border-slate-200 rounded-lg p-2 text-xs text-white focus:outline-none focus:border-indigo-500">
                     <option value="active">Active</option>
                     <option value="inactive">Inactive</option>
                   </select>
@@ -1038,13 +1038,13 @@ export default function AdminView({
               <div>
                 <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 font-mono">New Password <span className="text-slate-600 font-normal lowercase">(leave blank to keep current)</span></label>
                 <input type="password" value={editPassword} onChange={e => setEditPassword(e.target.value)} placeholder="••••••••"
-                  className="w-full bg-slate-900 border border-slate-800 rounded-lg p-2 text-xs text-white focus:outline-none focus:border-indigo-500" />
+                  className="w-full bg-white border border-slate-200 rounded-lg p-2 text-xs text-white focus:outline-none focus:border-indigo-500" />
               </div>
             </div>
 
-            <div className="flex justify-end gap-2 pt-2 border-t border-slate-800">
+            <div className="flex justify-end gap-2 pt-2 border-t border-slate-200">
               <button type="button" onClick={() => setEditingUser(null)}
-                className="px-4 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-xs font-bold cursor-pointer">Cancel</button>
+                className="px-4 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-300 rounded-lg text-xs font-bold cursor-pointer">Cancel</button>
               <button type="submit"
                 className="flex items-center gap-1.5 px-4 py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg text-xs font-bold cursor-pointer">
                 <Check className="h-3.5 w-3.5" /> Save Changes
@@ -1060,10 +1060,10 @@ export default function AdminView({
       {activeSubTab === "database" && (
         <div className="space-y-5">
           {/* Panel header */}
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-[#070d1a] border border-[#1e2d45] rounded-xl p-4">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-white border border-slate-200 rounded-xl p-4">
             <div>
               <h2 className="text-sm font-extrabold text-white font-mono flex items-center gap-2">
-                <Database className="h-4 w-4 text-amber-400" />
+                <Database className="h-4 w-4 text-amber-600" />
                 System Admin Database
               </h2>
               <p className="text-[10px] text-slate-500 font-mono mt-0.5">
@@ -1071,7 +1071,7 @@ export default function AdminView({
               </p>
             </div>
             <div className="flex items-center gap-2 text-[10px] font-mono font-bold">
-              <span className="px-2.5 py-1 rounded-lg bg-amber-500/10 border border-amber-500/20 text-amber-400">
+              <span className="px-2.5 py-1 rounded-lg bg-amber-500/10 border border-amber-500/20 text-amber-600">
                 {users.length} Accounts
               </span>
               <span className="px-2.5 py-1 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-400">
@@ -1081,7 +1081,7 @@ export default function AdminView({
           </div>
 
           {/* 4-tab inner switcher */}
-          <div className="flex gap-0 border-b border-[#1e2d45]">
+          <div className="flex gap-0 border-b border-slate-200">
             {[
               { key: "registry", label: "📋 Account Registry" },
               { key: "ledger",   label: "💳 Subscription Ledger" },
@@ -1093,7 +1093,7 @@ export default function AdminView({
                 onClick={() => setDbTab(t.key as typeof dbTab)}
                 className={`px-4 py-2.5 text-[11px] font-bold font-mono transition-all border-b-2 ${
                   dbTab === t.key
-                    ? "border-amber-500 text-amber-400"
+                    ? "border-amber-500 text-amber-600"
                     : "border-transparent text-slate-500 hover:text-slate-300"
                 }`}
               >
@@ -1114,25 +1114,25 @@ export default function AdminView({
                     placeholder="Search store, owner, email, mobile…"
                     value={regSearch}
                     onChange={e => setRegSearch(e.target.value)}
-                    className="w-full bg-[#0d1829] border border-[#1e2d45] rounded-lg pl-9 pr-4 py-2.5 text-xs text-white placeholder-slate-600 focus:outline-none focus:border-amber-500/50 font-mono"
+                    className="w-full bg-[#0d1829] border border-slate-200 rounded-lg pl-9 pr-4 py-2.5 text-xs text-white placeholder-slate-600 focus:outline-none focus:border-amber-500/50 font-mono"
                   />
                 </div>
                 <div className="flex gap-2">
-                  <span className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-[#0d1829] border border-[#1e2d45] text-[10px] font-mono text-slate-400">
+                  <span className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-[#0d1829] border border-slate-200 text-[10px] font-mono text-slate-400">
                     All
                   </span>
-                  <span className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-amber-500/10 border border-amber-500/30 text-[10px] font-mono text-amber-400">
+                  <span className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-amber-500/10 border border-amber-500/30 text-[10px] font-mono text-amber-600">
                     Trading ERP
                   </span>
-                  <span className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-[#0d1829] border border-[#1e2d45] text-[10px] font-mono text-slate-400">
+                  <span className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-[#0d1829] border border-slate-200 text-[10px] font-mono text-slate-400">
                     Service ERP
                   </span>
                 </div>
               </div>
 
               {/* Table */}
-              <div className="bg-[#070d1a] border border-[#1e2d45] rounded-xl overflow-hidden">
-                <div className="px-5 py-3 border-b border-[#1e2d45] flex items-center justify-between">
+              <div className="bg-white border border-slate-200 rounded-xl overflow-hidden">
+                <div className="px-5 py-3 border-b border-slate-200 flex items-center justify-between">
                   <h3 className="text-xs font-bold text-white font-mono flex items-center gap-2">
                     <span className="h-1.5 w-1.5 rounded-full bg-amber-500 inline-block"></span>
                     Account Credentials Registry ({users.filter(u =>
@@ -1147,7 +1147,7 @@ export default function AdminView({
                 </div>
                 <div className="overflow-x-auto">
                   <table className="min-w-full text-xs">
-                    <thead className="bg-[#0a1020] border-b border-[#1e2d45]">
+                    <thead className="bg-[#0a1020] border-b border-slate-200">
                       <tr>
                         <th className="px-5 py-3 text-left text-[10px] font-bold text-slate-400 uppercase tracking-wider font-mono">Store & Sector</th>
                         <th className="px-5 py-3 text-left text-[10px] font-bold text-slate-400 uppercase tracking-wider font-mono">Owner / User Name</th>
@@ -1175,16 +1175,16 @@ export default function AdminView({
                               <div className="flex flex-wrap gap-1 mt-1.5">
                                 <span className="px-1.5 py-0.5 rounded bg-teal-500/10 border border-teal-500/20 text-[9px] font-bold text-teal-400 font-mono">TRADING ERP</span>
                                 {u.role === UserRole.SYSTEM_ADMIN && (
-                                  <span className="px-1.5 py-0.5 rounded bg-amber-500/10 border border-amber-500/20 text-[9px] font-bold text-amber-400 font-mono">Demo</span>
+                                  <span className="px-1.5 py-0.5 rounded bg-amber-500/10 border border-amber-500/20 text-[9px] font-bold text-amber-600 font-mono">Demo</span>
                                 )}
                               </div>
                             </td>
                             {/* Owner / User */}
                             <td className="px-5 py-4">
-                              <div className="font-bold text-slate-200 text-xs">{u.name}</div>
+                              <div className="font-bold text-slate-700 text-xs">{u.name}</div>
                               <span className={`inline-block mt-1 px-1.5 py-0.5 rounded text-[9px] font-bold font-mono ${
                                 u.role === UserRole.SYSTEM_ADMIN
-                                  ? "bg-amber-500/15 border border-amber-500/30 text-amber-400"
+                                  ? "bg-amber-500/15 border border-amber-500/30 text-amber-600"
                                   : u.role === "Company Admin"
                                   ? "bg-emerald-500/15 border border-emerald-500/30 text-emerald-400"
                                   : "bg-slate-700/50 border border-slate-600 text-slate-400"
@@ -1245,7 +1245,7 @@ export default function AdminView({
                                 </button>
                                 <button
                                   onClick={() => handleOpenEditUser(u)}
-                                  className="flex items-center gap-1 px-2.5 py-1.5 bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/20 text-amber-400 rounded-lg text-[10px] font-bold font-mono transition-all cursor-pointer"
+                                  className="flex items-center gap-1 px-2.5 py-1.5 bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/20 text-amber-600 rounded-lg text-[10px] font-bold font-mono transition-all cursor-pointer"
                                 >
                                   ✎ Edit
                                 </button>
@@ -1269,8 +1269,8 @@ export default function AdminView({
           {/* ── TAB 2: SUBSCRIPTION LEDGER ── */}
           {dbTab === "ledger" && (
             <div className="space-y-4">
-              <div className="bg-[#070d1a] border border-[#1e2d45] rounded-xl overflow-hidden">
-                <div className="px-5 py-3 border-b border-[#1e2d45] flex items-center justify-between">
+              <div className="bg-white border border-slate-200 rounded-xl overflow-hidden">
+                <div className="px-5 py-3 border-b border-slate-200 flex items-center justify-between">
                   <h3 className="text-xs font-bold text-white font-mono flex items-center gap-2">
                     <span className="h-1.5 w-1.5 rounded-full bg-amber-500 inline-block"></span>
                     Subscription Ledger ({subscriptions.length} tenants)
@@ -1286,7 +1286,7 @@ export default function AdminView({
                 </div>
                 <div className="overflow-x-auto">
                   <table className="min-w-full text-xs">
-                    <thead className="bg-[#0a1020] border-b border-[#1e2d45]">
+                    <thead className="bg-[#0a1020] border-b border-slate-200">
                       <tr>
                         {["Company / Owner", "Plan", "Cycle Period", "Amount", "Status", "Actions"].map(h => (
                           <th key={h} className="px-5 py-3 text-left text-[10px] font-bold text-slate-400 uppercase tracking-wider font-mono">{h}</th>
@@ -1307,7 +1307,7 @@ export default function AdminView({
                             <div className="text-[10px] text-slate-500 font-mono mt-0.5">{sub.ownerName} · {sub.email}</div>
                           </td>
                           <td className="px-5 py-4">
-                            <span className="px-2 py-0.5 rounded bg-amber-500/10 border border-amber-500/20 text-amber-400 text-[9px] font-bold font-mono">₹500/mo</span>
+                            <span className="px-2 py-0.5 rounded bg-amber-500/10 border border-amber-500/20 text-amber-600 text-[9px] font-bold font-mono">₹500/mo</span>
                           </td>
                           <td className="px-5 py-4 font-mono text-[10px] text-slate-400">
                             {sub.cycleStart} → {sub.cycleEnd}
@@ -1316,7 +1316,7 @@ export default function AdminView({
                           <td className="px-5 py-4">
                             <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[9px] font-bold font-mono border ${
                               sub.status === "Paid" ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-400"
-                              : sub.status === "Pending" ? "bg-amber-500/10 border-amber-500/20 text-amber-400"
+                              : sub.status === "Pending" ? "bg-amber-500/10 border-amber-500/20 text-amber-600"
                               : "bg-rose-500/10 border-rose-500/20 text-rose-400"
                             }`}>
                               <span className={`h-1 w-1 rounded-full ${sub.status === "Paid" ? "bg-emerald-400" : sub.status === "Pending" ? "bg-amber-400" : "bg-rose-400"}`}></span>
@@ -1350,8 +1350,8 @@ export default function AdminView({
 
           {/* ── TAB 3: ACTIVITY LOGS ── */}
           {dbTab === "logs" && (
-            <div className="bg-[#070d1a] border border-[#1e2d45] rounded-xl overflow-hidden">
-              <div className="px-5 py-3 border-b border-[#1e2d45]">
+            <div className="bg-white border border-slate-200 rounded-xl overflow-hidden">
+              <div className="px-5 py-3 border-b border-slate-200">
                 <h3 className="text-xs font-bold text-white font-mono flex items-center gap-2">
                   <span className="h-1.5 w-1.5 rounded-full bg-amber-500 animate-pulse inline-block"></span>
                   System Activity Log
@@ -1370,12 +1370,12 @@ export default function AdminView({
                   <div key={i} className="flex items-start gap-4 px-5 py-3 hover:bg-[#0d1829] transition-colors">
                     <span className={`mt-0.5 shrink-0 px-1.5 py-0.5 rounded text-[9px] font-bold font-mono border ${
                       log.type === "AUTH" ? "bg-indigo-500/10 border-indigo-500/20 text-indigo-400"
-                      : log.type === "ADMIN" ? "bg-amber-500/10 border-amber-500/20 text-amber-400"
+                      : log.type === "ADMIN" ? "bg-amber-500/10 border-amber-500/20 text-amber-600"
                       : log.type === "BILLING" ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-400"
                       : "bg-slate-700/50 border-slate-600 text-slate-400"
                     }`}>{log.type}</span>
                     <div className="flex-1 min-w-0">
-                      <p className={`text-xs font-semibold ${log.ok ? "text-slate-200" : "text-rose-400"}`}>{log.event}</p>
+                      <p className={`text-xs font-semibold ${log.ok ? "text-slate-700" : "text-rose-400"}`}>{log.event}</p>
                       <p className="text-[10px] text-slate-600 font-mono mt-0.5">{log.user}</p>
                     </div>
                     <span className="text-[10px] text-slate-600 font-mono shrink-0">{log.time}</span>
@@ -1426,13 +1426,13 @@ export default function AdminView({
                   ]
                 },
               ].map(card => (
-                <div key={card.title} className="bg-[#070d1a] border border-[#1e2d45] rounded-xl p-5 space-y-3">
-                  <h4 className="text-[10px] font-bold text-amber-400 uppercase tracking-widest font-mono border-b border-[#1e2d45] pb-2">{card.title}</h4>
+                <div key={card.title} className="bg-white border border-slate-200 rounded-xl p-5 space-y-3">
+                  <h4 className="text-[10px] font-bold text-amber-600 uppercase tracking-widest font-mono border-b border-slate-200 pb-2">{card.title}</h4>
                   <div className="space-y-2">
                     {card.fields.map(f => (
                       <div key={f.label} className="flex items-center justify-between gap-4">
                         <span className="text-[10px] text-slate-500 font-mono">{f.label}</span>
-                        <span className={`text-[10px] font-bold text-slate-200 text-right ${f.mono ? "font-mono" : ""}`}>{f.value}</span>
+                        <span className={`text-[10px] font-bold text-slate-700 text-right ${f.mono ? "font-mono" : ""}`}>{f.value}</span>
                       </div>
                     ))}
                   </div>
@@ -1447,9 +1447,9 @@ export default function AdminView({
       {activeSubTab === "billing" && (
         <div className="space-y-6">
           {/* Header Card */}
-          <div className="bg-slate-950/60 border border-slate-800 rounded-xl p-5 md:p-6 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div className="bg-white border border-slate-200 rounded-xl p-5 md:p-6 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div className="text-left space-y-1">
-              <h2 className="text-base font-bold text-slate-100 flex items-center gap-2">
+              <h2 className="text-base font-bold text-slate-800 flex items-center gap-2">
                 <CreditCard className="h-5 w-5 text-indigo-400" />
                 <span>Enterprise Billing & Subscriptions Desk</span>
               </h2>
@@ -1474,12 +1474,12 @@ export default function AdminView({
             <div className="bg-emerald-500/10 border border-emerald-500/20 text-emerald-300 p-3.5 rounded-lg text-xs relative flex items-start gap-2 animate-fadeIn text-left">
               <span className="text-emerald-400 font-bold">✓</span>
               <div className="flex-1 pr-4">
-                <p className="font-semibold text-white">Invoice Reminder Sent</p>
+                <p className="font-semibold text-slate-800">Invoice Reminder Sent</p>
                 <p className="mt-0.5 leading-relaxed">{invoiceRemindedMsg}</p>
               </div>
               <button 
                 onClick={() => setInvoiceRemindedMsg(null)} 
-                className="absolute right-2 top-2 text-slate-400 hover:text-white font-bold"
+                className="absolute right-2 top-2 text-slate-400 hover:text-slate-800 font-bold"
               >
                 ×
               </button>
@@ -1491,7 +1491,7 @@ export default function AdminView({
             <div className="space-y-6">
               {/* Stat Cards Row */}
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-left">
-                <div className="bg-slate-950/60 border border-slate-800 rounded-xl p-4 space-y-1.5 shadow-xs">
+                <div className="bg-white border border-slate-200 rounded-xl p-4 space-y-1.5 shadow-xs">
                   <span className="text-[10px] font-mono text-slate-500 font-bold uppercase tracking-wider block">Total Managed Tenants</span>
                   <div className="flex items-baseline gap-2">
                     <span className="text-2xl font-extrabold text-white">{subscriptions.length}</span>
@@ -1499,7 +1499,7 @@ export default function AdminView({
                   </div>
                 </div>
 
-                <div className="bg-slate-950/60 border border-slate-800 rounded-xl p-4 space-y-1.5 shadow-xs">
+                <div className="bg-white border border-slate-200 rounded-xl p-4 space-y-1.5 shadow-xs">
                   <span className="text-[10px] font-mono text-emerald-400 font-bold uppercase tracking-wider block">Fully Paid cycles</span>
                   <div className="flex items-baseline gap-2">
                     <span className="text-2xl font-extrabold text-emerald-400">
@@ -1511,17 +1511,17 @@ export default function AdminView({
                   </div>
                 </div>
 
-                <div className="bg-slate-950/60 border border-slate-800 rounded-xl p-4 space-y-1.5 shadow-xs">
-                  <span className="text-[10px] font-mono text-amber-400 font-bold uppercase tracking-wider block">Pending / Overdue</span>
+                <div className="bg-white border border-slate-200 rounded-xl p-4 space-y-1.5 shadow-xs">
+                  <span className="text-[10px] font-mono text-amber-600 font-bold uppercase tracking-wider block">Pending / Overdue</span>
                   <div className="flex items-baseline gap-2">
-                    <span className="text-2xl font-extrabold text-amber-400">
+                    <span className="text-2xl font-extrabold text-amber-600">
                       {subscriptions.filter(s => s.status !== "Paid").length}
                     </span>
                     <span className="text-[10px] text-slate-500 font-mono font-semibold">Requires Attention</span>
                   </div>
                 </div>
 
-                <div className="bg-slate-950/60 border border-slate-800 rounded-xl p-4 space-y-1.5 shadow-xs">
+                <div className="bg-white border border-slate-200 rounded-xl p-4 space-y-1.5 shadow-xs">
                   <span className="text-[10px] font-mono text-indigo-400 font-bold uppercase tracking-wider block">Monthly Recurring Rev.</span>
                   <div className="flex items-baseline gap-2">
                     <span className="text-2xl font-extrabold text-white">
@@ -1546,15 +1546,15 @@ export default function AdminView({
               )}
 
               {/* Client subscriptions registry */}
-              <div className="bg-slate-950/60 border border-slate-800 rounded-xl overflow-hidden shadow-xs">
-                <div className="px-5 py-4 border-b border-slate-800 bg-slate-950 flex items-center justify-between">
+              <div className="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-xs">
+                <div className="px-5 py-4 border-b border-slate-200 bg-white flex items-center justify-between">
                   <h3 className="text-sm font-bold text-slate-300 uppercase tracking-wider font-mono">Client Subscriptions Registry</h3>
                   <span className="text-xs text-slate-500 font-mono">Count: {subscriptions.length} active licenses</span>
                 </div>
 
                 <div className="overflow-x-auto">
                   <table className="min-w-full divide-y divide-slate-800 text-sm">
-                    <thead className="bg-slate-950 font-semibold text-slate-300 text-left">
+                    <thead className="bg-white font-semibold text-slate-300 text-left">
                       <tr>
                         <th className="px-5 py-3">Client Workspace / Code</th>
                         <th className="px-5 py-3">Administrative Owner</th>
@@ -1566,15 +1566,15 @@ export default function AdminView({
                     </thead>
                     <tbody className="divide-y divide-slate-850 text-slate-300 font-medium">
                       {subscriptions.map(sub => (
-                        <tr key={sub.id} className="hover:bg-slate-900/40 transition-colors text-left">
+                        <tr key={sub.id} className="hover:bg-slate-50 transition-colors text-left">
                           <td className="px-5 py-4">
-                            <div className="font-bold text-slate-200 leading-tight flex items-center gap-2">
+                            <div className="font-bold text-slate-700 leading-tight flex items-center gap-2">
                               <span>🏢 {sub.companyName}</span>
                             </div>
                             <div className="text-[10px] text-indigo-400 font-mono font-bold uppercase mt-1">Tenant Code: {sub.companyCode}</div>
                           </td>
                           <td className="px-5 py-4">
-                            <div className="font-semibold text-slate-200">{sub.ownerName}</div>
+                            <div className="font-semibold text-slate-700">{sub.ownerName}</div>
                             <div className="text-xs text-slate-500 font-mono mt-0.5">{sub.email}</div>
                           </td>
                           <td className="px-5 py-4 font-mono font-bold text-slate-300">{formatINR(sub.monthlyAmount)}</td>
@@ -1586,14 +1586,14 @@ export default function AdminView({
                                     type="date" 
                                     value={editCycleStart} 
                                     onChange={(e) => setEditCycleStart(e.target.value)}
-                                    className="bg-slate-900 border border-slate-700 text-xs text-white rounded p-1 focus:outline-hidden"
+                                    className="bg-white border border-slate-200 text-xs text-white rounded p-1 focus:outline-hidden"
                                   />
                                   <span className="text-slate-500 text-xs">to</span>
                                   <input 
                                     type="date" 
                                     value={editCycleEnd} 
                                     onChange={(e) => setEditCycleEnd(e.target.value)}
-                                    className="bg-slate-900 border border-slate-700 text-xs text-white rounded p-1 focus:outline-hidden"
+                                    className="bg-white border border-slate-200 text-xs text-white rounded p-1 focus:outline-hidden"
                                   />
                                 </div>
                                 <div className="flex gap-1.5">
@@ -1607,7 +1607,7 @@ export default function AdminView({
                                   <button 
                                     type="button"
                                     onClick={() => setEditingSubId(null)}
-                                    className="bg-slate-850 hover:bg-slate-800 px-2 py-1 rounded text-[10px] font-bold text-slate-300 transition-colors cursor-pointer"
+                                    className="bg-slate-850 hover:bg-slate-100 px-2 py-1 rounded text-[10px] font-bold text-slate-300 transition-colors cursor-pointer"
                                   >
                                     Cancel
                                   </button>
@@ -1635,7 +1635,7 @@ export default function AdminView({
                               sub.status === "Paid" 
                                 ? "border-emerald-500/20 bg-emerald-500/10 text-emerald-400" 
                                 : sub.status === "Pending"
-                                ? "border-amber-500/20 bg-amber-500/10 text-amber-400"
+                                ? "border-amber-500/20 bg-amber-500/10 text-amber-600"
                                 : "border-rose-500/20 bg-rose-500/10 text-rose-400"
                             }`}>
                               <span className={`h-1.5 w-1.5 rounded-full ${
@@ -1666,7 +1666,7 @@ export default function AdminView({
                                 <button
                                   type="button"
                                   onClick={() => handleUpdateSubscriptionStatus(sub.id, "Pending")}
-                                  className="bg-slate-800 hover:bg-slate-700 text-amber-400 text-[10px] font-bold px-2 py-1 rounded border border-slate-700 transition-colors cursor-pointer"
+                                  className="bg-slate-100 hover:bg-slate-200 text-amber-600 text-[10px] font-bold px-2 py-1 rounded border border-slate-200 transition-colors cursor-pointer"
                                 >
                                   Mark Pending
                                 </button>
@@ -1675,7 +1675,7 @@ export default function AdminView({
                                 <button
                                   type="button"
                                   onClick={() => handleUpdateSubscriptionStatus(sub.id, "Overdue")}
-                                  className="bg-slate-800 hover:bg-slate-750 text-rose-400 text-[10px] font-bold px-2 py-1 rounded border border-slate-700 transition-colors cursor-pointer"
+                                  className="bg-slate-100 hover:bg-slate-750 text-rose-400 text-[10px] font-bold px-2 py-1 rounded border border-slate-200 transition-colors cursor-pointer"
                                 >
                                   Mark Overdue
                                 </button>
@@ -1708,15 +1708,15 @@ export default function AdminView({
                 />
 
                 {/* Simulated Ledger Receipt download */}
-                <div className="bg-slate-950/60 border border-slate-800 rounded-xl overflow-hidden shadow-xs">
-                  <div className="px-5 py-4 border-b border-slate-800 bg-slate-950 flex items-center justify-between">
+                <div className="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-xs">
+                  <div className="px-5 py-4 border-b border-slate-200 bg-white flex items-center justify-between">
                     <h3 className="text-sm font-bold text-slate-300 uppercase tracking-wider font-mono">Payment ledger & Receipts</h3>
                     <span className="text-[10px] text-slate-500 font-mono">Currency: INR</span>
                   </div>
 
                   <div className="overflow-x-auto font-medium">
                     <table className="min-w-full divide-y divide-slate-850 text-xs text-slate-300">
-                      <thead className="bg-slate-950 text-slate-400 font-bold text-left uppercase tracking-wider font-mono">
+                      <thead className="bg-white text-slate-400 font-bold text-left uppercase tracking-wider font-mono">
                         <tr>
                           <th className="px-5 py-3 text-[10px]">Invoice ID</th>
                           <th className="px-5 py-3 text-[10px]">Billing period</th>
@@ -1726,7 +1726,7 @@ export default function AdminView({
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-slate-850">
-                        <tr className="hover:bg-slate-900/40 transition-colors">
+                        <tr className="hover:bg-slate-50 transition-colors">
                           <td className="px-5 py-3 font-mono">INV-2026-06</td>
                           <td className="px-5 py-3 text-slate-400">June 1, 2026 - June 30, 2026</td>
                           <td className="px-5 py-3 font-mono">₹500.00</td>
@@ -1737,7 +1737,7 @@ export default function AdminView({
                             <button onClick={() => toast.info("PDF Download", "Receipt INV-2026-06 downloading...")} className="text-indigo-400 hover:text-indigo-300 font-semibold uppercase text-[10px] cursor-pointer">PDF Download</button>
                           </td>
                         </tr>
-                        <tr className="hover:bg-slate-900/40 transition-colors">
+                        <tr className="hover:bg-slate-50 transition-colors">
                           <td className="px-5 py-3 font-mono">INV-2026-05</td>
                           <td className="px-5 py-3 text-slate-400">May 1, 2026 - May 31, 2026</td>
                           <td className="px-5 py-3 font-mono">₹500.00</td>
@@ -1748,7 +1748,7 @@ export default function AdminView({
                             <button onClick={() => toast.info("PDF Download", "Receipt INV-2026-05 downloading...")} className="text-indigo-400 hover:text-indigo-300 font-semibold uppercase text-[10px] cursor-pointer">PDF Download</button>
                           </td>
                         </tr>
-                        <tr className="hover:bg-slate-900/40 transition-colors">
+                        <tr className="hover:bg-slate-50 transition-colors">
                           <td className="px-5 py-3 font-mono">INV-2026-04</td>
                           <td className="px-5 py-3 text-slate-400">April 1, 2026 - April 30, 2026</td>
                           <td className="px-5 py-3 font-mono">₹500.00</td>
@@ -1767,8 +1767,8 @@ export default function AdminView({
 
               {/* Side context cards */}
               <div className="space-y-6">
-                <div className="bg-slate-950/60 border border-slate-800 rounded-xl p-5 shadow-xs space-y-4">
-                  <h3 className="text-sm font-bold text-slate-300 uppercase tracking-wider border-b border-slate-800 pb-2 font-mono">Pricing Scheme Terms</h3>
+                <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-xs space-y-4">
+                  <h3 className="text-sm font-bold text-slate-500 uppercase tracking-wider border-b border-slate-100 pb-2 font-mono">Pricing Scheme Terms</h3>
                   <div className="space-y-3.5 text-xs text-slate-400 leading-relaxed">
                     <p>
                       <strong>Standard Whitelabel rate:</strong> Our licensing plan is extremely simplified. Symmetrical flat ₹500 per calendar month per client node.
@@ -1840,16 +1840,16 @@ function ClientSubscribedSection({
   return (
     <div className="space-y-6">
       {/* Subscription Status Callout */}
-      <div className="bg-slate-950/60 border border-slate-800 rounded-xl p-6 space-y-4 shadow-xs">
-        <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+      <div className="bg-white border border-slate-200 rounded-xl p-6 space-y-4 shadow-xs">
+        <div className="flex items-center justify-between border-b border-slate-200 pb-3">
           <div>
             <span className="text-[10px] font-mono text-slate-500 font-bold uppercase tracking-wider block">Service Category</span>
-            <strong className="text-sm font-bold text-slate-200">Whitelabel ERP Enterprise Suite</strong>
+            <strong className="text-sm font-bold text-slate-700">Whitelabel ERP Enterprise Suite</strong>
           </div>
           <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider border ${
             mySub.status === "Paid" 
               ? "border-emerald-500/20 bg-emerald-500/10 text-emerald-400" 
-              : "border-amber-500/20 bg-amber-500/10 text-amber-400"
+              : "border-amber-500/20 bg-amber-500/10 text-amber-600"
           }`}>
             <span className={`h-1.5 w-1.5 rounded-full ${mySub.status === "Paid" ? "bg-emerald-400" : "bg-amber-400"}`}></span>
             <span>{mySub.status === "Paid" ? "Fully Active" : "Payment Pending"}</span>
@@ -1859,11 +1859,11 @@ function ClientSubscribedSection({
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs font-mono">
           <div>
             <span className="text-[10px] text-slate-500 font-bold block uppercase mb-1">Billing Cycle Duration</span>
-            <span className="text-slate-200 font-semibold">{mySub.cycleStart} to {mySub.cycleEnd}</span>
+            <span className="text-slate-700 font-semibold">{mySub.cycleStart} to {mySub.cycleEnd}</span>
           </div>
           <div>
             <span className="text-[10px] text-slate-500 font-bold block uppercase mb-1">Subscription Price</span>
-            <span className="text-slate-200 font-bold text-sm">₹500.00 / month flat</span>
+            <span className="text-slate-700 font-bold text-sm">₹500.00 / month flat</span>
           </div>
           <div>
             <span className="text-[10px] text-slate-500 font-bold block uppercase mb-1">Assigned Tenant Code</span>
@@ -1878,7 +1878,7 @@ function ClientSubscribedSection({
           </div>
         ) : (
           <div className="bg-amber-500/10 border border-amber-500/20 rounded-lg p-4 text-xs text-slate-300 leading-relaxed">
-            <span className="text-amber-400 font-bold block mb-1 font-mono uppercase tracking-wide">⚠ Payment Statement Issued</span>
+            <span className="text-amber-600 font-bold block mb-1 font-mono uppercase tracking-wide">⚠ Payment Statement Issued</span>
             Your subscription invoice for the active cycle period is pending. Standard subscription fee is ₹500/month. Please settle the pending amount via our secure payment gateway below to maintain fully automated accounting operations.
           </div>
         )}
@@ -1886,8 +1886,8 @@ function ClientSubscribedSection({
 
       {/* Checkout Gateway (Only display if payment is pending) */}
       {mySub.status !== "Paid" && (
-        <form onSubmit={handleClientPayment} className="bg-slate-950/80 border border-indigo-500/20 rounded-xl p-6 space-y-4 shadow-xl">
-          <h3 className="text-sm font-bold text-slate-200 uppercase tracking-wider border-b border-slate-800 pb-3 font-mono flex items-center gap-1.5">
+        <form onSubmit={handleClientPayment} className="bg-white border border-indigo-500/20 rounded-xl p-6 space-y-4 shadow-xl">
+          <h3 className="text-sm font-bold text-slate-700 uppercase tracking-wider border-b border-slate-200 pb-3 font-mono flex items-center gap-1.5">
             <CreditCard className="h-4.5 w-4.5 text-indigo-400" />
             <span>Secure Payment Gateway (Simulated checkout)</span>
           </h3>
@@ -1907,7 +1907,7 @@ function ClientSubscribedSection({
                 placeholder="e.g., Sarah Jenkins"
                 value={checkoutCardholder}
                 onChange={(e) => setCheckoutCardholder(e.target.value)}
-                className="w-full bg-slate-900 border border-slate-800 rounded-lg px-3 py-2 text-xs text-white placeholder-slate-500 focus:outline-hidden focus:border-indigo-500"
+                className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-xs text-white placeholder-slate-500 focus:outline-hidden focus:border-indigo-500"
               />
             </div>
 
@@ -1920,7 +1920,7 @@ function ClientSubscribedSection({
                 placeholder="4111 2222 3333 4444"
                 value={checkoutCardNumber}
                 onChange={(e) => setCheckoutCardNumber(e.target.value)}
-                className="w-full bg-slate-900 border border-slate-800 rounded-lg px-3 py-2 text-xs text-white placeholder-slate-500 focus:outline-hidden focus:border-indigo-500 font-mono"
+                className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-xs text-white placeholder-slate-500 focus:outline-hidden focus:border-indigo-500 font-mono"
               />
             </div>
 
@@ -1933,7 +1933,7 @@ function ClientSubscribedSection({
                 placeholder="MM/YY"
                 value={checkoutExpiry}
                 onChange={(e) => setCheckoutExpiry(e.target.value)}
-                className="w-full bg-slate-900 border border-slate-800 rounded-lg px-3 py-2 text-xs text-white placeholder-slate-500 focus:outline-hidden focus:border-indigo-500 font-mono"
+                className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-xs text-white placeholder-slate-500 focus:outline-hidden focus:border-indigo-500 font-mono"
               />
             </div>
 
@@ -1946,7 +1946,7 @@ function ClientSubscribedSection({
                 placeholder="•••"
                 value={checkoutCVV}
                 onChange={(e) => setCheckoutCVV(e.target.value)}
-                className="w-full bg-slate-900 border border-slate-800 rounded-lg px-3 py-2 text-xs text-white placeholder-slate-500 focus:outline-hidden focus:border-indigo-500 font-mono"
+                className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-xs text-white placeholder-slate-500 focus:outline-hidden focus:border-indigo-500 font-mono"
               />
             </div>
           </div>
@@ -1965,3 +1965,6 @@ function ClientSubscribedSection({
     </div>
   );
 }
+
+
+

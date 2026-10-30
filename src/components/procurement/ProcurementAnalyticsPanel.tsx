@@ -1,4 +1,4 @@
-import React from "react";
+﻿import React from "react";
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, AreaChart, Area, CartesianGrid, PieChart, Pie, Cell } from "recharts";
 import { TrendingUp, Clock, ShieldCheck, Landmark } from "lucide-react";
 import { formatINR } from "../../types";
@@ -34,7 +34,7 @@ export default function ProcurementAnalyticsPanel() {
     <div className="space-y-6">
       {/* KPI Dashboard Row */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="bg-slate-900/40 border border-slate-800 rounded-xl p-4 flex items-center gap-3.5">
+        <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 flex items-center gap-3.5">
           <div className="p-2.5 bg-indigo-500/10 text-indigo-400 rounded-lg">
             <TrendingUp className="h-5 w-5" />
           </div>
@@ -45,7 +45,7 @@ export default function ProcurementAnalyticsPanel() {
           </div>
         </div>
 
-        <div className="bg-slate-900/40 border border-slate-800 rounded-xl p-4 flex items-center gap-3.5">
+        <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 flex items-center gap-3.5">
           <div className="p-2.5 bg-emerald-500/10 text-emerald-400 rounded-lg">
             <Clock className="h-5 w-5" />
           </div>
@@ -56,7 +56,7 @@ export default function ProcurementAnalyticsPanel() {
           </div>
         </div>
 
-        <div className="bg-slate-900/40 border border-slate-800 rounded-xl p-4 flex items-center gap-3.5">
+        <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 flex items-center gap-3.5">
           <div className="p-2.5 bg-blue-500/10 text-blue-400 rounded-lg">
             <ShieldCheck className="h-5 w-5" />
           </div>
@@ -67,7 +67,7 @@ export default function ProcurementAnalyticsPanel() {
           </div>
         </div>
 
-        <div className="bg-slate-900/40 border border-slate-800 rounded-xl p-4 flex items-center gap-3.5">
+        <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 flex items-center gap-3.5">
           <div className="p-2.5 bg-purple-500/10 text-purple-400 rounded-lg">
             <Landmark className="h-5 w-5" />
           </div>
@@ -82,7 +82,7 @@ export default function ProcurementAnalyticsPanel() {
       {/* Charts Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
         {/* Sourcing Spend Flow - AreaChart */}
-        <div className="bg-slate-950/40 border border-slate-800 rounded-xl p-4 space-y-3">
+        <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 space-y-3">
           <span className="block text-[10px] text-indigo-400 uppercase tracking-widest font-mono font-bold">
             Outward Procurement Expenditure flow
           </span>
@@ -109,7 +109,7 @@ export default function ProcurementAnalyticsPanel() {
         </div>
 
         {/* Spend by Department - BarChart */}
-        <div className="bg-slate-950/40 border border-slate-800 rounded-xl p-4 space-y-3">
+        <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 space-y-3">
           <span className="block text-[10px] text-indigo-400 uppercase tracking-widest font-mono font-bold">
             Sourcing Expenditure by Cost Centre
           </span>
@@ -134,20 +134,20 @@ export default function ProcurementAnalyticsPanel() {
         </div>
 
         {/* Supplier SLA Performance Lead Time Quality */}
-        <div className="bg-slate-950/40 border border-slate-800 rounded-xl p-4 space-y-3 col-span-full">
+        <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 space-y-3 col-span-full">
           <span className="block text-[10px] text-indigo-400 uppercase tracking-widest font-mono font-bold">
             Registered Vendor SLA & Fulfillment Metrics
           </span>
           
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4 pt-2">
             {vendorPerformanceData.map((vendor) => (
-              <div key={vendor.name} className="bg-slate-900/60 border border-slate-850 rounded-lg p-3 space-y-2">
+              <div key={vendor.name} className="bg-slate-50 border border-slate-850 rounded-lg p-3 space-y-2">
                 <div className="flex justify-between items-center">
-                  <span className="text-[11px] text-slate-200 font-bold truncate max-w-[130px]">{vendor.name}</span>
+                  <span className="text-[11px] text-slate-700 font-bold truncate max-w-[130px]">{vendor.name}</span>
                   <span className="text-[10px] font-mono font-bold text-indigo-300">{vendor.rating}% SLA</span>
                 </div>
                 {/* Simulated bar indicator */}
-                <div className="w-full bg-slate-950 h-1.5 rounded-full overflow-hidden border border-slate-800">
+                <div className="w-full bg-white h-1.5 rounded-full overflow-hidden border border-slate-200">
                   <div 
                     className="h-full rounded-full transition-all" 
                     style={{ width: `${vendor.rating}%`, backgroundColor: vendor.color }}
@@ -165,3 +165,5 @@ export default function ProcurementAnalyticsPanel() {
     </div>
   );
 }
+
+

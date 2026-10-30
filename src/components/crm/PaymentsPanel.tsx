@@ -1,4 +1,4 @@
-import { toast } from "../../utils/toast";
+﻿import { toast } from "../../utils/toast";
 import React, { useState } from "react";
 import { Plus, Search, CreditCard, Eye, Pencil, Trash2, X, Check, Printer } from "lucide-react";
 import { Payment, Invoice, Customer, Company, formatINR } from "../../types";
@@ -144,7 +144,7 @@ export default function PaymentsPanel({ invoices, setInvoices, customers, compan
     <div className="space-y-4">
       {/* Top Banner */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <div className="bg-slate-900/60 border border-slate-800 rounded-xl p-4 flex items-center justify-between">
+        <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 flex items-center justify-between">
           <div>
             <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block font-mono">Total Collected Collections</span>
             <span className="text-2xl font-bold text-emerald-400 font-mono mt-0.5 block">{formatINR(totalCollected)}</span>
@@ -156,7 +156,7 @@ export default function PaymentsPanel({ invoices, setInvoices, customers, compan
       </div>
 
       {/* Control row */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 bg-slate-950/40 border border-slate-800 rounded-xl p-4">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 bg-slate-50 border border-slate-200 rounded-xl p-4">
         <div className="relative flex-1 max-w-md">
           <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-500" />
           <input
@@ -164,7 +164,7 @@ export default function PaymentsPanel({ invoices, setInvoices, customers, compan
             placeholder="Search payments ledger..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full bg-slate-900 border border-slate-800 rounded-lg pl-8.5 pr-3 py-1.5 text-xs text-slate-200 focus:outline-hidden focus:border-indigo-500 font-semibold"
+            className="w-full bg-white border border-slate-200 rounded-lg pl-8.5 pr-3 py-1.5 text-xs text-slate-700 focus:outline-hidden focus:border-indigo-500 font-semibold"
           />
         </div>
         <button
@@ -177,9 +177,9 @@ export default function PaymentsPanel({ invoices, setInvoices, customers, compan
       </div>
 
       {/* Table */}
-      <div className="bg-slate-950/40 border border-slate-800 rounded-xl overflow-hidden shadow-xs">
-        <table className="min-w-full divide-y divide-slate-800 text-xs">
-          <thead className="bg-slate-950 text-slate-300 font-semibold text-left">
+      <div className="bg-slate-50 border border-slate-200 rounded-xl overflow-hidden shadow-xs">
+        <table className="min-w-full divide-y divide-slate-100 text-xs">
+          <thead className="bg-white text-slate-300 font-semibold text-left">
             <tr>
               <th className="px-4 py-3">Receipt No.</th>
               <th className="px-4 py-3">Invoice No.</th>
@@ -191,7 +191,7 @@ export default function PaymentsPanel({ invoices, setInvoices, customers, compan
               <th className="px-4 py-3 text-center">Actions</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-slate-800/60 text-slate-300">
+          <tbody className="divide-y divide-slate-100/60 text-slate-300">
             {filteredPayments.length === 0 ? (
               <tr>
                 <td colSpan={8} className="px-4 py-8 text-center text-slate-500 font-mono">
@@ -200,10 +200,10 @@ export default function PaymentsPanel({ invoices, setInvoices, customers, compan
               </tr>
             ) : (
               filteredPayments.map(p => (
-                <tr key={p.id} className="hover:bg-slate-900/40 transition-colors">
+                <tr key={p.id} className="hover:bg-slate-50 transition-colors">
                   <td className="px-4 py-3 font-mono text-[10px] text-slate-400">{p.id}</td>
                   <td className="px-4 py-3 font-mono font-bold text-indigo-400">{p.invoiceNumber}</td>
-                  <td className="px-4 py-3 font-bold text-slate-200">{p.companyName}</td>
+                  <td className="px-4 py-3 font-bold text-slate-700">{p.companyName}</td>
                   <td className="px-4 py-3 font-mono font-bold text-emerald-400">{formatINR(p.amount)}</td>
                   <td className="px-4 py-3 font-mono text-slate-400">{p.paymentDate}</td>
                   <td className="px-4 py-3 font-semibold text-slate-300">{p.paymentMethod}</td>
@@ -213,21 +213,21 @@ export default function PaymentsPanel({ invoices, setInvoices, customers, compan
                       <button
                         onClick={() => openView(p)}
                         title="View"
-                        className="h-6 w-6 flex items-center justify-center rounded bg-slate-800 hover:bg-indigo-600/20 text-slate-400 hover:text-indigo-400 transition-colors cursor-pointer"
+                        className="h-6 w-6 flex items-center justify-center rounded bg-slate-100 hover:bg-indigo-600/20 text-slate-400 hover:text-indigo-400 transition-colors cursor-pointer"
                       >
                         <Eye className="h-3 w-3" />
                       </button>
                       <button
                         onClick={() => openEdit(p)}
                         title="Edit"
-                        className="h-6 w-6 flex items-center justify-center rounded bg-slate-800 hover:bg-amber-600/20 text-slate-400 hover:text-amber-400 transition-colors cursor-pointer"
+                        className="h-6 w-6 flex items-center justify-center rounded bg-slate-100 hover:bg-amber-600/20 text-slate-400 hover:text-amber-400 transition-colors cursor-pointer"
                       >
                         <Pencil className="h-3 w-3" />
                       </button>
                       <button
                         onClick={() => handleDelete(p)}
                         title="Delete"
-                        className="h-6 w-6 flex items-center justify-center rounded bg-slate-800 hover:bg-red-600/20 text-slate-400 hover:text-red-400 transition-colors cursor-pointer"
+                        className="h-6 w-6 flex items-center justify-center rounded bg-slate-100 hover:bg-red-600/20 text-slate-400 hover:text-red-400 transition-colors cursor-pointer"
                       >
                         <Trash2 className="h-3 w-3" />
                       </button>
@@ -357,7 +357,7 @@ export default function PaymentsPanel({ invoices, setInvoices, customers, compan
 
         return (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
-            <div className="w-full max-w-lg rounded-2xl border border-slate-700 bg-slate-950 shadow-2xl text-left animate-scaleUp overflow-hidden">
+            <div className="w-full max-w-lg rounded-2xl border border-slate-200 bg-white shadow-2xl text-left animate-scaleUp overflow-hidden">
 
               {/* Modal header */}
               <div className="bg-indigo-900/40 border-b border-indigo-800/40 px-5 py-4 flex items-center justify-between">
@@ -365,7 +365,7 @@ export default function PaymentsPanel({ invoices, setInvoices, customers, compan
                   <span className="text-[10px] font-bold text-indigo-400 uppercase tracking-widest font-mono block">Payment Receipt</span>
                   <h3 className="text-sm font-bold text-white font-mono mt-0.5">{receiptNo}</h3>
                 </div>
-                <button onClick={() => setModalMode(null)} className="p-1.5 rounded-lg bg-slate-800 text-slate-400 hover:text-white cursor-pointer"><X className="h-4 w-4" /></button>
+                <button onClick={() => setModalMode(null)} className="p-1.5 rounded-lg bg-slate-100 text-slate-400 hover:text-slate-800 cursor-pointer"><X className="h-4 w-4" /></button>
               </div>
 
               {/* Amount highlight */}
@@ -380,7 +380,7 @@ export default function PaymentsPanel({ invoices, setInvoices, customers, compan
               </div>
 
               {/* Details grid */}
-              <div className="px-5 py-4 space-y-0 divide-y divide-slate-800/60">
+              <div className="px-5 py-4 space-y-0 divide-y divide-slate-100/60">
                 {[
                   ["Invoice No.", p.invoiceNumber || "—"],
                   ["Received From", p.companyName || "—"],
@@ -392,13 +392,13 @@ export default function PaymentsPanel({ invoices, setInvoices, customers, compan
                 ].map(([label, value]) => (
                   <div key={label} className="flex justify-between gap-4 py-2.5">
                     <span className="text-slate-500 font-mono uppercase text-[10px] tracking-wider shrink-0">{label}</span>
-                    <span className="text-slate-200 font-semibold text-right text-xs">{value}</span>
+                    <span className="text-slate-700 font-semibold text-right text-xs">{value}</span>
                   </div>
                 ))}
               </div>
 
               {/* Actions */}
-              <div className="px-5 py-4 border-t border-slate-800 flex justify-between items-center">
+              <div className="px-5 py-4 border-t border-slate-200 flex justify-between items-center">
                 <button
                   onClick={() => openEdit(p)}
                   className="flex items-center gap-1.5 px-3 py-1.5 bg-amber-600/20 hover:bg-amber-600/40 text-amber-400 rounded-lg text-xs font-bold transition-all cursor-pointer"
@@ -414,7 +414,7 @@ export default function PaymentsPanel({ invoices, setInvoices, customers, compan
                   </button>
                   <button
                     onClick={() => setModalMode(null)}
-                    className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-xs font-bold transition-all cursor-pointer"
+                    className="px-3 py-1.5 bg-slate-100 hover:bg-slate-700 text-slate-300 rounded-lg text-xs font-bold transition-all cursor-pointer"
                   >
                     Close
                   </button>
@@ -430,13 +430,13 @@ export default function PaymentsPanel({ invoices, setInvoices, customers, compan
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4">
           <form
             onSubmit={handleSubmit}
-            className="w-full max-w-md rounded-xl border border-slate-800 bg-slate-950 p-5 shadow-2xl text-left space-y-4 animate-scaleUp"
+            className="w-full max-w-md rounded-xl border border-slate-200 bg-white p-5 shadow-2xl text-left space-y-4 animate-scaleUp"
           >
-            <div className="border-b border-slate-800 pb-2 flex items-center justify-between">
-              <h3 className="text-sm font-bold text-white uppercase tracking-wider font-mono">
+            <div className="border-b border-slate-200 pb-2 flex items-center justify-between">
+              <h3 className="text-sm font-bold text-slate-800 uppercase tracking-wider font-mono">
                 {modalMode === "add" ? "Record Payment" : "Edit Payment"}
               </h3>
-              <button type="button" onClick={() => setModalMode(null)} className="text-slate-400 hover:text-white cursor-pointer"><X className="h-4 w-4" /></button>
+              <button type="button" onClick={() => setModalMode(null)} className="text-slate-400 hover:text-slate-800 cursor-pointer"><X className="h-4 w-4" /></button>
             </div>
 
             <div className="space-y-3">
@@ -446,7 +446,7 @@ export default function PaymentsPanel({ invoices, setInvoices, customers, compan
                   required
                   value={invoiceId}
                   onChange={(e) => setInvoiceId(e.target.value)}
-                  className="w-full bg-slate-900 border border-slate-800 rounded-lg p-2 text-xs text-white focus:outline-hidden focus:border-indigo-500 font-semibold"
+                  className="w-full bg-white border border-slate-200 rounded-lg p-2 text-xs text-white focus:outline-hidden focus:border-indigo-500 font-semibold"
                 >
                   <option value="">— Select Invoice —</option>
                   {invoices.map(inv => {
@@ -471,7 +471,7 @@ export default function PaymentsPanel({ invoices, setInvoices, customers, compan
                     placeholder="0.00"
                     value={amount}
                     onChange={(e) => setAmount(e.target.value)}
-                    className="w-full bg-slate-900 border border-slate-800 rounded-lg p-2 text-xs text-white font-mono focus:outline-hidden focus:border-indigo-500"
+                    className="w-full bg-white border border-slate-200 rounded-lg p-2 text-xs text-white font-mono focus:outline-hidden focus:border-indigo-500"
                   />
                 </div>
                 <div>
@@ -481,7 +481,7 @@ export default function PaymentsPanel({ invoices, setInvoices, customers, compan
                     required
                     value={paymentDate}
                     onChange={(e) => setPaymentDate(e.target.value)}
-                    className="w-full bg-slate-900 border border-slate-800 rounded-lg p-2 text-xs text-white focus:outline-hidden focus:border-indigo-500 font-semibold"
+                    className="w-full bg-white border border-slate-200 rounded-lg p-2 text-xs text-white focus:outline-hidden focus:border-indigo-500 font-semibold"
                   />
                 </div>
               </div>
@@ -492,7 +492,7 @@ export default function PaymentsPanel({ invoices, setInvoices, customers, compan
                   <select
                     value={paymentMethod}
                     onChange={(e) => setPaymentMethod(e.target.value)}
-                    className="w-full bg-slate-900 border border-slate-800 rounded-lg p-2 text-xs text-white focus:outline-hidden focus:border-indigo-500 font-semibold"
+                    className="w-full bg-white border border-slate-200 rounded-lg p-2 text-xs text-white focus:outline-hidden focus:border-indigo-500 font-semibold"
                   >
                     <option>Cash</option>
                     <option>Bank Transfer</option>
@@ -507,7 +507,7 @@ export default function PaymentsPanel({ invoices, setInvoices, customers, compan
                     placeholder="TXN ID, Cheque No."
                     value={referenceNo}
                     onChange={(e) => setReferenceNo(e.target.value)}
-                    className="w-full bg-slate-900 border border-slate-800 rounded-lg p-2 text-xs text-white font-mono focus:outline-hidden focus:border-indigo-500"
+                    className="w-full bg-white border border-slate-200 rounded-lg p-2 text-xs text-white font-mono focus:outline-hidden focus:border-indigo-500"
                   />
                 </div>
               </div>
@@ -519,16 +519,16 @@ export default function PaymentsPanel({ invoices, setInvoices, customers, compan
                   placeholder="e.g. HDFC Bank, cleared on 15 Jun"
                   value={notes}
                   onChange={(e) => setNotes(e.target.value)}
-                  className="w-full bg-slate-900 border border-slate-800 rounded-lg p-2 text-xs text-white focus:outline-hidden focus:border-indigo-500"
+                  className="w-full bg-white border border-slate-200 rounded-lg p-2 text-xs text-white focus:outline-hidden focus:border-indigo-500"
                 />
               </div>
             </div>
 
-            <div className="flex justify-end gap-2.5 pt-3 border-t border-slate-800/80">
+            <div className="flex justify-end gap-2.5 pt-3 border-t border-slate-200/80">
               <button
                 type="button"
                 onClick={() => setModalMode(null)}
-                className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-xs font-bold transition-all cursor-pointer"
+                className="px-3 py-1.5 bg-slate-100 hover:bg-slate-700 text-slate-300 rounded-lg text-xs font-bold transition-all cursor-pointer"
               >
                 Cancel
               </button>
@@ -546,3 +546,5 @@ export default function PaymentsPanel({ invoices, setInvoices, customers, compan
     </div>
   );
 }
+
+

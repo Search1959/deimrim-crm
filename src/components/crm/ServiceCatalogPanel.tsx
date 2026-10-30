@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+﻿import React, { useState } from "react";
 import { Plus, Trash2, Edit, Wrench, Check, Download, Upload } from "lucide-react";
 import { ServiceCatalogItem, formatINR } from "../../types";
 import { toast } from "../../utils/toast";
@@ -85,7 +85,7 @@ export default function ServiceCatalogPanel({ serviceCatalog, setServiceCatalog 
   return (
     <div className="space-y-4">
       {/* Header */}
-      <div className="flex items-center justify-between bg-slate-950/40 border border-slate-800 rounded-xl p-4">
+      <div className="flex items-center justify-between bg-slate-50 border border-slate-200 rounded-xl p-4">
         <div>
           <div className="flex items-center gap-2 mb-0.5">
             <Wrench className="h-4 w-4 text-violet-400" />
@@ -94,10 +94,10 @@ export default function ServiceCatalogPanel({ serviceCatalog, setServiceCatalog 
           <p className="text-[11px] text-slate-400">Pre-saved services you can add to any invoice — no stock deducted, only Finance revenue posted.</p>
         </div>
         <div className="flex items-center gap-2">
-          <button onClick={handleExport} className="flex items-center gap-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg px-2.5 py-1.5 text-xs font-bold cursor-pointer border border-slate-700">
+          <button onClick={handleExport} className="flex items-center gap-1.5 bg-slate-100 hover:bg-slate-700 text-slate-300 rounded-lg px-2.5 py-1.5 text-xs font-bold cursor-pointer border border-slate-200">
             <Download className="h-3.5 w-3.5" /> Export
           </button>
-          <label className="flex items-center gap-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg px-2.5 py-1.5 text-xs font-bold cursor-pointer border border-slate-700">
+          <label className="flex items-center gap-1.5 bg-slate-100 hover:bg-slate-700 text-slate-300 rounded-lg px-2.5 py-1.5 text-xs font-bold cursor-pointer border border-slate-200">
             <Upload className="h-3.5 w-3.5" /> Import
             <input type="file" accept=".xlsx,.xls" className="hidden" onChange={handleImport} />
           </label>
@@ -114,7 +114,7 @@ export default function ServiceCatalogPanel({ serviceCatalog, setServiceCatalog 
             No services yet. Click "Add Service" to create your first.
           </div>
         ) : serviceCatalog.map(svc => (
-          <div key={svc.id} className="bg-slate-950/60 border border-slate-800 rounded-xl p-4 hover:border-violet-500/30 transition-all group">
+          <div key={svc.id} className="bg-white border border-slate-200 rounded-xl p-4 hover:border-violet-500/30 transition-all group">
             <div className="flex items-start justify-between mb-2">
               <div className="flex-1 min-w-0">
                 <div className="font-bold text-white text-xs leading-snug">{svc.name}</div>
@@ -123,7 +123,7 @@ export default function ServiceCatalogPanel({ serviceCatalog, setServiceCatalog 
                 )}
               </div>
               <div className="flex gap-1 ml-2 opacity-0 group-hover:opacity-100 transition-opacity shrink-0">
-                <button onClick={() => openEdit(svc)} className="p-1 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded cursor-pointer">
+                <button onClick={() => openEdit(svc)} className="p-1 bg-slate-100 hover:bg-slate-700 text-slate-300 rounded cursor-pointer">
                   <Edit className="h-3 w-3" />
                 </button>
                 <button onClick={() => handleDelete(svc.id)} className="p-1 bg-red-500/10 hover:bg-red-500/20 text-red-400 rounded cursor-pointer">
@@ -131,7 +131,7 @@ export default function ServiceCatalogPanel({ serviceCatalog, setServiceCatalog 
                 </button>
               </div>
             </div>
-            <div className="flex items-end justify-between mt-3 pt-3 border-t border-slate-800/80">
+            <div className="flex items-end justify-between mt-3 pt-3 border-t border-slate-200/80">
               <div className="space-y-0.5">
                 <div className="text-[10px] text-slate-500 font-mono">
                   SAC: <span className="text-slate-300 font-semibold">{svc.sacCode || "—"}</span>
@@ -153,13 +153,13 @@ export default function ServiceCatalogPanel({ serviceCatalog, setServiceCatalog 
       {/* Add/Edit Modal */}
       {showModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-          <form onSubmit={handleSave} className="w-full max-w-sm rounded-xl border border-slate-800 bg-slate-950 p-5 shadow-2xl space-y-4">
-            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+          <form onSubmit={handleSave} className="w-full max-w-sm rounded-xl border border-slate-200 bg-white p-5 shadow-2xl space-y-4">
+            <div className="flex items-center justify-between border-b border-slate-200 pb-3">
               <div className="flex items-center gap-2">
                 <Wrench className="h-4 w-4 text-violet-400" />
                 <h3 className="text-sm font-bold text-white font-mono">{editing ? "Edit Service" : "New Service"}</h3>
               </div>
-              <button type="button" onClick={() => setShowModal(false)} className="text-slate-400 hover:text-white font-bold text-lg leading-none">×</button>
+              <button type="button" onClick={() => setShowModal(false)} className="text-slate-400 hover:text-slate-800 font-bold text-lg leading-none">×</button>
             </div>
 
             <div className="space-y-3 text-xs">
@@ -170,7 +170,7 @@ export default function ServiceCatalogPanel({ serviceCatalog, setServiceCatalog 
                   value={form.name}
                   onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
                   placeholder="e.g. Annual Maintenance Contract"
-                  className="w-full bg-slate-900 border border-slate-800 rounded-lg p-2 text-xs text-white focus:outline-none focus:border-violet-500"
+                  className="w-full bg-white border border-slate-200 rounded-lg p-2 text-xs text-white focus:outline-none focus:border-violet-500"
                 />
               </div>
 
@@ -182,7 +182,7 @@ export default function ServiceCatalogPanel({ serviceCatalog, setServiceCatalog 
                     value={form.sacCode}
                     onChange={e => setForm(f => ({ ...f, sacCode: e.target.value }))}
                     placeholder="998311"
-                    className="w-full bg-slate-900 border border-slate-800 rounded-lg p-2 text-xs text-white font-mono focus:outline-none focus:border-violet-500"
+                    className="w-full bg-white border border-slate-200 rounded-lg p-2 text-xs text-white font-mono focus:outline-none focus:border-violet-500"
                   />
                 </div>
                 <div>
@@ -190,7 +190,7 @@ export default function ServiceCatalogPanel({ serviceCatalog, setServiceCatalog 
                   <select
                     value={form.unit}
                     onChange={e => setForm(f => ({ ...f, unit: e.target.value }))}
-                    className="w-full bg-slate-900 border border-slate-800 rounded-lg p-2 text-xs text-white focus:outline-none focus:border-violet-500"
+                    className="w-full bg-white border border-slate-200 rounded-lg p-2 text-xs text-white focus:outline-none focus:border-violet-500"
                   >
                     {UNITS.map(u => <option key={u} value={u}>{u}</option>)}
                   </select>
@@ -203,7 +203,7 @@ export default function ServiceCatalogPanel({ serviceCatalog, setServiceCatalog 
                   required type="number" min={1}
                   value={form.defaultRate}
                   onChange={e => setForm(f => ({ ...f, defaultRate: Number(e.target.value) }))}
-                  className="w-full bg-slate-900 border border-slate-800 rounded-lg p-2 text-xs text-white font-mono focus:outline-none focus:border-violet-500"
+                  className="w-full bg-white border border-slate-200 rounded-lg p-2 text-xs text-white font-mono focus:outline-none focus:border-violet-500"
                 />
               </div>
 
@@ -214,14 +214,14 @@ export default function ServiceCatalogPanel({ serviceCatalog, setServiceCatalog 
                   value={form.description}
                   onChange={e => setForm(f => ({ ...f, description: e.target.value }))}
                   placeholder="Brief description of the service..."
-                  className="w-full bg-slate-900 border border-slate-800 rounded-lg p-2 text-xs text-white focus:outline-none"
+                  className="w-full bg-white border border-slate-200 rounded-lg p-2 text-xs text-white focus:outline-none"
                 />
               </div>
             </div>
 
-            <div className="flex justify-end gap-2 pt-2 border-t border-slate-800">
+            <div className="flex justify-end gap-2 pt-2 border-t border-slate-200">
               <button type="button" onClick={() => setShowModal(false)}
-                className="px-4 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-xs font-bold cursor-pointer">
+                className="px-4 py-1.5 bg-slate-100 hover:bg-slate-700 text-slate-300 rounded-lg text-xs font-bold cursor-pointer">
                 Cancel
               </button>
               <button type="submit"
@@ -236,3 +236,5 @@ export default function ServiceCatalogPanel({ serviceCatalog, setServiceCatalog 
     </div>
   );
 }
+
+

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+﻿import React, { useState, useEffect } from "react";
 import { Plus, Search, Edit, Trash2, AlertCircle } from "lucide-react";
 import { ServiceTicket, Customer } from "../../types";
 
@@ -125,7 +125,7 @@ export default function TicketsPanel({ customers, companyId }: TicketsPanelProps
   return (
     <div className="space-y-4">
       {/* Control row */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 bg-slate-950/40 border border-slate-800 rounded-xl p-4">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 bg-slate-50 border border-slate-200 rounded-xl p-4">
         <div className="relative flex-1 max-w-md">
           <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-500" />
           <input
@@ -133,7 +133,7 @@ export default function TicketsPanel({ customers, companyId }: TicketsPanelProps
             placeholder="Search tickets..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full bg-slate-900 border border-slate-800 rounded-lg pl-8.5 pr-3 py-1.5 text-xs text-slate-200 focus:outline-hidden focus:border-indigo-500 font-semibold"
+            className="w-full bg-white border border-slate-200 rounded-lg pl-8.5 pr-3 py-1.5 text-xs text-slate-700 focus:outline-hidden focus:border-indigo-500 font-semibold"
           />
         </div>
         <button
@@ -154,7 +154,7 @@ export default function TicketsPanel({ customers, companyId }: TicketsPanelProps
             className={`px-2.5 py-1 rounded-md border transition-all shrink-0 cursor-pointer ${
               priorityFilter === pr
                 ? "bg-indigo-600/10 border-indigo-500/40 text-indigo-300"
-                : "bg-slate-900/60 border-slate-800 text-slate-400 hover:border-slate-700 hover:text-slate-200"
+                : "bg-slate-50 border-slate-200 text-slate-400 hover:border-slate-200 hover:text-slate-700"
             }`}
           >
             {pr}
@@ -170,7 +170,7 @@ export default function TicketsPanel({ customers, companyId }: TicketsPanelProps
           </div>
         ) : (
           filtered.map(t => (
-            <div key={t.id} className="bg-slate-900/40 border border-slate-800 rounded-xl p-4 flex flex-col justify-between space-y-3">
+            <div key={t.id} className="bg-slate-50 border border-slate-200 rounded-xl p-4 flex flex-col justify-between space-y-3">
               <div className="flex items-start justify-between">
                 <div className="space-y-1">
                   <span className="font-mono text-[10px] text-indigo-400 font-bold">{t.ticketNumber}</span>
@@ -179,7 +179,7 @@ export default function TicketsPanel({ customers, companyId }: TicketsPanelProps
                 <span className={`px-1.5 py-0.5 rounded text-[9px] font-bold uppercase border shrink-0 ${
                   t.priority === "Urgent" ? "bg-red-500/10 text-red-400 border-red-500/20" :
                   t.priority === "High" ? "bg-amber-500/10 text-amber-400 border-amber-500/20" :
-                  "bg-slate-800 text-slate-400 border-slate-700"
+                  "bg-slate-100 text-slate-400 border-slate-200"
                 }`}>
                   {t.priority}
                 </span>
@@ -189,16 +189,16 @@ export default function TicketsPanel({ customers, companyId }: TicketsPanelProps
                 <p className="text-[10px] text-slate-400 leading-relaxed truncate max-w-sm">{t.description}</p>
               )}
 
-              <div className="space-y-1 text-[10px] text-slate-400 font-semibold border-t border-slate-800/60 pt-2">
-                <div>Client: <span className="text-slate-200">{t.companyName} ({t.contactName || "—"})</span></div>
+              <div className="space-y-1 text-[10px] text-slate-400 font-semibold border-t border-slate-200/60 pt-2">
+                <div>Client: <span className="text-slate-700">{t.companyName} ({t.contactName || "—"})</span></div>
                 <div>Status: <span className="text-slate-300 font-bold uppercase">{t.status}</span></div>
                 <div>Assignee: <span className="text-slate-300">{t.assignedTo || "Unassigned"}</span></div>
               </div>
 
-              <div className="flex items-center justify-end gap-1 border-t border-slate-800/60 pt-2 mt-1">
+              <div className="flex items-center justify-end gap-1 border-t border-slate-200/60 pt-2 mt-1">
                 <button
                   onClick={() => handleOpenEdit(t)}
-                  className="px-2.5 py-1 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded text-[10px] font-bold transition-all cursor-pointer"
+                  className="px-2.5 py-1 bg-slate-100 hover:bg-slate-700 text-slate-300 rounded text-[10px] font-bold transition-all cursor-pointer"
                 >
                   Edit Ticket
                 </button>
@@ -219,16 +219,16 @@ export default function TicketsPanel({ customers, companyId }: TicketsPanelProps
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4">
           <form 
             onSubmit={editingTicket ? handleSaveEdit : handleSaveTicket}
-            className="w-full max-w-sm rounded-xl border border-slate-800 bg-slate-950 p-5 shadow-2xl text-left space-y-4 animate-scaleUp"
+            className="w-full max-w-sm rounded-xl border border-slate-200 bg-white p-5 shadow-2xl text-left space-y-4 animate-scaleUp"
           >
-            <div className="border-b border-slate-800 pb-2 flex items-center justify-between">
-              <h3 className="text-sm font-bold text-white uppercase tracking-wider font-mono">
+            <div className="border-b border-slate-200 pb-2 flex items-center justify-between">
+              <h3 className="text-sm font-bold text-slate-800 uppercase tracking-wider font-mono">
                 {editingTicket ? "Edit Ticket" : "Add Ticket"}
               </h3>
               <button 
                 type="button" 
                 onClick={() => { setShowAddModal(false); setEditingTicket(null); }} 
-                className="text-slate-400 hover:text-white font-bold"
+                className="text-slate-400 hover:text-slate-800 font-bold"
               >
                 ×
               </button>
@@ -243,7 +243,7 @@ export default function TicketsPanel({ customers, companyId }: TicketsPanelProps
                   placeholder="e.g. Server response latency spike"
                   value={subject}
                   onChange={(e) => setSubject(e.target.value)}
-                  className="w-full bg-slate-900 border border-slate-800 rounded-lg p-2 text-xs text-white focus:outline-hidden focus:border-indigo-500 font-semibold"
+                  className="w-full bg-white border border-slate-200 rounded-lg p-2 text-xs text-white focus:outline-hidden focus:border-indigo-500 font-semibold"
                 />
               </div>
 
@@ -254,7 +254,7 @@ export default function TicketsPanel({ customers, companyId }: TicketsPanelProps
                     required
                     value={companyName}
                     onChange={(e) => setCompanyName(e.target.value)}
-                    className="w-full bg-slate-900 border border-slate-800 rounded-lg p-2 text-xs text-white focus:outline-hidden focus:border-indigo-500 font-semibold"
+                    className="w-full bg-white border border-slate-200 rounded-lg p-2 text-xs text-white focus:outline-hidden focus:border-indigo-500 font-semibold"
                   >
                     <option value="">— Select Company —</option>
                     {customers.map(c => (
@@ -269,7 +269,7 @@ export default function TicketsPanel({ customers, companyId }: TicketsPanelProps
                     placeholder="e.g. Amit Sen"
                     value={contactName}
                     onChange={(e) => setContactName(e.target.value)}
-                    className="w-full bg-slate-900 border border-slate-800 rounded-lg p-2 text-xs text-white focus:outline-hidden focus:border-indigo-500 font-semibold"
+                    className="w-full bg-white border border-slate-200 rounded-lg p-2 text-xs text-white focus:outline-hidden focus:border-indigo-500 font-semibold"
                   />
                 </div>
               </div>
@@ -280,7 +280,7 @@ export default function TicketsPanel({ customers, companyId }: TicketsPanelProps
                   <select
                     value={priority}
                     onChange={(e) => setPriority(e.target.value as ServiceTicket["priority"])}
-                    className="w-full bg-slate-900 border border-slate-800 rounded-lg p-2 text-xs text-white focus:outline-hidden focus:border-indigo-500 font-semibold"
+                    className="w-full bg-white border border-slate-200 rounded-lg p-2 text-xs text-white focus:outline-hidden focus:border-indigo-500 font-semibold"
                   >
                     <option value="Low">Low</option>
                     <option value="Medium">Medium</option>
@@ -293,7 +293,7 @@ export default function TicketsPanel({ customers, companyId }: TicketsPanelProps
                   <select
                     value={status}
                     onChange={(e) => setStatus(e.target.value as ServiceTicket["status"])}
-                    className="w-full bg-slate-900 border border-slate-800 rounded-lg p-2 text-xs text-white focus:outline-hidden focus:border-indigo-500 font-semibold"
+                    className="w-full bg-white border border-slate-200 rounded-lg p-2 text-xs text-white focus:outline-hidden focus:border-indigo-500 font-semibold"
                   >
                     <option value="Open">Open</option>
                     <option value="In Progress">In Progress</option>
@@ -310,7 +310,7 @@ export default function TicketsPanel({ customers, companyId }: TicketsPanelProps
                   placeholder="e.g. Kolkata Regional Technical Node"
                   value={assignedTo}
                   onChange={(e) => setAssignedTo(e.target.value)}
-                  className="w-full bg-slate-900 border border-slate-800 rounded-lg p-2 text-xs text-white focus:outline-hidden focus:border-indigo-500 font-semibold"
+                  className="w-full bg-white border border-slate-200 rounded-lg p-2 text-xs text-white focus:outline-hidden focus:border-indigo-500 font-semibold"
                 />
               </div>
 
@@ -321,16 +321,16 @@ export default function TicketsPanel({ customers, companyId }: TicketsPanelProps
                   placeholder="Elaborate support issue context..."
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
-                  className="w-full bg-slate-900 border border-slate-800 rounded-lg p-2 text-xs text-white focus:outline-hidden"
+                  className="w-full bg-white border border-slate-200 rounded-lg p-2 text-xs text-white focus:outline-hidden"
                 ></textarea>
               </div>
             </div>
 
-            <div className="flex justify-end gap-2.5 pt-3 border-t border-slate-800/80">
+            <div className="flex justify-end gap-2.5 pt-3 border-t border-slate-200/80">
               <button
                 type="button"
                 onClick={() => { setShowAddModal(false); setEditingTicket(null); }}
-                className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-xs font-bold transition-all cursor-pointer"
+                className="px-3 py-1.5 bg-slate-100 hover:bg-slate-700 text-slate-300 rounded-lg text-xs font-bold transition-all cursor-pointer"
               >
                 Cancel
               </button>
@@ -347,3 +347,5 @@ export default function TicketsPanel({ customers, companyId }: TicketsPanelProps
     </div>
   );
 }
+
+

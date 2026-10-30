@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+﻿import React, { useState } from "react";
 import { Plus, Search, Edit, Trash2, ArrowUpRight, Award, MessageSquare, Upload, Download } from "lucide-react";
 import { Lead, Customer, formatINR, UserRole } from "../../types";
 
@@ -174,7 +174,7 @@ export default function LeadsPanel({ leads, setLeads, customers, companyId, user
     <div className="space-y-4">
       {/* Top Banner metrics */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <div className="bg-slate-900/60 border border-slate-800 rounded-xl p-4 flex items-center justify-between">
+        <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 flex items-center justify-between">
           <div>
             <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block font-mono">Total Leads</span>
             <span className="text-2xl font-bold text-white font-mono mt-0.5 block">{totalLeads}</span>
@@ -183,7 +183,7 @@ export default function LeadsPanel({ leads, setLeads, customers, companyId, user
             <MessageSquare className="h-5 w-5" />
           </div>
         </div>
-        <div className="bg-slate-900/60 border border-slate-800 rounded-xl p-4 flex items-center justify-between">
+        <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 flex items-center justify-between">
           <div>
             <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block font-mono">Total Pipeline Value</span>
             <span className="text-2xl font-bold text-emerald-400 font-mono mt-0.5 block">{formatINR(pipelineValue)}</span>
@@ -195,7 +195,7 @@ export default function LeadsPanel({ leads, setLeads, customers, companyId, user
       </div>
 
       {/* Control row */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 bg-slate-950/40 border border-slate-800 rounded-xl p-4">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 bg-slate-50 border border-slate-200 rounded-xl p-4">
         <div className="relative flex-1 max-w-md">
           <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-500" />
           <input
@@ -203,14 +203,14 @@ export default function LeadsPanel({ leads, setLeads, customers, companyId, user
             placeholder="Search leads..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full bg-slate-900 border border-slate-800 rounded-lg pl-8.5 pr-3 py-1.5 text-xs text-slate-200 focus:outline-hidden focus:border-indigo-500 font-semibold"
+            className="w-full bg-white border border-slate-200 rounded-lg pl-8.5 pr-3 py-1.5 text-xs text-slate-700 focus:outline-hidden focus:border-indigo-500 font-semibold"
           />
         </div>
         <div className="flex flex-wrap items-center gap-2">
-          <button onClick={handleExport} className="flex items-center gap-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg px-3 py-1.5 text-xs font-bold transition-all cursor-pointer border border-slate-700">
+          <button onClick={handleExport} className="flex items-center gap-1.5 bg-slate-100 hover:bg-slate-700 text-slate-300 rounded-lg px-3 py-1.5 text-xs font-bold transition-all cursor-pointer border border-slate-200">
             <Download className="h-3.5 w-3.5" /><span>Export</span>
           </button>
-          {canWrite && (<label className="flex items-center gap-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg px-3 py-1.5 text-xs font-bold transition-all cursor-pointer border border-slate-700">
+          {canWrite && (<label className="flex items-center gap-1.5 bg-slate-100 hover:bg-slate-700 text-slate-300 rounded-lg px-3 py-1.5 text-xs font-bold transition-all cursor-pointer border border-slate-200">
             <Upload className="h-3.5 w-3.5" /><span>Import</span>
             <input type="file" accept=".xlsx,.xls,.csv" className="hidden" onChange={handleImport} />
           </label>)}
@@ -229,7 +229,7 @@ export default function LeadsPanel({ leads, setLeads, customers, companyId, user
             className={`px-2.5 py-1 rounded-md border transition-all shrink-0 cursor-pointer ${
               statusFilter === st
                 ? "bg-indigo-600/10 border-indigo-500/40 text-indigo-300"
-                : "bg-slate-900/60 border-slate-800 text-slate-400 hover:border-slate-700 hover:text-slate-200"
+                : "bg-slate-50 border-slate-200 text-slate-400 hover:border-slate-200 hover:text-slate-700"
             }`}
           >
             {st}
@@ -238,9 +238,9 @@ export default function LeadsPanel({ leads, setLeads, customers, companyId, user
       </div>
 
       {/* Table / List */}
-      <div className="bg-slate-950/40 border border-slate-800 rounded-xl overflow-hidden shadow-xs">
-        <table className="min-w-full divide-y divide-slate-800 text-xs">
-          <thead className="bg-slate-950 text-slate-300 font-semibold text-left">
+      <div className="bg-slate-50 border border-slate-200 rounded-xl overflow-hidden shadow-xs">
+        <table className="min-w-full divide-y divide-slate-100 text-xs">
+          <thead className="bg-white text-slate-300 font-semibold text-left">
             <tr>
               <th className="px-4 py-3">Lead Title</th>
               <th className="px-4 py-3">Company</th>
@@ -250,7 +250,7 @@ export default function LeadsPanel({ leads, setLeads, customers, companyId, user
               <th className="px-4 py-3 text-right">Actions</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-slate-800/60 text-slate-300">
+          <tbody className="divide-y divide-slate-100/60 text-slate-300">
             {filteredLeads.length === 0 ? (
               <tr>
                 <td colSpan={6} className="px-4 py-8 text-center text-slate-500 font-mono">
@@ -262,12 +262,12 @@ export default function LeadsPanel({ leads, setLeads, customers, companyId, user
                 const valMatch = l.notes?.match(/Est\. Value: ₹([\d.]+)/);
                 const estValue = valMatch ? parseFloat(valMatch[1]) : 0;
                 return (
-                  <tr key={l.id} className="hover:bg-slate-900/40 transition-colors">
+                  <tr key={l.id} className="hover:bg-slate-50 transition-colors">
                     <td className="px-4 py-3">
                       <div className="font-bold text-white">{l.name}</div>
                       <div className="text-[10px] text-slate-400 mt-0.5">{l.email}</div>
                     </td>
-                    <td className="px-4 py-3 font-semibold text-slate-200">{l.companyName || "—"}</td>
+                    <td className="px-4 py-3 font-semibold text-slate-700">{l.companyName || "—"}</td>
                     <td className="px-4 py-3 text-slate-400 font-medium">{l.source}</td>
                     <td className="px-4 py-3">
                       <span className={`inline-flex items-center px-2 py-0.5 rounded text-[9px] font-bold uppercase border ${
@@ -278,12 +278,12 @@ export default function LeadsPanel({ leads, setLeads, customers, companyId, user
                         {l.status}
                       </span>
                     </td>
-                    <td className="px-4 py-3 font-mono font-semibold text-slate-200">{estValue > 0 ? formatINR(estValue) : "—"}</td>
+                    <td className="px-4 py-3 font-mono font-semibold text-slate-700">{estValue > 0 ? formatINR(estValue) : "—"}</td>
                     <td className="px-4 py-3 text-right">
                       <div className="flex items-center justify-end gap-1.5">
                         {canWrite && (<button
                           onClick={() => handleOpenEdit(l)}
-                          className="p-1 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded transition-all"
+                          className="p-1 bg-slate-100 hover:bg-slate-700 text-slate-300 rounded transition-all"
                           title="Edit Lead"
                         >
                           <Edit className="h-3.5 w-3.5" />
@@ -310,16 +310,16 @@ export default function LeadsPanel({ leads, setLeads, customers, companyId, user
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 overflow-y-auto">
           <form 
             onSubmit={editingLead ? handleSaveEdit : handleSaveLead}
-            className="w-full max-w-lg rounded-xl border border-slate-800 bg-slate-950 p-5 shadow-2xl text-left space-y-4 my-8"
+            className="w-full max-w-lg rounded-xl border border-slate-200 bg-white p-5 shadow-2xl text-left space-y-4 my-8"
           >
-            <div className="border-b border-slate-800 pb-2 flex items-center justify-between">
-              <h3 className="text-sm font-bold text-white uppercase tracking-wider font-mono">
+            <div className="border-b border-slate-200 pb-2 flex items-center justify-between">
+              <h3 className="text-sm font-bold text-slate-800 uppercase tracking-wider font-mono">
                 {editingLead ? "Edit Lead" : "Add Lead"}
               </h3>
               <button 
                 type="button" 
                 onClick={() => { setShowAddModal(false); setEditingLead(null); setLeadEmail(""); }} 
-                className="text-slate-400 hover:text-white font-bold"
+                className="text-slate-400 hover:text-slate-800 font-bold"
               >
                 ×
               </button>
@@ -334,7 +334,7 @@ export default function LeadsPanel({ leads, setLeads, customers, companyId, user
                   placeholder="e.g. Website redesign for ABC Corp"
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
-                  className="w-full bg-slate-900 border border-slate-800 rounded-lg p-2 text-xs text-white focus:outline-hidden focus:border-indigo-500 font-semibold"
+                  className="w-full bg-white border border-slate-200 rounded-lg p-2 text-xs text-white focus:outline-hidden focus:border-indigo-500 font-semibold"
                 />
               </div>
 
@@ -344,7 +344,7 @@ export default function LeadsPanel({ leads, setLeads, customers, companyId, user
                   <select
                     value={companyName}
                     onChange={(e) => setCompanyName(e.target.value)}
-                    className="w-full bg-slate-900 border border-slate-800 rounded-lg p-2 text-xs text-white focus:outline-hidden focus:border-indigo-500 font-semibold"
+                    className="w-full bg-white border border-slate-200 rounded-lg p-2 text-xs text-white focus:outline-hidden focus:border-indigo-500 font-semibold"
                   >
                     <option value="">— Select Company —</option>
                     {customers.map(c => (
@@ -359,14 +359,14 @@ export default function LeadsPanel({ leads, setLeads, customers, companyId, user
                     placeholder="e.g. Amit Sen"
                     value={contactPerson}
                     onChange={(e) => setContactPerson(e.target.value)}
-                    className="w-full bg-slate-900 border border-slate-800 rounded-lg p-2 text-xs text-white focus:outline-hidden focus:border-indigo-500 font-semibold"
+                    className="w-full bg-white border border-slate-200 rounded-lg p-2 text-xs text-white focus:outline-hidden focus:border-indigo-500 font-semibold"
                   />
                 </div>
               </div>
 
               <div>
                 <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 font-mono">Email</label>
-                <input type="email" value={leadEmail} onChange={e => setLeadEmail(e.target.value)} placeholder="contact@company.com" className="w-full bg-slate-900 border border-slate-800 rounded px-3 py-2 text-xs text-white" />
+                <input type="email" value={leadEmail} onChange={e => setLeadEmail(e.target.value)} placeholder="contact@company.com" className="w-full bg-white border border-slate-200 rounded px-3 py-2 text-xs text-white" />
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -375,7 +375,7 @@ export default function LeadsPanel({ leads, setLeads, customers, companyId, user
                   <select
                     value={source}
                     onChange={(e) => setSource(e.target.value)}
-                    className="w-full bg-slate-900 border border-slate-800 rounded-lg p-2 text-xs text-white focus:outline-hidden focus:border-indigo-500 font-semibold"
+                    className="w-full bg-white border border-slate-200 rounded-lg p-2 text-xs text-white focus:outline-hidden focus:border-indigo-500 font-semibold"
                   >
                     <option value="Website">Website</option>
                     <option value="Referral">Referral</option>
@@ -389,7 +389,7 @@ export default function LeadsPanel({ leads, setLeads, customers, companyId, user
                   <select
                     value={status}
                     onChange={(e) => setStatus(e.target.value as Lead["status"])}
-                    className="w-full bg-slate-900 border border-slate-800 rounded-lg p-2 text-xs text-white focus:outline-hidden focus:border-indigo-500 font-semibold"
+                    className="w-full bg-white border border-slate-200 rounded-lg p-2 text-xs text-white focus:outline-hidden focus:border-indigo-500 font-semibold"
                   >
                     <option value="New">New</option>
                     <option value="Contacted">Contacted</option>
@@ -410,7 +410,7 @@ export default function LeadsPanel({ leads, setLeads, customers, companyId, user
                     placeholder="0.00"
                     value={value}
                     onChange={(e) => setValue(e.target.value)}
-                    className="w-full bg-slate-900 border border-slate-800 rounded-lg p-2 text-xs text-white font-mono focus:outline-hidden focus:border-indigo-500"
+                    className="w-full bg-white border border-slate-200 rounded-lg p-2 text-xs text-white font-mono focus:outline-hidden focus:border-indigo-500"
                   />
                 </div>
                 <div>
@@ -419,7 +419,7 @@ export default function LeadsPanel({ leads, setLeads, customers, companyId, user
                     type="date"
                     value={closeDate}
                     onChange={(e) => setCloseDate(e.target.value)}
-                    className="w-full bg-slate-900 border border-slate-800 rounded-lg p-2 text-xs text-white focus:outline-hidden focus:border-indigo-500 font-semibold"
+                    className="w-full bg-white border border-slate-200 rounded-lg p-2 text-xs text-white focus:outline-hidden focus:border-indigo-500 font-semibold"
                   />
                 </div>
               </div>
@@ -431,16 +431,16 @@ export default function LeadsPanel({ leads, setLeads, customers, companyId, user
                   placeholder="Client requirements, budget discussed, next steps..."
                   value={notes}
                   onChange={(e) => setNotes(e.target.value)}
-                  className="w-full bg-slate-900 border border-slate-800 rounded-lg p-2 text-xs text-white focus:outline-hidden"
+                  className="w-full bg-white border border-slate-200 rounded-lg p-2 text-xs text-white focus:outline-hidden"
                 ></textarea>
               </div>
             </div>
 
-            <div className="flex justify-end gap-2.5 pt-3 border-t border-slate-800/80">
+            <div className="flex justify-end gap-2.5 pt-3 border-t border-slate-200/80">
               <button
                 type="button"
                 onClick={() => { setShowAddModal(false); setEditingLead(null); setLeadEmail(""); }}
-                className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-xs font-bold transition-all cursor-pointer"
+                className="px-3 py-1.5 bg-slate-100 hover:bg-slate-700 text-slate-300 rounded-lg text-xs font-bold transition-all cursor-pointer"
               >
                 Cancel
               </button>
@@ -457,3 +457,5 @@ export default function LeadsPanel({ leads, setLeads, customers, companyId, user
     </div>
   );
 }
+
+

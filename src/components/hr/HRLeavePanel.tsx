@@ -30,8 +30,8 @@ export default function HRLeavePanel({
   const pendingCount = leaveRequests.filter(l => l.status === "pending").length;
 
   return (
-    <div className="bg-slate-950/40 border border-slate-800 rounded-xl overflow-hidden text-left">
-      <div className="px-5 py-4 border-b border-slate-800 bg-slate-950/40 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
+    <div className="bg-slate-50 border border-slate-200 rounded-xl overflow-hidden text-left">
+      <div className="px-5 py-4 border-b border-slate-200 bg-slate-50 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
         <div>
           <h3 className="text-sm font-bold text-slate-300 uppercase tracking-wider font-mono">Leave Entitlement Pipeline</h3>
           <p className="text-[11px] text-slate-500 font-medium">Review and process staff leave applications and track active schedule logs.</p>
@@ -42,8 +42,8 @@ export default function HRLeavePanel({
       </div>
 
       <div className="overflow-x-auto">
-        <table className="min-w-full divide-y divide-slate-800/60 text-sm">
-          <thead className="bg-slate-950 font-bold text-slate-300">
+        <table className="min-w-full divide-y divide-slate-100/60 text-sm">
+          <thead className="bg-white font-bold text-slate-300">
             <tr>
               <th className="px-5 py-3 text-left">Employee Name</th>
               <th className="px-5 py-3 text-left">Leave Type</th>
@@ -53,17 +53,17 @@ export default function HRLeavePanel({
               <th className="px-5 py-3 text-right">Decisions</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-slate-800/40 text-slate-300">
+          <tbody className="divide-y divide-slate-100/40 text-slate-300">
             {leaveRequests.map(req => {
               const emp = employees.find(e => e.id === req.employeeId);
               return (
-                <tr key={req.id} className="hover:bg-slate-900/20 transition-all">
+                <tr key={req.id} className="hover:bg-slate-50 transition-all">
                   <td className="px-5 py-4">
-                    <div className="font-bold text-slate-200">{emp?.name || "Corporate Staff"}</div>
+                    <div className="font-bold text-slate-700">{emp?.name || "Corporate Staff"}</div>
                     <div className="text-[10px] text-slate-400 font-mono font-bold mt-0.5">{emp?.employeeCode}</div>
                   </td>
                   <td className="px-5 py-4 font-semibold text-xs">
-                    <span className="capitalize px-2 py-0.5 rounded bg-slate-900 text-slate-300 font-mono border border-slate-800">
+                    <span className="capitalize px-2 py-0.5 rounded bg-white text-slate-300 font-mono border border-slate-200">
                       {req.leaveType}
                     </span>
                   </td>
@@ -120,3 +120,5 @@ export default function HRLeavePanel({
     </div>
   );
 }
+
+

@@ -79,8 +79,8 @@ export default function HRDepartmentsPanel({
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 text-left">
       {/* DEPARTMENTS CARD */}
-      <div className="bg-slate-950/40 border border-slate-800 rounded-xl p-5 space-y-4">
-        <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+      <div className="bg-slate-50 border border-slate-200 rounded-xl p-5 space-y-4">
+        <div className="flex items-center justify-between border-b border-slate-200 pb-3">
           <div className="flex items-center gap-2">
             <Building2 className="h-5 w-5 text-indigo-400" />
             <h3 className="font-bold text-sm text-white font-mono uppercase tracking-wider">Operational Departments</h3>
@@ -95,10 +95,10 @@ export default function HRDepartmentsPanel({
         </div>
 
         {showAddDept && (
-          <form onSubmit={handleCreateDept} className="bg-slate-900/60 border border-slate-800 p-3 rounded-lg space-y-3 animate-fadeIn">
+          <form onSubmit={handleCreateDept} className="bg-slate-50 border border-slate-200 p-3 rounded-lg space-y-3 animate-fadeIn">
             <div className="flex items-center justify-between">
               <span className="text-[10px] text-indigo-400 font-bold uppercase font-mono tracking-widest">Create Department</span>
-              <button type="button" onClick={() => setShowAddDept(false)} className="text-slate-400 hover:text-white">
+              <button type="button" onClick={() => setShowAddDept(false)} className="text-slate-400 hover:text-slate-800">
                 <X className="h-3.5 w-3.5" />
               </button>
             </div>
@@ -111,7 +111,7 @@ export default function HRDepartmentsPanel({
                   placeholder="e.g. Sourcing"
                   value={newDept.name}
                   onChange={(e) => setNewDept(prev => ({ ...prev, name: e.target.value }))}
-                  className="w-full rounded border border-slate-700 bg-slate-950 p-1.5 text-white focus:outline-none"
+                  className="w-full rounded border border-slate-200 bg-white p-1.5 text-white focus:outline-none"
                 />
               </div>
               <div>
@@ -122,7 +122,7 @@ export default function HRDepartmentsPanel({
                   placeholder="e.g. SRC"
                   value={newDept.code}
                   onChange={(e) => setNewDept(prev => ({ ...prev, code: e.target.value }))}
-                  className="w-full rounded border border-slate-700 bg-slate-950 p-1.5 text-white focus:outline-none font-mono uppercase"
+                  className="w-full rounded border border-slate-200 bg-white p-1.5 text-white focus:outline-none font-mono uppercase"
                 />
               </div>
             </div>
@@ -138,18 +138,18 @@ export default function HRDepartmentsPanel({
           {depts.map(dept => {
             const headcount = employees.filter(e => e.departmentId === dept.id).length;
             return (
-              <div key={dept.id} className="flex items-center justify-between p-3 bg-slate-900/40 border border-slate-850 rounded-lg text-xs hover:border-slate-800 transition-colors">
+              <div key={dept.id} className="flex items-center justify-between p-3 bg-slate-50 border border-slate-850 rounded-lg text-xs hover:border-slate-200 transition-colors">
                 <div className="flex items-center gap-2.5">
                   <div className="h-7 w-7 flex items-center justify-center rounded-md bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 font-mono font-bold">
                     {dept.code}
                   </div>
                   <div>
-                    <h4 className="font-bold text-slate-200">{dept.name}</h4>
+                    <h4 className="font-bold text-slate-700">{dept.name}</h4>
                     <span className="text-[9px] text-slate-500 font-mono block">ID: {dept.id}</span>
                   </div>
                 </div>
                 <div className="flex items-center gap-3">
-                  <span className="font-mono text-[11px] font-bold bg-slate-900 px-2 py-0.5 rounded border border-slate-800 text-slate-400">
+                  <span className="font-mono text-[11px] font-bold bg-white px-2 py-0.5 rounded border border-slate-200 text-slate-400">
                     {headcount} Officers
                   </span>
                   <button
@@ -167,8 +167,8 @@ export default function HRDepartmentsPanel({
       </div>
 
       {/* DESIGNATIONS CARD */}
-      <div className="bg-slate-950/40 border border-slate-800 rounded-xl p-5 space-y-4">
-        <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+      <div className="bg-slate-50 border border-slate-200 rounded-xl p-5 space-y-4">
+        <div className="flex items-center justify-between border-b border-slate-200 pb-3">
           <div className="flex items-center gap-2">
             <Network className="h-5 w-5 text-emerald-400" />
             <h3 className="font-bold text-sm text-white font-mono uppercase tracking-wider">Corporate Designations</h3>
@@ -183,10 +183,10 @@ export default function HRDepartmentsPanel({
         </div>
 
         {showAddDesig && (
-          <form onSubmit={handleCreateDesig} className="bg-slate-900/60 border border-slate-800 p-3 rounded-lg space-y-3 animate-fadeIn">
+          <form onSubmit={handleCreateDesig} className="bg-slate-50 border border-slate-200 p-3 rounded-lg space-y-3 animate-fadeIn">
             <div className="flex items-center justify-between">
               <span className="text-[10px] text-emerald-400 font-bold uppercase font-mono tracking-widest">Create Designation</span>
-              <button type="button" onClick={() => setShowAddDesig(false)} className="text-slate-400 hover:text-white">
+              <button type="button" onClick={() => setShowAddDesig(false)} className="text-slate-400 hover:text-slate-800">
                 <X className="h-3.5 w-3.5" />
               </button>
             </div>
@@ -198,7 +198,7 @@ export default function HRDepartmentsPanel({
                 placeholder="e.g. Procurement Lead"
                 value={newDesig.name}
                 onChange={(e) => setNewDesig({ name: e.target.value })}
-                className="w-full rounded border border-slate-700 bg-slate-950 p-1.5 text-white focus:outline-none"
+                className="w-full rounded border border-slate-200 bg-white p-1.5 text-white focus:outline-none"
               />
             </div>
             <div className="text-right">
@@ -213,18 +213,18 @@ export default function HRDepartmentsPanel({
           {desigs.map(des => {
             const headcount = employees.filter(e => e.designationId === des.id).length;
             return (
-              <div key={des.id} className="flex items-center justify-between p-3 bg-slate-900/40 border border-slate-850 rounded-lg text-xs hover:border-slate-800 transition-colors">
+              <div key={des.id} className="flex items-center justify-between p-3 bg-slate-50 border border-slate-850 rounded-lg text-xs hover:border-slate-200 transition-colors">
                 <div className="flex items-center gap-2.5">
                   <div className="h-7 w-7 flex items-center justify-center rounded-md bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-bold">
                     T
                   </div>
                   <div>
-                    <h4 className="font-bold text-slate-200">{des.name}</h4>
+                    <h4 className="font-bold text-slate-700">{des.name}</h4>
                     <span className="text-[9px] text-slate-500 font-mono block">ID: {des.id}</span>
                   </div>
                 </div>
                 <div className="flex items-center gap-3">
-                  <span className="font-mono text-[11px] font-bold bg-slate-900 px-2 py-0.5 rounded border border-slate-800 text-slate-400">
+                  <span className="font-mono text-[11px] font-bold bg-white px-2 py-0.5 rounded border border-slate-200 text-slate-400">
                     {headcount} Officers
                   </span>
                   <button
@@ -243,3 +243,5 @@ export default function HRDepartmentsPanel({
     </div>
   );
 }
+
+

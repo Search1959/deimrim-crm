@@ -237,7 +237,7 @@ export default function QuotationsPanel({ customers, companyId, isDemo }: Quotat
   return (
     <div className="space-y-4">
       {/* Control row */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 bg-slate-950/40 border border-slate-800 rounded-xl p-4">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 bg-slate-50 border border-slate-200 rounded-xl p-4">
         <div className="relative flex-1 max-w-md">
           <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-500" />
           <input
@@ -245,11 +245,11 @@ export default function QuotationsPanel({ customers, companyId, isDemo }: Quotat
             placeholder="Search quotations..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full bg-slate-900 border border-slate-800 rounded-lg pl-8.5 pr-3 py-1.5 text-xs text-slate-200 focus:outline-hidden focus:border-indigo-500 font-semibold"
+            className="w-full bg-white border border-slate-200 rounded-lg pl-8.5 pr-3 py-1.5 text-xs text-slate-700 focus:outline-hidden focus:border-indigo-500 font-semibold"
           />
         </div>
         <div className="flex items-center gap-2">
-          <button onClick={handleExport} className="flex items-center gap-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg px-2.5 py-1.5 text-xs font-bold cursor-pointer border border-slate-700">
+          <button onClick={handleExport} className="flex items-center gap-1.5 bg-slate-100 hover:bg-slate-700 text-slate-300 rounded-lg px-2.5 py-1.5 text-xs font-bold cursor-pointer border border-slate-200">
             <Download className="h-3.5 w-3.5" /> Export
           </button>
           <button onClick={handleOpenAdd} className="flex items-center gap-1.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg px-3 py-1.5 text-xs font-bold transition-all cursor-pointer">
@@ -260,9 +260,9 @@ export default function QuotationsPanel({ customers, companyId, isDemo }: Quotat
       </div>
 
       {/* List */}
-      <div className="bg-slate-950/40 border border-slate-800 rounded-xl overflow-hidden shadow-xs">
-        <table className="min-w-full divide-y divide-slate-800 text-xs">
-          <thead className="bg-slate-950 text-slate-300 font-semibold text-left">
+      <div className="bg-slate-50 border border-slate-200 rounded-xl overflow-hidden shadow-xs">
+        <table className="min-w-full divide-y divide-slate-100 text-xs">
+          <thead className="bg-white text-slate-300 font-semibold text-left">
             <tr>
               <th className="px-4 py-3">Quot No.</th>
               <th className="px-4 py-3">Company Name</th>
@@ -272,7 +272,7 @@ export default function QuotationsPanel({ customers, companyId, isDemo }: Quotat
               <th className="px-4 py-3 text-right">Actions</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-slate-800/60 text-slate-300">
+          <tbody className="divide-y divide-slate-100/60 text-slate-300">
             {filteredQuotations.length === 0 ? (
               <tr>
                 <td colSpan={6} className="px-4 py-8 text-center text-slate-500 font-mono">
@@ -281,10 +281,10 @@ export default function QuotationsPanel({ customers, companyId, isDemo }: Quotat
               </tr>
             ) : (
               filteredQuotations.map(q => (
-                <tr key={q.id} className="hover:bg-slate-900/40 transition-colors">
+                <tr key={q.id} className="hover:bg-slate-50 transition-colors">
                   <td className="px-4 py-3 font-mono font-bold text-indigo-400">{q.quotationNumber}</td>
-                  <td className="px-4 py-3 font-bold text-slate-200">{q.companyName}</td>
-                  <td className="px-4 py-3 font-mono font-semibold text-slate-100">{formatINR(q.totalAmount)}</td>
+                  <td className="px-4 py-3 font-bold text-slate-700">{q.companyName}</td>
+                  <td className="px-4 py-3 font-mono font-semibold text-slate-800">{formatINR(q.totalAmount)}</td>
                   <td className="px-4 py-3 font-mono text-slate-400">{q.validUntil || "—"}</td>
                   <td className="px-4 py-3">
                     <span className={`inline-flex items-center px-1.5 py-0.5 rounded text-[9px] font-bold uppercase border ${
@@ -307,14 +307,14 @@ export default function QuotationsPanel({ customers, companyId, isDemo }: Quotat
                       )}
                       <button
                         onClick={() => setViewingQuotation(q)}
-                        className="p-1 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded transition-all cursor-pointer"
+                        className="p-1 bg-slate-100 hover:bg-slate-700 text-slate-300 rounded transition-all cursor-pointer"
                         title="View Quotation"
                       >
                         <FileText className="h-3.5 w-3.5" />
                       </button>
                       <button
                         onClick={() => handleOpenEdit(q)}
-                        className="p-1 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded transition-all cursor-pointer"
+                        className="p-1 bg-slate-100 hover:bg-slate-700 text-slate-300 rounded transition-all cursor-pointer"
                         title="Edit Quotation"
                       >
                         <Edit className="h-3.5 w-3.5" />
@@ -340,16 +340,16 @@ export default function QuotationsPanel({ customers, companyId, isDemo }: Quotat
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 overflow-y-auto">
           <form 
             onSubmit={editingQuotation ? handleSaveEdit : handleSaveQuotation}
-            className="w-full max-w-2xl rounded-xl border border-slate-800 bg-slate-950 p-5 shadow-2xl text-left space-y-4 my-8"
+            className="w-full max-w-2xl rounded-xl border border-slate-200 bg-white p-5 shadow-2xl text-left space-y-4 my-8"
           >
-            <div className="border-b border-slate-800 pb-2 flex items-center justify-between">
-              <h3 className="text-sm font-bold text-white uppercase tracking-wider font-mono">
+            <div className="border-b border-slate-200 pb-2 flex items-center justify-between">
+              <h3 className="text-sm font-bold text-slate-800 uppercase tracking-wider font-mono">
                 {editingQuotation ? "Edit Quotation" : "New Quotation"}
               </h3>
               <button 
                 type="button" 
                 onClick={() => { setShowAddModal(false); setEditingQuotation(null); }} 
-                className="text-slate-400 hover:text-white font-bold"
+                className="text-slate-400 hover:text-slate-800 font-bold"
               >
                 ×
               </button>
@@ -357,7 +357,7 @@ export default function QuotationsPanel({ customers, companyId, isDemo }: Quotat
 
             <div className="max-h-[60vh] overflow-y-auto space-y-4 pr-1">
               {/* CLIENT DETAILS */}
-              <div className="bg-slate-900/40 border border-slate-850 p-3.5 rounded-lg space-y-3">
+              <div className="bg-slate-50 border border-slate-850 p-3.5 rounded-lg space-y-3">
                 <span className="text-[10px] font-bold text-indigo-400 uppercase tracking-wider block font-mono">Client Details</span>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div>
@@ -366,7 +366,7 @@ export default function QuotationsPanel({ customers, companyId, isDemo }: Quotat
                       required
                       value={companyName}
                       onChange={(e) => handleCompanyChange(e.target.value)}
-                      className="w-full bg-slate-900 border border-slate-800 rounded-lg p-2 text-xs text-white focus:outline-hidden focus:border-indigo-500 font-semibold"
+                      className="w-full bg-white border border-slate-200 rounded-lg p-2 text-xs text-white focus:outline-hidden focus:border-indigo-500 font-semibold"
                     >
                       <option value="">— Select Company —</option>
                       {customers.map(c => (
@@ -381,7 +381,7 @@ export default function QuotationsPanel({ customers, companyId, isDemo }: Quotat
                       placeholder="Contact name"
                       value={contactPerson}
                       onChange={(e) => setContactPerson(e.target.value)}
-                      className="w-full bg-slate-900 border border-slate-800 rounded-lg p-2 text-xs text-white focus:outline-hidden focus:border-indigo-500 font-semibold"
+                      className="w-full bg-white border border-slate-200 rounded-lg p-2 text-xs text-white focus:outline-hidden focus:border-indigo-500 font-semibold"
                     />
                   </div>
                 </div>
@@ -392,7 +392,7 @@ export default function QuotationsPanel({ customers, companyId, isDemo }: Quotat
                       type="text"
                       value={gstNo}
                       onChange={(e) => setGstNo(e.target.value)}
-                      className="w-full bg-slate-900 border border-slate-800 rounded-lg p-2 text-xs text-white font-mono focus:outline-hidden focus:border-indigo-500"
+                      className="w-full bg-white border border-slate-200 rounded-lg p-2 text-xs text-white font-mono focus:outline-hidden focus:border-indigo-500"
                     />
                   </div>
                   <div>
@@ -402,14 +402,14 @@ export default function QuotationsPanel({ customers, companyId, isDemo }: Quotat
                       placeholder="Full billing address..."
                       value={billingAddress}
                       onChange={(e) => setBillingAddress(e.target.value)}
-                      className="w-full bg-slate-900 border border-slate-800 rounded-lg p-2 text-xs text-white focus:outline-hidden"
+                      className="w-full bg-white border border-slate-200 rounded-lg p-2 text-xs text-white focus:outline-hidden"
                     ></textarea>
                   </div>
                 </div>
               </div>
 
               {/* QUOTATION DETAILS */}
-              <div className="bg-slate-900/40 border border-slate-850 p-3.5 rounded-lg space-y-3">
+              <div className="bg-slate-50 border border-slate-850 p-3.5 rounded-lg space-y-3">
                 <span className="text-[10px] font-bold text-indigo-400 uppercase tracking-wider block font-mono">Quotation Details</span>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div>
@@ -419,7 +419,7 @@ export default function QuotationsPanel({ customers, companyId, isDemo }: Quotat
                       placeholder="Auto-generated if blank"
                       value={quotationNo}
                       onChange={(e) => setQuotationNo(e.target.value)}
-                      className="w-full bg-slate-900 border border-slate-800 rounded-lg p-2 text-xs text-white font-mono focus:outline-hidden focus:border-indigo-500 font-semibold"
+                      className="w-full bg-white border border-slate-200 rounded-lg p-2 text-xs text-white font-mono focus:outline-hidden focus:border-indigo-500 font-semibold"
                     />
                   </div>
                   <div>
@@ -427,7 +427,7 @@ export default function QuotationsPanel({ customers, companyId, isDemo }: Quotat
                     <select
                       value={dealId}
                       onChange={(e) => setDealId(e.target.value)}
-                      className="w-full bg-slate-900 border border-slate-800 rounded-lg p-2 text-xs text-white focus:outline-hidden focus:border-indigo-500 font-semibold"
+                      className="w-full bg-white border border-slate-200 rounded-lg p-2 text-xs text-white focus:outline-hidden focus:border-indigo-500 font-semibold"
                     >
                       <option value="">— None —</option>
                       {deals.map(d => (
@@ -443,7 +443,7 @@ export default function QuotationsPanel({ customers, companyId, isDemo }: Quotat
                       type="date"
                       value={validUntil}
                       onChange={(e) => setValidUntil(e.target.value)}
-                      className="w-full bg-slate-900 border border-slate-800 rounded-lg p-2 text-xs text-white focus:outline-hidden focus:border-indigo-500 font-semibold"
+                      className="w-full bg-white border border-slate-200 rounded-lg p-2 text-xs text-white focus:outline-hidden focus:border-indigo-500 font-semibold"
                     />
                   </div>
                   <div>
@@ -453,7 +453,7 @@ export default function QuotationsPanel({ customers, companyId, isDemo }: Quotat
                       placeholder="Short memo notes..."
                       value={notes}
                       onChange={(e) => setNotes(e.target.value)}
-                      className="w-full bg-slate-900 border border-slate-800 rounded-lg p-2 text-xs text-white focus:outline-hidden focus:border-indigo-500"
+                      className="w-full bg-white border border-slate-200 rounded-lg p-2 text-xs text-white focus:outline-hidden focus:border-indigo-500"
                     />
                   </div>
                 </div>
@@ -474,8 +474,8 @@ export default function QuotationsPanel({ customers, companyId, isDemo }: Quotat
                 </div>
 
                 <div className="border border-slate-850 rounded-lg overflow-hidden">
-                  <table className="min-w-full divide-y divide-slate-800 text-[10px]">
-                    <thead className="bg-slate-900/60 text-slate-300 font-semibold text-left">
+                  <table className="min-w-full divide-y divide-slate-100 text-[10px]">
+                    <thead className="bg-slate-50 text-slate-300 font-semibold text-left">
                       <tr>
                         <th className="px-3 py-2">Product / Service</th>
                         <th className="px-3 py-2">Unit</th>
@@ -485,7 +485,7 @@ export default function QuotationsPanel({ customers, companyId, isDemo }: Quotat
                         <th className="px-2 py-2"></th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-slate-800/60 bg-slate-950/20 text-slate-300">
+                    <tbody className="divide-y divide-slate-100/60 bg-slate-50 text-slate-300">
                       {items.map((item, idx) => (
                         <tr key={idx}>
                           <td className="px-3 py-2">
@@ -495,7 +495,7 @@ export default function QuotationsPanel({ customers, companyId, isDemo }: Quotat
                               placeholder="Product or service name..."
                               value={item.productName}
                               onChange={(e) => handleUpdateItem(idx, "productName", e.target.value)}
-                              className="w-full bg-slate-900 border border-slate-800 rounded px-2 py-1 text-xs text-white focus:outline-hidden focus:border-indigo-500"
+                              className="w-full bg-white border border-slate-200 rounded px-2 py-1 text-xs text-white focus:outline-hidden focus:border-indigo-500"
                             />
                           </td>
                           <td className="px-3 py-2 w-16">
@@ -503,7 +503,7 @@ export default function QuotationsPanel({ customers, companyId, isDemo }: Quotat
                               type="text"
                               value={item.unit}
                               onChange={(e) => handleUpdateItem(idx, "unit", e.target.value)}
-                              className="w-full bg-slate-900 border border-slate-800 rounded px-2 py-1 text-xs text-white focus:outline-hidden"
+                              className="w-full bg-white border border-slate-200 rounded px-2 py-1 text-xs text-white focus:outline-hidden"
                             />
                           </td>
                           <td className="px-3 py-2 w-16">
@@ -512,7 +512,7 @@ export default function QuotationsPanel({ customers, companyId, isDemo }: Quotat
                               min="1"
                               value={item.quantity}
                               onChange={(e) => handleUpdateItem(idx, "quantity", Number(e.target.value))}
-                              className="w-full bg-slate-900 border border-slate-800 rounded px-2 py-1 text-xs text-white font-mono focus:outline-hidden"
+                              className="w-full bg-white border border-slate-200 rounded px-2 py-1 text-xs text-white font-mono focus:outline-hidden"
                             />
                           </td>
                           <td className="px-3 py-2 w-24">
@@ -521,10 +521,10 @@ export default function QuotationsPanel({ customers, companyId, isDemo }: Quotat
                               min="0"
                               value={item.unitPrice}
                               onChange={(e) => handleUpdateItem(idx, "unitPrice", Number(e.target.value))}
-                              className="w-full bg-slate-900 border border-slate-800 rounded px-2 py-1 text-xs text-white font-mono focus:outline-hidden"
+                              className="w-full bg-white border border-slate-200 rounded px-2 py-1 text-xs text-white font-mono focus:outline-hidden"
                             />
                           </td>
-                          <td className="px-3 py-2 font-mono font-semibold text-right text-slate-200">
+                          <td className="px-3 py-2 font-mono font-semibold text-right text-slate-700">
                             {formatINR(item.amount)}
                           </td>
                           <td className="px-2 py-2 text-center">
@@ -543,9 +543,9 @@ export default function QuotationsPanel({ customers, companyId, isDemo }: Quotat
                     </tbody>
                   </table>
                 </div>
-                <div className="flex justify-between items-center text-[10px] text-slate-400 font-semibold bg-slate-900/20 px-3 py-2 rounded-lg border border-slate-850">
+                <div className="flex justify-between items-center text-[10px] text-slate-400 font-semibold bg-slate-50 px-3 py-2 rounded-lg border border-slate-850">
                   <span>When accepted → stock auto-deducted from Inventory</span>
-                  <span className="font-mono text-slate-200">Total: {formatINR(calculatedTotal)}</span>
+                  <span className="font-mono text-slate-700">Total: {formatINR(calculatedTotal)}</span>
                 </div>
               </div>
 
@@ -557,16 +557,16 @@ export default function QuotationsPanel({ customers, companyId, isDemo }: Quotat
                   placeholder="Auto-calculated from items above"
                   value={overrideTotal}
                   onChange={(e) => setOverrideTotal(e.target.value)}
-                  className="w-full bg-slate-900 border border-slate-800 rounded-lg p-2 text-xs text-white font-mono focus:outline-hidden focus:border-indigo-500"
+                  className="w-full bg-white border border-slate-200 rounded-lg p-2 text-xs text-white font-mono focus:outline-hidden focus:border-indigo-500"
                 />
               </div>
             </div>
 
-            <div className="flex justify-end gap-2.5 pt-3 border-t border-slate-800/80">
+            <div className="flex justify-end gap-2.5 pt-3 border-t border-slate-200/80">
               <button
                 type="button"
                 onClick={() => { setShowAddModal(false); setEditingQuotation(null); }}
-                className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-xs font-bold transition-all cursor-pointer"
+                className="px-3 py-1.5 bg-slate-100 hover:bg-slate-700 text-slate-300 rounded-lg text-xs font-bold transition-all cursor-pointer"
               >
                 Cancel
               </button>
@@ -584,21 +584,21 @@ export default function QuotationsPanel({ customers, companyId, isDemo }: Quotat
       {/* View Quotation Preview Modal */}
       {viewingQuotation && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4">
-          <div className="w-full max-w-lg rounded-xl border border-slate-800 bg-slate-950 p-6 shadow-2xl text-left space-y-4">
-            <div className="border-b border-slate-800 pb-2 flex items-center justify-between">
+          <div className="w-full max-w-lg rounded-xl border border-slate-200 bg-white p-6 shadow-2xl text-left space-y-4">
+            <div className="border-b border-slate-200 pb-2 flex items-center justify-between">
               <span className="font-mono text-xs font-bold text-indigo-400">{viewingQuotation.quotationNumber} Specifications</span>
-              <button type="button" onClick={() => setViewingQuotation(null)} className="text-slate-400 hover:text-white font-bold">×</button>
+              <button type="button" onClick={() => setViewingQuotation(null)} className="text-slate-400 hover:text-slate-800 font-bold">×</button>
             </div>
 
             <div className="space-y-3 text-xs">
-              <div className="grid grid-cols-2 gap-2 text-slate-400 border-b border-slate-900 pb-2">
+              <div className="grid grid-cols-2 gap-2 text-slate-400 border-b border-slate-100 pb-2">
                 <div>
                   <span className="block text-[9px] font-bold uppercase tracking-wider font-mono">Client Name</span>
-                  <strong className="text-slate-200">{viewingQuotation.companyName}</strong>
+                  <strong className="text-slate-700">{viewingQuotation.companyName}</strong>
                 </div>
                 <div>
                   <span className="block text-[9px] font-bold uppercase tracking-wider font-mono">Contact Person</span>
-                  <strong className="text-slate-200">{viewingQuotation.contactPerson || "—"}</strong>
+                  <strong className="text-slate-700">{viewingQuotation.contactPerson || "—"}</strong>
                 </div>
               </div>
 
@@ -607,10 +607,10 @@ export default function QuotationsPanel({ customers, companyId, isDemo }: Quotat
                 <p className="text-slate-300 font-semibold">{viewingQuotation.billingAddress || "—"}</p>
               </div>
 
-              <div className="border border-slate-850 rounded-lg p-2.5 bg-slate-900/20 space-y-2">
+              <div className="border border-slate-850 rounded-lg p-2.5 bg-slate-50 space-y-2">
                 <span className="text-[9px] font-bold uppercase tracking-wider font-mono text-indigo-400">Items Ordered</span>
                 {viewingQuotation.items.map((it, i) => (
-                  <div key={i} className="flex justify-between items-center text-slate-300 border-b border-slate-900/40 pb-1.5 last:border-b-0 last:pb-0">
+                  <div key={i} className="flex justify-between items-center text-slate-300 border-b border-slate-100/40 pb-1.5 last:border-b-0 last:pb-0">
                     <div>
                       <div className="font-bold">{it.productName}</div>
                       <div className="text-[9px] text-slate-400 font-mono">{it.quantity} {it.unit} × {formatINR(it.unitPrice)}</div>
@@ -620,17 +620,17 @@ export default function QuotationsPanel({ customers, companyId, isDemo }: Quotat
                 ))}
               </div>
 
-              <div className="flex justify-between items-center bg-slate-900/60 p-3 rounded-lg border border-slate-800">
+              <div className="flex justify-between items-center bg-slate-50 p-3 rounded-lg border border-slate-200">
                 <span className="text-slate-300 font-bold uppercase font-mono text-[10px]">Total Proposal Value</span>
                 <strong className="text-emerald-400 font-mono text-sm">{formatINR(viewingQuotation.totalAmount)}</strong>
               </div>
             </div>
 
-            <div className="flex justify-end pt-2 border-t border-slate-800/80">
+            <div className="flex justify-end pt-2 border-t border-slate-200/80">
               <button
                 type="button"
                 onClick={() => setViewingQuotation(null)}
-                className="px-4 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-xs font-bold cursor-pointer"
+                className="px-4 py-1.5 bg-slate-100 hover:bg-slate-700 text-slate-300 rounded-lg text-xs font-bold cursor-pointer"
               >
                 Close
               </button>
@@ -641,3 +641,5 @@ export default function QuotationsPanel({ customers, companyId, isDemo }: Quotat
     </div>
   );
 }
+
+

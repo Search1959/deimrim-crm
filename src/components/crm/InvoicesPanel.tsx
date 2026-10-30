@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+﻿import React, { useState, useRef } from "react";
 import { Plus, Search, Eye, Trash2, Download, Share2, Edit, Package, Wrench, Upload } from "lucide-react";
 import { Invoice, Customer, Product, BatchStock, ServiceCatalogItem, Company, formatINR, UserRole } from "../../types";
 import { toast } from "../../utils/toast";
@@ -526,18 +526,18 @@ ${inv.notes ? `<div style="border:1px solid #e2e8f0;border-radius:8px;padding:14
   return (
     <div className="space-y-4">
       {/* Controls */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 bg-slate-950/40 border border-slate-800 rounded-xl p-4">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 bg-slate-50 border border-slate-200 rounded-xl p-4">
         <div className="relative flex-1 max-w-md">
           <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-500" />
           <input
             type="text" placeholder="Search invoices..."
             value={searchQuery} onChange={e => setSearchQuery(e.target.value)}
-            className="w-full bg-slate-900 border border-slate-800 rounded-lg pl-8 pr-3 py-1.5 text-xs text-slate-200 focus:outline-none focus:border-indigo-500 font-semibold"
+            className="w-full bg-white border border-slate-200 rounded-lg pl-8 pr-3 py-1.5 text-xs text-slate-700 focus:outline-none focus:border-indigo-500 font-semibold"
           />
         </div>
         <div className="flex items-center gap-2">
           <button onClick={() => exportInvoicesCSV(invoices, customers)}
-            className="flex items-center gap-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg px-3 py-1.5 text-xs font-bold cursor-pointer">
+            className="flex items-center gap-1.5 bg-slate-100 hover:bg-slate-700 text-slate-300 rounded-lg px-3 py-1.5 text-xs font-bold cursor-pointer">
             <Share2 className="h-3.5 w-3.5" /> Export CSV
           </button>
           <button onClick={async () => {
@@ -556,7 +556,7 @@ ${inv.notes ? `<div style="border:1px solid #e2e8f0;border-radius:8px;padding:14
             XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(rows), "Invoices");
             XLSX.writeFile(wb, "Invoices_Export.xlsx");
             toast.success("Exported", `${rows.length} invoices downloaded`);
-          }} className="flex items-center gap-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg px-3 py-1.5 text-xs font-bold cursor-pointer">
+          }} className="flex items-center gap-1.5 bg-slate-100 hover:bg-slate-700 text-slate-300 rounded-lg px-3 py-1.5 text-xs font-bold cursor-pointer">
             <Download className="h-3.5 w-3.5" /> Export Excel
           </button>
           {canWrite && (
@@ -580,9 +580,9 @@ ${inv.notes ? `<div style="border:1px solid #e2e8f0;border-radius:8px;padding:14
       </div>
 
       {/* Table */}
-      <div className="bg-slate-950/40 border border-slate-800 rounded-xl overflow-hidden">
-        <table className="min-w-full divide-y divide-slate-800 text-xs">
-          <thead className="bg-slate-950 text-slate-300 font-semibold text-left">
+      <div className="bg-slate-50 border border-slate-200 rounded-xl overflow-hidden">
+        <table className="min-w-full divide-y divide-slate-100 text-xs">
+          <thead className="bg-white text-slate-300 font-semibold text-left">
             <tr>
               <th className="px-4 py-3">Invoice No.</th>
               <th className="px-4 py-3">Customer</th>
@@ -594,7 +594,7 @@ ${inv.notes ? `<div style="border:1px solid #e2e8f0;border-radius:8px;padding:14
               <th className="px-4 py-3 text-right">Actions</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-slate-800/60 text-slate-300">
+          <tbody className="divide-y divide-slate-100/60 text-slate-300">
             {filtered.length === 0 ? (
               <tr><td colSpan={8} className="px-4 py-8 text-center text-slate-500">No invoices found.</td></tr>
             ) : filtered.map(inv => {
@@ -602,12 +602,12 @@ ${inv.notes ? `<div style="border:1px solid #e2e8f0;border-radius:8px;padding:14
               const invHasSvc = inv.items?.some(i => i.itemType === "service");
               const invHasProd = inv.items?.some(i => !i.itemType || i.itemType === "product");
               return (
-                <tr key={inv.id} className="hover:bg-slate-900/40 transition-colors">
+                <tr key={inv.id} className="hover:bg-slate-50 transition-colors">
                   <td className="px-4 py-3 font-mono font-bold text-indigo-400">{inv.invoiceNumber}</td>
-                  <td className="px-4 py-3 font-bold text-slate-200">{cust?.name ?? "—"}</td>
+                  <td className="px-4 py-3 font-bold text-slate-700">{cust?.name ?? "—"}</td>
                   <td className="px-4 py-3 font-mono text-slate-400">{inv.createdAt}</td>
                   <td className="px-4 py-3 font-mono text-slate-400">{inv.dueDate}</td>
-                  <td className="px-4 py-3 font-mono font-bold text-slate-200">{formatINR(inv.totalAmount)}</td>
+                  <td className="px-4 py-3 font-mono font-bold text-slate-700">{formatINR(inv.totalAmount)}</td>
                   <td className="px-4 py-3">
                     <div className="flex gap-1">
                       {invHasProd && <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[9px] font-bold bg-indigo-500/10 text-indigo-400 border border-indigo-500/20"><Package className="h-2.5 w-2.5" />Prod</span>}
@@ -623,8 +623,8 @@ ${inv.notes ? `<div style="border:1px solid #e2e8f0;border-radius:8px;padding:14
                   </td>
                   <td className="px-4 py-3 text-right">
                     <div className="flex items-center justify-end gap-1.5">
-                      <button onClick={() => setViewingInvoice(inv)} className="p-1 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded cursor-pointer"><Eye className="h-3.5 w-3.5" /></button>
-                      {canWrite && (<button onClick={() => handleOpenEdit(inv)} className="p-1 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded cursor-pointer"><Edit className="h-3.5 w-3.5" /></button>)}
+                      <button onClick={() => setViewingInvoice(inv)} className="p-1 bg-slate-100 hover:bg-slate-700 text-slate-300 rounded cursor-pointer"><Eye className="h-3.5 w-3.5" /></button>
+                      {canWrite && (<button onClick={() => handleOpenEdit(inv)} className="p-1 bg-slate-100 hover:bg-slate-700 text-slate-300 rounded cursor-pointer"><Edit className="h-3.5 w-3.5" /></button>)}
                       <button onClick={() => downloadInvoicePDF(inv)} className="p-1 bg-indigo-600/20 hover:bg-indigo-600/40 text-indigo-400 border border-indigo-500/10 rounded cursor-pointer"><Download className="h-3.5 w-3.5" /></button>
                       {canWrite && (
                         <button
@@ -650,11 +650,11 @@ ${inv.notes ? `<div style="border:1px solid #e2e8f0;border-radius:8px;padding:14
       {showAddModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 overflow-y-auto">
           <form onSubmit={handleSaveInvoice}
-            className="w-full max-w-2xl rounded-xl border border-slate-800 bg-slate-950 p-5 shadow-2xl space-y-4 my-8">
-            <div className="border-b border-slate-800 pb-2 flex items-center justify-between">
+            className="w-full max-w-2xl rounded-xl border border-slate-200 bg-white p-5 shadow-2xl space-y-4 my-8">
+            <div className="border-b border-slate-200 pb-2 flex items-center justify-between">
               <h3 className="text-sm font-bold text-white font-mono">{editingInvoice ? "Edit Invoice" : "New Invoice"}</h3>
               <button type="button" onClick={() => { setShowAddModal(false); setEditingInvoice(null); }}
-                className="text-slate-400 hover:text-white font-bold text-lg leading-none">×</button>
+                className="text-slate-400 hover:text-slate-800 font-bold text-lg leading-none">×</button>
             </div>
 
             <div className="max-h-[65vh] overflow-y-auto space-y-4 pr-1">
@@ -663,7 +663,7 @@ ${inv.notes ? `<div style="border:1px solid #e2e8f0;border-radius:8px;padding:14
                 <div>
                   <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 font-mono">Customer *</label>
                   <select required value={customerId} onChange={e => setCustomerId(e.target.value)}
-                    className="w-full bg-slate-900 border border-slate-800 rounded-lg p-2 text-xs text-white focus:outline-none focus:border-indigo-500">
+                    className="w-full bg-white border border-slate-200 rounded-lg p-2 text-xs text-white focus:outline-none focus:border-indigo-500">
                     <option value="">— Select Customer —</option>
                     {customers.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
                   </select>
@@ -671,12 +671,12 @@ ${inv.notes ? `<div style="border:1px solid #e2e8f0;border-radius:8px;padding:14
                 <div>
                   <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 font-mono">Invoice Date</label>
                   <input type="date" required value={invoiceDate} onChange={e => setInvoiceDate(e.target.value)}
-                    className="w-full bg-slate-900 border border-slate-800 rounded-lg p-2 text-xs text-white focus:outline-none focus:border-indigo-500 font-mono" />
+                    className="w-full bg-white border border-slate-200 rounded-lg p-2 text-xs text-white focus:outline-none focus:border-indigo-500 font-mono" />
                 </div>
                 <div>
                   <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 font-mono">Due Date *</label>
                   <input type="date" required value={dueDate} onChange={e => setDueDate(e.target.value)}
-                    className="w-full bg-slate-900 border border-slate-800 rounded-lg p-2 text-xs text-white focus:outline-none focus:border-indigo-500 font-mono" />
+                    className="w-full bg-white border border-slate-200 rounded-lg p-2 text-xs text-white focus:outline-none focus:border-indigo-500 font-mono" />
                 </div>
               </div>
 
@@ -701,10 +701,10 @@ ${inv.notes ? `<div style="border:1px solid #e2e8f0;border-radius:8px;padding:14
                     <div key={idx} className={`border rounded-lg overflow-hidden ${
                       item.itemType === "service"
                         ? "border-violet-500/25 bg-violet-500/5"
-                        : "border-slate-800 bg-slate-900/40"
+                        : "border-slate-200 bg-slate-50"
                     }`}>
                       {/* Line header with type badge */}
-                      <div className="flex items-center justify-between px-3 py-1.5 border-b border-slate-800/60">
+                      <div className="flex items-center justify-between px-3 py-1.5 border-b border-slate-200/60">
                         <div className="flex items-center gap-2">
                           <span className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[9px] font-bold ${
                             item.itemType === "service"
@@ -718,11 +718,11 @@ ${inv.notes ? `<div style="border:1px solid #e2e8f0;border-radius:8px;padding:14
                           {/* Toggle buttons */}
                           <div className="flex gap-1 ml-1">
                             <button type="button" onClick={() => handleTypeToggle(idx, "product")}
-                              className={`text-[9px] px-1.5 py-0.5 rounded cursor-pointer font-bold border transition-all ${item.itemType === "product" ? "bg-indigo-600/20 text-indigo-400 border-indigo-500/30" : "text-slate-500 border-slate-700 hover:text-slate-300"}`}>
+                              className={`text-[9px] px-1.5 py-0.5 rounded cursor-pointer font-bold border transition-all ${item.itemType === "product" ? "bg-indigo-600/20 text-indigo-400 border-indigo-500/30" : "text-slate-500 border-slate-200 hover:text-slate-300"}`}>
                               Product
                             </button>
                             <button type="button" onClick={() => handleTypeToggle(idx, "service")}
-                              className={`text-[9px] px-1.5 py-0.5 rounded cursor-pointer font-bold border transition-all ${item.itemType === "service" ? "bg-violet-600/20 text-violet-400 border-violet-500/30" : "text-slate-500 border-slate-700 hover:text-slate-300"}`}>
+                              className={`text-[9px] px-1.5 py-0.5 rounded cursor-pointer font-bold border transition-all ${item.itemType === "service" ? "bg-violet-600/20 text-violet-400 border-violet-500/30" : "text-slate-500 border-slate-200 hover:text-slate-300"}`}>
                               Service
                             </button>
                           </div>
@@ -742,7 +742,7 @@ ${inv.notes ? `<div style="border:1px solid #e2e8f0;border-radius:8px;padding:14
                               <label className="block text-slate-500 mb-0.5 font-mono uppercase">Product (Stock)</label>
                               <select required value={item.productId}
                                 onChange={e => handleUpdateLineItem(idx, "productId", e.target.value)}
-                                className="w-full bg-slate-900 border border-slate-800 rounded p-1 text-[10px] text-white focus:outline-none">
+                                className="w-full bg-white border border-slate-200 rounded p-1 text-[10px] text-white focus:outline-none">
                                 <option value="">— Select Product —</option>
                                 {products.map(p => {
                                   const stock = getStock(p.id, batchStocks);
@@ -757,7 +757,7 @@ ${inv.notes ? `<div style="border:1px solid #e2e8f0;border-radius:8px;padding:14
                                 <input required type="text" value={item.desc}
                                   onChange={e => handleUpdateLineItem(idx, "desc", e.target.value)}
                                   placeholder="Service description..."
-                                  className="flex-1 bg-slate-900 border border-slate-800 rounded p-1 text-[10px] text-white focus:outline-none" />
+                                  className="flex-1 bg-white border border-slate-200 rounded p-1 text-[10px] text-white focus:outline-none" />
                                 {serviceCatalog.length > 0 && (
                                   <select
                                     onChange={e => { if (e.target.value) handlePickService(idx, e.target.value); e.target.value = ""; }}
@@ -778,26 +778,26 @@ ${inv.notes ? `<div style="border:1px solid #e2e8f0;border-radius:8px;padding:14
                           <input type="text" value={item.hsn}
                             onChange={e => handleUpdateLineItem(idx, "hsn", e.target.value)}
                             placeholder={item.itemType === "service" ? "998311" : "HSN"}
-                            className="w-full bg-slate-900 border border-slate-800 rounded p-1 text-[10px] text-white font-mono focus:outline-none" />
+                            className="w-full bg-white border border-slate-200 rounded p-1 text-[10px] text-white font-mono focus:outline-none" />
                         </div>
 
                         <div className="col-span-1">
                           <label className="block text-slate-500 mb-0.5 font-mono uppercase">Qty</label>
                           <input type="number" min={1} required value={item.qty}
                             onChange={e => handleUpdateLineItem(idx, "qty", Number(e.target.value))}
-                            className="w-full bg-slate-900 border border-slate-800 rounded p-1 text-[10px] text-white font-mono focus:outline-none" />
+                            className="w-full bg-white border border-slate-200 rounded p-1 text-[10px] text-white font-mono focus:outline-none" />
                         </div>
 
                         <div className="col-span-2">
                           <label className="block text-slate-500 mb-0.5 font-mono uppercase">Rate ₹</label>
                           <input type="number" min={0} value={item.rate}
                             onChange={e => handleUpdateLineItem(idx, "rate", Number(e.target.value))}
-                            className="w-full bg-slate-900 border border-slate-800 rounded p-1 text-[10px] text-white font-mono focus:outline-none" />
+                            className="w-full bg-white border border-slate-200 rounded p-1 text-[10px] text-white font-mono focus:outline-none" />
                         </div>
 
                         <div className="col-span-2 flex flex-col justify-end">
                           <label className="block text-slate-500 mb-0.5 font-mono uppercase">Amount</label>
-                          <div className={`font-mono font-bold text-xs p-1 ${item.itemType === "service" ? "text-violet-400" : "text-slate-200"}`}>
+                          <div className={`font-mono font-bold text-xs p-1 ${item.itemType === "service" ? "text-violet-400" : "text-slate-700"}`}>
                             {formatINR(item.amount)}
                           </div>
                         </div>
@@ -807,11 +807,11 @@ ${inv.notes ? `<div style="border:1px solid #e2e8f0;border-radius:8px;padding:14
                 </div>
 
                 {/* Summary */}
-                <div className="bg-slate-900/40 p-3 rounded-lg border border-slate-800 mt-2 flex items-center justify-between text-xs">
+                <div className="bg-slate-50 p-3 rounded-lg border border-slate-200 mt-2 flex items-center justify-between text-xs">
                   <div className="flex items-center gap-2">
                     <span className="text-slate-400 font-mono text-[10px] uppercase font-bold">GST %</span>
                     <select value={gstPct} onChange={e => setGstPct(e.target.value)}
-                      className="bg-slate-900 border border-slate-800 rounded p-1 text-xs text-white focus:outline-none font-mono">
+                      className="bg-white border border-slate-200 rounded p-1 text-xs text-white focus:outline-none font-mono">
                       <option value="18">18%</option>
                       <option value="12">12%</option>
                       <option value="5">5%</option>
@@ -824,9 +824,9 @@ ${inv.notes ? `<div style="border:1px solid #e2e8f0;border-radius:8px;padding:14
                     </div>
                   </div>
                   <div className="text-right font-mono space-y-0.5 text-slate-400">
-                    <div>Subtotal: <span className="text-slate-200 font-bold">{formatINR(subtotalSum)}</span></div>
-                    <div>GST ({gstPct}%): <span className="text-slate-200 font-bold">{formatINR(gstTax)}</span></div>
-                    <div className="text-emerald-400 font-bold text-sm border-t border-slate-800 pt-0.5">Total: {formatINR(totalSum)}</div>
+                    <div>Subtotal: <span className="text-slate-700 font-bold">{formatINR(subtotalSum)}</span></div>
+                    <div>GST ({gstPct}%): <span className="text-slate-700 font-bold">{formatINR(gstTax)}</span></div>
+                    <div className="text-emerald-400 font-bold text-sm border-t border-slate-200 pt-0.5">Total: {formatINR(totalSum)}</div>
                   </div>
                 </div>
               </div>
@@ -837,20 +837,20 @@ ${inv.notes ? `<div style="border:1px solid #e2e8f0;border-radius:8px;padding:14
                   <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 font-mono">Notes</label>
                   <textarea rows={2} value={notes} onChange={e => setNotes(e.target.value)}
                     placeholder="Payment instructions, bank details..."
-                    className="w-full bg-slate-900 border border-slate-800 rounded-lg p-2 text-xs text-white focus:outline-none" />
+                    className="w-full bg-white border border-slate-200 rounded-lg p-2 text-xs text-white focus:outline-none" />
                 </div>
                 <div>
                   <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 font-mono">Terms & Conditions</label>
                   <textarea rows={2} value={terms} onChange={e => setTerms(e.target.value)}
                     placeholder="Payment due within 30 days..."
-                    className="w-full bg-slate-900 border border-slate-800 rounded-lg p-2 text-xs text-white focus:outline-none" />
+                    className="w-full bg-white border border-slate-200 rounded-lg p-2 text-xs text-white focus:outline-none" />
                 </div>
               </div>
             </div>
 
-            <div className="flex justify-end gap-2.5 pt-3 border-t border-slate-800">
+            <div className="flex justify-end gap-2.5 pt-3 border-t border-slate-200">
               <button type="button" onClick={() => { setShowAddModal(false); setEditingInvoice(null); }}
-                className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-xs font-bold cursor-pointer">Cancel</button>
+                className="px-4 py-2 bg-slate-100 hover:bg-slate-700 text-slate-300 rounded-lg text-xs font-bold cursor-pointer">Cancel</button>
               <button type="submit"
                 className="px-5 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg text-xs font-bold cursor-pointer">
                 {editingInvoice ? "Save Changes" : "Create Invoice"}
@@ -863,10 +863,10 @@ ${inv.notes ? `<div style="border:1px solid #e2e8f0;border-radius:8px;padding:14
       {/* View Modal */}
       {viewingInvoice && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-          <div className="w-full max-w-2xl rounded-xl border border-slate-800 bg-slate-950 p-6 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto">
-            <div className="border-b border-slate-800 pb-2 flex items-center justify-between">
+          <div className="w-full max-w-2xl rounded-xl border border-slate-200 bg-white p-6 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto">
+            <div className="border-b border-slate-200 pb-2 flex items-center justify-between">
               <span className="font-mono text-xs font-bold text-indigo-400">{viewingInvoice.invoiceNumber}</span>
-              <button onClick={() => setViewingInvoice(null)} className="text-slate-400 hover:text-white font-bold text-lg">×</button>
+              <button onClick={() => setViewingInvoice(null)} className="text-slate-400 hover:text-slate-800 font-bold text-lg">×</button>
             </div>
             <div className="space-y-3 text-xs">
               <div className="grid grid-cols-2 gap-2 text-slate-400">
@@ -898,7 +898,7 @@ ${inv.notes ? `<div style="border:1px solid #e2e8f0;border-radius:8px;padding:14
                     <div className="mt-2">
                       <div className="text-[9px] text-slate-500 mb-1">Signed QR Code (paste into invoice print)</div>
                       <textarea readOnly value={viewingInvoice.qrCode} rows={2}
-                        className="w-full bg-slate-900 border border-slate-700 rounded text-[9px] font-mono text-slate-400 p-1 resize-none" />
+                        className="w-full bg-white border border-slate-200 rounded text-[9px] font-mono text-slate-400 p-1 resize-none" />
                     </div>
                   )}
                 </div>
@@ -913,9 +913,9 @@ ${inv.notes ? `<div style="border:1px solid #e2e8f0;border-radius:8px;padding:14
                 </button>
               )}
               {viewingInvoice.billingAddress && (
-                <div className="text-slate-500 text-[10px] border-t border-slate-800 pt-2">{viewingInvoice.billingAddress}</div>
+                <div className="text-slate-500 text-[10px] border-t border-slate-200 pt-2">{viewingInvoice.billingAddress}</div>
               )}
-              <div className="border-t border-slate-800 pt-2 text-right">
+              <div className="border-t border-slate-200 pt-2 text-right">
                 <span className="text-slate-500 block text-[10px]">Total Amount</span>
                 <strong className="text-base text-emerald-400 font-mono">{formatINR(viewingInvoice.totalAmount)}</strong>
               </div>
@@ -933,13 +933,13 @@ ${inv.notes ? `<div style="border:1px solid #e2e8f0;border-radius:8px;padding:14
                     <label className="block text-[9px] font-bold text-slate-500 uppercase mb-1">e-Way Bill No</label>
                     <input type="text" defaultValue={viewingInvoice.eWayBillNo || ""}
                       onBlur={e => setInvoices(prev => prev.map(i => i.id === viewingInvoice.id ? { ...i, eWayBillNo: e.target.value } : i))}
-                      className="w-full bg-slate-900 border border-slate-700 rounded px-2 py-1 text-xs text-white font-mono focus:outline-none focus:border-amber-500" placeholder="12-digit EWB No" />
+                      className="w-full bg-white border border-slate-200 rounded px-2 py-1 text-xs text-white font-mono focus:outline-none focus:border-amber-500" placeholder="12-digit EWB No" />
                   </div>
                   <div>
                     <label className="block text-[9px] font-bold text-slate-500 uppercase mb-1">Transport Mode</label>
                     <select defaultValue={viewingInvoice.transportMode || "Road"}
                       onBlur={e => setInvoices(prev => prev.map(i => i.id === viewingInvoice.id ? { ...i, transportMode: e.target.value as "Road"|"Rail"|"Air"|"Ship" } : i))}
-                      className="w-full bg-slate-900 border border-slate-700 rounded px-2 py-1 text-xs text-white focus:outline-none focus:border-amber-500">
+                      className="w-full bg-white border border-slate-200 rounded px-2 py-1 text-xs text-white focus:outline-none focus:border-amber-500">
                       <option>Road</option><option>Rail</option><option>Air</option><option>Ship</option>
                     </select>
                   </div>
@@ -947,61 +947,61 @@ ${inv.notes ? `<div style="border:1px solid #e2e8f0;border-radius:8px;padding:14
                     <label className="block text-[9px] font-bold text-slate-500 uppercase mb-1">Vehicle Number</label>
                     <input type="text" defaultValue={viewingInvoice.vehicleNumber || ""}
                       onBlur={e => setInvoices(prev => prev.map(i => i.id === viewingInvoice.id ? { ...i, vehicleNumber: e.target.value } : i))}
-                      className="w-full bg-slate-900 border border-slate-700 rounded px-2 py-1 text-xs text-white font-mono uppercase focus:outline-none focus:border-amber-500" placeholder="WB12AB1234" />
+                      className="w-full bg-white border border-slate-200 rounded px-2 py-1 text-xs text-white font-mono uppercase focus:outline-none focus:border-amber-500" placeholder="WB12AB1234" />
                   </div>
                   <div>
                     <label className="block text-[9px] font-bold text-slate-500 uppercase mb-1">Distance (KM)</label>
                     <input type="number" defaultValue={viewingInvoice.transportDistance || ""}
                       onBlur={e => setInvoices(prev => prev.map(i => i.id === viewingInvoice.id ? { ...i, transportDistance: Number(e.target.value) } : i))}
-                      className="w-full bg-slate-900 border border-slate-700 rounded px-2 py-1 text-xs text-white focus:outline-none focus:border-amber-500" placeholder="e.g. 250" />
+                      className="w-full bg-white border border-slate-200 rounded px-2 py-1 text-xs text-white focus:outline-none focus:border-amber-500" placeholder="e.g. 250" />
                   </div>
                   <div>
                     <label className="block text-[9px] font-bold text-slate-500 uppercase mb-1">Transporter Name</label>
                     <input type="text" defaultValue={viewingInvoice.transporterName || ""}
                       onBlur={e => setInvoices(prev => prev.map(i => i.id === viewingInvoice.id ? { ...i, transporterName: e.target.value } : i))}
-                      className="w-full bg-slate-900 border border-slate-700 rounded px-2 py-1 text-xs text-white focus:outline-none focus:border-amber-500" placeholder="Transporter company name" />
+                      className="w-full bg-white border border-slate-200 rounded px-2 py-1 text-xs text-white focus:outline-none focus:border-amber-500" placeholder="Transporter company name" />
                   </div>
                   <div>
                     <label className="block text-[9px] font-bold text-slate-500 uppercase mb-1">Transporter GSTIN</label>
                     <input type="text" defaultValue={viewingInvoice.transporterId || ""}
                       onBlur={e => setInvoices(prev => prev.map(i => i.id === viewingInvoice.id ? { ...i, transporterId: e.target.value } : i))}
-                      className="w-full bg-slate-900 border border-slate-700 rounded px-2 py-1 text-xs text-white font-mono focus:outline-none focus:border-amber-500" placeholder="15-digit GSTIN" />
+                      className="w-full bg-white border border-slate-200 rounded px-2 py-1 text-xs text-white font-mono focus:outline-none focus:border-amber-500" placeholder="15-digit GSTIN" />
                   </div>
                   <div>
                     <label className="block text-[9px] font-bold text-slate-500 uppercase mb-1">LR / Doc No</label>
                     <input type="text" defaultValue={viewingInvoice.transportDocNo || ""}
                       onBlur={e => setInvoices(prev => prev.map(i => i.id === viewingInvoice.id ? { ...i, transportDocNo: e.target.value } : i))}
-                      className="w-full bg-slate-900 border border-slate-700 rounded px-2 py-1 text-xs text-white font-mono focus:outline-none focus:border-amber-500" placeholder="LR/RR/Airway Bill No" />
+                      className="w-full bg-white border border-slate-200 rounded px-2 py-1 text-xs text-white font-mono focus:outline-none focus:border-amber-500" placeholder="LR/RR/Airway Bill No" />
                   </div>
                   <div>
                     <label className="block text-[9px] font-bold text-slate-500 uppercase mb-1">Doc Date</label>
                     <input type="date" defaultValue={viewingInvoice.transportDocDate || ""}
                       onBlur={e => setInvoices(prev => prev.map(i => i.id === viewingInvoice.id ? { ...i, transportDocDate: e.target.value } : i))}
-                      className="w-full bg-slate-900 border border-slate-700 rounded px-2 py-1 text-xs text-white focus:outline-none focus:border-amber-500" />
+                      className="w-full bg-white border border-slate-200 rounded px-2 py-1 text-xs text-white focus:outline-none focus:border-amber-500" />
                   </div>
                   <div>
                     <label className="block text-[9px] font-bold text-slate-500 uppercase mb-1">Valid From</label>
                     <input type="date" defaultValue={viewingInvoice.ewbValidFrom || ""}
                       onBlur={e => setInvoices(prev => prev.map(i => i.id === viewingInvoice.id ? { ...i, ewbValidFrom: e.target.value } : i))}
-                      className="w-full bg-slate-900 border border-slate-700 rounded px-2 py-1 text-xs text-white focus:outline-none focus:border-amber-500" />
+                      className="w-full bg-white border border-slate-200 rounded px-2 py-1 text-xs text-white focus:outline-none focus:border-amber-500" />
                   </div>
                   <div>
                     <label className="block text-[9px] font-bold text-slate-500 uppercase mb-1">Valid Until</label>
                     <input type="date" defaultValue={viewingInvoice.ewbValidUntil || ""}
                       onBlur={e => setInvoices(prev => prev.map(i => i.id === viewingInvoice.id ? { ...i, ewbValidUntil: e.target.value } : i))}
-                      className="w-full bg-slate-900 border border-slate-700 rounded px-2 py-1 text-xs text-white focus:outline-none focus:border-amber-500" />
+                      className="w-full bg-white border border-slate-200 rounded px-2 py-1 text-xs text-white focus:outline-none focus:border-amber-500" />
                   </div>
                 </div>
                 <p className="text-[9px] text-slate-600">Fields save automatically on tab/click away. Transport details print on invoice PDF.</p>
               </div>
             </div>
-            <div className="flex justify-end gap-2 pt-2 border-t border-slate-800">
+            <div className="flex justify-end gap-2 pt-2 border-t border-slate-200">
               <button onClick={() => downloadInvoicePDF(viewingInvoice)}
                 className="flex items-center gap-1.5 px-4 py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg text-xs font-bold cursor-pointer">
                 <Download className="h-3.5 w-3.5" /> PDF
               </button>
               <button onClick={() => setViewingInvoice(null)}
-                className="px-4 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-xs cursor-pointer">Close</button>
+                className="px-4 py-1.5 bg-slate-100 hover:bg-slate-700 text-slate-300 rounded-lg text-xs cursor-pointer">Close</button>
             </div>
           </div>
         </div>
@@ -1031,7 +1031,7 @@ ${inv.notes ? `<div style="border:1px solid #e2e8f0;border-radius:8px;padding:14
       )}
       {showGSTBuilder && (!company || !setCompany) && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60">
-          <div className="bg-slate-900 border border-slate-700 rounded-xl p-6 text-white text-sm max-w-md">
+          <div className="bg-white border border-slate-200 rounded-xl p-6 text-white text-sm max-w-md">
             <p className="mb-4">Company profile not loaded. Please reload the page and try again.</p>
             <button onClick={() => setShowGSTBuilder(false)} className="px-4 py-2 bg-slate-700 rounded-lg cursor-pointer">Close</button>
           </div>
@@ -1040,3 +1040,5 @@ ${inv.notes ? `<div style="border:1px solid #e2e8f0;border-radius:8px;padding:14
     </div>
   );
 }
+
+

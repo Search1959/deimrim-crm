@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+﻿import React, { useState, useEffect } from "react";
 import {
   MessageSquare, ShieldAlert, FileText, CreditCard, Award,
   Building2, Users, AlertCircle, ClipboardCheck, Truck, Wrench, Sparkles
@@ -211,3 +211,4 @@ export default function SalesCRMView({
     </div>
   );
 }
+

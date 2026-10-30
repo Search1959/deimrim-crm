@@ -254,7 +254,7 @@ Peter Gregory,peter@raviga.com,+1 (415) 555-0101,dept-it,des-se,2026-04-12,25000
   return (
     <div className="space-y-6">
       {/* Top action bar */}
-      <div className="flex flex-col sm:flex-row items-center justify-between gap-4 bg-slate-950/40 border border-slate-800 rounded-xl p-4">
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-4 bg-slate-50 border border-slate-200 rounded-xl p-4">
         <h3 className="text-sm font-bold text-slate-300 font-mono">Workforce Profiles Registry</h3>
         <div className="flex flex-wrap gap-2 w-full sm:w-auto justify-end">
           <button
@@ -266,14 +266,14 @@ Peter Gregory,peter@raviga.com,+1 (415) 555-0101,dept-it,des-se,2026-04-12,25000
           </button>
           <button
             onClick={() => setShowImportModal(true)}
-            className="flex items-center gap-1.5 rounded-lg border border-slate-800 bg-slate-900 hover:bg-slate-800 px-3 py-1.5 text-xs font-bold text-slate-300 transition-all cursor-pointer"
+            className="flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white hover:bg-slate-100 px-3 py-1.5 text-xs font-bold text-slate-300 transition-all cursor-pointer"
           >
             <Upload className="h-3.5 w-3.5 text-slate-400" />
             <span>Import Staff</span>
           </button>
           <button
             onClick={handleExportCSV}
-            className="flex items-center gap-1.5 rounded-lg border border-slate-800 bg-slate-900 hover:bg-slate-800 px-3 py-1.5 text-xs font-bold text-slate-300 transition-all cursor-pointer"
+            className="flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white hover:bg-slate-100 px-3 py-1.5 text-xs font-bold text-slate-300 transition-all cursor-pointer"
           >
             <Download className="h-3.5 w-3.5 text-slate-400" />
             <span>Export CSV</span>
@@ -283,8 +283,8 @@ Peter Gregory,peter@raviga.com,+1 (415) 555-0101,dept-it,des-se,2026-04-12,25000
 
       {/* ADD EMPLOYEE FORM: Exactly matches fields in Image 2 */}
       {showAddEmployee && (
-        <div className="bg-slate-950 border border-slate-800 rounded-xl overflow-hidden shadow-2xl animate-fadeIn">
-          <div className="px-5 py-4 border-b border-slate-800 bg-slate-900/60 flex items-center justify-between">
+        <div className="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-2xl animate-fadeIn">
+          <div className="px-5 py-4 border-b border-slate-200 bg-slate-50 flex items-center justify-between">
             <h3 className="font-bold text-sm text-white font-mono flex items-center gap-2">
               <Plus className="h-4 w-4 text-indigo-400" />
               <span>Add Employee</span>
@@ -292,7 +292,7 @@ Peter Gregory,peter@raviga.com,+1 (415) 555-0101,dept-it,des-se,2026-04-12,25000
             <button 
               type="button" 
               onClick={() => setShowAddEmployee(false)} 
-              className="p-1 text-slate-400 hover:text-white rounded-md bg-slate-900 border border-slate-800 transition-all cursor-pointer"
+              className="p-1 text-slate-400 hover:text-slate-800 rounded-md bg-white border border-slate-200 transition-all cursor-pointer"
             >
               <X className="h-4 w-4" />
             </button>
@@ -309,7 +309,7 @@ Peter Gregory,peter@raviga.com,+1 (415) 555-0101,dept-it,des-se,2026-04-12,25000
                   placeholder="Enter employee full name"
                   value={form.name}
                   onChange={(e) => setForm(prev => ({ ...prev, name: e.target.value }))}
-                  className="w-full rounded-lg border border-slate-800 bg-slate-900 p-2 text-sm text-white focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                  className="w-full rounded-lg border border-slate-200 bg-white p-2 text-sm text-slate-800 focus:outline-none focus:ring-1 focus:ring-indigo-500"
                 />
               </div>
 
@@ -321,7 +321,7 @@ Peter Gregory,peter@raviga.com,+1 (415) 555-0101,dept-it,des-se,2026-04-12,25000
                   placeholder="Enter email address"
                   value={form.email}
                   onChange={(e) => setForm(prev => ({ ...prev, email: e.target.value }))}
-                  className="w-full rounded-lg border border-slate-800 bg-slate-900 p-2 text-sm text-white focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                  className="w-full rounded-lg border border-slate-200 bg-white p-2 text-sm text-slate-800 focus:outline-none focus:ring-1 focus:ring-indigo-500"
                 />
               </div>
 
@@ -332,7 +332,7 @@ Peter Gregory,peter@raviga.com,+1 (415) 555-0101,dept-it,des-se,2026-04-12,25000
                   placeholder="Enter contact number"
                   value={form.phone}
                   onChange={(e) => setForm(prev => ({ ...prev, phone: e.target.value }))}
-                  className="w-full rounded-lg border border-slate-800 bg-slate-900 p-2 text-sm text-white focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                  className="w-full rounded-lg border border-slate-200 bg-white p-2 text-sm text-slate-800 focus:outline-none focus:ring-1 focus:ring-indigo-500"
                 />
               </div>
 
@@ -342,7 +342,7 @@ Peter Gregory,peter@raviga.com,+1 (415) 555-0101,dept-it,des-se,2026-04-12,25000
                   type="date"
                   value={form.dob}
                   onChange={(e) => setForm(prev => ({ ...prev, dob: e.target.value }))}
-                  className="w-full rounded-lg border border-slate-800 bg-slate-900 p-2 text-sm text-white focus:outline-none focus:ring-1 focus:ring-indigo-500 font-mono"
+                  className="w-full rounded-lg border border-slate-200 bg-white p-2 text-sm text-slate-800 focus:outline-none focus:ring-1 focus:ring-indigo-500 font-mono"
                 />
               </div>
 
@@ -351,7 +351,7 @@ Peter Gregory,peter@raviga.com,+1 (415) 555-0101,dept-it,des-se,2026-04-12,25000
                 <select
                   value={form.gender}
                   onChange={(e) => setForm(prev => ({ ...prev, gender: e.target.value }))}
-                  className="w-full rounded-lg border border-slate-800 bg-slate-900 p-2 text-sm text-white focus:outline-none focus:ring-1 focus:ring-indigo-500 font-semibold"
+                  className="w-full rounded-lg border border-slate-200 bg-white p-2 text-sm text-slate-800 focus:outline-none focus:ring-1 focus:ring-indigo-500 font-semibold"
                 >
                   <option value="">— Select —</option>
                   <option value="Male">Male</option>
@@ -366,7 +366,7 @@ Peter Gregory,peter@raviga.com,+1 (415) 555-0101,dept-it,des-se,2026-04-12,25000
                 <select
                   value={form.departmentId}
                   onChange={(e) => setForm(prev => ({ ...prev, departmentId: e.target.value }))}
-                  className="w-full rounded-lg border border-slate-800 bg-slate-900 p-2 text-sm text-white focus:outline-none focus:ring-1 focus:ring-indigo-500 font-semibold"
+                  className="w-full rounded-lg border border-slate-200 bg-white p-2 text-sm text-slate-800 focus:outline-none focus:ring-1 focus:ring-indigo-500 font-semibold"
                 >
                   <option value="">— Select —</option>
                   {departments.map(d => (
@@ -380,7 +380,7 @@ Peter Gregory,peter@raviga.com,+1 (415) 555-0101,dept-it,des-se,2026-04-12,25000
                 <select
                   value={form.designationId}
                   onChange={(e) => setForm(prev => ({ ...prev, designationId: e.target.value }))}
-                  className="w-full rounded-lg border border-slate-800 bg-slate-900 p-2 text-sm text-white focus:outline-none focus:ring-1 focus:ring-indigo-500 font-semibold"
+                  className="w-full rounded-lg border border-slate-200 bg-white p-2 text-sm text-slate-800 focus:outline-none focus:ring-1 focus:ring-indigo-500 font-semibold"
                 >
                   <option value="">— Select —</option>
                   {designations.map(ds => (
@@ -395,7 +395,7 @@ Peter Gregory,peter@raviga.com,+1 (415) 555-0101,dept-it,des-se,2026-04-12,25000
                   type="date"
                   value={form.joiningDate}
                   onChange={(e) => setForm(prev => ({ ...prev, joiningDate: e.target.value }))}
-                  className="w-full rounded-lg border border-slate-800 bg-slate-900 p-2 text-sm text-white focus:outline-none focus:ring-1 focus:ring-indigo-500 font-mono"
+                  className="w-full rounded-lg border border-slate-200 bg-white p-2 text-sm text-slate-800 focus:outline-none focus:ring-1 focus:ring-indigo-500 font-mono"
                 />
               </div>
 
@@ -406,13 +406,13 @@ Peter Gregory,peter@raviga.com,+1 (415) 555-0101,dept-it,des-se,2026-04-12,25000
                   placeholder="0"
                   value={form.salary || ""}
                   onChange={(e) => setForm(prev => ({ ...prev, salary: Number(e.target.value) }))}
-                  className="w-full rounded-lg border border-slate-800 bg-slate-900 p-2 text-sm text-white focus:outline-none focus:ring-1 focus:ring-indigo-500 font-mono"
+                  className="w-full rounded-lg border border-slate-200 bg-white p-2 text-sm text-slate-800 focus:outline-none focus:ring-1 focus:ring-indigo-500 font-mono"
                 />
               </div>
             </div>
 
             {/* BANK DETAILS */}
-            <div className="space-y-3 pt-3 border-t border-slate-800/80">
+            <div className="space-y-3 pt-3 border-t border-slate-200/80">
               <h4 className="text-xs font-extrabold text-indigo-400 uppercase tracking-widest font-mono">BANK DETAILS</h4>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
@@ -422,7 +422,7 @@ Peter Gregory,peter@raviga.com,+1 (415) 555-0101,dept-it,des-se,2026-04-12,25000
                     placeholder="Enter bank account number"
                     value={form.bankAccountNumber}
                     onChange={(e) => setForm(prev => ({ ...prev, bankAccountNumber: e.target.value }))}
-                    className="w-full rounded-lg border border-slate-800 bg-slate-900 p-2 text-sm text-white focus:outline-none focus:ring-1 focus:ring-indigo-500 font-mono"
+                    className="w-full rounded-lg border border-slate-200 bg-white p-2 text-sm text-slate-800 focus:outline-none focus:ring-1 focus:ring-indigo-500 font-mono"
                   />
                 </div>
                 <div>
@@ -432,7 +432,7 @@ Peter Gregory,peter@raviga.com,+1 (415) 555-0101,dept-it,des-se,2026-04-12,25000
                     placeholder="Enter bank IFSC branch code"
                     value={form.bankIfsc}
                     onChange={(e) => setForm(prev => ({ ...prev, bankIfsc: e.target.value }))}
-                    className="w-full rounded-lg border border-slate-800 bg-slate-900 p-2 text-sm text-white focus:outline-none focus:ring-1 focus:ring-indigo-500 font-mono uppercase"
+                    className="w-full rounded-lg border border-slate-200 bg-white p-2 text-sm text-slate-800 focus:outline-none focus:ring-1 focus:ring-indigo-500 font-mono uppercase"
                   />
                 </div>
                 <div className="md:col-span-2">
@@ -442,14 +442,14 @@ Peter Gregory,peter@raviga.com,+1 (415) 555-0101,dept-it,des-se,2026-04-12,25000
                     placeholder="Enter commercial bank name"
                     value={form.bankName}
                     onChange={(e) => setForm(prev => ({ ...prev, bankName: e.target.value }))}
-                    className="w-full rounded-lg border border-slate-800 bg-slate-900 p-2 text-sm text-white focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                    className="w-full rounded-lg border border-slate-200 bg-white p-2 text-sm text-slate-800 focus:outline-none focus:ring-1 focus:ring-indigo-500"
                   />
                 </div>
               </div>
             </div>
 
             {/* EMERGENCY CONTACT */}
-            <div className="space-y-3 pt-3 border-t border-slate-800/80">
+            <div className="space-y-3 pt-3 border-t border-slate-200/80">
               <h4 className="text-xs font-extrabold text-indigo-400 uppercase tracking-widest font-mono">EMERGENCY CONTACT</h4>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
@@ -459,7 +459,7 @@ Peter Gregory,peter@raviga.com,+1 (415) 555-0101,dept-it,des-se,2026-04-12,25000
                     placeholder="Contact person's name"
                     value={form.emergencyName}
                     onChange={(e) => setForm(prev => ({ ...prev, emergencyName: e.target.value }))}
-                    className="w-full rounded-lg border border-slate-800 bg-slate-900 p-2 text-sm text-white focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                    className="w-full rounded-lg border border-slate-200 bg-white p-2 text-sm text-slate-800 focus:outline-none focus:ring-1 focus:ring-indigo-500"
                   />
                 </div>
                 <div>
@@ -469,7 +469,7 @@ Peter Gregory,peter@raviga.com,+1 (415) 555-0101,dept-it,des-se,2026-04-12,25000
                     placeholder="Contact person's phone number"
                     value={form.emergencyPhone}
                     onChange={(e) => setForm(prev => ({ ...prev, emergencyPhone: e.target.value }))}
-                    className="w-full rounded-lg border border-slate-800 bg-slate-900 p-2 text-sm text-white focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                    className="w-full rounded-lg border border-slate-200 bg-white p-2 text-sm text-slate-800 focus:outline-none focus:ring-1 focus:ring-indigo-500"
                   />
                 </div>
                 <div className="md:col-span-2">
@@ -479,18 +479,18 @@ Peter Gregory,peter@raviga.com,+1 (415) 555-0101,dept-it,des-se,2026-04-12,25000
                     placeholder="Residential address details"
                     value={form.emergencyAddress}
                     onChange={(e) => setForm(prev => ({ ...prev, emergencyAddress: e.target.value }))}
-                    className="w-full rounded-lg border border-slate-800 bg-slate-900 p-2 text-sm text-white focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                    className="w-full rounded-lg border border-slate-200 bg-white p-2 text-sm text-slate-800 focus:outline-none focus:ring-1 focus:ring-indigo-500"
                   />
                 </div>
               </div>
             </div>
 
             {/* Form actions */}
-            <div className="flex justify-end gap-3 pt-4 border-t border-slate-800">
+            <div className="flex justify-end gap-3 pt-4 border-t border-slate-200">
               <button 
                 type="button" 
                 onClick={() => setShowAddEmployee(false)}
-                className="px-4 py-2 border border-slate-800 bg-slate-900 hover:bg-slate-850 rounded-lg text-xs font-bold text-slate-300 cursor-pointer"
+                className="px-4 py-2 border border-slate-200 bg-white hover:bg-slate-850 rounded-lg text-xs font-bold text-slate-300 cursor-pointer"
               >
                 Cancel
               </button>
@@ -506,7 +506,7 @@ Peter Gregory,peter@raviga.com,+1 (415) 555-0101,dept-it,des-se,2026-04-12,25000
       )}
 
       {/* SEARCH AND FILTERING PANEL */}
-      <div className="bg-slate-950/40 border border-slate-800 rounded-xl p-4 flex flex-col md:flex-row gap-4 items-center">
+      <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 flex flex-col md:flex-row gap-4 items-center">
         <div className="relative flex-1 w-full">
           <Search className="absolute left-3 top-2.5 h-4 w-4 text-slate-500" />
           <input
@@ -514,7 +514,7 @@ Peter Gregory,peter@raviga.com,+1 (415) 555-0101,dept-it,des-se,2026-04-12,25000
             placeholder="Search by Employee Code, Name, or Email..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full rounded-lg border border-slate-800 bg-slate-900 pl-9 pr-4 py-2 text-xs text-white focus:outline-none focus:ring-1 focus:ring-indigo-500 font-medium"
+            className="w-full rounded-lg border border-slate-200 bg-white pl-9 pr-4 py-2 text-xs text-white focus:outline-none focus:ring-1 focus:ring-indigo-500 font-medium"
           />
         </div>
         <div className="flex items-center gap-2 w-full md:w-auto shrink-0 justify-end">
@@ -522,7 +522,7 @@ Peter Gregory,peter@raviga.com,+1 (415) 555-0101,dept-it,des-se,2026-04-12,25000
           <select
             value={deptFilter}
             onChange={(e) => setDeptFilter(e.target.value)}
-            className="rounded-lg border border-slate-800 bg-slate-900 px-3 py-2 text-xs text-slate-300 font-semibold focus:outline-none"
+            className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs text-slate-300 font-semibold focus:outline-none"
           >
             <option value="">All Departments</option>
             {departments.map(d => (
@@ -539,18 +539,18 @@ Peter Gregory,peter@raviga.com,+1 (415) 555-0101,dept-it,des-se,2026-04-12,25000
           const des = designations.find(d => d.id === emp.designationId);
 
           return (
-            <div key={emp.id} className="bg-slate-950/50 border border-slate-800/80 rounded-xl p-5 space-y-4 shadow-sm hover:border-indigo-500/50 transition-all">
+            <div key={emp.id} className="bg-slate-500 border border-slate-200/80 rounded-xl p-5 space-y-4 shadow-sm hover:border-indigo-500/50 transition-all">
               <div className="flex items-center gap-3">
                 <div className="h-10 w-10 shrink-0 flex items-center justify-center rounded-full bg-indigo-500/10 text-indigo-400 font-bold text-sm border border-indigo-500/20">
                   {emp.name.split(" ").map(n => n[0]).join("")}
                 </div>
                 <div className="text-left">
-                  <h4 className="font-bold text-slate-200 text-sm leading-tight">{emp.name}</h4>
+                  <h4 className="font-bold text-slate-700 text-sm leading-tight">{emp.name}</h4>
                   <span className="text-[10px] font-mono text-slate-400 font-bold block mt-0.5">{emp.employeeCode}</span>
                 </div>
               </div>
 
-              <div className="space-y-1.5 text-xs text-slate-400 border-t border-b border-slate-800/50 py-3 text-left">
+              <div className="space-y-1.5 text-xs text-slate-400 border-t border-b border-slate-200/50 py-3 text-left">
                 <div>Department: <strong className="text-slate-300 font-semibold">{dept?.name || "Corporate"}</strong></div>
                 <div>Designation: <span className="text-slate-300 font-medium">{des?.name || "N/A"}</span></div>
                 <div>Email: <span className="font-mono text-indigo-400 font-semibold text-[11px]">{emp.email}</span></div>
@@ -559,10 +559,10 @@ Peter Gregory,peter@raviga.com,+1 (415) 555-0101,dept-it,des-se,2026-04-12,25000
 
               <div className="flex justify-between items-center text-xs">
                 <span className="text-slate-500 font-bold uppercase tracking-wider text-[10px] font-mono">Monthly Salary</span>
-                <strong className="text-slate-200 font-mono font-extrabold">{formatINR(emp.salary)}</strong>
+                <strong className="text-slate-700 font-mono font-extrabold">{formatINR(emp.salary)}</strong>
               </div>
 
-              <div className="flex justify-between items-center pt-2 border-t border-slate-800/40">
+              <div className="flex justify-between items-center pt-2 border-t border-slate-200/40">
                 <span className={`inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide border ${
                   emp.status === "active" ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20" :
                   emp.status === "on_leave" ? "bg-amber-500/10 text-amber-400 border-amber-500/20" :
@@ -573,14 +573,14 @@ Peter Gregory,peter@raviga.com,+1 (415) 555-0101,dept-it,des-se,2026-04-12,25000
                 <div className="flex gap-1">
                   <button
                     onClick={() => setEmployeeToView(emp)}
-                    className="rounded p-1 bg-slate-900 hover:bg-slate-800 text-slate-300 border border-slate-800 transition-all cursor-pointer"
+                    className="rounded p-1 bg-white hover:bg-slate-100 text-slate-300 border border-slate-200 transition-all cursor-pointer"
                     title="View Profile Specification"
                   >
                     <Eye className="h-3.5 w-3.5" />
                   </button>
                   <button
                     onClick={() => setEmployeeToEdit(emp)}
-                    className="rounded p-1 bg-slate-900 hover:bg-slate-800 text-slate-300 border border-slate-800 transition-all cursor-pointer"
+                    className="rounded p-1 bg-white hover:bg-slate-100 text-slate-300 border border-slate-200 transition-all cursor-pointer"
                     title="Edit Profile"
                   >
                     <Edit className="h-3.5 w-3.5" />
@@ -608,15 +608,15 @@ Peter Gregory,peter@raviga.com,+1 (415) 555-0101,dept-it,des-se,2026-04-12,25000
       {/* VIEW EMPLOYEE DETAIL MODAL */}
       {employeeToView && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-          <div className="w-full max-w-lg rounded-2xl border border-slate-800 bg-slate-950 p-6 shadow-2xl animate-scaleUp text-left space-y-4 max-h-[90vh] overflow-y-auto">
-            <div className="border-b border-slate-800 pb-2 flex items-center justify-between">
+          <div className="w-full max-w-lg rounded-2xl border border-slate-200 bg-white p-6 shadow-2xl animate-scaleUp text-left space-y-4 max-h-[90vh] overflow-y-auto">
+            <div className="border-b border-slate-200 pb-2 flex items-center justify-between">
               <h4 className="font-bold text-base text-white font-mono flex items-center gap-2">
                 <Users2 className="h-5 w-5 text-indigo-400" />
                 <span>Employee Profile Sheet</span>
               </h4>
               <button 
                 onClick={() => setEmployeeToView(null)} 
-                className="p-1 text-slate-400 hover:text-white rounded-md bg-slate-900 border border-slate-850 cursor-pointer"
+                className="p-1 text-slate-400 hover:text-slate-800 rounded-md bg-white border border-slate-850 cursor-pointer"
               >
                 <X className="h-4 w-4" />
               </button>
@@ -624,7 +624,7 @@ Peter Gregory,peter@raviga.com,+1 (415) 555-0101,dept-it,des-se,2026-04-12,25000
 
             <div className="space-y-4 text-sm text-slate-300">
               {/* Header profile card */}
-              <div className="flex items-center gap-4 bg-slate-900 p-4 rounded-xl border border-slate-800/80">
+              <div className="flex items-center gap-4 bg-white p-4 rounded-xl border border-slate-200/80">
                 <div className="h-14 w-14 flex items-center justify-center rounded-full bg-indigo-500/10 text-indigo-400 font-extrabold text-xl border border-indigo-500/20">
                   {employeeToView.name.split(" ").map((n: string) => n[0]).join("")}
                 </div>
@@ -635,39 +635,39 @@ Peter Gregory,peter@raviga.com,+1 (415) 555-0101,dept-it,des-se,2026-04-12,25000
               </div>
 
               {/* Base Details info */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 bg-slate-900 p-4 rounded-xl border border-slate-800/80">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 bg-white p-4 rounded-xl border border-slate-200/80">
                 <div><strong>Email:</strong> <span className="font-mono text-indigo-400 block mt-0.5">{employeeToView.email}</span></div>
-                <div><strong>Phone:</strong> <span className="text-slate-200 block mt-0.5">{employeeToView.phone || "—"}</span></div>
-                <div><strong>DOB:</strong> <span className="text-slate-200 block mt-0.5 font-mono">{employeeToView.dob || "—"}</span></div>
-                <div><strong>Gender:</strong> <span className="text-slate-200 block mt-0.5">{employeeToView.gender || "—"}</span></div>
-                <div><strong>Department:</strong> <span className="text-slate-200 block mt-0.5 font-semibold">{departments.find(d => d.id === employeeToView.departmentId)?.name || "—"}</span></div>
-                <div><strong>Designation:</strong> <span className="text-slate-200 block mt-0.5">{designations.find(d => d.id === employeeToView.designationId)?.name || "—"}</span></div>
-                <div><strong>Joining Date:</strong> <span className="text-slate-200 block mt-0.5 font-mono">{employeeToView.joiningDate}</span></div>
-                <div><strong>Basic Salary:</strong> <span className="text-slate-200 block mt-0.5 font-mono font-bold text-indigo-400">{formatINR(employeeToView.salary)}</span></div>
+                <div><strong>Phone:</strong> <span className="text-slate-700 block mt-0.5">{employeeToView.phone || "—"}</span></div>
+                <div><strong>DOB:</strong> <span className="text-slate-700 block mt-0.5 font-mono">{employeeToView.dob || "—"}</span></div>
+                <div><strong>Gender:</strong> <span className="text-slate-700 block mt-0.5">{employeeToView.gender || "—"}</span></div>
+                <div><strong>Department:</strong> <span className="text-slate-700 block mt-0.5 font-semibold">{departments.find(d => d.id === employeeToView.departmentId)?.name || "—"}</span></div>
+                <div><strong>Designation:</strong> <span className="text-slate-700 block mt-0.5">{designations.find(d => d.id === employeeToView.designationId)?.name || "—"}</span></div>
+                <div><strong>Joining Date:</strong> <span className="text-slate-700 block mt-0.5 font-mono">{employeeToView.joiningDate}</span></div>
+                <div><strong>Basic Salary:</strong> <span className="text-slate-700 block mt-0.5 font-mono font-bold text-indigo-400">{formatINR(employeeToView.salary)}</span></div>
               </div>
 
               {/* Bank accounts view */}
-              <div className="p-4 bg-slate-900 rounded-xl border border-slate-800/80 space-y-2">
+              <div className="p-4 bg-white rounded-xl border border-slate-200/80 space-y-2">
                 <span className="block text-[10px] text-indigo-400 uppercase tracking-widest font-mono font-bold">BANK DETAILS</span>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-xs">
-                  <div><strong className="text-slate-400">Account Number:</strong> <span className="font-mono text-slate-200 block mt-0.5">{employeeToView.bankAccountNumber || "—"}</span></div>
-                  <div><strong className="text-slate-400">IFSC Code:</strong> <span className="font-mono text-slate-200 block mt-0.5 uppercase">{employeeToView.bankIfsc || "—"}</span></div>
-                  <div className="md:col-span-2"><strong className="text-slate-400">Bank Name:</strong> <span className="text-slate-200 block mt-0.5">{employeeToView.bankName || "—"}</span></div>
+                  <div><strong className="text-slate-400">Account Number:</strong> <span className="font-mono text-slate-700 block mt-0.5">{employeeToView.bankAccountNumber || "—"}</span></div>
+                  <div><strong className="text-slate-400">IFSC Code:</strong> <span className="font-mono text-slate-700 block mt-0.5 uppercase">{employeeToView.bankIfsc || "—"}</span></div>
+                  <div className="md:col-span-2"><strong className="text-slate-400">Bank Name:</strong> <span className="text-slate-700 block mt-0.5">{employeeToView.bankName || "—"}</span></div>
                 </div>
               </div>
 
               {/* Emergency Contact view */}
-              <div className="p-4 bg-slate-900 rounded-xl border border-slate-800/80 space-y-2">
+              <div className="p-4 bg-white rounded-xl border border-slate-200/80 space-y-2">
                 <span className="block text-[10px] text-indigo-400 uppercase tracking-widest font-mono font-bold">EMERGENCY CONTACT</span>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-xs">
-                  <div><strong className="text-slate-400">Contact Person Name:</strong> <span className="text-slate-200 block mt-0.5">{employeeToView.emergencyName || "—"}</span></div>
-                  <div><strong className="text-slate-400">Phone:</strong> <span className="text-slate-200 block mt-0.5">{employeeToView.emergencyPhone || "—"}</span></div>
-                  <div className="md:col-span-2"><strong className="text-slate-400">Address:</strong> <span className="text-slate-200 block mt-0.5 leading-relaxed">{employeeToView.emergencyAddress || "—"}</span></div>
+                  <div><strong className="text-slate-400">Contact Person Name:</strong> <span className="text-slate-700 block mt-0.5">{employeeToView.emergencyName || "—"}</span></div>
+                  <div><strong className="text-slate-400">Phone:</strong> <span className="text-slate-700 block mt-0.5">{employeeToView.emergencyPhone || "—"}</span></div>
+                  <div className="md:col-span-2"><strong className="text-slate-400">Address:</strong> <span className="text-slate-700 block mt-0.5 leading-relaxed">{employeeToView.emergencyAddress || "—"}</span></div>
                 </div>
               </div>
             </div>
 
-            <div className="flex justify-end pt-3 border-t border-slate-800">
+            <div className="flex justify-end pt-3 border-t border-slate-200">
               <button
                 onClick={() => setEmployeeToView(null)}
                 className="rounded-lg bg-indigo-600 hover:bg-indigo-500 px-4 py-2 text-xs font-bold text-white transition-all cursor-pointer"
@@ -682,13 +682,13 @@ Peter Gregory,peter@raviga.com,+1 (415) 555-0101,dept-it,des-se,2026-04-12,25000
       {/* EDIT EMPLOYEE MODAL */}
       {employeeToEdit && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-          <form onSubmit={handleSaveEdit} className="w-full max-w-lg rounded-2xl border border-slate-800 bg-slate-950 p-6 shadow-2xl animate-scaleUp text-left space-y-4 max-h-[90vh] overflow-y-auto">
-            <div className="border-b border-slate-800 pb-2 flex items-center justify-between">
+          <form onSubmit={handleSaveEdit} className="w-full max-w-lg rounded-2xl border border-slate-200 bg-white p-6 shadow-2xl animate-scaleUp text-left space-y-4 max-h-[90vh] overflow-y-auto">
+            <div className="border-b border-slate-200 pb-2 flex items-center justify-between">
               <h4 className="font-bold text-base text-white font-mono">Edit Staff: {employeeToEdit.name}</h4>
               <button 
                 type="button" 
                 onClick={() => setEmployeeToEdit(null)} 
-                className="p-1 text-slate-400 hover:text-white rounded-md bg-slate-900 border border-slate-850 cursor-pointer"
+                className="p-1 text-slate-400 hover:text-slate-800 rounded-md bg-white border border-slate-850 cursor-pointer"
               >
                 <X className="h-4 w-4" />
               </button>
@@ -703,7 +703,7 @@ Peter Gregory,peter@raviga.com,+1 (415) 555-0101,dept-it,des-se,2026-04-12,25000
                     required
                     value={employeeToEdit.name}
                     onChange={(e) => setEmployeeToEdit({ ...employeeToEdit, name: e.target.value })}
-                    className="w-full rounded-lg border border-slate-800 bg-slate-900 p-2 text-white focus:outline-none"
+                    className="w-full rounded-lg border border-slate-200 bg-white p-2 text-white focus:outline-none"
                   />
                 </div>
                 <div>
@@ -713,7 +713,7 @@ Peter Gregory,peter@raviga.com,+1 (415) 555-0101,dept-it,des-se,2026-04-12,25000
                     required
                     value={employeeToEdit.email}
                     onChange={(e) => setEmployeeToEdit({ ...employeeToEdit, email: e.target.value })}
-                    className="w-full rounded-lg border border-slate-800 bg-slate-900 p-2 text-white focus:outline-none"
+                    className="w-full rounded-lg border border-slate-200 bg-white p-2 text-white focus:outline-none"
                   />
                 </div>
                 <div>
@@ -722,7 +722,7 @@ Peter Gregory,peter@raviga.com,+1 (415) 555-0101,dept-it,des-se,2026-04-12,25000
                     type="text"
                     value={employeeToEdit.phone || ""}
                     onChange={(e) => setEmployeeToEdit({ ...employeeToEdit, phone: e.target.value })}
-                    className="w-full rounded-lg border border-slate-800 bg-slate-900 p-2 text-white focus:outline-none"
+                    className="w-full rounded-lg border border-slate-200 bg-white p-2 text-white focus:outline-none"
                   />
                 </div>
                 <div>
@@ -731,7 +731,7 @@ Peter Gregory,peter@raviga.com,+1 (415) 555-0101,dept-it,des-se,2026-04-12,25000
                     type="date"
                     value={employeeToEdit.dob || ""}
                     onChange={(e) => setEmployeeToEdit({ ...employeeToEdit, dob: e.target.value })}
-                    className="w-full rounded-lg border border-slate-800 bg-slate-900 p-2 text-white focus:outline-none"
+                    className="w-full rounded-lg border border-slate-200 bg-white p-2 text-white focus:outline-none"
                   />
                 </div>
                 <div>
@@ -739,7 +739,7 @@ Peter Gregory,peter@raviga.com,+1 (415) 555-0101,dept-it,des-se,2026-04-12,25000
                   <select
                     value={employeeToEdit.gender || ""}
                     onChange={(e) => setEmployeeToEdit({ ...employeeToEdit, gender: e.target.value })}
-                    className="w-full rounded-lg border border-slate-800 bg-slate-900 p-2 text-white focus:outline-none"
+                    className="w-full rounded-lg border border-slate-200 bg-white p-2 text-white focus:outline-none"
                   >
                     <option value="">Select Gender</option>
                     <option value="Male">Male</option>
@@ -753,7 +753,7 @@ Peter Gregory,peter@raviga.com,+1 (415) 555-0101,dept-it,des-se,2026-04-12,25000
                   <select
                     value={employeeToEdit.departmentId}
                     onChange={(e) => setEmployeeToEdit({ ...employeeToEdit, departmentId: e.target.value })}
-                    className="w-full rounded-lg border border-slate-800 bg-slate-900 p-2 text-white focus:outline-none"
+                    className="w-full rounded-lg border border-slate-200 bg-white p-2 text-white focus:outline-none"
                   >
                     {departments.map(d => (
                       <option key={d.id} value={d.id}>{d.name}</option>
@@ -765,7 +765,7 @@ Peter Gregory,peter@raviga.com,+1 (415) 555-0101,dept-it,des-se,2026-04-12,25000
                   <select
                     value={employeeToEdit.designationId}
                     onChange={(e) => setEmployeeToEdit({ ...employeeToEdit, designationId: e.target.value })}
-                    className="w-full rounded-lg border border-slate-800 bg-slate-900 p-2 text-white focus:outline-none"
+                    className="w-full rounded-lg border border-slate-200 bg-white p-2 text-white focus:outline-none"
                   >
                     {designations.map(ds => (
                       <option key={ds.id} value={ds.id}>{ds.name}</option>
@@ -778,7 +778,7 @@ Peter Gregory,peter@raviga.com,+1 (415) 555-0101,dept-it,des-se,2026-04-12,25000
                     type="number"
                     value={employeeToEdit.salary}
                     onChange={(e) => setEmployeeToEdit({ ...employeeToEdit, salary: Number(e.target.value) })}
-                    className="w-full rounded-lg border border-slate-800 bg-slate-900 p-2 text-white focus:outline-none font-mono"
+                    className="w-full rounded-lg border border-slate-200 bg-white p-2 text-white focus:outline-none font-mono"
                   />
                 </div>
                 <div>
@@ -787,7 +787,7 @@ Peter Gregory,peter@raviga.com,+1 (415) 555-0101,dept-it,des-se,2026-04-12,25000
                     type="date"
                     value={employeeToEdit.joiningDate}
                     onChange={(e) => setEmployeeToEdit({ ...employeeToEdit, joiningDate: e.target.value })}
-                    className="w-full rounded-lg border border-slate-800 bg-slate-900 p-2 text-white focus:outline-none font-mono"
+                    className="w-full rounded-lg border border-slate-200 bg-white p-2 text-white focus:outline-none font-mono"
                   />
                 </div>
                 <div>
@@ -795,7 +795,7 @@ Peter Gregory,peter@raviga.com,+1 (415) 555-0101,dept-it,des-se,2026-04-12,25000
                   <select
                     value={employeeToEdit.status}
                     onChange={(e) => setEmployeeToEdit({ ...employeeToEdit, status: e.target.value as any })}
-                    className="w-full rounded-lg border border-slate-800 bg-slate-900 p-2 text-white focus:outline-none"
+                    className="w-full rounded-lg border border-slate-200 bg-white p-2 text-white focus:outline-none"
                   >
                     <option value="active">Active</option>
                     <option value="on_leave">On Leave</option>
@@ -805,7 +805,7 @@ Peter Gregory,peter@raviga.com,+1 (415) 555-0101,dept-it,des-se,2026-04-12,25000
               </div>
 
               {/* Edit bank info */}
-              <div className="space-y-3 pt-3 border-t border-slate-800/80">
+              <div className="space-y-3 pt-3 border-t border-slate-200/80">
                 <span className="block text-[10px] text-indigo-400 uppercase tracking-widest font-mono font-bold">BANK DETAILS</span>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs font-semibold">
                   <div>
@@ -814,7 +814,7 @@ Peter Gregory,peter@raviga.com,+1 (415) 555-0101,dept-it,des-se,2026-04-12,25000
                       type="text"
                       value={employeeToEdit.bankAccountNumber || ""}
                       onChange={(e) => setEmployeeToEdit({ ...employeeToEdit, bankAccountNumber: e.target.value })}
-                      className="w-full rounded-lg border border-slate-800 bg-slate-900 p-2 text-white focus:outline-none font-mono"
+                      className="w-full rounded-lg border border-slate-200 bg-white p-2 text-white focus:outline-none font-mono"
                     />
                   </div>
                   <div>
@@ -823,7 +823,7 @@ Peter Gregory,peter@raviga.com,+1 (415) 555-0101,dept-it,des-se,2026-04-12,25000
                       type="text"
                       value={employeeToEdit.bankIfsc || ""}
                       onChange={(e) => setEmployeeToEdit({ ...employeeToEdit, bankIfsc: e.target.value })}
-                      className="w-full rounded-lg border border-slate-800 bg-slate-900 p-2 text-white focus:outline-none font-mono uppercase"
+                      className="w-full rounded-lg border border-slate-200 bg-white p-2 text-white focus:outline-none font-mono uppercase"
                     />
                   </div>
                   <div className="md:col-span-2">
@@ -832,14 +832,14 @@ Peter Gregory,peter@raviga.com,+1 (415) 555-0101,dept-it,des-se,2026-04-12,25000
                       type="text"
                       value={employeeToEdit.bankName || ""}
                       onChange={(e) => setEmployeeToEdit({ ...employeeToEdit, bankName: e.target.value })}
-                      className="w-full rounded-lg border border-slate-800 bg-slate-900 p-2 text-white focus:outline-none"
+                      className="w-full rounded-lg border border-slate-200 bg-white p-2 text-white focus:outline-none"
                     />
                   </div>
                 </div>
               </div>
 
               {/* Edit emergency contact */}
-              <div className="space-y-3 pt-3 border-t border-slate-800/80">
+              <div className="space-y-3 pt-3 border-t border-slate-200/80">
                 <span className="block text-[10px] text-indigo-400 uppercase tracking-widest font-mono font-bold">EMERGENCY CONTACT</span>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs font-semibold">
                   <div>
@@ -848,7 +848,7 @@ Peter Gregory,peter@raviga.com,+1 (415) 555-0101,dept-it,des-se,2026-04-12,25000
                       type="text"
                       value={employeeToEdit.emergencyName || ""}
                       onChange={(e) => setEmployeeToEdit({ ...employeeToEdit, emergencyName: e.target.value })}
-                      className="w-full rounded-lg border border-slate-800 bg-slate-900 p-2 text-white focus:outline-none"
+                      className="w-full rounded-lg border border-slate-200 bg-white p-2 text-white focus:outline-none"
                     />
                   </div>
                   <div>
@@ -857,7 +857,7 @@ Peter Gregory,peter@raviga.com,+1 (415) 555-0101,dept-it,des-se,2026-04-12,25000
                       type="text"
                       value={employeeToEdit.emergencyPhone || ""}
                       onChange={(e) => setEmployeeToEdit({ ...employeeToEdit, emergencyPhone: e.target.value })}
-                      className="w-full rounded-lg border border-slate-800 bg-slate-900 p-2 text-white focus:outline-none"
+                      className="w-full rounded-lg border border-slate-200 bg-white p-2 text-white focus:outline-none"
                     />
                   </div>
                   <div className="md:col-span-2">
@@ -866,18 +866,18 @@ Peter Gregory,peter@raviga.com,+1 (415) 555-0101,dept-it,des-se,2026-04-12,25000
                       rows={2}
                       value={employeeToEdit.emergencyAddress || ""}
                       onChange={(e) => setEmployeeToEdit({ ...employeeToEdit, emergencyAddress: e.target.value })}
-                      className="w-full rounded-lg border border-slate-800 bg-slate-900 p-2 text-white focus:outline-none"
+                      className="w-full rounded-lg border border-slate-200 bg-white p-2 text-white focus:outline-none"
                     />
                   </div>
                 </div>
               </div>
             </div>
 
-            <div className="flex justify-end gap-3 pt-3 border-t border-slate-800">
+            <div className="flex justify-end gap-3 pt-3 border-t border-slate-200">
               <button
                 type="button"
                 onClick={() => setEmployeeToEdit(null)}
-                className="rounded-lg border border-slate-800 bg-slate-900 px-4 py-2 text-xs font-bold text-slate-300"
+                className="rounded-lg border border-slate-200 bg-white px-4 py-2 text-xs font-bold text-slate-300"
               >
                 Cancel
               </button>
@@ -892,13 +892,13 @@ Peter Gregory,peter@raviga.com,+1 (415) 555-0101,dept-it,des-se,2026-04-12,25000
       {/* IMPORT EMPLOYEES MODAL */}
       {showImportModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-          <div className="w-full max-w-lg rounded-2xl border border-slate-800 bg-slate-950 p-6 shadow-2xl animate-scaleUp text-left space-y-4">
-            <div className="border-b border-slate-800 pb-2 flex items-center justify-between">
+          <div className="w-full max-w-lg rounded-2xl border border-slate-200 bg-white p-6 shadow-2xl animate-scaleUp text-left space-y-4">
+            <div className="border-b border-slate-200 pb-2 flex items-center justify-between">
               <h4 className="font-bold text-base text-white font-mono flex items-center gap-2">
                 <Upload className="h-4 w-4 text-indigo-400" />
                 <span>Bulk Import Staff Profiles</span>
               </h4>
-              <button onClick={() => setShowImportModal(false)} className="text-slate-400 hover:text-white">
+              <button onClick={() => setShowImportModal(false)} className="text-slate-400 hover:text-slate-800">
                 <X className="h-5 w-5" />
               </button>
             </div>
@@ -907,9 +907,9 @@ Peter Gregory,peter@raviga.com,+1 (415) 555-0101,dept-it,des-se,2026-04-12,25000
                 {importNotice}
               </div>
             )}
-            <div className="text-xs text-slate-400 space-y-1 bg-slate-900 p-3 rounded-lg border border-slate-800">
+            <div className="text-xs text-slate-400 space-y-1 bg-white p-3 rounded-lg border border-slate-200">
               <span className="font-bold text-slate-300 font-mono">Header fields layout:</span>
-              <code className="block bg-slate-950 p-2 rounded text-indigo-300 overflow-x-auto text-[10px] leading-relaxed">
+              <code className="block bg-white p-2 rounded text-indigo-300 overflow-x-auto text-[10px] leading-relaxed">
                 name,email,phone,departmentId,designationId,joiningDate,salary,dob,gender,bankAccountNumber,bankIfsc,bankName,emergencyName,emergencyPhone,emergencyAddress
               </code>
             </div>
@@ -924,13 +924,13 @@ Peter Gregory,peter@raviga.com,+1 (415) 555-0101,dept-it,des-se,2026-04-12,25000
               value={csvText}
               onChange={(e) => setCsvText(e.target.value)}
               placeholder="Paste comma-separated employee text here..."
-              className="w-full rounded-lg border border-slate-800 bg-slate-900 p-2.5 text-xs text-white font-mono focus:outline-none"
+              className="w-full rounded-lg border border-slate-200 bg-white p-2.5 text-xs text-white font-mono focus:outline-none"
             />
-            <div className="flex justify-end gap-3 pt-3 border-t border-slate-800 font-bold">
+            <div className="flex justify-end gap-3 pt-3 border-t border-slate-200 font-bold">
               <button
                 type="button"
                 onClick={() => setShowImportModal(false)}
-                className="rounded-lg border border-slate-800 bg-slate-900 px-4 py-2 text-xs font-bold text-slate-300 cursor-pointer"
+                className="rounded-lg border border-slate-200 bg-white px-4 py-2 text-xs font-bold text-slate-300 cursor-pointer"
               >
                 Cancel
               </button>
@@ -944,3 +944,5 @@ Peter Gregory,peter@raviga.com,+1 (415) 555-0101,dept-it,des-se,2026-04-12,25000
     </div>
   );
 }
+
+

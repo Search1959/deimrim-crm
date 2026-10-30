@@ -1,4 +1,4 @@
-import { toast } from "../utils/toast";
+﻿import { toast } from "../utils/toast";
 import React, { useState } from "react";
 import { ShoppingBag, Users, FileCheck, ChevronRight } from "lucide-react";
 import { Supplier, PurchaseOrder, Product, UserRole, VendorInvoice } from "../types";
@@ -169,3 +169,4 @@ export default function PurchaseView({
     </div>
   );
 }
+

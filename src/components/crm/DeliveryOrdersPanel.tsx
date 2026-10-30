@@ -307,7 +307,7 @@ export default function DeliveryOrdersPanel({ customers, companyId }: DeliveryOr
   return (
     <div className="space-y-4">
       {/* Search and action bar */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 bg-slate-950/40 border border-slate-800 rounded-xl p-4">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 bg-slate-50 border border-slate-200 rounded-xl p-4">
         <div className="relative flex-1 max-w-md">
           <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-500" />
           <input
@@ -315,7 +315,7 @@ export default function DeliveryOrdersPanel({ customers, companyId }: DeliveryOr
             placeholder="Search Delivery Orders (by DO #, Invoice #, Client)..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full bg-slate-900 border border-slate-800 rounded-lg pl-8.5 pr-3 py-1.5 text-xs text-slate-200 focus:outline-hidden focus:border-emerald-500 font-semibold"
+            className="w-full bg-white border border-slate-200 rounded-lg pl-8.5 pr-3 py-1.5 text-xs text-slate-700 focus:outline-hidden focus:border-emerald-500 font-semibold"
           />
         </div>
         <button
@@ -336,7 +336,7 @@ export default function DeliveryOrdersPanel({ customers, companyId }: DeliveryOr
             className={`px-2.5 py-1 rounded-md border transition-all shrink-0 cursor-pointer ${
               statusFilter === st
                 ? "bg-emerald-600/10 border-emerald-500/40 text-emerald-300"
-                : "bg-slate-900/60 border-slate-800 text-slate-400 hover:border-slate-700 hover:text-slate-200"
+                : "bg-slate-50 border-slate-200 text-slate-400 hover:border-slate-200 hover:text-slate-700"
             }`}
           >
             {st.toUpperCase()}
@@ -345,10 +345,10 @@ export default function DeliveryOrdersPanel({ customers, companyId }: DeliveryOr
       </div>
 
       {/* DO Data List */}
-      <div className="bg-slate-950/40 border border-slate-800 rounded-xl overflow-hidden shadow-xs">
+      <div className="bg-slate-50 border border-slate-200 rounded-xl overflow-hidden shadow-xs">
         <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-slate-800 text-xs">
-            <thead className="bg-slate-950 text-slate-300 font-semibold uppercase font-mono tracking-wider">
+          <table className="min-w-full divide-y divide-slate-100 text-xs">
+            <thead className="bg-white text-slate-300 font-semibold uppercase font-mono tracking-wider">
               <tr>
                 <th className="px-5 py-3 text-left">DO Number</th>
                 <th className="px-5 py-3 text-left">Customer</th>
@@ -359,7 +359,7 @@ export default function DeliveryOrdersPanel({ customers, companyId }: DeliveryOr
                 <th className="px-5 py-3 text-right">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-800/60 text-slate-300">
+            <tbody className="divide-y divide-slate-100/60 text-slate-300">
               {filtered.length === 0 ? (
                 <tr>
                   <td colSpan={7} className="px-5 py-8 text-center text-slate-500 font-mono">
@@ -370,10 +370,10 @@ export default function DeliveryOrdersPanel({ customers, companyId }: DeliveryOr
                 filtered.map(doItem => {
                   const cust = customers.find(c => c.id === doItem.customerId);
                   return (
-                    <tr key={doItem.id} className="hover:bg-slate-900/40 transition-colors">
+                    <tr key={doItem.id} className="hover:bg-slate-50 transition-colors">
                       <td className="px-5 py-4 font-bold text-emerald-400 font-mono text-xs">{doItem.doNumber}</td>
                       <td className="px-5 py-4">
-                        <div className="font-bold text-slate-100">{cust?.name || "Unlisted Client"}</div>
+                        <div className="font-bold text-slate-800">{cust?.name || "Unlisted Client"}</div>
                         <div className="text-[10px] text-slate-400 font-mono">{cust?.code || "CUST-UNSPEC"}</div>
                       </td>
                       <td className="px-5 py-4 font-mono font-bold text-slate-300">{doItem.invoiceNumber || "—"}</td>
@@ -387,7 +387,7 @@ export default function DeliveryOrdersPanel({ customers, companyId }: DeliveryOr
                           doItem.status === "delivered" ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20" :
                           doItem.status === "dispatched" ? "bg-indigo-500/10 text-indigo-400 border-indigo-500/20" :
                           doItem.status === "cancelled" ? "bg-red-500/10 text-red-400 border-red-500/20" :
-                          "bg-slate-800 text-slate-400 border-slate-700"
+                          "bg-slate-100 text-slate-400 border-slate-200"
                         }`}>
                           {doItem.status}
                         </span>
@@ -396,14 +396,14 @@ export default function DeliveryOrdersPanel({ customers, companyId }: DeliveryOr
                         <div className="flex items-center justify-end gap-1.5">
                           <button
                             onClick={() => setViewingDO(doItem)}
-                            className="rounded-lg p-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 transition-colors cursor-pointer"
+                            className="rounded-lg p-1.5 bg-slate-100 hover:bg-slate-700 text-slate-300 transition-colors cursor-pointer"
                             title="View DO / Form Preview"
                           >
                             <Eye className="h-3.5 w-3.5" />
                           </button>
                           <button
                             onClick={() => handleOpenEdit(doItem)}
-                            className="rounded-lg p-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 transition-colors cursor-pointer"
+                            className="rounded-lg p-1.5 bg-slate-100 hover:bg-slate-700 text-slate-300 transition-colors cursor-pointer"
                             title="Edit Delivery Order"
                           >
                             <Edit className="h-3.5 w-3.5" />
@@ -436,23 +436,23 @@ export default function DeliveryOrdersPanel({ customers, companyId }: DeliveryOr
       {/* VIEW DO DETAILS MODAL / GORGEOUS FORM PREVIEW */}
       {viewingDO && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-xs p-4 text-left">
-          <div className="w-full max-w-lg bg-slate-950 border border-slate-800 rounded-2xl shadow-2xl overflow-hidden animate-fadeIn">
-            <div className="border-b border-slate-800 p-5 flex items-center justify-between bg-slate-900/40">
+          <div className="w-full max-w-lg bg-white border border-slate-200 rounded-2xl shadow-2xl overflow-hidden animate-fadeIn">
+            <div className="border-b border-slate-200 p-5 flex items-center justify-between bg-slate-50">
               <div className="flex items-center gap-2">
                 <Truck className="h-5 w-5 text-emerald-400 animate-pulse" />
-                <h3 className="text-sm font-bold text-white uppercase tracking-wider font-mono">
+                <h3 className="text-sm font-bold text-slate-800 uppercase tracking-wider font-mono">
                   Delivery Challan / DO Preview: {viewingDO.doNumber}
                 </h3>
               </div>
-              <button onClick={() => setViewingDO(null)} className="text-slate-400 hover:text-white cursor-pointer font-bold">
+              <button onClick={() => setViewingDO(null)} className="text-slate-400 hover:text-slate-800 cursor-pointer font-bold">
                 <X className="h-5 w-5" />
               </button>
             </div>
             
             <div className="p-6 space-y-4 max-h-[70vh] overflow-y-auto">
               {/* Paper styled preview */}
-              <div className="border border-slate-800 rounded-xl bg-slate-900/20 p-5 space-y-4">
-                <div className="flex justify-between items-start border-b border-slate-800 pb-3">
+              <div className="border border-slate-200 rounded-xl bg-slate-50 p-5 space-y-4">
+                <div className="flex justify-between items-start border-b border-slate-200 pb-3">
                   <div>
                     <h4 className="text-sm font-extrabold text-white">DeInrim Enterprises</h4>
                     <span className="text-[9px] text-slate-400 block font-semibold uppercase font-mono tracking-wider mt-0.5">Logistics & Dispatch Division</span>
@@ -465,7 +465,7 @@ export default function DeliveryOrdersPanel({ customers, companyId }: DeliveryOr
                 <div className="grid grid-cols-2 gap-4 text-xs">
                   <div className="space-y-1">
                     <span className="block text-[10px] font-bold text-slate-500 uppercase font-mono">Consignee</span>
-                    <strong className="text-slate-200 block text-xs">{customers.find(c => c.id === viewingDO.customerId)?.name || "Unlisted Customer"}</strong>
+                    <strong className="text-slate-700 block text-xs">{customers.find(c => c.id === viewingDO.customerId)?.name || "Unlisted Customer"}</strong>
                     <p className="text-slate-400 text-[11px] leading-relaxed flex gap-1 items-start mt-1">
                       <MapPin className="h-3.5 w-3.5 text-slate-500 shrink-0 mt-0.5" />
                       <span>{viewingDO.deliveryAddress}</span>
@@ -473,44 +473,44 @@ export default function DeliveryOrdersPanel({ customers, companyId }: DeliveryOr
                   </div>
                   <div className="space-y-1 text-right font-semibold">
                     <span className="block text-[10px] font-bold text-slate-500 uppercase font-mono">Details</span>
-                    <div className="text-slate-300">Ref Invoice: <span className="text-slate-100 font-mono font-bold">{viewingDO.invoiceNumber || "N/A"}</span></div>
-                    <div className="text-slate-300">Expected: <span className="text-slate-100 font-mono">{viewingDO.expectedDeliveryDate || "Immediate"}</span></div>
-                    <div className="text-slate-300">Date Issued: <span className="text-slate-100 font-mono">{viewingDO.createdAt}</span></div>
+                    <div className="text-slate-300">Ref Invoice: <span className="text-slate-800 font-mono font-bold">{viewingDO.invoiceNumber || "N/A"}</span></div>
+                    <div className="text-slate-300">Expected: <span className="text-slate-800 font-mono">{viewingDO.expectedDeliveryDate || "Immediate"}</span></div>
+                    <div className="text-slate-300">Date Issued: <span className="text-slate-800 font-mono">{viewingDO.createdAt}</span></div>
                   </div>
                 </div>
 
                 {/* Transportation block */}
-                <div className="p-3 bg-slate-900/60 rounded-lg border border-slate-800/80 grid grid-cols-3 gap-2 text-xs font-semibold">
+                <div className="p-3 bg-slate-50 rounded-lg border border-slate-200/80 grid grid-cols-3 gap-2 text-xs font-semibold">
                   <div>
                     <span className="text-[9px] text-slate-500 uppercase block font-mono">Vehicle Number</span>
-                    <span className="text-slate-200 font-mono">{viewingDO.vehicleNumber || "Not assigned"}</span>
+                    <span className="text-slate-700 font-mono">{viewingDO.vehicleNumber || "Not assigned"}</span>
                   </div>
                   <div>
                     <span className="text-[9px] text-slate-500 uppercase block font-mono">Driver Name</span>
-                    <span className="text-slate-200">{viewingDO.driverName || "Not assigned"}</span>
+                    <span className="text-slate-700">{viewingDO.driverName || "Not assigned"}</span>
                   </div>
                   <div>
                     <span className="text-[9px] text-slate-500 uppercase block font-mono">E-Way Bill No</span>
-                    <span className="text-slate-200 font-mono">{viewingDO.ewayBillNumber || "None"}</span>
+                    <span className="text-slate-700 font-mono">{viewingDO.ewayBillNumber || "None"}</span>
                   </div>
                 </div>
 
                 {/* Items Table */}
-                <div className="border border-slate-800 rounded-lg overflow-hidden text-xs">
-                  <table className="min-w-full text-left divide-y divide-slate-800 font-semibold">
-                    <thead className="bg-slate-950 text-slate-400 uppercase font-mono text-[9px] tracking-wider">
+                <div className="border border-slate-200 rounded-lg overflow-hidden text-xs">
+                  <table className="min-w-full text-left divide-y divide-slate-100 font-semibold">
+                    <thead className="bg-white text-slate-400 uppercase font-mono text-[9px] tracking-wider">
                       <tr>
                         <th className="px-3 py-2">Item Description</th>
                         <th className="px-3 py-2 text-center w-20">Unit</th>
                         <th className="px-3 py-2 text-right w-20">Quantity</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-slate-800/50 text-slate-300 bg-slate-950/20">
+                    <tbody className="divide-y divide-slate-100/50 text-slate-300 bg-slate-50">
                       {viewingDO.items.map((it, i) => (
                         <tr key={i}>
                           <td className="px-3 py-2.5 font-medium">{it.description}</td>
                           <td className="px-3 py-2.5 text-center font-mono text-slate-400">{it.unit}</td>
-                          <td className="px-3 py-2.5 text-right font-mono font-extrabold text-slate-200">{it.quantity}</td>
+                          <td className="px-3 py-2.5 text-right font-mono font-extrabold text-slate-700">{it.quantity}</td>
                         </tr>
                       ))}
                     </tbody>
@@ -518,23 +518,23 @@ export default function DeliveryOrdersPanel({ customers, companyId }: DeliveryOr
                 </div>
 
                 {/* Signatures */}
-                <div className="grid grid-cols-2 gap-4 pt-4 border-t border-slate-800 text-[10px] text-slate-500 text-center font-bold">
+                <div className="grid grid-cols-2 gap-4 pt-4 border-t border-slate-200 text-[10px] text-slate-500 text-center font-bold">
                   <div>
-                    <div className="border-b border-slate-800/80 pb-1 mb-1 font-mono uppercase">Dispatched By</div>
+                    <div className="border-b border-slate-200/80 pb-1 mb-1 font-mono uppercase">Dispatched By</div>
                     <span>Logistics stamp & sign</span>
                   </div>
                   <div>
-                    <div className="border-b border-slate-800/80 pb-1 mb-1 font-mono uppercase">Consignee sign</div>
+                    <div className="border-b border-slate-200/80 pb-1 mb-1 font-mono uppercase">Consignee sign</div>
                     <span>Received in good condition</span>
                   </div>
                 </div>
               </div>
             </div>
 
-            <div className="border-t border-slate-800 p-5 bg-slate-900/20 flex justify-end gap-3">
+            <div className="border-t border-slate-200 p-5 bg-slate-50 flex justify-end gap-3">
               <button
                 onClick={() => setViewingDO(null)}
-                className="px-4 py-2 rounded-lg bg-slate-900 hover:bg-slate-800 text-xs font-semibold text-slate-400 hover:text-slate-200 cursor-pointer"
+                className="px-4 py-2 rounded-lg bg-white hover:bg-slate-100 text-xs font-semibold text-slate-400 hover:text-slate-700 cursor-pointer"
               >
                 Close
               </button>
@@ -555,19 +555,19 @@ export default function DeliveryOrdersPanel({ customers, companyId }: DeliveryOr
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-xs p-4 text-left overflow-y-auto">
           <form 
             onSubmit={handleSaveDO} 
-            className="w-full max-w-xl bg-slate-950 border border-slate-800 rounded-2xl shadow-2xl overflow-hidden animate-scaleUp my-8"
+            className="w-full max-w-xl bg-white border border-slate-200 rounded-2xl shadow-2xl overflow-hidden animate-scaleUp my-8"
           >
-            <div className="border-b border-slate-800 p-5 flex items-center justify-between bg-slate-900/40">
+            <div className="border-b border-slate-200 p-5 flex items-center justify-between bg-slate-50">
               <div className="flex items-center gap-2">
                 <Truck className="h-5 w-5 text-emerald-400" />
-                <h3 className="text-sm font-bold text-white uppercase tracking-wider font-mono">
+                <h3 className="text-sm font-bold text-slate-800 uppercase tracking-wider font-mono">
                   {editingDO ? "Edit Delivery Order" : "Create Delivery Order"}
                 </h3>
               </div>
               <button 
                 type="button" 
                 onClick={() => setShowAddModal(false)} 
-                className="text-slate-400 hover:text-white cursor-pointer font-bold"
+                className="text-slate-400 hover:text-slate-800 cursor-pointer font-bold"
               >
                 <X className="h-5 w-5" />
               </button>
@@ -581,7 +581,7 @@ export default function DeliveryOrdersPanel({ customers, companyId }: DeliveryOr
                     required
                     value={customerId}
                     onChange={(e) => setCustomerId(e.target.value)}
-                    className="w-full bg-slate-900 border border-slate-800 rounded-lg p-2 text-xs text-white focus:outline-hidden focus:border-emerald-500 font-semibold"
+                    className="w-full bg-white border border-slate-200 rounded-lg p-2 text-xs text-white focus:outline-hidden focus:border-emerald-500 font-semibold"
                   >
                     <option value="">-- Choose Customer --</option>
                     {customers.map(c => (
@@ -596,7 +596,7 @@ export default function DeliveryOrdersPanel({ customers, companyId }: DeliveryOr
                     value={invoiceNumber}
                     onChange={(e) => setInvoiceNumber(e.target.value)}
                     placeholder="e.g. INV-2026-0012"
-                    className="w-full bg-slate-900 border border-slate-800 rounded-lg p-2 text-xs text-white focus:outline-hidden focus:border-emerald-500 font-semibold"
+                    className="w-full bg-white border border-slate-200 rounded-lg p-2 text-xs text-white focus:outline-hidden focus:border-emerald-500 font-semibold"
                   />
                 </div>
               </div>
@@ -609,7 +609,7 @@ export default function DeliveryOrdersPanel({ customers, companyId }: DeliveryOr
                   value={deliveryAddress}
                   onChange={(e) => setDeliveryAddress(e.target.value)}
                   placeholder="Full physical delivery address location details..."
-                  className="w-full bg-slate-900 border border-slate-800 rounded-lg p-2 text-xs text-slate-200 focus:outline-hidden focus:border-emerald-500 font-semibold"
+                  className="w-full bg-white border border-slate-200 rounded-lg p-2 text-xs text-slate-700 focus:outline-hidden focus:border-emerald-500 font-semibold"
                 />
               </div>
 
@@ -620,7 +620,7 @@ export default function DeliveryOrdersPanel({ customers, companyId }: DeliveryOr
                     type="date"
                     value={expectedDeliveryDate}
                     onChange={(e) => setExpectedDeliveryDate(e.target.value)}
-                    className="w-full bg-slate-900 border border-slate-800 rounded-lg p-2 text-xs text-white focus:outline-hidden focus:border-emerald-500 font-semibold font-mono"
+                    className="w-full bg-white border border-slate-200 rounded-lg p-2 text-xs text-white focus:outline-hidden focus:border-emerald-500 font-semibold font-mono"
                   />
                 </div>
                 <div>
@@ -628,7 +628,7 @@ export default function DeliveryOrdersPanel({ customers, companyId }: DeliveryOr
                   <select
                     value={status}
                     onChange={(e) => setStatus(e.target.value as any)}
-                    className="w-full bg-slate-900 border border-slate-800 rounded-lg p-2 text-xs text-white focus:outline-hidden focus:border-emerald-500 font-semibold"
+                    className="w-full bg-white border border-slate-200 rounded-lg p-2 text-xs text-white focus:outline-hidden focus:border-emerald-500 font-semibold"
                   >
                     <option value="draft">Draft</option>
                     <option value="dispatched">Dispatched</option>
@@ -639,7 +639,7 @@ export default function DeliveryOrdersPanel({ customers, companyId }: DeliveryOr
               </div>
 
               {/* Transportation Details */}
-              <div className="p-4 bg-slate-900/40 border border-slate-850 rounded-xl space-y-3">
+              <div className="p-4 bg-slate-50 border border-slate-850 rounded-xl space-y-3">
                 <span className="block text-[10px] font-bold text-emerald-400 uppercase font-mono tracking-wider">Transportation & Logistics (E-Way)</span>
                 <div className="grid grid-cols-3 gap-3">
                   <div>
@@ -649,7 +649,7 @@ export default function DeliveryOrdersPanel({ customers, companyId }: DeliveryOr
                       value={vehicleNumber}
                       onChange={(e) => setVehicleNumber(e.target.value)}
                       placeholder="e.g. WB-02-Y-8831"
-                      className="w-full bg-slate-900 border border-slate-800 rounded-lg p-1.5 text-xs text-white font-mono focus:outline-hidden"
+                      className="w-full bg-white border border-slate-200 rounded-lg p-1.5 text-xs text-white font-mono focus:outline-hidden"
                     />
                   </div>
                   <div>
@@ -659,7 +659,7 @@ export default function DeliveryOrdersPanel({ customers, companyId }: DeliveryOr
                       value={driverName}
                       onChange={(e) => setDriverName(e.target.value)}
                       placeholder="e.g. Sanjay Dutta"
-                      className="w-full bg-slate-900 border border-slate-800 rounded-lg p-1.5 text-xs text-white focus:outline-hidden"
+                      className="w-full bg-white border border-slate-200 rounded-lg p-1.5 text-xs text-white focus:outline-hidden"
                     />
                   </div>
                   <div>
@@ -669,7 +669,7 @@ export default function DeliveryOrdersPanel({ customers, companyId }: DeliveryOr
                       value={ewayBillNumber}
                       onChange={(e) => setEwayBillNumber(e.target.value)}
                       placeholder="8821 4432 1092"
-                      className="w-full bg-slate-900 border border-slate-800 rounded-lg p-1.5 text-xs text-white font-mono focus:outline-hidden"
+                      className="w-full bg-white border border-slate-200 rounded-lg p-1.5 text-xs text-white font-mono focus:outline-hidden"
                     />
                   </div>
                 </div>
@@ -678,9 +678,9 @@ export default function DeliveryOrdersPanel({ customers, companyId }: DeliveryOr
               {/* Line Items Dynamic Table */}
               <div className="space-y-2">
                 <span className="block text-[10px] font-bold text-slate-400 uppercase font-mono tracking-wider">Goods Specifications List *</span>
-                <div className="border border-slate-850 rounded-xl overflow-hidden bg-slate-900/20 text-xs">
+                <div className="border border-slate-850 rounded-xl overflow-hidden bg-slate-50 text-xs">
                   <table className="min-w-full">
-                    <thead className="bg-slate-950 text-slate-400 font-mono font-bold uppercase tracking-wider text-[9px]">
+                    <thead className="bg-white text-slate-400 font-mono font-bold uppercase tracking-wider text-[9px]">
                       <tr>
                         <th className="px-3 py-2 text-left">Item Description</th>
                         <th className="px-3 py-2 text-center w-24">Quantity</th>
@@ -688,7 +688,7 @@ export default function DeliveryOrdersPanel({ customers, companyId }: DeliveryOr
                         <th className="px-3 py-2 text-center w-10"></th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-slate-800/60">
+                    <tbody className="divide-y divide-slate-100/60">
                       {lineItems.map((item, idx) => (
                         <tr key={idx}>
                           <td className="px-3 py-2">
@@ -698,7 +698,7 @@ export default function DeliveryOrdersPanel({ customers, companyId }: DeliveryOr
                               placeholder="e.g. Enterprise Cloud Units"
                               value={item.description}
                               onChange={(e) => handleLineItemChange(idx, "description", e.target.value)}
-                              className="w-full bg-slate-950 border border-slate-850 rounded p-1.5 text-xs text-white font-semibold"
+                              className="w-full bg-white border border-slate-850 rounded p-1.5 text-xs text-white font-semibold"
                             />
                           </td>
                           <td className="px-3 py-2">
@@ -708,14 +708,14 @@ export default function DeliveryOrdersPanel({ customers, companyId }: DeliveryOr
                               min={1}
                               value={item.quantity}
                               onChange={(e) => handleLineItemChange(idx, "quantity", Number(e.target.value))}
-                              className="w-full text-center bg-slate-950 border border-slate-850 rounded p-1.5 text-xs text-white font-mono font-extrabold"
+                              className="w-full text-center bg-white border border-slate-850 rounded p-1.5 text-xs text-white font-mono font-extrabold"
                             />
                           </td>
                           <td className="px-3 py-2">
                             <select
                               value={item.unit}
                               onChange={(e) => handleLineItemChange(idx, "unit", e.target.value)}
-                              className="w-full bg-slate-950 border border-slate-850 rounded p-1.5 text-xs text-white"
+                              className="w-full bg-white border border-slate-850 rounded p-1.5 text-xs text-white"
                             >
                               <option value="Nos">Nos</option>
                               <option value="Boxes">Boxes</option>
@@ -738,7 +738,7 @@ export default function DeliveryOrdersPanel({ customers, companyId }: DeliveryOr
                       ))}
                     </tbody>
                   </table>
-                  <div className="bg-slate-950 p-2 border-t border-slate-800">
+                  <div className="bg-white p-2 border-t border-slate-200">
                     <button
                       type="button"
                       onClick={handleAddLineItem}
@@ -751,11 +751,11 @@ export default function DeliveryOrdersPanel({ customers, companyId }: DeliveryOr
               </div>
             </div>
 
-            <div className="border-t border-slate-800 p-5 bg-slate-900/20 flex justify-end gap-3 text-xs">
+            <div className="border-t border-slate-200 p-5 bg-slate-50 flex justify-end gap-3 text-xs">
               <button
                 type="button"
                 onClick={() => setShowAddModal(false)}
-                className="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-slate-300 rounded-lg font-bold transition-all cursor-pointer"
+                className="px-4 py-2 bg-white hover:bg-slate-100 text-slate-300 rounded-lg font-bold transition-all cursor-pointer"
               >
                 Cancel
               </button>
@@ -772,3 +772,5 @@ export default function DeliveryOrdersPanel({ customers, companyId }: DeliveryOr
     </div>
   );
 }
+
+

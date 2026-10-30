@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+﻿import React, { useState } from "react";
 import { CalendarDays, Plus, X, Trash2, Star } from "lucide-react";
 
 interface Holiday {
@@ -162,3 +162,5 @@ export default function HRHolidaysPanel() {
     </div>
   );
 }
+
+

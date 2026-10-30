@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+﻿import React, { useState } from "react";
 import { Briefcase, Plus, User, Calendar, MapPin, X, ChevronDown } from "lucide-react";
 
 interface JobOpening {
@@ -213,3 +213,5 @@ export default function HRRecruitmentPanel() {
     </div>
   );
 }
+
+

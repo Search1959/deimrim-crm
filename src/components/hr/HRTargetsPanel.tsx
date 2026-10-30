@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+﻿import React, { useState } from "react";
 import { Target, TrendingUp, Plus, Trophy, DollarSign, CheckCircle, Clock, X } from "lucide-react";
 import { Employee, formatINR } from "../../types";
 
@@ -180,3 +180,5 @@ export default function HRTargetsPanel({ employees }: Props) {
     </div>
   );
 }
+
+
