@@ -889,23 +889,23 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
 
       {/* ── PRICING ───────────────────────────────────────────────────────── */}
       <section id="pricing" className="w-full max-w-4xl mx-auto px-4 md:px-8 pb-16">
-        <div className="bg-white/50 rounded-2xl p-6 border border-sky-500/10 shadow-xl space-y-5 text-center">
+        <div className="rounded-2xl p-6 border border-indigo-500/20 shadow-xl space-y-5 text-center" style={{background:"rgba(255,255,255,0.03)"}}>
           <div className="space-y-1">
-            <span className="text-[10px] uppercase font-bold tracking-widest text-indigo-500 font-mono">Tenant Pricing</span>
-            <h3 className="text-xl font-bold text-white">Deinrim OMS Subscription</h3>
-            <p className="text-xs text-slate-400 max-w-lg mx-auto">Each registered tenant gets a completely clean database — zero demo data — branded with your company name, logo, and contact details.</p>
+            <span className="text-[10px] uppercase font-bold tracking-widest text-indigo-400 font-mono">Tenant Pricing</span>
+            <h3 className="text-xl font-bold" style={{color:"#ffffff"}}>Deinrim OMS Subscription</h3>
+            <p className="text-xs max-w-lg mx-auto" style={{color:"#94a3b8"}}>Each registered tenant gets a completely clean database — zero demo data — branded with your company name, logo, and contact details.</p>
           </div>
-          <div className="bg-white p-6 rounded-xl border border-slate-200 inline-block text-center space-y-3 min-w-[200px]">
-            <span className="text-[10px] font-mono font-bold tracking-widest text-slate-500 uppercase block">Flat Monthly Charge</span>
-            <div><span className="text-4xl font-extrabold text-white">₹500</span><span className="text-xs text-slate-400 ml-1">INR</span></div>
-            <span className="text-xs text-slate-500 block">per tenant / month</span>
+          <div className="inline-block text-center space-y-3 min-w-[200px] rounded-xl p-6 border border-indigo-500/20" style={{background:"rgba(99,102,241,0.08)"}}>
+            <span className="text-[10px] font-mono font-bold tracking-widest uppercase block" style={{color:"#94a3b8"}}>Flat Monthly Charge</span>
+            <div><span className="text-4xl font-extrabold" style={{color:"#ffffff"}}>₹500</span><span className="text-xs ml-1" style={{color:"#94a3b8"}}>INR</span></div>
+            <span className="text-xs block" style={{color:"#64748b"}}>per tenant / month</span>
           </div>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs text-slate-600 max-w-2xl mx-auto">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs max-w-2xl mx-auto" style={{color:"#94a3b8"}}>
             {["Zero Demo Data","Whitelabel Identity","10 Staff Logins","Full Ledger Integration"].map((f,i)=>(
-              <div key={i} className="flex items-center gap-1.5"><Check className="h-3.5 w-3.5 text-emerald-400 shrink-0" />{f}</div>
+              <div key={i} className="flex items-center gap-1.5"><Check className="h-3.5 w-3.5 shrink-0" style={{color:"#10b981"}} />{f}</div>
             ))}
           </div>
-          <button onClick={() => openModal("register")} className="px-8 py-3 bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs rounded-xl transition-all cursor-pointer shadow-lg shadow-indigo-500/20">
+          <button onClick={() => openModal("register")} className="px-8 py-3 font-bold text-xs rounded-xl transition-all cursor-pointer" style={{background:"linear-gradient(to right,#6366f1,#7c3aed)",color:"#ffffff",boxShadow:"0 4px 20px rgba(99,102,241,0.3)"}}>
             Create Your Account Now →
           </button>
         </div>
@@ -915,7 +915,7 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
       <section className="w-full max-w-6xl mx-auto px-4 md:px-8 pb-16">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 text-left">
           <div className="lg:col-span-7 space-y-6">
-            <div className="space-y-1"><span className="text-[10px] uppercase font-bold tracking-widest text-indigo-500 font-mono">Engineering Trust</span><h3 className="text-xl font-bold text-white">Why Companies Choose DEINRIM 360</h3></div>
+            <div className="space-y-1"><span className="text-[10px] uppercase font-bold tracking-widest text-indigo-400 font-mono">Engineering Trust</span><h3 className="text-xl font-bold mt-1" style={{color:"#ffffff"}}>Why Companies Choose DEINRIM 360</h3></div>
             <div className="space-y-4">
               {[
                 { title: "⚡ Reduce Manual Effort & Double Entry", desc: "Inventory movements trigger procurement and CRM entries automatically — no re-keying." },
@@ -924,14 +924,14 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
                 { title: "🇮🇳 Kolkata, West Bengal Local Presence", desc: "High-touch local consultation, rapid deployment, and active SLA backing from our Kolkata team." },
               ].map((point, idx) => (
                 <div key={idx} className="flex gap-3">
-                  <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-indigo-600/10 text-indigo-500 text-xs font-bold mt-0.5">✓</span>
-                  <div><span className="text-xs font-bold text-slate-800">{point.title}</span><p className="text-[11px] text-slate-400 leading-normal mt-0.5">{point.desc}</p></div>
+                  <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-xs font-bold mt-0.5" style={{background:"rgba(99,102,241,0.15)",color:"#818cf8"}}>✓</span>
+                  <div><span className="text-xs font-bold" style={{color:"#e2e8f0"}}>{point.title}</span><p className="text-[11px] leading-normal mt-0.5" style={{color:"#64748b"}}>{point.desc}</p></div>
                 </div>
               ))}
             </div>
           </div>
-          <div className="lg:col-span-5 bg-gradient-to-br from-slate-900 to-sky-950/30 rounded-2xl p-6 border border-sky-500/10 space-y-4">
-            <div><span className="text-[10px] uppercase font-bold tracking-widest text-amber-400 font-mono">Future Roadmap v2.0</span><h3 className="text-md font-bold text-slate-800 mt-1">Coming to Your Workspace</h3></div>
+          <div className="lg:col-span-5 rounded-2xl p-6 border border-indigo-500/20 space-y-4" style={{background:"rgba(255,255,255,0.03)"}}>
+            <div><span className="text-[10px] uppercase font-bold tracking-widest font-mono" style={{color:"#f59e0b"}}>Future Roadmap v2.0</span><h3 className="text-md font-bold mt-1" style={{color:"#ffffff"}}>Coming to Your Workspace</h3></div>
             <div className="space-y-2.5 font-mono text-[11px]">
               {[
                 ["📈 Consolidated Finance & Accounting","Q3 2026"],
@@ -940,9 +940,9 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
                 ["📱 Native iOS & Android Apps","Q1 2027"],
                 ["🔔 WhatsApp Automated Alerts","Q2 2027"],
               ].map(([name,status],i)=>(
-                <div key={i} className="flex items-center justify-between p-2 rounded bg-slate-50 border border-slate-200">
-                  <span className="text-slate-600 font-sans font-semibold">{name}</span>
-                  <span className="text-[9px] bg-amber-500/10 text-amber-400 px-2 py-0.5 rounded shrink-0">{status}</span>
+                <div key={i} className="flex items-center justify-between p-2 rounded border" style={{background:"rgba(255,255,255,0.04)",borderColor:"rgba(255,255,255,0.06)"}}>
+                  <span className="font-sans font-semibold" style={{color:"#cbd5e1"}}>{name}</span>
+                  <span className="text-[9px] px-2 py-0.5 rounded shrink-0" style={{background:"rgba(245,158,11,0.1)",color:"#f59e0b"}}>{status}</span>
                 </div>
               ))}
             </div>
@@ -952,16 +952,16 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
 
       {/* ── CTA BANNER ────────────────────────────────────────────────────── */}
       <section className="w-full max-w-6xl mx-auto px-4 md:px-8 pb-16">
-        <div className="bg-gradient-to-r from-sky-950/80 via-slate-900 to-sky-950/80 rounded-2xl p-6 md:p-8 border border-indigo-200 text-center space-y-5">
+        <div className="rounded-2xl p-6 md:p-8 border border-indigo-500/20 text-center space-y-5" style={{background:"linear-gradient(to right,rgba(30,27,75,0.6),rgba(15,23,42,0.8),rgba(30,27,75,0.6))"}}>
           <div className="space-y-2 max-w-2xl mx-auto">
-            <h3 className="text-xl font-black text-white">Ready to Digitize Your Organization?</h3>
-            <p className="text-xs text-slate-600 leading-relaxed">Unlock operational clarity, eliminate double entry, and secure your company database. Schedule a sandbox demo with our Kolkata engineering desk.</p>
+            <h3 className="text-xl font-black" style={{color:"#ffffff"}}>Ready to Digitize Your Organization?</h3>
+            <p className="text-xs leading-relaxed" style={{color:"#64748b"}}>Unlock operational clarity, eliminate double entry, and secure your company database. Schedule a sandbox demo with our Kolkata engineering desk.</p>
           </div>
           <div className="flex flex-wrap items-center justify-center gap-4">
-            <button onClick={() => openModal("register")} className="px-6 py-3 bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs rounded-xl transition-all cursor-pointer shadow-lg shadow-indigo-500/20">
+            <button onClick={() => openModal("register")} className="px-6 py-3 font-bold text-xs rounded-xl transition-all cursor-pointer" style={{background:"linear-gradient(to right,#6366f1,#7c3aed)",color:"#ffffff",boxShadow:"0 4px 20px rgba(99,102,241,0.3)"}}>
               ✨ Create Free Account
             </button>
-            <a href="https://wa.me/919836130393?text=I'm%20interested%20in%20a%20DEINRIM%20360%20demo" target="_blank" rel="noreferrer" className="px-6 py-3 bg-white hover:bg-slate-100 text-emerald-400 border border-slate-200 font-bold text-xs rounded-xl transition-all">
+            <a href="https://wa.me/919836130393?text=I'm%20interested%20in%20a%20DEINRIM%20360%20demo" target="_blank" rel="noreferrer" className="px-6 py-3 font-bold text-xs rounded-xl transition-all border" style={{color:"#10b981",borderColor:"rgba(16,185,129,0.3)",background:"rgba(16,185,129,0.08)"}}>
               💬 WhatsApp (+91 98361-30393)
             </a>
           </div>
@@ -971,23 +971,23 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
 
       {/* ── FAQ ───────────────────────────────────────────────────────────── */}
       <section id="faq" className="w-full max-w-4xl mx-auto px-4 md:px-8 pb-16">
-        <div className="bg-slate-50 rounded-2xl p-6 border border-slate-200 shadow-xl space-y-4">
+        <div className="rounded-2xl p-6 border border-indigo-500/15 space-y-4" style={{background:"rgba(255,255,255,0.03)"}}>
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-            <div className="flex items-center gap-2"><BookOpen className="h-5 w-5 text-indigo-500" /><h3 className="text-md font-bold text-white">Knowledge Base Q&A</h3></div>
-            <div className="relative"><Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-500" /><input type="text" placeholder="Search Q&A..." value={helpSearch} onChange={e => setHelpSearch(e.target.value)} className="bg-white border border-slate-200 rounded-lg pl-8 pr-3 py-1 text-xs text-slate-700 placeholder-slate-500 focus:outline-none focus:border-sky-500 w-full md:w-64 font-semibold" /></div>
+            <div className="flex items-center gap-2"><BookOpen className="h-5 w-5 text-indigo-400" /><h3 className="text-md font-bold" style={{color:"#ffffff"}}>Knowledge Base Q&A</h3></div>
+            <div className="relative"><Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5" style={{color:"#64748b"}} /><input type="text" placeholder="Search Q&A..." value={helpSearch} onChange={e => setHelpSearch(e.target.value)} style={{background:"rgba(255,255,255,0.05)",border:"1px solid rgba(255,255,255,0.1)",color:"#e2e8f0",outline:"none"}} className="rounded-lg pl-8 pr-3 py-1 text-xs w-full md:w-64 font-semibold" /></div>
           </div>
           <div className="space-y-2.5 max-h-[500px] overflow-y-auto pr-1">
-            {filteredQas.length === 0 ? <div className="text-center py-6 text-slate-500 text-xs">No Q&A articles match your search.</div> : filteredQas.map((item, index) => {
+            {filteredQas.length === 0 ? <div className="text-center py-6 text-xs" style={{color:"#64748b"}}>No Q&A articles match your search.</div> : filteredQas.map((item, index) => {
               const isExpanded = expandedQa === index;
               return (
-                <div key={index} className={`rounded-xl border transition-all ${isExpanded ? "bg-white border-sky-500/40" : "bg-white/45 border-slate-200 hover:border-slate-200"}`}>
+                <div key={index} className="rounded-xl border transition-all" style={{background: isExpanded ? "rgba(99,102,241,0.08)" : "rgba(255,255,255,0.03)", borderColor: isExpanded ? "rgba(99,102,241,0.3)" : "rgba(255,255,255,0.07)"}}>
                   <button onClick={() => setExpandedQa(isExpanded ? null : index)} className="w-full text-left px-4 py-3 flex items-center justify-between gap-3 font-semibold">
-                    <span className="text-xs text-slate-700">{item.q}</span>
-                    {isExpanded ? <ChevronDown className="h-4 w-4 text-indigo-500 shrink-0" /> : <ChevronRight className="h-4 w-4 text-slate-500 shrink-0" />}
+                    <span className="text-xs" style={{color:"#cbd5e1"}}>{item.q}</span>
+                    {isExpanded ? <ChevronDown className="h-4 w-4 shrink-0" style={{color:"#818cf8"}} /> : <ChevronRight className="h-4 w-4 shrink-0" style={{color:"#475569"}} />}
                   </button>
                   {isExpanded && (
-                    <div className="px-4 pb-4 pt-1 border-t border-slate-200/40 text-xs text-slate-400 leading-relaxed">
-                      <p dangerouslySetInnerHTML={{ __html: item.a.replace(/\*\*(.*?)\*\*/g, '<strong class="text-slate-800 font-bold">$1</strong>') }}></p>
+                    <div className="px-4 pb-4 pt-1 text-xs leading-relaxed" style={{borderTop:"1px solid rgba(255,255,255,0.07)",color:"#94a3b8"}}>
+                      <p dangerouslySetInnerHTML={{ __html: item.a.replace(/\*\*(.*?)\*\*/g, '<strong style="color:#e2e8f0;font-weight:700">$1</strong>') }}></p>
                     </div>
                   )}
                 </div>
@@ -995,14 +995,14 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
             })}
           </div>
         </div>
-        <div className="bg-slate-50 rounded-xl p-4 border border-slate-200 flex items-start gap-3 mt-4">
-          <Info className="h-5 w-5 text-indigo-500 shrink-0 mt-0.5" />
-          <div><span className="text-xs font-bold text-slate-700">Role-Based Access Control Policy</span><p className="text-[11px] text-slate-400 leading-normal mt-1">All business actions validate user role parameters under the RBAC matrix dynamically before committing to the database. System Admin has unrestricted access to edit or delete any record or account without requiring additional approvals.</p></div>
+        <div className="rounded-xl p-4 border flex items-start gap-3 mt-4" style={{background:"rgba(255,255,255,0.03)",borderColor:"rgba(255,255,255,0.07)"}}>
+          <Info className="h-5 w-5 text-indigo-400 shrink-0 mt-0.5" />
+          <div><span className="text-xs font-bold" style={{color:"#e2e8f0"}}>Role-Based Access Control Policy</span><p className="text-[11px] leading-normal mt-1" style={{color:"#64748b"}}>All business actions validate user role parameters under the RBAC matrix dynamically before committing to the database. System Admin has unrestricted access to edit or delete any record or account without requiring additional approvals.</p></div>
         </div>
       </section>
 
       {/* ── FOOTER ────────────────────────────────────────────────────────── */}
-      <footer className="border-t border-slate-200 bg-[#030712] px-6 py-6 text-xs text-slate-400 shrink-0">
+      <footer className="bg-[#030712] px-6 py-6 text-xs shrink-0" style={{borderTop:"1px solid rgba(255,255,255,0.06)",color:"#94a3b8"}}>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 max-w-6xl mx-auto text-left">
           <div className="space-y-1.5">
             <h4 className="text-[11px] font-extrabold text-indigo-500 uppercase tracking-wider font-mono">OPERATED & DEVELOPED BY</h4>
