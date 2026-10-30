@@ -476,7 +476,7 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
             <p className="text-slate-300 text-sm leading-relaxed max-w-lg">
               CRM · Inventory · Procurement · HR · Finance · GST — unified in one mathematically fenced, single-tenant database.
             </p>
-            <p className="text-slate-500 text-xs leading-relaxed max-w-lg font-mono">
+            <p className="text-slate-400 text-xs leading-relaxed max-w-lg font-mono">
               No shared tables. No data bleed. Every tenant runs inside an isolated schema — so your numbers stay yours, always.
             </p>
             {/* Stats row */}
@@ -488,7 +488,7 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
               ].map(s => (
                 <div key={s.val}>
                   <div className="text-2xl font-black text-white leading-none">{s.val}</div>
-                  <div className="text-[10px] text-slate-500 font-mono uppercase tracking-widest mt-0.5">{s.label}</div>
+                  <div className="text-[10px] text-slate-400 font-mono uppercase tracking-widest mt-0.5">{s.label}</div>
                 </div>
               ))}
             </div>
@@ -504,7 +504,7 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
                 💬 WhatsApp <ExternalLink className="h-3 w-3" />
               </a>
             </div>
-            <div className="flex flex-wrap items-center gap-5 pt-2 text-[10px] text-slate-600 font-mono font-bold uppercase tracking-widest">
+            <div className="flex flex-wrap items-center gap-5 pt-2 text-[10px] text-slate-400 font-mono font-bold uppercase tracking-widest">
               <span className="flex items-center gap-1"><Check className="h-3.5 w-3.5 text-emerald-500" /> SSL Secure</span>
               <span className="flex items-center gap-1"><Check className="h-3.5 w-3.5 text-indigo-500" /> Cloud Hosted</span>
               <span className="flex items-center gap-1"><Check className="h-3.5 w-3.5 text-violet-500" /> Mobile Ready</span>
@@ -562,19 +562,19 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
                   {heroSlides[heroSlide].kpis.map((kpi, i) => (
                     <div key={i} className="bg-white/70 rounded-lg p-2 border border-slate-200/60 text-center">
                       <div className={`text-base font-black ${kpi.color} leading-none`}>{kpi.val}</div>
-                      <div className="text-[8px] text-slate-500 font-mono mt-0.5 leading-tight">{kpi.label}</div>
-                      <div className="text-[8px] text-slate-600 font-mono">{kpi.sub}</div>
+                      <div className="text-[8px] text-slate-300 font-mono mt-0.5 leading-tight">{kpi.label}</div>
+                      <div className="text-[8px] text-slate-400 font-mono">{kpi.sub}</div>
                     </div>
                   ))}
                 </div>
 
                 {/* data rows */}
                 <div className="space-y-1.5">
-                  <div className="text-[8px] text-slate-600 font-mono font-bold uppercase tracking-wider">Recent Entries</div>
+                  <div className="text-[8px] text-slate-400 font-mono font-bold uppercase tracking-wider">Recent Entries</div>
                   {heroSlides[heroSlide].rows.map((row, i) => (
-                    <div key={i} className="flex items-center justify-between bg-white/50 rounded-lg px-3 py-2 border border-slate-200/50">
-                      <span className="text-[10px] font-bold text-slate-700 truncate max-w-[45%]">{row[0]}</span>
-                      <span className="text-[9px] text-slate-500 font-mono truncate mx-1">{row[1]}</span>
+                    <div key={i} className="flex items-center justify-between rounded-lg px-3 py-2" style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.08)" }}>
+                      <span className="text-[10px] font-bold text-slate-100 truncate max-w-[45%]">{row[0]}</span>
+                      <span className="text-[9px] text-slate-400 font-mono truncate mx-1">{row[1]}</span>
                       <span className="text-[9px] text-indigo-500 font-mono font-bold shrink-0">{row[2]}</span>
                     </div>
                   ))}
@@ -588,8 +588,8 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
                     ))}
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="text-[8px] text-slate-600 font-mono">Auto-cycling dashboard views</span>
-                    <span className="text-[8px] text-slate-600 font-mono">{heroSlide + 1} / {heroSlides.length}</span>
+                    <span className="text-[8px] text-slate-400 font-mono">Auto-cycling dashboard views</span>
+                    <span className="text-[8px] text-slate-400 font-mono">{heroSlide + 1} / {heroSlides.length}</span>
                   </div>
                 </div>
               </div>
@@ -606,7 +606,7 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
 
       {/* ── DIVIDER ───────────────────────────────────────────────────────── */}
       <div className="w-full border-t border-white/5 py-6 text-center">
-        <span className="text-[10px] font-mono font-bold text-slate-600 uppercase tracking-[0.3em]">── Learn OMS Architecture ──</span>
+        <span className="text-[10px] font-mono font-bold text-slate-400 uppercase tracking-[0.3em]">── Learn OMS Architecture ──</span>
       </div>
 
       {/* ── MODULES GRID ──────────────────────────────────────────────────── */}
@@ -692,11 +692,11 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                       <span className="text-[10px] uppercase font-bold tracking-wider text-emerald-400 block font-mono">Database Effect</span>
-                      <p className="text-slate-500 text-xs mt-0.5 leading-relaxed">{flowNodeDetails[activeFlowNode].databaseEffect}</p>
+                      <p className="text-slate-300 text-xs mt-0.5 leading-relaxed">{flowNodeDetails[activeFlowNode].databaseEffect}</p>
                     </div>
                     <div>
                       <span className="text-[10px] uppercase font-bold tracking-wider text-indigo-400 block font-mono">Automated Next Step</span>
-                      <p className="text-slate-500 text-xs mt-0.5 leading-relaxed">{flowNodeDetails[activeFlowNode].nextStep}</p>
+                      <p className="text-slate-300 text-xs mt-0.5 leading-relaxed">{flowNodeDetails[activeFlowNode].nextStep}</p>
                     </div>
                   </div>
                 </div>
@@ -757,10 +757,10 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
             {activeReviewTab === "about" && (
               <div className="space-y-4 text-left">
                 <div className="flex items-center gap-2 pb-2 border-b border-slate-200/60"><History className="h-4 w-4 text-indigo-500" /><h4 className="text-xs font-bold uppercase tracking-wider text-slate-200">Corporate Heritage & High-Touch Support</h4></div>
-                <p className="text-xs text-slate-600">Operated by <strong className="text-white">Apex7tech</strong>, incorporated in Kolkata, WB, India. Engineering custom SaaS enterprise software since 2018, scaling from a regional consultancy to managing high-performance multi-tenant platforms.</p>
+                <p className="text-xs text-slate-300">Operated by <strong className="text-white">Apex7tech</strong>, incorporated in Kolkata, WB, India. Engineering custom SaaS enterprise software since 2018, scaling from a regional consultancy to managing high-performance multi-tenant platforms.</p>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs font-mono">
-                  <div className="bg-white/5 p-3 rounded-lg border border-white/8"><span className="text-[10px] text-indigo-500 uppercase tracking-widest font-bold">Priority Support SLA</span><p className="text-slate-600 mt-1 font-sans">2-hour response time for critical issues. Standard tickets resolved within 12-24 hours via dedicated email and callback.</p></div>
-                  <div className="bg-white/5 p-3 rounded-lg border border-white/8"><span className="text-[10px] text-amber-600 uppercase tracking-widest font-bold">Active Customer Retention</span><p className="text-slate-600 mt-1 font-sans">Serving 140+ active business tenants in South Asia with zero telemetry loss incidents since inception.</p></div>
+                  <div className="bg-white/5 p-3 rounded-lg border border-white/8"><span className="text-[10px] text-indigo-400 uppercase tracking-widest font-bold">Priority Support SLA</span><p className="text-slate-300 mt-1 font-sans">2-hour response time for critical issues. Standard tickets resolved within 12-24 hours via dedicated email and callback.</p></div>
+                  <div className="bg-white/5 p-3 rounded-lg border border-white/8"><span className="text-[10px] text-amber-400 uppercase tracking-widest font-bold">Active Customer Retention</span><p className="text-slate-300 mt-1 font-sans">Serving 140+ active business tenants in South Asia with zero telemetry loss incidents since inception.</p></div>
                 </div>
               </div>
             )}
@@ -774,7 +774,7 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
                     { label: "SECURITY ENCRYPTION",   text: "256-Bit SSL/TLS in-transit encryption and AES-256 rest encryption on cloud storage blocks." },
                     { label: "DISASTER BACKUP",       text: "Automated snapshots every 6 hours, replicated across redundant physical availability zones." },
                   ].map((item, i) => (
-                    <div key={i} className="space-y-1"><span className="text-[10px] font-mono text-indigo-500 block font-bold">{item.label}</span><p className="text-slate-600 text-xs">{item.text}</p></div>
+                    <div key={i} className="space-y-1"><span className="text-[10px] font-mono text-indigo-400 block font-bold">{item.label}</span><p className="text-slate-300 text-xs">{item.text}</p></div>
                   ))}
                 </div>
               </div>
@@ -782,7 +782,7 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
             {activeReviewTab === "reseller" && (
               <div className="space-y-4 text-left">
                 <div className="flex items-center gap-2 pb-2 border-b border-slate-200/60"><Building2 className="h-4 w-4 text-indigo-500" /><h4 className="text-xs font-bold uppercase tracking-wider text-slate-200">White-Label Partner Program</h4></div>
-                <p className="text-xs text-slate-600">Create a recurring high-margin SaaS revenue channel. We charge you a wholesale flat rate, letting you keep 100% of the customer margins.</p>
+                <p className="text-xs text-slate-300">Create a recurring high-margin SaaS revenue channel. We charge you a wholesale flat rate, letting you keep 100% of the customer margins.</p>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-center">
                   {[
                     { label: "1. Brand Customization", text: "Upload your custom logo, configure brand hex colors, set support emails, and configure footer text." },
@@ -800,7 +800,7 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
             {activeReviewTab === "templates" && (
               <div className="space-y-4 text-left">
                 <div className="flex items-center gap-2 pb-2 border-b border-slate-200/60"><CheckCircle2 className="h-4 w-4 text-indigo-500" /><h4 className="text-xs font-bold uppercase tracking-wider text-slate-200">One-Click Setup Industry Templates</h4></div>
-                <p className="text-xs text-slate-600">When provisioning a new tenant, select an industry preset to seed standard master records instantly — zero manual configuration.</p>
+                <p className="text-xs text-slate-300">When provisioning a new tenant, select an industry preset to seed standard master records instantly — zero manual configuration.</p>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5 text-xs font-mono">
                   {[
                     { emoji: "🏭", name: "Manufacturing Preset", text: "Preloads raw materials, production racks, assembly employee codes, and depreciation ledger maps." },
@@ -824,7 +824,7 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
           <div className="space-y-2 text-center">
             <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded bg-indigo-600/10 text-indigo-500 font-mono text-[10px] font-bold uppercase tracking-wider">Interactive UI Previews</span>
             <h3 className="text-xl font-black text-white">Inspect Our Multi-Tenant Workspace</h3>
-            <p className="text-xs text-slate-500">Click tabs to switch between department portals and trace operations.</p>
+            <p className="text-xs text-slate-400">Click tabs to switch between department portals and trace operations.</p>
           </div>
           <div className="flex flex-wrap gap-2 border-b border-white/8 pb-3">
             {[
@@ -1004,7 +1004,7 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
               💬 WhatsApp (+91 98361-30393)
             </a>
           </div>
-          <div className="text-[10px] text-slate-500 font-mono">Apex7tech • Kolkata, India • deinrim360.in</div>
+          <div className="text-[10px] text-slate-400 font-mono">Apex7tech • Kolkata, India • deinrim360.in</div>
         </div>
       </section>
 
@@ -1046,9 +1046,9 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
           <div className="space-y-1.5">
             <h4 className="text-[11px] font-extrabold text-indigo-500 uppercase tracking-wider font-mono">OPERATED & DEVELOPED BY</h4>
             <p className="text-slate-300 font-semibold text-sm">Apex7tech</p>
-            <p className="text-slate-600">Kolkata, West Bengal (WB), India</p>
+            <p className="text-slate-400">Kolkata, West Bengal (WB), India</p>
             <p className="text-white font-bold text-sm">Corporate: +91 98361-30393</p>
-            <p className="text-slate-500 text-[10px] leading-normal pt-2 border-t border-slate-100 mt-2">DEINRIM OMS v2.0 • Isolated high-performance relational structures with real-time replication.</p>
+            <p className="text-slate-400 text-[10px] leading-normal pt-2 mt-2" style={{ borderTop: "1px solid rgba(255,255,255,0.08)" }}>DEINRIM OMS v2.0 • Isolated high-performance relational structures with real-time replication.</p>
           </div>
           <div className="space-y-2">
             <h4 className="text-[11px] font-extrabold text-indigo-500 uppercase tracking-wider font-mono">REGULATORY COMPLIANCE</h4>
@@ -1062,8 +1062,8 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
           <div className="space-y-2">
             <h4 className="text-[11px] font-extrabold text-indigo-500 uppercase tracking-wider font-mono">ENTERPRISE SECURITY</h4>
             <ul className="space-y-2 text-slate-400 text-xs leading-relaxed">
-              <li className="flex items-start gap-2"><span className="text-slate-600 font-mono mt-0.5">•</span><span><strong>Multi-Tenant Isolation:</strong> Company databases are isolated per unique tenant schema. No cross-tenant query execution possible.</span></li>
-              <li className="flex items-start gap-2"><span className="text-slate-600 font-mono mt-0.5">•</span><span><strong>Data Sovereignty:</strong> Transactions encrypted using AES-256 standard, backed up every 6 hours on secure containers.</span></li>
+              <li className="flex items-start gap-2"><span className="text-indigo-400 font-mono mt-0.5">•</span><span><strong>Multi-Tenant Isolation:</strong> Company databases are isolated per unique tenant schema. No cross-tenant query execution possible.</span></li>
+              <li className="flex items-start gap-2"><span className="text-indigo-400 font-mono mt-0.5">•</span><span><strong>Data Sovereignty:</strong> Transactions encrypted using AES-256 standard, backed up every 6 hours on secure containers.</span></li>
             </ul>
           </div>
         </div>
@@ -1118,7 +1118,7 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
                     <div className="relative"><Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500" /><input type="password" required placeholder="Enter password" value={password} onChange={e => { setPassword(e.target.value); setLoginError(""); }} className={`${inputCls} pl-10`} /></div>
                   </div>
                   <button type="submit" className={btnSky}>Sign In <ArrowRight className="h-3.5 w-3.5" /></button>
-                  <p className="text-center text-[10px] text-slate-600 font-mono">Secure multi-tenant verification · DEINRIM OMS v2</p>
+                  <p className="text-center text-[10px] text-slate-400 font-mono">Secure multi-tenant verification · DEINRIM OMS v2</p>
                 </form>
               )}
 
@@ -1148,7 +1148,7 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
                   <button type="submit" disabled={regLoading} className={`${btnSky} ${regLoading ? "opacity-70 cursor-not-allowed" : ""}`}>
                     {regLoading ? "Creating Account…" : <><UserPlus className="h-3.5 w-3.5" /> Create Account</>}
                   </button>
-                  <p className="text-center text-[10px] text-slate-600 font-mono">System Admin can edit or delete your account at any time.</p>
+                  <p className="text-center text-[10px] text-slate-400 font-mono">System Admin can edit or delete your account at any time.</p>
                 </form>
               )}
 
