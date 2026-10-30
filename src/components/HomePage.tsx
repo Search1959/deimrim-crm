@@ -384,67 +384,81 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
   const CurrentFlowIcon = flowNodeDetails[activeFlowNode]?.icon || Workflow;
 
   // ── Sky-blue input / button class helpers ─────────────────────────────────
-  const inputCls = "w-full bg-slate-50 border border-slate-200 rounded-lg px-3.5 py-2.5 text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:border-indigo-300 focus:ring-1 focus:ring-indigo-200 font-mono";
-  const btnSky = "w-full py-2.5 bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-700 text-white font-bold text-xs rounded-lg flex items-center justify-center gap-2 cursor-pointer font-mono tracking-wider uppercase transition-all shadow-lg shadow-indigo-200";
+  const inputCls = "w-full bg-white/5 border border-white/10 rounded-lg px-3.5 py-2.5 text-xs text-slate-200 placeholder-slate-600 focus:outline-none focus:border-indigo-500/50 focus:ring-1 focus:ring-indigo-500/20 font-mono";
+  const btnSky = "w-full py-2.5 bg-gradient-to-r from-indigo-500 to-violet-600 hover:from-indigo-400 hover:to-violet-500 active:opacity-90 text-white font-bold text-xs rounded-lg flex items-center justify-center gap-2 cursor-pointer font-mono tracking-wider uppercase transition-all shadow-lg shadow-indigo-500/20";
 
   return (
-    <div  className="min-h-screen w-full bg-gradient-to-br from-slate-50 via-white to-indigo-50/40 text-slate-800 flex flex-col overflow-x-hidden font-sans">
+    <div  className="min-h-screen w-full bg-[#04080f] text-slate-100 flex flex-col overflow-x-hidden font-sans">
 
       {/* ── NAV ───────────────────────────────────────────────────────────── */}
-      <header className="sticky top-0 z-30 border-b border-white/70 bg-white/80 backdrop-blur-xl shadow-sm px-4 md:px-8 py-3 flex items-center justify-between">
+      <header className="sticky top-0 z-30 border-b border-white/5 bg-[#04080f]/95 backdrop-blur-xl px-4 md:px-8 py-3.5 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-indigo-600 text-white shadow-md shadow-sky-500/30">
+          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-indigo-500 to-violet-600 text-white shadow-lg shadow-indigo-500/30">
             <Building2 className="h-5 w-5" />
           </div>
           <div>
-            <h1 className="text-sm font-bold text-slate-900 tracking-wider uppercase leading-none font-mono">DEINRIM OMS</h1>
-            <span className="text-[9px] text-indigo-500 uppercase tracking-widest font-mono">Enterprise v2.0</span>
+            <h1 className="text-sm font-black text-white tracking-widest uppercase leading-none font-mono">DEINRIM OMS</h1>
+            <span className="text-[9px] text-indigo-400 uppercase tracking-widest font-mono">Enterprise v2.0</span>
           </div>
         </div>
-        <nav className="hidden md:flex items-center gap-6 text-xs text-slate-600 font-semibold">
-          <a href="#modules" className="hover:text-indigo-600 transition-colors">Modules</a>
-          <a href="#industries" className="hover:text-indigo-600 transition-colors">Industries</a>
-          <a href="#pricing" className="hover:text-indigo-600 transition-colors">Pricing</a>
-          <a href="#faq" className="hover:text-indigo-600 transition-colors">FAQ</a>
+        <nav className="hidden md:flex items-center gap-5 text-xs text-slate-400 font-medium">
+          <a href="#modules" className="hover:text-indigo-300 transition-colors">Modules</a>
+          <a href="#industries" className="hover:text-indigo-300 transition-colors">Target Industries</a>
+          <a href="#pricing" className="hover:text-indigo-300 transition-colors">Pricing</a>
+          <a href="#faq" className="hover:text-indigo-300 transition-colors">Knowledge Base</a>
         </nav>
         <div className="flex items-center gap-2">
-          <button onClick={() => openModal("login")} className="px-4 py-2 border border-slate-200 hover:border-indigo-300 text-slate-600 hover:text-indigo-600 text-xs font-bold rounded-lg transition-all cursor-pointer flex items-center gap-1.5">
+          <button onClick={() => openModal("login")} className="px-4 py-2 border border-white/10 hover:border-indigo-400/40 text-slate-400 hover:text-white text-xs font-bold rounded-lg transition-all cursor-pointer flex items-center gap-1.5">
             <LogIn className="h-3.5 w-3.5" /> Login
           </button>
-          <button onClick={() => openModal("register")} className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold rounded-lg transition-all cursor-pointer flex items-center gap-1.5 shadow-sm">
+          <button onClick={() => openModal("register")} className="px-4 py-2 bg-gradient-to-r from-indigo-500 to-violet-600 hover:from-indigo-400 hover:to-violet-500 text-white text-xs font-bold rounded-lg transition-all cursor-pointer flex items-center gap-1.5 shadow-lg shadow-indigo-500/25">
             <UserPlus className="h-3.5 w-3.5" /> Create Account
           </button>
         </div>
       </header>
 
       {/* ── HERO ──────────────────────────────────────────────────────────── */}
-      <section className="w-full max-w-7xl mx-auto px-4 md:px-8 pt-14 pb-10">
+      <section className="w-full max-w-7xl mx-auto px-4 md:px-8 pt-16 pb-12 relative">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-14 items-center">
 
           {/* LEFT — copy */}
           <div className="space-y-6 text-left">
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-semibold bg-gradient-to-r from-indigo-50 to-violet-50 text-indigo-700 border border-indigo-100 shadow-sm">
-              <Sparkles className="h-3 w-3" /> Enterprise Business Operating System
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded text-[10px] font-bold bg-indigo-500/10 text-indigo-300 border border-indigo-500/20 font-mono tracking-widest uppercase">
+              <Sparkles className="h-3 w-3" /> Apex7tech Enterprise Suite · ISO 27001 Ready · PostgreSQL HA Isolated
             </div>
-            <h2 className="text-4xl md:text-5xl font-extrabold text-slate-900 tracking-tight leading-[1.1]">
-              One Platform to Run<br />
-              <span className="bg-gradient-to-r from-indigo-600 to-violet-600 bg-clip-text text-transparent">Your Entire Organization</span>
+            <h2 className="text-4xl md:text-5xl lg:text-6xl font-black text-white tracking-tight leading-[1.05]">
+              The Complete<br />
+              <span className="bg-gradient-to-r from-indigo-400 to-violet-400 bg-clip-text text-transparent">Autonomous Operating</span><br /><span className="text-white">System</span><br /><span className="text-slate-400 text-3xl md:text-4xl lg:text-5xl font-bold">for Modern Enterprises</span>
             </h2>
-            <p className="text-slate-500 text-sm md:text-base leading-relaxed max-w-lg">
-              CRM · Inventory · Purchase · HR · Finance · GST — all linked under one secure, multi-tenant workspace. Built and supported from Kolkata by Apex7tech
+            <p className="text-slate-400 text-sm leading-relaxed max-w-lg">
+              CRM, Multi-Warehouse Inventory, Procurement, Biometric HR, Double-Entry Finance, and GST Reconciliation unified under mathematically fenced single-tenant database schemas.
             </p>
+            {/* Stats row */}
+            <div className="flex gap-8 py-2">
+              {[
+                { val: "99.99%", label: "Schema Isolation" },
+                { val: "0 Leak",  label: "Data Minimising" },
+                { val: "<3 Min",  label: "Auto Provision" },
+              ].map(s => (
+                <div key={s.val}>
+                  <div className="text-2xl font-black text-white leading-none">{s.val}</div>
+                  <div className="text-[10px] text-slate-500 font-mono uppercase tracking-widest mt-0.5">{s.label}</div>
+                </div>
+              ))}
+            </div>
+
             <div className="flex flex-wrap items-center gap-3">
-              <button onClick={() => openModal("register")} className="px-6 py-3.5 bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white font-semibold text-sm rounded-xl transition-all shadow-lg shadow-indigo-200 flex items-center gap-2 cursor-pointer">
-                <UserPlus className="h-3.5 w-3.5" /> Create Free Account
+              <button onClick={() => openModal("register")} className="px-5 py-2.5 bg-gradient-to-r from-indigo-500 to-violet-600 hover:from-indigo-400 hover:to-violet-500 text-white font-bold text-xs rounded-lg transition-all shadow-lg shadow-indigo-500/25 flex items-center gap-2 cursor-pointer font-mono uppercase tracking-wide">
+                <UserPlus className="h-3.5 w-3.5" /> ⬡ Provision Tenant Workspace
               </button>
-              <button onClick={() => openModal("admin-demo")} className="px-6 py-3.5 bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 font-semibold text-sm rounded-xl transition-all shadow-sm flex items-center gap-2 cursor-pointer">
+              <button onClick={() => openModal("admin-demo")} className="px-5 py-2.5 bg-white/5 hover:bg-white/10 text-slate-300 border border-white/10 hover:border-white/20 font-bold text-xs rounded-lg transition-all flex items-center gap-2 cursor-pointer font-mono uppercase tracking-wide">
                 <Zap className="h-3.5 w-3.5 text-indigo-500" /> Try Live Demo
               </button>
-              <a href="https://wa.me/919836130393?text=I'm%20interested%20in%20a%20DEINRIM%20360%20demo" target="_blank" rel="noreferrer" className="px-6 py-3.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 font-semibold text-sm rounded-xl transition-all flex items-center gap-1.5">
+              <a href="https://wa.me/919836130393?text=I'm%20interested%20in%20a%20DEINRIM%20360%20demo" target="_blank" rel="noreferrer" className="px-5 py-2.5 bg-emerald-500/10 hover:bg-emerald-500/15 text-emerald-400 border border-emerald-500/25 font-bold text-xs rounded-lg transition-all flex items-center gap-1.5 font-mono uppercase tracking-wide">
                 💬 WhatsApp <ExternalLink className="h-3 w-3" />
               </a>
             </div>
-            <div className="flex flex-wrap items-center gap-4 pt-2 text-xs text-slate-500 font-medium">
+            <div className="flex flex-wrap items-center gap-5 pt-2 text-[10px] text-slate-600 font-mono font-bold uppercase tracking-widest">
               <span className="flex items-center gap-1"><Check className="h-3.5 w-3.5 text-emerald-500" /> SSL Secure</span>
               <span className="flex items-center gap-1"><Check className="h-3.5 w-3.5 text-indigo-500" /> Cloud Hosted</span>
               <span className="flex items-center gap-1"><Check className="h-3.5 w-3.5 text-violet-500" /> Mobile Ready</span>
@@ -455,11 +469,11 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
           {/* RIGHT — dashboard slideshow */}
           <div className="relative">
             {/* glow behind card */}
-            <div className="absolute -inset-6 bg-gradient-to-br from-indigo-400/10 to-violet-400/10 rounded-3xl blur-3xl pointer-events-none" />
+            <div className="absolute -inset-6 bg-gradient-to-br from-indigo-600/20 to-violet-600/10 rounded-3xl blur-3xl pointer-events-none" />
 
             {/* slide card */}
             <div
-              className="relative rounded-2xl border border-indigo-100 bg-slate-800 overflow-hidden shadow-2xl shadow-indigo-200/50 ring-1 ring-indigo-100"
+              className="relative rounded-2xl border border-indigo-500/20 bg-[#080d16] overflow-hidden shadow-2xl ring-1 ring-indigo-400/10"
               style={{ transition: "opacity 0.15s ease", opacity: heroAnim ? 1 : 0 }}
             >
               {/* top bar */}
@@ -536,19 +550,24 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
             </div>
 
             {/* floating badge bottom-right */}
-            <div className="absolute -bottom-3 -right-3 bg-white border border-slate-200 rounded-xl px-3 py-2 shadow-xl flex items-center gap-2">
+            <div className="absolute -bottom-3 -right-3 bg-[#0d1829] border border-indigo-500/30 rounded-xl px-3 py-2 shadow-xl flex items-center gap-2">
               <div className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse"></div>
-              <span className="text-[10px] font-semibold text-slate-600">Live on deinrim360.in</span>
+              <span className="text-[10px] font-semibold text-indigo-300 font-mono">Live on deinrim360.in</span>
             </div>
           </div>
         </div>
       </section>
 
+      {/* ── DIVIDER ───────────────────────────────────────────────────────── */}
+      <div className="w-full border-t border-white/5 py-6 text-center">
+        <span className="text-[10px] font-mono font-bold text-slate-600 uppercase tracking-[0.3em]">── Learn OMS Architecture ──</span>
+      </div>
+
       {/* ── MODULES GRID ──────────────────────────────────────────────────── */}
       <section id="modules" className="w-full max-w-6xl mx-auto px-4 md:px-8 pb-16 space-y-6">
         <div className="text-center space-y-2">
-          <span className="text-xs uppercase font-bold tracking-widest text-indigo-600">Unified Features</span>
-          <h3 className="text-3xl font-bold text-slate-900">9 Production-Ready Modules</h3>
+          <span className="text-[10px] uppercase font-bold tracking-widest text-indigo-400 font-mono">── Mission-Critical Enterprise Modules</span>
+          <h3 className="text-3xl font-black text-white">9 Production-Ready Modules</h3>
           <p className="text-sm text-slate-500 max-w-xl mx-auto">All fully linked — one entry propagates across inventory, finance, CRM and HR automatically.</p>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -565,16 +584,16 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
           ].map((mod, idx) => {
             const Icon = mod.icon;
             return (
-              <div key={idx} className="bg-white p-5 rounded-2xl border border-slate-200 hover:border-indigo-200 hover:shadow-md transition-all relative overflow-hidden group">
+              <div key={idx} className="bg-white/3 p-5 rounded-2xl border border-white/5 hover:border-indigo-500/30 hover:bg-indigo-500/5 transition-all relative overflow-hidden group">
                 <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-indigo-400 via-violet-400 to-indigo-400 opacity-0 group-hover:opacity-100 transition-opacity"></div>
                 <div className="flex items-center gap-2 mb-2">
-                  <div className="p-1.5 bg-indigo-600/10 rounded-lg border border-indigo-200">
+                  <div className="p-1.5 bg-indigo-500/15 rounded-lg border border-indigo-500/20">
                     <Icon className="h-4 w-4 text-indigo-500" />
                   </div>
-                  <h4 className="text-xs font-bold text-slate-800 uppercase tracking-wide">{mod.name}</h4>
+                  <h4 className="text-xs font-bold text-slate-200 uppercase tracking-wide">{mod.name}</h4>
                 </div>
                 <p className="text-xs text-slate-500 leading-relaxed mt-1">{mod.desc}</p>
-                <span className="mt-2 inline-block text-[9px] bg-emerald-50 text-emerald-700 border border-emerald-200 px-2 py-0.5 rounded-full font-bold">Active</span>
+                <span className="mt-2 inline-block text-[9px] bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-2 py-0.5 rounded-full font-bold font-mono">● Active</span>
               </div>
             );
           })}
@@ -583,11 +602,11 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
 
       {/* ── FLOW DIAGRAM ──────────────────────────────────────────────────── */}
       <section className="w-full max-w-6xl mx-auto px-4 md:px-8 pb-16">
-        <div className="bg-slate-50 rounded-2xl p-6 border border-slate-200 shadow-xl space-y-6">
+        <div className="bg-white/3 rounded-2xl p-6 border border-white/5 shadow-xl space-y-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Workflow className="h-5 w-5 text-indigo-500" />
-              <h3 className="text-md font-bold text-slate-800">Interactive Working Method Flow</h3>
+              <h3 className="text-md font-bold text-white">Interactive Working Method Flow</h3>
             </div>
             <span className="text-[10px] font-mono text-slate-400 bg-slate-100 px-2 py-0.5 rounded-full uppercase">Click nodes to trace</span>
           </div>
@@ -600,7 +619,7 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
                 return (
                   <button key={key} onClick={() => setActiveFlowNode(key)}
                     className={`flex flex-col items-center p-3 rounded-xl border text-center transition-all ${
-                      isActive ? "bg-indigo-50 border-indigo-300 text-indigo-700 shadow-md shadow-indigo-100" : "bg-white border-slate-200/80 text-slate-400 hover:border-slate-200 hover:text-slate-700"
+                      isActive ? "bg-indigo-500/15 border-indigo-400/40 text-indigo-200 shadow-md shadow-indigo-500/10" : "bg-white border-slate-200/80 text-slate-400 hover:border-slate-200 hover:text-slate-700"
                     } ${key === "finance" ? "col-span-2 sm:col-span-1" : ""}`}
                   >
                     <div className={`p-2 rounded-lg mb-2 ${isActive ? "bg-indigo-600 text-white" : "bg-slate-100"}`}>
@@ -613,24 +632,24 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
             </div>
           </div>
           {activeFlowNode && (
-            <div className="bg-white rounded-xl p-5 border border-slate-200">
+            <div className="bg-white/5 rounded-xl p-5 border border-white/8">
               <div className="flex items-start gap-4">
                 <div className="p-3 bg-indigo-600/10 rounded-xl text-indigo-500 border border-indigo-200">
                   <CurrentFlowIcon className="h-6 w-6" />
                 </div>
                 <div className="space-y-3 flex-1 text-sm">
-                  <h4 className="text-base font-bold text-slate-800">{flowNodeDetails[activeFlowNode].title}</h4>
+                  <h4 className="text-base font-bold text-white">{flowNodeDetails[activeFlowNode].title}</h4>
                   <div>
                     <span className="text-[10px] uppercase font-bold tracking-wider text-slate-400 block font-mono">Operational Trigger</span>
-                    <p className="text-slate-600 mt-0.5 text-xs">{flowNodeDetails[activeFlowNode].trigger}</p>
+                    <p className="text-slate-400 mt-0.5 text-xs">{flowNodeDetails[activeFlowNode].trigger}</p>
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                      <span className="text-[10px] uppercase font-bold tracking-wider text-emerald-700 block">Database Effect</span>
+                      <span className="text-[10px] uppercase font-bold tracking-wider text-emerald-400 block font-mono">Database Effect</span>
                       <p className="text-slate-500 text-xs mt-0.5 leading-relaxed">{flowNodeDetails[activeFlowNode].databaseEffect}</p>
                     </div>
                     <div>
-                      <span className="text-[10px] uppercase font-bold tracking-wider text-indigo-500 block font-mono">Automated Next Step</span>
+                      <span className="text-[10px] uppercase font-bold tracking-wider text-indigo-400 block font-mono">Automated Next Step</span>
                       <p className="text-slate-500 text-xs mt-0.5 leading-relaxed">{flowNodeDetails[activeFlowNode].nextStep}</p>
                     </div>
                   </div>
@@ -642,10 +661,10 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
       </section>
 
       {/* ── INDUSTRIES ────────────────────────────────────────────────────── */}
-      <section id="industries" className="w-full max-w-6xl mx-auto px-4 md:px-8 pb-16 space-y-6">
+      <section id="industries" className="w-full max-w-6xl mx-auto px-4 md:px-8 pb-16 space-y-6" id="modules">
         <div className="text-center space-y-2">
-          <span className="text-[10px] uppercase font-bold tracking-widest text-indigo-500 font-mono">Target Sectors</span>
-          <h3 className="text-3xl font-bold text-slate-900">Designed for Versatile Organizations</h3>
+          <span className="text-[10px] uppercase font-bold tracking-widest text-indigo-400 font-mono">── Target Sectors</span>
+          <h3 className="text-3xl font-black text-white">Designed for Versatile Organizations</h3>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {[
@@ -656,8 +675,8 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
             { title: "💻 Coworking Spaces",        desc: "Multi-tenant logins, resource allocation, monthly subscription tracking, and corporate desk occupancy." },
             { title: "🏭 Manufacturing Plants",    desc: "Raw material mapping, batch codes, GRN processing, and equipment maintenance scheduling." },
           ].map((item, idx) => (
-            <div key={idx} className="bg-slate-50 p-5 rounded-2xl border border-slate-200 hover:border-indigo-200 transition-all space-y-2">
-              <h4 className="text-sm font-bold text-slate-800">{item.title}</h4>
+            <div key={idx} className="bg-white/3 p-5 rounded-2xl border border-white/5 hover:border-indigo-500/30 transition-all space-y-2">
+              <h4 className="text-sm font-bold text-slate-100">{item.title}</h4>
               <p className="text-xs text-slate-500 leading-relaxed mt-1">{item.desc}</p>
             </div>
           ))}
@@ -666,12 +685,12 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
 
       {/* ── TRUST HUB ─────────────────────────────────────────────────────── */}
       <section className="w-full max-w-6xl mx-auto px-4 md:px-8 pb-16">
-        <div className="bg-slate-50 rounded-2xl p-6 border border-slate-200 shadow-xl space-y-6">
+        <div className="bg-white/3 rounded-2xl p-6 border border-white/5 shadow-xl space-y-6">
           <div className="space-y-1 text-center">
-            <span className="text-[10px] uppercase font-bold tracking-widest text-indigo-500 font-mono">Platform Trust</span>
-            <h3 className="text-xl font-bold text-slate-900">Enterprise Transparency Hub</h3>
+            <span className="text-[10px] uppercase font-bold tracking-widest text-indigo-400 font-mono">── Platform Trust</span>
+            <h3 className="text-xl font-black text-white">Enterprise Transparency Hub</h3>
           </div>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-2 bg-white/50 p-1 rounded-xl border border-slate-200">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-2 bg-white/3 p-1 rounded-xl border border-white/5">
             {([
               { id: "about",     icon: HeartHandshake, label: "Company & Trust" },
               { id: "tech",      icon: Server,         label: "Tech Specs" },
@@ -681,27 +700,27 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
               const Icon = tab.icon;
               return (
                 <button key={tab.id} onClick={() => setActiveReviewTab(tab.id)}
-                  className={`flex items-center justify-center gap-1.5 py-2 px-2 rounded-lg text-xs font-bold transition-all cursor-pointer ${activeReviewTab === tab.id ? "bg-indigo-600 text-white shadow-md" : "text-slate-500 hover:text-slate-700"}`}
+                  className={`flex items-center justify-center gap-1.5 py-2 px-2 rounded-lg text-xs font-bold transition-all cursor-pointer ${activeReviewTab === tab.id ? "bg-indigo-600 text-white shadow-md" : "text-slate-500 hover:text-slate-300"}`}
                 >
                   <Icon className="h-3.5 w-3.5" /> {tab.label}
                 </button>
               );
             })}
           </div>
-          <div className="bg-slate-50 rounded-xl p-5 border border-slate-200/80 text-sm">
+          <div className="bg-white/3 rounded-xl p-5 border border-white/5 text-sm">
             {activeReviewTab === "about" && (
               <div className="space-y-4 text-left">
-                <div className="flex items-center gap-2 pb-2 border-b border-slate-200/60"><History className="h-4 w-4 text-indigo-500" /><h4 className="text-xs font-bold uppercase tracking-wider text-slate-800">Corporate Heritage & High-Touch Support</h4></div>
+                <div className="flex items-center gap-2 pb-2 border-b border-slate-200/60"><History className="h-4 w-4 text-indigo-500" /><h4 className="text-xs font-bold uppercase tracking-wider text-slate-200">Corporate Heritage & High-Touch Support</h4></div>
                 <p className="text-xs text-slate-600">Operated by <strong className="text-white">Apex7tech</strong>, incorporated in Kolkata, WB, India. Engineering custom SaaS enterprise software since 2018, scaling from a regional consultancy to managing high-performance multi-tenant platforms.</p>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs font-mono">
-                  <div className="bg-white/45 p-3 rounded-lg border border-slate-200"><span className="text-[10px] text-indigo-500 uppercase tracking-widest font-bold">Priority Support SLA</span><p className="text-slate-600 mt-1 font-sans">2-hour response time for critical issues. Standard tickets resolved within 12-24 hours via dedicated email and callback.</p></div>
-                  <div className="bg-white/45 p-3 rounded-lg border border-slate-200"><span className="text-[10px] text-amber-600 uppercase tracking-widest font-bold">Active Customer Retention</span><p className="text-slate-600 mt-1 font-sans">Serving 140+ active business tenants in South Asia with zero telemetry loss incidents since inception.</p></div>
+                  <div className="bg-white/5 p-3 rounded-lg border border-white/8"><span className="text-[10px] text-indigo-500 uppercase tracking-widest font-bold">Priority Support SLA</span><p className="text-slate-600 mt-1 font-sans">2-hour response time for critical issues. Standard tickets resolved within 12-24 hours via dedicated email and callback.</p></div>
+                  <div className="bg-white/5 p-3 rounded-lg border border-white/8"><span className="text-[10px] text-amber-600 uppercase tracking-widest font-bold">Active Customer Retention</span><p className="text-slate-600 mt-1 font-sans">Serving 140+ active business tenants in South Asia with zero telemetry loss incidents since inception.</p></div>
                 </div>
               </div>
             )}
             {activeReviewTab === "tech" && (
               <div className="space-y-4 text-left">
-                <div className="flex items-center gap-2 pb-2 border-b border-slate-200/60"><Code className="h-4 w-4 text-indigo-500" /><h4 className="text-xs font-bold uppercase tracking-wider text-slate-800">Technical Specifications & Data Sovereignty</h4></div>
+                <div className="flex items-center gap-2 pb-2 border-b border-slate-200/60"><Code className="h-4 w-4 text-indigo-500" /><h4 className="text-xs font-bold uppercase tracking-wider text-slate-200">Technical Specifications & Data Sovereignty</h4></div>
                 <div className="grid grid-cols-2 gap-3.5 text-xs">
                   {[
                     { label: "DATABASE LAYER",        text: "Strictly partitioned schemas on high-performance relational MySQL, preventing cross-tenant leakage." },
@@ -716,7 +735,7 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
             )}
             {activeReviewTab === "reseller" && (
               <div className="space-y-4 text-left">
-                <div className="flex items-center gap-2 pb-2 border-b border-slate-200/60"><Building2 className="h-4 w-4 text-indigo-500" /><h4 className="text-xs font-bold uppercase tracking-wider text-slate-800">White-Label Partner Program</h4></div>
+                <div className="flex items-center gap-2 pb-2 border-b border-slate-200/60"><Building2 className="h-4 w-4 text-indigo-500" /><h4 className="text-xs font-bold uppercase tracking-wider text-slate-200">White-Label Partner Program</h4></div>
                 <p className="text-xs text-slate-600">Create a recurring high-margin SaaS revenue channel. We charge you a wholesale flat rate, letting you keep 100% of the customer margins.</p>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-center">
                   {[
@@ -724,8 +743,8 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
                     { label: "2. Custom Domain Mapping", text: "Point your domain (e.g., erp.yourbrand.com) via standard CNAME records mapped instantly." },
                     { label: "3. Custom Pricing Margin", text: "You pay wholesale ₹500/tenant/month. Bill your customers ₹2,000–₹5,000 per month." },
                   ].map((item, i) => (
-                    <div key={i} className="bg-slate-50 p-3 rounded-lg border border-slate-200 text-left space-y-1">
-                      <span className="text-indigo-500 font-bold text-xs">{item.label}</span>
+                    <div key={i} className="bg-white/5 p-3 rounded-lg border border-white/8 text-left space-y-1">
+                      <span className="text-indigo-400 font-bold text-xs">{item.label}</span>
                       <p className="text-[10px] text-slate-400 leading-normal">{item.text}</p>
                     </div>
                   ))}
@@ -734,16 +753,16 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
             )}
             {activeReviewTab === "templates" && (
               <div className="space-y-4 text-left">
-                <div className="flex items-center gap-2 pb-2 border-b border-slate-200/60"><CheckCircle2 className="h-4 w-4 text-indigo-500" /><h4 className="text-xs font-bold uppercase tracking-wider text-slate-800">One-Click Setup Industry Templates</h4></div>
+                <div className="flex items-center gap-2 pb-2 border-b border-slate-200/60"><CheckCircle2 className="h-4 w-4 text-indigo-500" /><h4 className="text-xs font-bold uppercase tracking-wider text-slate-200">One-Click Setup Industry Templates</h4></div>
                 <p className="text-xs text-slate-600">When provisioning a new tenant, select an industry preset to seed standard master records instantly — zero manual configuration.</p>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5 text-xs font-mono">
                   {[
                     { emoji: "🏭", name: "Manufacturing Preset", text: "Preloads raw materials, production racks, assembly employee codes, and depreciation ledger maps." },
                     { emoji: "📦", name: "Wholesaling & Retail Preset", text: "Preloads barcode formats, product batches, supplier categories, and margin ledgers." },
                   ].map((item, i) => (
-                    <div key={i} className="bg-white/45 p-3 rounded-lg border border-slate-200 flex gap-2.5 items-start">
+                    <div key={i} className="bg-white/5 p-3 rounded-lg border border-white/8 flex gap-2.5 items-start">
                       <span className="bg-indigo-600/10 text-indigo-500 p-1 rounded font-bold text-xs shrink-0">{item.emoji}</span>
-                      <div><span className="text-slate-800 font-bold text-[11px] block">{item.name}</span><p className="text-slate-400 text-[10px] mt-0.5 font-sans leading-normal">{item.text}</p></div>
+                      <div><span className="text-slate-200 font-bold text-[11px] block">{item.name}</span><p className="text-slate-400 text-[10px] mt-0.5 font-sans leading-normal">{item.text}</p></div>
                     </div>
                   ))}
                 </div>
@@ -755,13 +774,13 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
 
       {/* ── DASHBOARD MOCKUPS ─────────────────────────────────────────────── */}
       <section className="w-full max-w-6xl mx-auto px-4 md:px-8 pb-16">
-        <div className="bg-white/80 rounded-2xl p-6 md:p-8 border border-slate-200 shadow-xl space-y-6 text-left">
+        <div className="bg-white/3 rounded-2xl p-6 md:p-8 border border-white/5 shadow-xl space-y-6 text-left">
           <div className="space-y-2 text-center">
             <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded bg-indigo-600/10 text-indigo-500 font-mono text-[10px] font-bold uppercase tracking-wider">Interactive UI Previews</span>
-            <h3 className="text-xl font-bold text-slate-900">Inspect Our Multi-Tenant Workspace</h3>
-            <p className="text-xs text-slate-400">Click tabs to switch between department portals and trace operations.</p>
+            <h3 className="text-xl font-black text-white">Inspect Our Multi-Tenant Workspace</h3>
+            <p className="text-xs text-slate-500">Click tabs to switch between department portals and trace operations.</p>
           </div>
-          <div className="flex flex-wrap gap-2 border-b border-slate-200 pb-3">
+          <div className="flex flex-wrap gap-2 border-b border-white/8 pb-3">
             {[
               { id: "admin", label: "🛡️ Admin Control Room" },
               { id: "crm", label: "📈 CRM Sales Pipeline" },
@@ -770,18 +789,18 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
               { id: "purchases", label: "🛍️ Procurement (PO)" },
             ].map(tab => (
               <button key={tab.id} onClick={() => setActiveScreenshotTab(tab.id as any)}
-                className={`px-3 py-2 rounded-lg text-xs font-bold transition-all cursor-pointer ${activeScreenshotTab === tab.id ? "bg-indigo-600 text-white shadow-md" : "bg-slate-50 text-slate-500 hover:text-slate-700"}`}
+                className={`px-3 py-2 rounded-lg text-xs font-bold transition-all cursor-pointer ${activeScreenshotTab === tab.id ? "bg-indigo-600 text-white shadow-md" : "bg-white/5 text-slate-500 hover:text-slate-300"}`}
               >
                 {tab.label}
               </button>
             ))}
           </div>
-          <div className="bg-slate-50 rounded-xl p-5 border border-slate-200/80 min-h-[280px]">
+          <div className="bg-white/3 rounded-xl p-5 border border-white/5 min-h-[280px]">
             {activeScreenshotTab === "admin" && (
               <div className="space-y-4">
                 <div className="flex items-center justify-between pb-3 border-b border-slate-200/60">
-                  <div><span className="text-[10px] text-indigo-500 font-mono font-bold">SYSTEM ADMIN PORTAL</span><h4 className="text-sm font-extrabold text-slate-800">Root Configuration & Tenant Management</h4></div>
-                  <span className="text-[10px] bg-emerald-50 text-emerald-700 border border-emerald-200 px-2.5 py-0.5 rounded font-bold">LIVE</span>
+                  <div><span className="text-[10px] text-indigo-500 font-mono font-bold">SYSTEM ADMIN PORTAL</span><h4 className="text-sm font-extrabold text-white">Root Configuration & Tenant Management</h4></div>
+                  <span className="text-[10px] bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-2.5 py-0.5 rounded font-mono font-bold">LIVE</span>
                 </div>
                 <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
                   {[["Active Tenants","14 Companies","text-white"],["Isolated Schemas","14 Partitioned","text-indigo-500"],["SSL Routing","100% Active","text-emerald-400"],["API Webhooks","2 Active","text-violet-400"]].map(([label,val,cls],i)=>(
@@ -879,7 +898,7 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
               <div key={i} className="flex items-center gap-1.5"><Check className="h-3.5 w-3.5 text-emerald-400 shrink-0" />{f}</div>
             ))}
           </div>
-          <button onClick={() => openModal("register")} className="px-8 py-3 bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs rounded-xl transition-all cursor-pointer shadow-lg shadow-indigo-200">
+          <button onClick={() => openModal("register")} className="px-8 py-3 bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs rounded-xl transition-all cursor-pointer shadow-lg shadow-indigo-500/20">
             Create Your Account Now →
           </button>
         </div>
@@ -889,7 +908,7 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
       <section className="w-full max-w-6xl mx-auto px-4 md:px-8 pb-16">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 text-left">
           <div className="lg:col-span-7 space-y-6">
-            <div className="space-y-1"><span className="text-[10px] uppercase font-bold tracking-widest text-indigo-500 font-mono">Engineering Trust</span><h3 className="text-xl font-bold text-slate-900">Why Companies Choose DEINRIM 360</h3></div>
+            <div className="space-y-1"><span className="text-[10px] uppercase font-bold tracking-widest text-indigo-500 font-mono">Engineering Trust</span><h3 className="text-xl font-bold text-white">Why Companies Choose DEINRIM 360</h3></div>
             <div className="space-y-4">
               {[
                 { title: "⚡ Reduce Manual Effort & Double Entry", desc: "Inventory movements trigger procurement and CRM entries automatically — no re-keying." },
@@ -932,7 +951,7 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
             <p className="text-xs text-slate-600 leading-relaxed">Unlock operational clarity, eliminate double entry, and secure your company database. Schedule a sandbox demo with our Kolkata engineering desk.</p>
           </div>
           <div className="flex flex-wrap items-center justify-center gap-4">
-            <button onClick={() => openModal("register")} className="px-6 py-3 bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs rounded-xl transition-all cursor-pointer shadow-lg shadow-indigo-200">
+            <button onClick={() => openModal("register")} className="px-6 py-3 bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs rounded-xl transition-all cursor-pointer shadow-lg shadow-indigo-500/20">
               ✨ Create Free Account
             </button>
             <a href="https://wa.me/919836130393?text=I'm%20interested%20in%20a%20DEINRIM%20360%20demo" target="_blank" rel="noreferrer" className="px-6 py-3 bg-white hover:bg-slate-100 text-emerald-400 border border-slate-200 font-bold text-xs rounded-xl transition-all">
@@ -947,7 +966,7 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
       <section id="faq" className="w-full max-w-4xl mx-auto px-4 md:px-8 pb-16">
         <div className="bg-slate-50 rounded-2xl p-6 border border-slate-200 shadow-xl space-y-4">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-            <div className="flex items-center gap-2"><BookOpen className="h-5 w-5 text-indigo-500" /><h3 className="text-md font-bold text-slate-800">Knowledge Base Q&A</h3></div>
+            <div className="flex items-center gap-2"><BookOpen className="h-5 w-5 text-indigo-500" /><h3 className="text-md font-bold text-white">Knowledge Base Q&A</h3></div>
             <div className="relative"><Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-500" /><input type="text" placeholder="Search Q&A..." value={helpSearch} onChange={e => setHelpSearch(e.target.value)} className="bg-white border border-slate-200 rounded-lg pl-8 pr-3 py-1 text-xs text-slate-700 placeholder-slate-500 focus:outline-none focus:border-sky-500 w-full md:w-64 font-semibold" /></div>
           </div>
           <div className="space-y-2.5 max-h-[500px] overflow-y-auto pr-1">
@@ -980,7 +999,7 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 max-w-6xl mx-auto text-left">
           <div className="space-y-1.5">
             <h4 className="text-[11px] font-extrabold text-indigo-500 uppercase tracking-wider font-mono">OPERATED & DEVELOPED BY</h4>
-            <p className="text-slate-700 font-semibold text-sm">Apex7tech</p>
+            <p className="text-slate-300 font-semibold text-sm">Apex7tech</p>
             <p className="text-slate-600">Kolkata, West Bengal (WB), India</p>
             <p className="text-white font-bold text-sm">Corporate: +91 98361-30393</p>
             <p className="text-slate-500 text-[10px] leading-normal pt-2 border-t border-slate-100 mt-2">DEINRIM OMS v2.0 • Isolated high-performance relational structures with real-time replication.</p>
@@ -989,7 +1008,7 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
             <h4 className="text-[11px] font-extrabold text-indigo-500 uppercase tracking-wider font-mono">REGULATORY COMPLIANCE</h4>
             <div className="flex flex-wrap items-center gap-x-2 gap-y-1.5 text-indigo-500 font-bold mt-2 text-[11px]">
               {[["privacy","Privacy Policy"],["terms","Terms of Service"],["support","App Support"]].map(([key,label])=>(
-                <React.Fragment key={key}><button type="button" onClick={() => setActiveFooterModal(key as any)} className="hover:text-sky-300 underline transition-all cursor-pointer">{label}</button><span className="text-slate-700">|</span></React.Fragment>
+                <React.Fragment key={key}><button type="button" onClick={() => setActiveFooterModal(key as any)} className="hover:text-indigo-300 underline transition-all cursor-pointer">{label}</button><span className="text-slate-700">|</span></React.Fragment>
               ))}
               <button type="button" onClick={() => setActiveFooterModal("deletion")} className="text-rose-500 hover:text-rose-400 underline transition-all cursor-pointer font-bold">Data Deletion Request</button>
             </div>
@@ -1007,21 +1026,21 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
       {/* ── LOGIN MODAL ───────────────────────────────────────────────────── */}
       {showModal && (
         <div className="fixed inset-0 z-50 flex items-start md:items-center justify-center bg-black/70 backdrop-blur-sm p-2 md:p-4 overflow-y-auto" onClick={(e) => { if (e.target === e.currentTarget) closeModal(); }}>
-          <div className="w-full max-w-md rounded-2xl border border-slate-200 bg-white shadow-2xl overflow-hidden my-4 md:my-0">
+          <div className="w-full max-w-md rounded-2xl border border-indigo-500/20 bg-[#080d16] shadow-2xl overflow-hidden my-4 md:my-0">
             {/* Top accent */}
             <div className="h-0.5 w-full bg-gradient-to-r from-sky-500 via-blue-400 to-sky-600"></div>
 
             {/* Header */}
-            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-white/8">
               <div className="flex items-center gap-2.5">
                 <div className="h-8 w-8 rounded-lg bg-indigo-600 flex items-center justify-center"><Building2 className="h-4 w-4 text-white" /></div>
-                <div><div className="text-sm font-bold text-white font-mono">DEINRIM OMS</div><div className="text-[10px] text-slate-500 font-mono">Secure Enterprise Portal</div></div>
+                <div><div className="text-sm font-bold text-white font-mono">DEINRIM 360</div><div className="text-[10px] text-slate-500 font-mono">Secure Enterprise Portal</div></div>
               </div>
-              <button onClick={closeModal} className="text-slate-400 hover:text-slate-800 cursor-pointer"><X className="h-5 w-5" /></button>
+              <button onClick={closeModal} className="text-slate-500 hover:text-white cursor-pointer"><X className="h-5 w-5" /></button>
             </div>
 
             {/* 3 Tabs */}
-            <div className="flex gap-1 p-3 bg-slate-50 border-b border-slate-200">
+            <div className="flex gap-1 p-3 bg-white/3 border-b border-white/8">
               {([
                 { id: "login",      label: "Login",         icon: LogIn },
                 { id: "register",   label: "Create Account",icon: UserPlus },
@@ -1030,7 +1049,7 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
                 const Icon = tab.icon;
                 return (
                   <button key={tab.id} onClick={() => setModalTab(tab.id)}
-                    className={`flex-1 flex items-center justify-center gap-1 py-2 rounded-lg text-[11px] font-bold transition-all cursor-pointer font-mono ${modalTab === tab.id ? "bg-indigo-600 text-white" : "text-slate-400 hover:text-slate-800 hover:bg-slate-100"}`}
+                    className={`flex-1 flex items-center justify-center gap-1 py-2 rounded-lg text-[11px] font-bold transition-all cursor-pointer font-mono ${modalTab === tab.id ? "bg-indigo-600 text-white" : "text-slate-500 hover:text-slate-200 hover:bg-white/5"}`}
                   >
                     <Icon className="h-3 w-3" />{tab.label}
                   </button>
@@ -1045,11 +1064,11 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
                 <form onSubmit={handleLogin} className="space-y-4">
                   {loginError && <div className="bg-red-500/10 border border-red-500/30 text-red-600 p-3 rounded-lg text-xs flex items-start gap-2"><ShieldAlert className="h-4 w-4 shrink-0 text-red-400 mt-0.5" />{loginError}</div>}
                   <div className="space-y-1.5">
-                    <label className="text-[10px] font-bold text-indigo-500/80 font-mono uppercase tracking-widest">Email Address</label>
+                    <label className="text-[10px] font-bold text-indigo-400/80 font-mono uppercase tracking-widest">Email Address</label>
                     <div className="relative"><Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500" /><input type="email" required placeholder="your@company.com" value={email} onChange={e => { setEmail(e.target.value); setLoginError(""); }} className={`${inputCls} pl-10`} /></div>
                   </div>
                   <div className="space-y-1.5">
-                    <label className="text-[10px] font-bold text-indigo-500/80 font-mono uppercase tracking-widest">Password</label>
+                    <label className="text-[10px] font-bold text-indigo-400/80 font-mono uppercase tracking-widest">Password</label>
                     <div className="relative"><Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500" /><input type="password" required placeholder="Enter password" value={password} onChange={e => { setPassword(e.target.value); setLoginError(""); }} className={`${inputCls} pl-10`} /></div>
                   </div>
                   <button type="submit" className={btnSky}>Sign In <ArrowRight className="h-3.5 w-3.5" /></button>
@@ -1061,23 +1080,23 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
               {modalTab === "register" && (
                 <form onSubmit={handleRegister} className="space-y-4">
                   {regError && <div className="bg-red-500/10 border border-red-500/30 text-red-600 p-3 rounded-lg text-xs flex items-start gap-2"><ShieldAlert className="h-4 w-4 shrink-0 text-red-400 mt-0.5" />{regError}</div>}
-                  <div className="bg-indigo-50 border border-indigo-100 rounded-lg p-3 text-[10px] text-indigo-600 font-sans">
+                  <div className="bg-indigo-500/10 border border-indigo-500/20 rounded-lg p-3 text-[10px] text-indigo-300 font-sans">
                     Creating an account provisions a <strong className="text-sky-300">clean, isolated company workspace</strong> with zero demo data. You will be the Company Admin.
                   </div>
                   <div className="space-y-1.5">
-                    <label className="text-[10px] font-bold text-indigo-500/80 font-mono uppercase tracking-widest">Company Name *</label>
+                    <label className="text-[10px] font-bold text-indigo-400/80 font-mono uppercase tracking-widest">Company Name *</label>
                     <input type="text" required placeholder="Acme Corp Pvt. Ltd." value={regCompany} onChange={e => setRegCompany(e.target.value)} className={inputCls} />
                   </div>
                   <div className="space-y-1.5">
-                    <label className="text-[10px] font-bold text-indigo-500/80 font-mono uppercase tracking-widest">Admin Email *</label>
+                    <label className="text-[10px] font-bold text-indigo-400/80 font-mono uppercase tracking-widest">Admin Email *</label>
                     <div className="relative"><Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500" /><input type="email" required placeholder="admin@company.com" value={regEmail} onChange={e => setRegEmail(e.target.value)} className={`${inputCls} pl-10`} /></div>
                   </div>
                   <div className="space-y-1.5">
-                    <label className="text-[10px] font-bold text-indigo-500/80 font-mono uppercase tracking-widest">Password *</label>
+                    <label className="text-[10px] font-bold text-indigo-400/80 font-mono uppercase tracking-widest">Password *</label>
                     <div className="relative"><Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500" /><input type="password" required placeholder="Min 6 characters" value={regPassword} onChange={e => setRegPassword(e.target.value)} className={`${inputCls} pl-10`} /></div>
                   </div>
                   <div className="space-y-1.5">
-                    <label className="text-[10px] font-bold text-indigo-500/80 font-mono uppercase tracking-widest">Confirm Password *</label>
+                    <label className="text-[10px] font-bold text-indigo-400/80 font-mono uppercase tracking-widest">Confirm Password *</label>
                     <div className="relative"><Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500" /><input type="password" required placeholder="Repeat password" value={regConfirm} onChange={e => setRegConfirm(e.target.value)} className={`${inputCls} pl-10`} /></div>
                   </div>
                   <button type="submit" disabled={regLoading} className={`${btnSky} ${regLoading ? "opacity-70 cursor-not-allowed" : ""}`}>
@@ -1108,9 +1127,9 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
                   <div className="space-y-3">
                     <div className="flex items-center gap-2 pb-2 border-b border-slate-200">
                       <Zap className="h-3.5 w-3.5 text-amber-400" />
-                      <span className="text-[10px] font-bold text-amber-700 uppercase tracking-widest font-mono">Quick Demo Access</span>
+                      <span className="text-[10px] font-bold text-amber-400 uppercase tracking-widest font-mono">Quick Demo Access</span>
                     </div>
-                    <div className="bg-amber-50 border border-amber-100 rounded-lg p-2.5 text-[10px] text-amber-700 font-sans">
+                    <div className="bg-amber-500/10 border border-amber-500/20 rounded-lg p-2.5 text-[10px] text-amber-300 font-sans">
                       Demo accounts use shared read-only data. Click any role to land directly on the dashboard.
                     </div>
                     <div className="space-y-2">
@@ -1123,11 +1142,11 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
                         { type: "readonly",  label: "Read-Only Observer",sub: "All modules, no write access",        dot: "bg-slate-500"   },
                       ] as const).map(item => (
                         <button key={item.type} onClick={() => handleDemoLogin(item.type)}
-                          className="w-full bg-slate-100/60 hover:bg-indigo-50 border border-slate-200 hover:border-indigo-200 rounded-xl px-4 py-3 flex items-center gap-3 text-left cursor-pointer transition-all"
+                          className="w-full bg-slate-100/60 hover:bg-indigo-500/10 border border-white/8 hover:border-indigo-500/30 rounded-xl px-4 py-3 flex items-center gap-3 text-left cursor-pointer transition-all"
                         >
                           <div className={`w-2 h-2 rounded-full ${item.dot} shrink-0`}></div>
                           <div className="flex-1">
-                            <div className="text-xs font-bold text-slate-700 font-mono">{item.label}</div>
+                            <div className="text-xs font-bold text-slate-200 font-mono">{item.label}</div>
                             <div className="text-[10px] text-slate-500 font-mono">{item.sub}</div>
                           </div>
                           <ArrowRight className="h-3.5 w-3.5 text-slate-500" />
@@ -1152,7 +1171,7 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
                 {activeFooterModal === "terms"    && <FileText className="h-5 w-5 text-indigo-500" />}
                 {activeFooterModal === "support"  && <BookOpen className="h-5 w-5 text-indigo-500" />}
                 {activeFooterModal === "deletion" && <AlertTriangle className="h-5 w-5 text-rose-500" />}
-                <h3 className="text-base font-bold text-slate-800">
+                <h3 className="text-base font-bold text-white">
                   {activeFooterModal === "privacy"  && "Privacy Policy"}
                   {activeFooterModal === "terms"    && "Terms of Service"}
                   {activeFooterModal === "support"  && "Submit Support Query"}
@@ -1192,7 +1211,7 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
               ) : (
                 <div className="text-center py-6 space-y-4">
                   <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-emerald-500/10 text-emerald-400"><CheckCircle2 className="h-8 w-8" /></div>
-                  <div><h4 className="text-sm font-bold text-slate-800">Ticket Submitted!</h4><p className="text-xs text-slate-400 max-w-xs mx-auto mt-1">Thank you, {supportName}. Ticket <strong>#OMS-{Math.floor(100000 + Math.random() * 900000)}</strong> is raised.</p></div>
+                  <div><h4 className="text-sm font-bold text-slate-100">Ticket Submitted!</h4><p className="text-xs text-slate-400 max-w-xs mx-auto mt-1">Thank you, {supportName}. Ticket <strong>#OMS-{Math.floor(100000 + Math.random() * 900000)}</strong> is raised.</p></div>
                   <button onClick={closeFooterModal} className="rounded-lg bg-white border border-slate-200 px-4 py-2 text-xs font-bold text-white cursor-pointer">Close</button>
                 </div>
               )
@@ -1212,7 +1231,7 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
               ) : (
                 <div className="text-center py-6 space-y-4">
                   <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-rose-500/10 text-rose-400"><Trash2 className="h-8 w-8" /></div>
-                  <div><h4 className="text-sm font-bold text-slate-800">Deletion Scheduled</h4><p className="text-xs text-slate-400 max-w-xs mx-auto mt-1">Request for <strong>{deletionEmail}</strong> received. Ticket: <strong>#OMS-DEL-{Math.floor(100000 + Math.random() * 900000)}</strong>. Processing within 14 business days.</p></div>
+                  <div><h4 className="text-sm font-bold text-slate-100">Deletion Scheduled</h4><p className="text-xs text-slate-400 max-w-xs mx-auto mt-1">Request for <strong>{deletionEmail}</strong> received. Ticket: <strong>#OMS-DEL-{Math.floor(100000 + Math.random() * 900000)}</strong>. Processing within 14 business days.</p></div>
                   <button onClick={closeFooterModal} className="rounded-lg bg-white border border-slate-200 px-4 py-2 text-xs font-bold text-white cursor-pointer">Close</button>
                 </div>
               )
@@ -1223,6 +1242,7 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
     </div>
   );
 }
+
 
 
 
