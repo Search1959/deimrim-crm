@@ -1,16 +1,18 @@
 ﻿import { toast } from "../utils/toast";
 import React, { useState } from "react";
-import { 
-  LayoutDashboard, 
-  Users2, 
-  Building2, 
-  Clock, 
-  Calendar, 
-  Wallet, 
-  Eye, 
-  Sparkles,
+import {
+  LayoutDashboard,
+  Users2,
+  Building2,
+  Clock,
+  Calendar,
+  Wallet,
   ChevronRight,
-  ShieldCheck
+  Target,
+  Briefcase,
+  LogOut,
+  List,
+  CalendarDays,
 } from "lucide-react";
 import { Employee, LeaveRequest, Department, Designation, UserRole, Company } from "../types";
 
@@ -21,6 +23,11 @@ import HRDepartmentsPanel from "./hr/HRDepartmentsPanel";
 import HRAttendancePanel from "./hr/HRAttendancePanel";
 import HRLeavePanel from "./hr/HRLeavePanel";
 import HRPayrollPanel from "./hr/HRPayrollPanel";
+import HRTargetsPanel from "./hr/HRTargetsPanel";
+import HRRecruitmentPanel from "./hr/HRRecruitmentPanel";
+import HRExitsPanel from "./hr/HRExitsPanel";
+import HRLeaveTypesPanel from "./hr/HRLeaveTypesPanel";
+import HRHolidaysPanel from "./hr/HRHolidaysPanel";
 
 interface HRViewProps {
   employees: Employee[];
@@ -49,7 +56,7 @@ export default function HRView({
 }: HRViewProps) {
   // Local active menu subtab mapping to sidebar options
   const [activeSubTab, setActiveSubTab] = useState<
-    "dashboard" | "employees" | "departments" | "attendance" | "leaves" | "payroll"
+    "dashboard" | "employees" | "departments" | "attendance" | "leaves" | "payroll" | "targets" | "recruitment" | "exits" | "leave-types" | "holidays"
   >("dashboard");
 
   const isHRManager = [
@@ -72,7 +79,12 @@ export default function HRView({
           {id:'departments',label:'Departments'},
           {id:'attendance',label:'Attendance'},
           {id:'leaves',label:'Leaves'},
-          {id:'payroll',label:'Payroll'}
+          {id:'payroll',label:'Payroll'},
+          {id:'targets',label:'Targets'},
+          {id:'recruitment',label:'Recruitment'},
+          {id:'exits',label:'Exits'},
+          {id:'leave-types',label:'Leave Types'},
+          {id:'holidays',label:'Holidays'},
         ].map(tab => (
           <button key={tab.id} onClick={() => setActiveSubTab(tab.id as any)} className={`shrink-0 px-3 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap cursor-pointer ${activeSubTab===tab.id ? 'bg-indigo-600 text-white' : 'bg-slate-800 text-slate-400 hover:text-white'}`}>{tab.label}</button>
         ))}
@@ -188,6 +200,22 @@ export default function HRView({
               </div>
             </div>
 
+            {/* Group: PERFORMANCE */}
+            <div className="space-y-1">
+              <span className="block text-[8px] font-bold text-slate-600 tracking-widest font-mono uppercase px-2">PERFORMANCE</span>
+              <div className="space-y-0.5">
+                {[
+                  { id: "targets", label: "Targets & Incentives", Icon: Target },
+                ].map(({ id, label, Icon }) => (
+                  <button key={id} onClick={() => setActiveSubTab(id as any)}
+                    className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg text-[11px] font-bold tracking-tight transition-all cursor-pointer ${activeSubTab === id ? "bg-indigo-600/10 border border-indigo-500/30 text-indigo-300" : "border border-transparent text-slate-400 hover:text-slate-200 hover:bg-slate-900/40"}`}>
+                    <div className="flex items-center gap-2"><Icon className={`h-3.5 w-3.5 ${activeSubTab === id ? "text-indigo-400" : "text-slate-500"}`} /><span>{label}</span></div>
+                    {activeSubTab === id && <ChevronRight className="h-3 w-3 text-indigo-500/80" />}
+                  </button>
+                ))}
+              </div>
+            </div>
+
             {/* Group: FINANCE */}
             <div className="space-y-1">
               <span className="block text-[8px] font-bold text-slate-600 tracking-widest font-mono uppercase px-2">
@@ -208,6 +236,40 @@ export default function HRView({
                   </div>
                   {activeSubTab === "payroll" && <ChevronRight className="h-3 w-3 text-indigo-500/80" />}
                 </button>
+              </div>
+            </div>
+
+            {/* Group: TALENT */}
+            <div className="space-y-1">
+              <span className="block text-[8px] font-bold text-slate-600 tracking-widest font-mono uppercase px-2">TALENT</span>
+              <div className="space-y-0.5">
+                {[
+                  { id: "recruitment", label: "Recruitment", Icon: Briefcase },
+                  { id: "exits", label: "Exits", Icon: LogOut },
+                ].map(({ id, label, Icon }) => (
+                  <button key={id} onClick={() => setActiveSubTab(id as any)}
+                    className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg text-[11px] font-bold tracking-tight transition-all cursor-pointer ${activeSubTab === id ? "bg-indigo-600/10 border border-indigo-500/30 text-indigo-300" : "border border-transparent text-slate-400 hover:text-slate-200 hover:bg-slate-900/40"}`}>
+                    <div className="flex items-center gap-2"><Icon className={`h-3.5 w-3.5 ${activeSubTab === id ? "text-indigo-400" : "text-slate-500"}`} /><span>{label}</span></div>
+                    {activeSubTab === id && <ChevronRight className="h-3 w-3 text-indigo-500/80" />}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Group: CONFIGURATION */}
+            <div className="space-y-1">
+              <span className="block text-[8px] font-bold text-slate-600 tracking-widest font-mono uppercase px-2">CONFIG</span>
+              <div className="space-y-0.5">
+                {[
+                  { id: "leave-types", label: "Leave Types", Icon: List },
+                  { id: "holidays", label: "Holidays", Icon: CalendarDays },
+                ].map(({ id, label, Icon }) => (
+                  <button key={id} onClick={() => setActiveSubTab(id as any)}
+                    className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg text-[11px] font-bold tracking-tight transition-all cursor-pointer ${activeSubTab === id ? "bg-indigo-600/10 border border-indigo-500/30 text-indigo-300" : "border border-transparent text-slate-400 hover:text-slate-200 hover:bg-slate-900/40"}`}>
+                    <div className="flex items-center gap-2"><Icon className={`h-3.5 w-3.5 ${activeSubTab === id ? "text-indigo-400" : "text-slate-500"}`} /><span>{label}</span></div>
+                    {activeSubTab === id && <ChevronRight className="h-3 w-3 text-indigo-500/80" />}
+                  </button>
+                ))}
               </div>
             </div>
           </nav>
@@ -273,6 +335,26 @@ export default function HRView({
             company={company}
             onSalaryDisbursed={onSalaryDisbursed}
           />
+        )}
+
+        {activeSubTab === "targets" && (
+          <HRTargetsPanel employees={employees} />
+        )}
+
+        {activeSubTab === "recruitment" && (
+          <HRRecruitmentPanel />
+        )}
+
+        {activeSubTab === "exits" && (
+          <HRExitsPanel employees={employees} />
+        )}
+
+        {activeSubTab === "leave-types" && (
+          <HRLeaveTypesPanel />
+        )}
+
+        {activeSubTab === "holidays" && (
+          <HRHolidaysPanel />
         )}
       </main>
     </div>
