@@ -67,9 +67,10 @@ async function initDB() {
     await conn.execute(`
       INSERT IGNORE INTO users (id, email, password, name, role, company_id, branch_id)
       VALUES
-        ('u-apex',   'apex7tech@gmail.com',    'Search@1959', 'Apex Tech Admin', 'System Administrator',  'comp-1',      'br-hq'),
-        ('u-demo',   'demo@deinrim.in',         'demo123....', 'Demo User',       'Read Only User',        'comp-1',      'br-hq'),
-        ('u-iswind', 'iswind.mail@gmail.com',   'isw@123',     'Iswind Client',   'Company Admin', 'comp-iswind', 'br-iswind-hq')
+        ('u-apex',    'apex7tech@gmail.com',           'Search@1959', 'Apex Tech Admin',  'System Administrator', 'comp-1',      'br-hq'),
+        ('u-deinrim', 'deinrimsolutionss@gmail.com',  'Deinrim@2026', 'Arun Jaiswal',     'System Administrator', 'comp-1',      'br-hq'),
+        ('u-demo',    'demo@deinrim.in',               'demo123....', 'Demo User',        'Read Only User',       'comp-1',      'br-hq'),
+        ('u-iswind',  'iswind.mail@gmail.com',         'isw@123',     'Iswind Client',    'Company Admin',        'comp-iswind', 'br-iswind-hq')
     `);
     await conn.execute(`
       UPDATE users SET role = 'System Administrator'   WHERE role IN ('System Admin','system_admin','SystemAdmin')
@@ -558,28 +559,9 @@ async function startServer() {
     if (!ANTHROPIC_KEY) return res.status(400).json({ error: "ANTHROPIC_API_KEY not configured in environment" });
     if (!req.file) return res.status(400).json({ error: "No image uploaded" });
     const base64 = req.file.buffer.toString("base64");
-    const mediaType = req.file.mimetype || "image/jpeg";
-    try {
-      const response = await fetch("https://api.anthropic.com/v1/messages", {
-        method: "POST",
-        headers: {
-          "x-api-key": ANTHROPIC_KEY,
-          "anthropic-version": "2023-06-01",
-          "content-type": "application/json"
-        },
-        body: JSON.stringify({
-          model: "claude-sonnet-4-6",
-          max_tokens: 1024,
-          messages: [{
-            role: "user",
-            content: [
-              {
-                type: "image",
-                source: { type: "base64", media_type: mediaType, data: base64 }
-              },
-              {
-                type: "text",
-                text: `Extract purchase bill / tax invoice data from this image and return ONLY valid JSON with this exact structure (no markdown, no explanation):
+    const isPDF = req.file.mimetype === "application/pdf";
+    const imageMediaType = req.file.mimetype || "image/jpeg";
+    const billPrompt = `Extract ALL purchase bill / tax invoice data from this document and return ONLY valid JSON (no markdown, no explanation):
 {
   "supplierName": "",
   "supplierGSTIN": "",
@@ -590,20 +572,56 @@ async function startServer() {
   "eWayBillNo": "",
   "vehicleNo": "",
   "transportMode": "Road",
+  "narration": "",
   "items": [
     {
-      "description": "",
+      "description": "product name",
       "hsn": "",
       "qty": 1,
+      "free": 0,
+      "pack": "",
       "unit": "Nos",
+      "batch": "",
+      "expiryDate": "MM/YYYY or empty",
+      "mrp": 0,
       "rate": 0,
+      "discount": 0,
       "gstPct": 18
     }
-  ],
-  "narration": ""
+  ]
 }
-Rules: invoiceDate must be YYYY-MM-DD format or empty string. qty and rate are numbers. gstPct is 0/5/12/18/28. If a field is not visible, use empty string or 0. Return only the JSON object.`
-              }
+Rules:
+- supplierName = the SELLER / FROM party (not buyer/bill-to)
+- billNumber = invoice/memo/bill number
+- invoiceDate = YYYY-MM-DD or empty
+- qty = quantity ordered (number), free = free/bonus qty (number, 0 if not present)
+- rate = unit rate BEFORE discount (number)
+- discount = trade discount % (number, 0 if not shown)
+- mrp = maximum retail price per unit (number, 0 if not shown)
+- batch = batch/lot number (string)
+- expiryDate = expiry as MM/YYYY (string, empty if not shown)
+- gstPct = total GST % (CGST%+SGST% or IGST%) as number: 0/5/12/18/28
+- pack = pack size like 10TAB, 30ML, 1GM etc (string)
+- If a field is not visible use empty string or 0
+- Return ONLY the JSON object, nothing else`;
+    const fileBlock = isPDF ? { type: "document", source: { type: "base64", media_type: "application/pdf", data: base64 } } : { type: "image", source: { type: "base64", media_type: imageMediaType, data: base64 } };
+    try {
+      const response = await fetch("https://api.anthropic.com/v1/messages", {
+        method: "POST",
+        headers: {
+          "x-api-key": ANTHROPIC_KEY,
+          "anthropic-version": "2023-06-01",
+          "anthropic-beta": "pdfs-2024-09-25",
+          "content-type": "application/json"
+        },
+        body: JSON.stringify({
+          model: "claude-sonnet-4-6",
+          max_tokens: 2048,
+          messages: [{
+            role: "user",
+            content: [
+              fileBlock,
+              { type: "text", text: billPrompt }
             ]
           }]
         })
