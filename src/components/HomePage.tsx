@@ -388,7 +388,7 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
   const btnSky = "w-full py-2.5 bg-gradient-to-r from-indigo-500 to-violet-600 hover:from-indigo-400 hover:to-violet-500 active:opacity-90 text-white font-bold text-xs rounded-lg flex items-center justify-center gap-2 cursor-pointer font-mono tracking-wider uppercase transition-all shadow-lg shadow-indigo-500/20";
 
   return (
-    <div  className="min-h-screen w-full bg-[#04080f] text-slate-100 flex flex-col overflow-x-hidden font-sans">
+    <div data-theme="dark" className="min-h-screen w-full bg-[#04080f] text-slate-100 flex flex-col overflow-x-hidden font-sans">
 
       {/* ── NAV ───────────────────────────────────────────────────────────── */}
       <header className="sticky top-0 z-30 border-b border-white/5 bg-[#04080f]/95 backdrop-blur-xl px-4 md:px-8 py-3.5 flex items-center justify-between">
