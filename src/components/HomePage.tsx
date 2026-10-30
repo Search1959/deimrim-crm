@@ -100,6 +100,13 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
   // Dashboard mockup tabs
   const [activeScreenshotTab, setActiveScreenshotTab] = useState<"admin" | "crm" | "inventory" | "hr" | "purchases">("admin");
 
+  // Set body background dark while homepage is mounted
+  useEffect(() => {
+    const prev = document.body.style.backgroundColor;
+    document.body.style.setProperty("background-color", "#04080f", "important");
+    return () => { document.body.style.backgroundColor = prev; };
+  }, []);
+
   // Hero slideshow
   const heroSlides = [
     {
