@@ -433,9 +433,9 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded text-[10px] font-bold bg-indigo-500/10 text-indigo-300 border border-indigo-500/20 font-mono tracking-widest uppercase">
               <Sparkles className="h-3 w-3" /> Apex7tech Enterprise Suite · ISO 27001 Ready · PostgreSQL HA Isolated
             </div>
-            <h2 className="text-4xl md:text-5xl lg:text-6xl font-black text-white tracking-tight leading-[1.05]">
-              The Complete<br />
-              <span className="bg-gradient-to-r from-indigo-400 to-violet-400 bg-clip-text text-transparent">Autonomous Operating</span><br /><span className="text-white">System</span><br /><span className="text-slate-400 text-3xl md:text-4xl lg:text-5xl font-bold">for Modern Enterprises</span>
+            <h2 className="text-4xl md:text-5xl lg:text-6xl font-black tracking-tight leading-[1.05]">
+              <span className="text-white">Run Your Entire Business</span><br />
+              <span className="bg-gradient-to-r from-indigo-400 to-violet-400 bg-clip-text text-transparent">from One Platform</span>
             </h2>
             <p className="text-slate-300 text-sm leading-relaxed max-w-lg">
               CRM · Inventory · Procurement · HR · Finance · GST — unified in one mathematically fenced, single-tenant database.
