@@ -69,220 +69,97 @@ export default function HRView({
     toast.info("SuperAdmin Mode", "Connected to admin control panel")
   };
 
+  const NAV_GROUPS = [
+    {
+      label: null,
+      items: [{ id: "dashboard", label: "Dashboard", Icon: LayoutDashboard }],
+    },
+    {
+      label: "WORKFORCE",
+      items: [
+        { id: "employees", label: "Employees", Icon: Users2 },
+        { id: "departments", label: "Departments", Icon: Building2 },
+      ],
+    },
+    {
+      label: "TIME & LEAVE",
+      items: [
+        { id: "attendance", label: "Attendance", Icon: Clock },
+        { id: "leaves", label: "Leave Management", Icon: Calendar },
+      ],
+    },
+    {
+      label: "PERFORMANCE",
+      items: [{ id: "targets", label: "Targets & Incentives", Icon: Target }],
+    },
+    {
+      label: "FINANCE",
+      items: [{ id: "payroll", label: "Payroll", Icon: Wallet }],
+    },
+    {
+      label: "TALENT",
+      items: [
+        { id: "recruitment", label: "Recruitment", Icon: Briefcase },
+        { id: "exits", label: "Exits", Icon: LogOut },
+      ],
+    },
+    {
+      label: "CONFIG",
+      items: [
+        { id: "leave-types", label: "Leave Types", Icon: List },
+        { id: "holidays", label: "Holidays", Icon: CalendarDays },
+      ],
+    },
+  ];
+
   return (
-    <div className="flex flex-1 h-full overflow-hidden text-left bg-slate-950/20 text-slate-100">
+    <div className="flex flex-1 h-full overflow-hidden text-left">
       {/* Mobile tab bar */}
-      <div className="flex md:hidden gap-2 overflow-x-auto pb-2 mb-0 border-b border-slate-800 bg-slate-950/60 px-3 py-2">
-        {[
-          {id:'dashboard',label:'Dashboard'},
-          {id:'employees',label:'Employees'},
-          {id:'departments',label:'Departments'},
-          {id:'attendance',label:'Attendance'},
-          {id:'leaves',label:'Leaves'},
-          {id:'payroll',label:'Payroll'},
-          {id:'targets',label:'Targets'},
-          {id:'recruitment',label:'Recruitment'},
-          {id:'exits',label:'Exits'},
-          {id:'leave-types',label:'Leave Types'},
-          {id:'holidays',label:'Holidays'},
-        ].map(tab => (
-          <button key={tab.id} onClick={() => setActiveSubTab(tab.id as any)} className={`shrink-0 px-3 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap cursor-pointer ${activeSubTab===tab.id ? 'bg-indigo-600 text-white' : 'bg-slate-800 text-slate-400 hover:text-white'}`}>{tab.label}</button>
+      <div className="flex md:hidden gap-1 overflow-x-auto pb-2 border-b border-slate-100 bg-white px-3 py-2">
+        {NAV_GROUPS.flatMap(g => g.items).map(tab => (
+          <button key={tab.id} onClick={() => setActiveSubTab(tab.id as any)}
+            className={`shrink-0 px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap cursor-pointer transition-colors ${activeSubTab === tab.id ? "bg-indigo-600 text-white" : "text-slate-500 hover:bg-slate-100"}`}>
+            {tab.label}
+          </button>
         ))}
       </div>
 
-      {/* 1. CUSTOM HR SUITE SUB-SIDEBAR (Matches Image 1 layout exactly) */}
-      <aside className="w-64 border-r border-slate-900 bg-slate-950/60 flex flex-col justify-between shrink-0 font-sans hidden md:flex">
-        <div className="flex flex-col">
-          {/* Logo header matching 'HR Suite' branding in Image 1 */}
-          <div className="flex items-center gap-3 p-5 border-b border-slate-900">
-            <div className="h-9 w-9 bg-[#f47521] rounded-xl flex items-center justify-center font-black text-white text-sm shadow-md shadow-orange-500/10">
-              HR
-            </div>
-            <div className="flex flex-col text-left">
-              <span className="font-sans text-base font-extrabold tracking-tight text-white leading-tight">HR Suite</span>
-              <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider font-mono">Operations Console</span>
-            </div>
+      {/* Sub-sidebar */}
+      <aside className="w-56 border-r border-slate-100 bg-white flex flex-col shrink-0 hidden md:flex">
+        {/* Header */}
+        <div className="flex items-center gap-3 px-4 py-4 border-b border-slate-100">
+          <div className="h-8 w-8 bg-indigo-600 rounded-lg flex items-center justify-center font-black text-white text-xs">HR</div>
+          <div>
+            <span className="text-sm font-bold text-slate-800 block leading-tight">HR Suite</span>
+            <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Operations</span>
           </div>
-
-
-
-          {/* Custom sidebar navigation items mapped by groups */}
-          <nav className="px-3 py-2 space-y-4 overflow-y-auto">
-            {/* Dashboard (Ungrouped item) */}
-            <div>
-              <button
-                onClick={() => setActiveSubTab("dashboard")}
-                className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg text-[11px] font-bold tracking-tight transition-all cursor-pointer ${
-                  activeSubTab === "dashboard"
-                    ? "bg-indigo-600/10 border border-indigo-500/30 text-indigo-300"
-                    : "border border-transparent text-slate-400 hover:text-slate-200 hover:bg-slate-900/40"
-                }`}
-              >
-                <div className="flex items-center gap-2">
-                  <LayoutDashboard className={`h-3.5 w-3.5 ${activeSubTab === "dashboard" ? "text-indigo-400" : "text-slate-500"}`} />
-                  <span>Dashboard</span>
-                </div>
-                {activeSubTab === "dashboard" && <ChevronRight className="h-3 w-3 text-indigo-500/80" />}
-              </button>
-            </div>
-
-            {/* Group: WORKFORCE */}
-            <div className="space-y-1">
-              <span className="block text-[8px] font-bold text-slate-600 tracking-widest font-mono uppercase px-2">
-                WORKFORCE
-              </span>
-              <div className="space-y-0.5">
-                <button
-                  onClick={() => setActiveSubTab("employees")}
-                  className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg text-[11px] font-bold tracking-tight transition-all cursor-pointer ${
-                    activeSubTab === "employees"
-                      ? "bg-[#f47521]/10 border border-[#f47521]/30 text-orange-400"
-                      : "border border-transparent text-slate-400 hover:text-slate-200 hover:bg-slate-900/40"
-                  }`}
-                >
-                  <div className="flex items-center gap-2">
-                    <Users2 className={`h-3.5 w-3.5 ${activeSubTab === "employees" ? "text-[#f47521]" : "text-slate-500"}`} />
-                    <span>Employees</span>
-                  </div>
-                  {activeSubTab === "employees" && <ChevronRight className="h-3 w-3 text-[#f47521]/80" />}
-                </button>
-                <button
-                  onClick={() => setActiveSubTab("departments")}
-                  className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg text-[11px] font-bold tracking-tight transition-all cursor-pointer ${
-                    activeSubTab === "departments"
-                      ? "bg-indigo-600/10 border border-indigo-500/30 text-indigo-300"
-                      : "border border-transparent text-slate-400 hover:text-slate-200 hover:bg-slate-900/40"
-                  }`}
-                >
-                  <div className="flex items-center gap-2">
-                    <Building2 className={`h-3.5 w-3.5 ${activeSubTab === "departments" ? "text-indigo-400" : "text-slate-500"}`} />
-                    <span>Departments</span>
-                  </div>
-                  {activeSubTab === "departments" && <ChevronRight className="h-3 w-3 text-indigo-500/80" />}
-                </button>
-              </div>
-            </div>
-
-            {/* Group: TIME & LEAVE */}
-            <div className="space-y-1">
-              <span className="block text-[8px] font-bold text-slate-600 tracking-widest font-mono uppercase px-2">
-                TIME & LEAVE
-              </span>
-              <div className="space-y-0.5">
-                <button
-                  onClick={() => setActiveSubTab("attendance")}
-                  className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg text-[11px] font-bold tracking-tight transition-all cursor-pointer ${
-                    activeSubTab === "attendance"
-                      ? "bg-indigo-600/10 border border-indigo-500/30 text-indigo-300"
-                      : "border border-transparent text-slate-400 hover:text-slate-200 hover:bg-slate-900/40"
-                  }`}
-                >
-                  <div className="flex items-center gap-2">
-                    <Clock className={`h-3.5 w-3.5 ${activeSubTab === "attendance" ? "text-indigo-400" : "text-slate-500"}`} />
-                    <span>Attendance</span>
-                  </div>
-                  {activeSubTab === "attendance" && <ChevronRight className="h-3 w-3 text-indigo-500/80" />}
-                </button>
-                <button
-                  onClick={() => setActiveSubTab("leaves")}
-                  className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg text-[11px] font-bold tracking-tight transition-all cursor-pointer ${
-                    activeSubTab === "leaves"
-                      ? "bg-indigo-600/10 border border-indigo-500/30 text-indigo-300"
-                      : "border border-transparent text-slate-400 hover:text-slate-200 hover:bg-slate-900/40"
-                  }`}
-                >
-                  <div className="flex items-center gap-2">
-                    <Calendar className={`h-3.5 w-3.5 ${activeSubTab === "leaves" ? "text-indigo-400" : "text-slate-500"}`} />
-                    <span>Leave Management</span>
-                  </div>
-                  {activeSubTab === "leaves" && <ChevronRight className="h-3 w-3 text-indigo-500/80" />}
-                </button>
-              </div>
-            </div>
-
-            {/* Group: PERFORMANCE */}
-            <div className="space-y-1">
-              <span className="block text-[8px] font-bold text-slate-600 tracking-widest font-mono uppercase px-2">PERFORMANCE</span>
-              <div className="space-y-0.5">
-                {[
-                  { id: "targets", label: "Targets & Incentives", Icon: Target },
-                ].map(({ id, label, Icon }) => (
-                  <button key={id} onClick={() => setActiveSubTab(id as any)}
-                    className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg text-[11px] font-bold tracking-tight transition-all cursor-pointer ${activeSubTab === id ? "bg-indigo-600/10 border border-indigo-500/30 text-indigo-300" : "border border-transparent text-slate-400 hover:text-slate-200 hover:bg-slate-900/40"}`}>
-                    <div className="flex items-center gap-2"><Icon className={`h-3.5 w-3.5 ${activeSubTab === id ? "text-indigo-400" : "text-slate-500"}`} /><span>{label}</span></div>
-                    {activeSubTab === id && <ChevronRight className="h-3 w-3 text-indigo-500/80" />}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Group: FINANCE */}
-            <div className="space-y-1">
-              <span className="block text-[8px] font-bold text-slate-600 tracking-widest font-mono uppercase px-2">
-                FINANCE
-              </span>
-              <div className="space-y-0.5">
-                <button
-                  onClick={() => setActiveSubTab("payroll")}
-                  className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg text-[11px] font-bold tracking-tight transition-all cursor-pointer ${
-                    activeSubTab === "payroll"
-                      ? "bg-indigo-600/10 border border-indigo-500/30 text-indigo-300"
-                      : "border border-transparent text-slate-400 hover:text-slate-200 hover:bg-slate-900/40"
-                  }`}
-                >
-                  <div className="flex items-center gap-2">
-                    <Wallet className={`h-3.5 w-3.5 ${activeSubTab === "payroll" ? "text-indigo-400" : "text-slate-500"}`} />
-                    <span>Payroll</span>
-                  </div>
-                  {activeSubTab === "payroll" && <ChevronRight className="h-3 w-3 text-indigo-500/80" />}
-                </button>
-              </div>
-            </div>
-
-            {/* Group: TALENT */}
-            <div className="space-y-1">
-              <span className="block text-[8px] font-bold text-slate-600 tracking-widest font-mono uppercase px-2">TALENT</span>
-              <div className="space-y-0.5">
-                {[
-                  { id: "recruitment", label: "Recruitment", Icon: Briefcase },
-                  { id: "exits", label: "Exits", Icon: LogOut },
-                ].map(({ id, label, Icon }) => (
-                  <button key={id} onClick={() => setActiveSubTab(id as any)}
-                    className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg text-[11px] font-bold tracking-tight transition-all cursor-pointer ${activeSubTab === id ? "bg-indigo-600/10 border border-indigo-500/30 text-indigo-300" : "border border-transparent text-slate-400 hover:text-slate-200 hover:bg-slate-900/40"}`}>
-                    <div className="flex items-center gap-2"><Icon className={`h-3.5 w-3.5 ${activeSubTab === id ? "text-indigo-400" : "text-slate-500"}`} /><span>{label}</span></div>
-                    {activeSubTab === id && <ChevronRight className="h-3 w-3 text-indigo-500/80" />}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Group: CONFIGURATION */}
-            <div className="space-y-1">
-              <span className="block text-[8px] font-bold text-slate-600 tracking-widest font-mono uppercase px-2">CONFIG</span>
-              <div className="space-y-0.5">
-                {[
-                  { id: "leave-types", label: "Leave Types", Icon: List },
-                  { id: "holidays", label: "Holidays", Icon: CalendarDays },
-                ].map(({ id, label, Icon }) => (
-                  <button key={id} onClick={() => setActiveSubTab(id as any)}
-                    className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg text-[11px] font-bold tracking-tight transition-all cursor-pointer ${activeSubTab === id ? "bg-indigo-600/10 border border-indigo-500/30 text-indigo-300" : "border border-transparent text-slate-400 hover:text-slate-200 hover:bg-slate-900/40"}`}>
-                    <div className="flex items-center gap-2"><Icon className={`h-3.5 w-3.5 ${activeSubTab === id ? "text-indigo-400" : "text-slate-500"}`} /><span>{label}</span></div>
-                    {activeSubTab === id && <ChevronRight className="h-3 w-3 text-indigo-500/80" />}
-                  </button>
-                ))}
-              </div>
-            </div>
-          </nav>
         </div>
 
-        {/* Custom sidebar footer */}
-        <div className="p-4 border-t border-slate-900 text-center text-slate-500 text-[10px] font-mono leading-relaxed bg-slate-950/20">
-          <div>HR SUITE SYSTEM</div>
-          <div className="text-indigo-400/80 font-bold uppercase tracking-wider mt-0.5">Double-Entry Linked</div>
-        </div>
+        {/* Nav */}
+        <nav className="flex-1 px-3 py-3 space-y-3 overflow-y-auto">
+          {NAV_GROUPS.map((group, gi) => (
+            <div key={gi} className="space-y-0.5">
+              {group.label && (
+                <span className="block text-[9px] font-bold text-slate-400 uppercase tracking-widest px-2 mb-1">{group.label}</span>
+              )}
+              {group.items.map(({ id, label, Icon }) => {
+                const isActive = activeSubTab === id;
+                return (
+                  <button key={id} onClick={() => setActiveSubTab(id as any)}
+                    className={`w-full flex items-center gap-2.5 px-2.5 py-1.5 rounded-lg text-xs font-semibold transition-all text-left cursor-pointer border-l-[3px] ${
+                      isActive ? "border-indigo-400 bg-indigo-50 text-indigo-700" : "border-transparent text-slate-500 hover:bg-slate-50 hover:text-slate-700"
+                    }`}>
+                    <Icon className="h-3.5 w-3.5 shrink-0" />
+                    <span>{label}</span>
+                  </button>
+                );
+              })}
+            </div>
+          ))}
+        </nav>
       </aside>
 
-      {/* 2. DYNAMIC WORKSPACE PANEL (Right Side Panel) */}
+      {/* Main workspace */}
       <main className="flex-1 overflow-y-auto p-6 space-y-6">
         {/* Render corresponding view */}
         {activeSubTab === "dashboard" && (

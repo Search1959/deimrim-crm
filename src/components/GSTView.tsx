@@ -285,39 +285,42 @@ export default function GSTView({ invoices, customers, transactions, company }: 
   return (
     <div className="flex h-full overflow-hidden">
       {/* Left sub-nav */}
-      <aside className="w-52 shrink-0 bg-slate-950 border-r border-slate-800 flex flex-col">
-        <div className="p-4 border-b border-slate-800">
-          <p className="text-[9px] font-bold text-slate-500 uppercase tracking-widest font-mono">GST Module</p>
+      <aside className="w-52 shrink-0 bg-white border-r border-slate-100 flex flex-col">
+        <div className="px-4 py-4 border-b border-slate-100 flex items-center gap-2.5">
+          <div className="p-1.5 bg-emerald-50 rounded-lg"><FileSpreadsheet className="h-4 w-4 text-emerald-600" /></div>
+          <div>
+            <p className="text-xs font-bold text-slate-800">GST Module</p>
+            <p className="text-[9px] text-slate-400 uppercase tracking-widest">Compliance</p>
+          </div>
         </div>
         <nav className="flex-1 p-3 space-y-0.5 overflow-y-auto">
           {tabs.map(t => {
             const Icon = t.icon;
+            const isActive = activeTab === t.id;
             return (
               <button key={t.id} onClick={() => setActiveTab(t.id)}
-                className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-[11px] font-bold transition-all cursor-pointer ${
-                  activeTab === t.id
-                    ? "bg-emerald-600/10 border border-emerald-500/30 text-emerald-300"
-                    : "border border-transparent text-slate-400 hover:text-slate-200 hover:bg-slate-900/40"
+                className={`w-full flex items-center gap-2.5 px-2.5 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer border-l-[3px] ${
+                  isActive ? "border-emerald-500 bg-emerald-50 text-emerald-700" : "border-transparent text-slate-500 hover:bg-slate-50 hover:text-slate-700"
                 }`}>
-                <Icon className={`h-3.5 w-3.5 ${activeTab === t.id ? "text-emerald-400" : "text-slate-500"}`} />
-                {t.label}
+                <Icon className={`h-3.5 w-3.5 shrink-0 ${isActive ? "text-emerald-600" : "text-slate-400"}`} />
+                <span className="flex-1 text-left">{t.label}</span>
                 {t.id === "gstr1" && b2bInvoices.length > 0 && (
-                  <span className="ml-auto text-[8px] bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 px-1 rounded font-mono">{b2bInvoices.length}</span>
+                  <span className="text-[9px] bg-emerald-100 text-emerald-700 px-1.5 py-0.5 rounded-full font-bold">{b2bInvoices.length}</span>
                 )}
               </button>
             );
           })}
         </nav>
         {/* Period selector */}
-        <div className="p-3 border-t border-slate-800">
-          <p className="text-[9px] text-slate-500 font-mono uppercase mb-1">Period</p>
+        <div className="p-3 border-t border-slate-100">
+          <p className="text-[9px] text-slate-400 uppercase tracking-widest mb-1">Period</p>
           <input type="month" value={period} onChange={e => setPeriod(e.target.value)}
-            className="w-full bg-slate-900 border border-slate-800 rounded-lg px-2 py-1.5 text-[10px] text-white focus:outline-none focus:border-emerald-500" />
+            className="w-full bg-white border border-slate-200 rounded-lg px-2 py-1.5 text-xs text-slate-800 focus:outline-none" />
         </div>
       </aside>
 
       {/* Main content */}
-      <div className="flex-1 overflow-y-auto p-6 bg-slate-900">
+      <div className="flex-1 overflow-y-auto p-6">
         {/* ── DASHBOARD ── */}
         {activeTab === "dashboard" && (
           <div className="space-y-5">

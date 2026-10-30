@@ -435,44 +435,44 @@ DR-IOT-TEMP1,IoT Ambient Temperature Sensor,cat-3,Unit,45,95,20,200,88091100225,
   return (
     <div className="flex-1 space-y-6 overflow-y-auto p-6 text-left">
       {/* Module Title & Stats bar */}
-      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between border-b border-slate-800 pb-4">
+      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between border-b border-slate-100 pb-4">
         <div>
-          <h1 className="text-2xl font-bold text-white tracking-tight">Core Inventory Engine</h1>
-          <p className="text-sm text-slate-400 mt-1">Real-time valuation models, warehouse logistics mapping, and stock transaction ledger audit trail.</p>
+          <h1 className="text-xl font-bold text-slate-900 tracking-tight">Inventory</h1>
+          <p className="text-xs text-slate-400 mt-0.5">Stock valuation, warehouse mapping, and movement ledger.</p>
         </div>
 
         {/* Dynamic Valuation Metrics */}
-        <div className="flex gap-4 self-start bg-slate-950 p-3 rounded-xl border border-slate-800">
+        <div className="flex gap-4 self-start bg-white p-3 rounded-xl border border-slate-100">
           <div className="text-left">
-            <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest leading-none">Capital Valuation</span>
-            <div className="text-base font-bold text-slate-200 font-mono mt-1">{formatINR(totalValuation)}</div>
+            <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest leading-none">Capital Value</span>
+            <div className="text-base font-bold text-slate-800 mt-1">{formatINR(totalValuation)}</div>
           </div>
-          <div className="border-l border-slate-800 pl-4 text-left">
-            <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest leading-none">Expected Returns</span>
-            <div className="text-base font-bold text-indigo-400 font-mono mt-1">{formatINR(potentialSellingValue)}</div>
+          <div className="border-l border-slate-100 pl-4 text-left">
+            <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest leading-none">Expected Returns</span>
+            <div className="text-base font-bold text-indigo-600 mt-1">{formatINR(potentialSellingValue)}</div>
           </div>
-          <div className="border-l border-slate-800 pl-4 text-left hidden sm:block">
-            <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest leading-none">Potential Margin</span>
-            <div className="text-base font-bold text-emerald-400 font-mono mt-1">+{formatINR(profitProjection)}</div>
+          <div className="border-l border-slate-100 pl-4 text-left hidden sm:block">
+            <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest leading-none">Potential Margin</span>
+            <div className="text-base font-bold text-emerald-600 mt-1">+{formatINR(profitProjection)}</div>
           </div>
         </div>
       </div>
 
       {/* View switcher & Search Filters */}
-      <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between bg-slate-950/40 border border-slate-800 rounded-xl p-4">
-        <div className="flex bg-slate-900 p-1 rounded-lg self-start flex-wrap gap-1">
+      <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between bg-white border border-slate-100 rounded-xl p-3">
+        <div className="flex bg-slate-50 p-1 rounded-lg self-start flex-wrap gap-1">
           <button
             onClick={() => { setActiveSubTab("catalog"); setSelectedProductDetail(null); }}
-            className={`px-3.5 py-1.5 text-xs font-bold rounded-md transition-colors ${
-              activeSubTab === "catalog" ? "bg-slate-800 text-indigo-400 shadow-xs" : "text-slate-400 hover:text-slate-200"
+            className={`px-3.5 py-1.5 text-xs font-semibold rounded-md transition-colors ${
+              activeSubTab === "catalog" ? "bg-indigo-600 text-white shadow-sm" : "text-slate-500 hover:text-slate-800"
             }`}
           >
             Stock On Hand
           </button>
           <button
             onClick={() => { setActiveSubTab("categories"); setSelectedProductDetail(null); }}
-            className={`px-3.5 py-1.5 text-xs font-bold rounded-md transition-colors ${
-              activeSubTab === "categories" ? "bg-slate-800 text-indigo-400 shadow-xs" : "text-slate-400 hover:text-slate-200"
+            className={`px-3.5 py-1.5 text-xs font-semibold rounded-md transition-colors ${
+              activeSubTab === "categories" ? "bg-indigo-600 text-white shadow-sm" : "text-slate-500 hover:text-slate-800"
             }`}
           >
             Product Categories
@@ -480,8 +480,8 @@ DR-IOT-TEMP1,IoT Ambient Temperature Sensor,cat-3,Unit,45,95,20,200,88091100225,
 
           <button
             onClick={() => { setActiveSubTab("movements"); setSelectedProductDetail(null); }}
-            className={`px-3.5 py-1.5 text-xs font-bold rounded-md transition-colors ${
-              activeSubTab === "movements" ? "bg-slate-800 text-indigo-400 shadow-xs" : "text-slate-400 hover:text-slate-200"
+            className={`px-3.5 py-1.5 text-xs font-semibold rounded-md transition-colors ${
+              activeSubTab === "movements" ? "bg-indigo-600 text-white shadow-sm" : "text-slate-500 hover:text-slate-800"
             }`}
           >
             Stock Movement Logs
@@ -498,13 +498,13 @@ DR-IOT-TEMP1,IoT Ambient Temperature Sensor,cat-3,Unit,45,95,20,200,88091100225,
                   placeholder="Filter by SKU or Name..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-48 pl-9 rounded-lg border border-slate-800 bg-slate-900 py-2 pr-3 text-xs focus:bg-slate-950 focus:outline-hidden text-white"
+                  className="w-48 pl-9 rounded-lg border border-slate-200 bg-white py-2 pr-3 text-xs focus:outline-hidden text-slate-800"
                 />
               </div>
               <select
                 value={selectedCategory}
                 onChange={(e) => setSelectedCategory(e.target.value)}
-                className="rounded-lg border border-slate-800 bg-slate-900 p-2 text-xs focus:bg-slate-950 focus:outline-hidden text-white font-semibold"
+                className="rounded-lg border border-slate-200 bg-white p-2 text-xs focus:outline-hidden text-slate-700 font-semibold"
               >
                 <option value="">All Categories</option>
                 {categories.map(cat => (
@@ -530,7 +530,7 @@ DR-IOT-TEMP1,IoT Ambient Temperature Sensor,cat-3,Unit,45,95,20,200,88091100225,
               {canWrite && (
               <button
                 onClick={() => setShowImportModal(true)}
-                className="flex items-center gap-1 rounded-lg border border-slate-800 bg-slate-900 hover:bg-slate-800 px-3 py-2 text-xs font-bold text-slate-300 transition-colors cursor-pointer"
+                className="flex items-center gap-1 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 px-3 py-2 text-xs font-semibold text-slate-600 transition-colors cursor-pointer"
                 title="Import catalog from CSV text"
               >
                 <Upload className="h-3.5 w-3.5 text-slate-400" />

@@ -743,67 +743,67 @@ Office Ergonomic Chairs,AST-CH-99,Furniture,1200,1050,12`;
   return (
     <div className="flex-1 space-y-6 overflow-y-auto p-6 text-left">
       {/* Title & Stats */}
-      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between border-b border-slate-800 pb-4">
+      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between border-b border-slate-100 pb-4">
         <div>
-          <h1 className="text-2xl font-bold text-white tracking-tight">Finance Operations Desk</h1>
-          <p className="text-sm text-slate-400 mt-1">Nurture bank reserves, review automatic profit & loss worksheets, and oversee physical company assets.</p>
+          <h1 className="text-xl font-bold text-slate-900 tracking-tight">Finance</h1>
+          <p className="text-xs text-slate-400 mt-0.5">Bank reserves, P&L worksheets, and asset register.</p>
         </div>
 
         {/* Financial snapshot */}
-        <div className="flex gap-4 self-start bg-slate-950 p-3 rounded-xl border border-slate-800 text-xs">
+        <div className="flex gap-4 self-start bg-white p-3 rounded-xl border border-slate-100 text-xs">
           <div>
-            <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest leading-none font-mono">Main Bank Reserve</span>
-            <div className="text-base font-bold text-white font-mono mt-1">{formatINR(bankAccountSum)}</div>
+            <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest leading-none">Bank Reserve</span>
+            <div className="text-base font-bold text-slate-800 mt-1">{formatINR(bankAccountSum)}</div>
           </div>
-          <div className="border-l border-slate-800 pl-4">
-            <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest leading-none font-mono">Petty Cash Drawer</span>
-            <div className="text-base font-bold text-indigo-400 font-mono mt-1">{formatINR(cashAccountSum)}</div>
+          <div className="border-l border-slate-100 pl-4">
+            <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest leading-none">Petty Cash</span>
+            <div className="text-base font-bold text-indigo-600 mt-1">{formatINR(cashAccountSum)}</div>
           </div>
-          <div className="border-l border-slate-800 pl-4">
-            <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest leading-none font-mono">Capital Assets Value</span>
-            <div className="text-base font-bold text-emerald-400 font-mono mt-1">{formatINR(totalAssetsVal)}</div>
+          <div className="border-l border-slate-100 pl-4">
+            <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest leading-none">Assets Value</span>
+            <div className="text-base font-bold text-emerald-600 mt-1">{formatINR(totalAssetsVal)}</div>
           </div>
         </div>
       </div>
 
       {/* View Switch Menu */}
-      <div className="flex bg-slate-900 p-1 rounded-lg self-start flex-wrap gap-1">
+      <div className="flex bg-white border border-slate-100 rounded-xl p-1.5 self-start flex-wrap gap-1">
         <button
           onClick={() => setActiveSubTab("ledger")}
-          className={`px-4 py-1.5 text-xs font-semibold rounded-md transition-colors ${
-            activeSubTab === "ledger" ? "bg-indigo-600 text-white shadow-xs" : "text-slate-400 hover:text-white"
+          className={`px-4 py-1.5 text-xs font-semibold rounded-lg transition-colors ${
+            activeSubTab === "ledger" ? "bg-indigo-600 text-white shadow-sm" : "text-slate-500 hover:text-slate-800 hover:bg-slate-50"
           }`}
         >
           Inflow & Outflow logs
         </button>
         <button
           onClick={() => setActiveSubTab("pl")}
-          className={`px-4 py-1.5 text-xs font-semibold rounded-md transition-colors ${
-            activeSubTab === "pl" ? "bg-indigo-600 text-white shadow-xs" : "text-slate-400 hover:text-white"
+          className={`px-4 py-1.5 text-xs font-semibold rounded-lg transition-colors ${
+            activeSubTab === "pl" ? "bg-indigo-600 text-white shadow-sm" : "text-slate-500 hover:text-slate-800 hover:bg-slate-50"
           }`}
         >
           Profit & Loss Worksheet
         </button>
         <button
           onClick={() => setActiveSubTab("assets")}
-          className={`px-4 py-1.5 text-xs font-semibold rounded-md transition-colors ${
-            activeSubTab === "assets" ? "bg-indigo-600 text-white shadow-xs" : "text-slate-400 hover:text-white"
+          className={`px-4 py-1.5 text-xs font-semibold rounded-lg transition-colors ${
+            activeSubTab === "assets" ? "bg-indigo-600 text-white shadow-sm" : "text-slate-500 hover:text-slate-800 hover:bg-slate-50"
           }`}
         >
           Asset Register
         </button>
         <button
           onClick={() => setActiveSubTab("tally")}
-          className={`px-4 py-1.5 text-xs font-semibold rounded-md transition-colors flex items-center gap-1.5 ${
-            activeSubTab === "tally" ? "bg-emerald-600 text-white shadow-xs" : "text-emerald-400 hover:text-emerald-300"
+          className={`px-4 py-1.5 text-xs font-semibold rounded-lg transition-colors flex items-center gap-1.5 ${
+            activeSubTab === "tally" ? "bg-emerald-600 text-white shadow-sm" : "text-slate-500 hover:text-emerald-700 hover:bg-emerald-50"
           }`}
         >
           <Download className="w-3 h-3" /> Tally Export
         </button>
         <button
           onClick={() => setActiveSubTab("clientledger")}
-          className={`px-4 py-1.5 text-xs font-semibold rounded-md transition-colors flex items-center gap-1.5 ${
-            activeSubTab === "clientledger" ? "bg-sky-600 text-white shadow-xs" : "text-sky-400 hover:text-sky-300"
+          className={`px-4 py-1.5 text-xs font-semibold rounded-lg transition-colors flex items-center gap-1.5 ${
+            activeSubTab === "clientledger" ? "bg-sky-600 text-white shadow-sm" : "text-slate-500 hover:text-sky-700 hover:bg-sky-50"
           }`}
         >
           📒 Client Ledger
@@ -813,13 +813,13 @@ Office Ergonomic Chairs,AST-CH-99,Furniture,1200,1050,12`;
       {/* SUB-TAB: TRANSACTIONS LEDGER */}
       {activeSubTab === "ledger" && (
         <div className="space-y-4">
-          <div className="flex justify-between items-center bg-slate-950/40 border border-slate-800 rounded-xl p-4 flex-wrap gap-2">
-            <h3 className="text-sm font-bold text-slate-300 font-mono">Inflows & Expenditures Operational Ledger</h3>
+          <div className="flex justify-between items-center bg-white border border-slate-100 rounded-xl p-4 flex-wrap gap-2">
+            <h3 className="text-sm font-bold text-slate-800">Inflows & Expenditures Ledger</h3>
             <div className="flex gap-2">
               {isFinanceManager && (
                 <button
                   onClick={() => setShowAddTx(!showAddTx)}
-                  className="flex items-center gap-1 rounded-lg bg-indigo-600 hover:bg-indigo-500 px-3 py-1.5 text-xs font-bold text-white transition-colors"
+                  className="flex items-center gap-1 rounded-lg bg-indigo-600 hover:bg-indigo-500 px-3 py-1.5 text-xs font-semibold text-white transition-colors"
                 >
                   <Plus className="h-3.5 w-3.5" />
                   <span>Log Transaction</span>
@@ -827,14 +827,14 @@ Office Ergonomic Chairs,AST-CH-99,Furniture,1200,1050,12`;
               )}
               <button
                 onClick={() => setShowImportTxModal(true)}
-                className="flex items-center gap-1 rounded-lg border border-slate-800 bg-slate-900 hover:bg-slate-800 px-3 py-1.5 text-xs font-bold text-slate-300 transition-colors"
+                className="flex items-center gap-1 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 px-3 py-1.5 text-xs font-semibold text-slate-600 transition-colors"
               >
                 <Upload className="h-3.5 w-3.5 text-slate-400" />
                 <span>Import CSV</span>
               </button>
               <button
                 onClick={handleExportTxCSV}
-                className="flex items-center gap-1 rounded-lg border border-slate-800 bg-slate-900 hover:bg-slate-800 px-3 py-1.5 text-xs font-bold text-slate-300 transition-colors"
+                className="flex items-center gap-1 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 px-3 py-1.5 text-xs font-semibold text-slate-600 transition-colors"
               >
                 <Download className="h-3.5 w-3.5 text-slate-400" />
                 <span>Export CSV</span>
@@ -1346,13 +1346,13 @@ Office Ergonomic Chairs,AST-CH-99,Furniture,1200,1050,12`;
       {/* SUB-TAB: ASSET REGISTER */}
       {activeSubTab === "assets" && (
         <div className="space-y-4 text-left">
-          <div className="flex justify-between items-center bg-slate-950/40 border border-slate-800 rounded-xl p-4 flex-wrap gap-2">
-            <h3 className="text-sm font-bold text-slate-300 font-mono">Physical Capital Assets Register Ledger</h3>
+          <div className="flex justify-between items-center bg-white border border-slate-100 rounded-xl p-4 flex-wrap gap-2">
+            <h3 className="text-sm font-bold text-slate-800">Capital Assets Register</h3>
             <div className="flex gap-2">
               {isFinanceManager && (
                 <button
                   onClick={() => setShowAddAsset(!showAddAsset)}
-                  className="flex items-center gap-1 rounded-lg bg-indigo-600 hover:bg-indigo-500 px-3 py-1.5 text-xs font-bold text-white transition-colors"
+                  className="flex items-center gap-1 rounded-lg bg-indigo-600 hover:bg-indigo-500 px-3 py-1.5 text-xs font-semibold text-white transition-colors"
                 >
                   <Plus className="h-3.5 w-3.5" />
                   <span>Log Capital Asset</span>
@@ -1360,14 +1360,14 @@ Office Ergonomic Chairs,AST-CH-99,Furniture,1200,1050,12`;
               )}
               <button
                 onClick={() => setShowImportAssetsModal(true)}
-                className="flex items-center gap-1 rounded-lg border border-slate-800 bg-slate-900 hover:bg-slate-800 px-3 py-1.5 text-xs font-bold text-slate-300 transition-colors"
+                className="flex items-center gap-1 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 px-3 py-1.5 text-xs font-semibold text-slate-600 transition-colors"
               >
                 <Upload className="h-3.5 w-3.5 text-slate-400" />
                 <span>Import Assets</span>
               </button>
               <button
                 onClick={handleExportAssetsCSV}
-                className="flex items-center gap-1 rounded-lg border border-slate-800 bg-slate-900 hover:bg-slate-800 px-3 py-1.5 text-xs font-bold text-slate-300 transition-colors"
+                className="flex items-center gap-1 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 px-3 py-1.5 text-xs font-semibold text-slate-600 transition-colors"
               >
                 <Download className="h-3.5 w-3.5 text-slate-400" />
                 <span>Export Assets</span>

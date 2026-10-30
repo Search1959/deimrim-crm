@@ -117,66 +117,49 @@ export default function PurchaseView({
   };
 
   return (
-    <div className="flex flex-col md:flex-row flex-1 h-full overflow-hidden text-left bg-slate-950/20">
+    <div className="flex flex-col md:flex-row flex-1 h-full overflow-hidden text-left">
 
-      {/* Desktop sidebar */}
-      <div className="w-56 border-r border-slate-900 bg-slate-950/60 flex-col shrink-0 hidden md:flex">
-        <div className="p-4 space-y-4">
-          <div className="flex items-center gap-2 px-1">
-            <div className="p-1.5 bg-indigo-500/10 text-indigo-400 rounded border border-indigo-500/25">
-              <ShoppingBag className="h-4 w-4" />
-            </div>
-            <div>
-              <strong className="text-white text-xs block font-bold uppercase tracking-widest font-mono">PURCHASE</strong>
-              <span className="text-[10px] text-slate-500 font-mono">Orders & Vendors</span>
-            </div>
-          </div>
-          <nav className="space-y-0.5">
-            {tabs.map(item => {
-              const Icon = item.icon;
-              const isActive = activeTab === item.id;
-              return (
-                <button
-                  key={item.id}
-                  onClick={() => setActiveTab(item.id)}
-                  className={`w-full flex items-center justify-between px-2.5 py-2 rounded-lg text-[11px] font-bold tracking-tight transition-all cursor-pointer ${
-                    isActive
-                      ? "bg-indigo-600/10 border border-indigo-500/30 text-indigo-300"
-                      : "border border-transparent text-slate-400 hover:text-slate-200 hover:bg-slate-900/40"
-                  }`}
-                >
-                  <div className="flex items-center gap-2">
-                    <Icon className={`h-3.5 w-3.5 ${isActive ? "text-indigo-400" : "text-slate-500"}`} />
-                    <span>{item.name}</span>
-                  </div>
-                  {isActive && <ChevronRight className="h-3 w-3 text-indigo-500/80" />}
-                </button>
-              );
-            })}
-          </nav>
-        </div>
-      </div>
-
-      {/* Mobile tab bar — horizontal pills, stacked above content */}
-      <div className="md:hidden shrink-0 bg-slate-950/80 border-b border-slate-800 px-3 py-2 flex gap-2 overflow-x-auto">
+      {/* Mobile tab bar */}
+      <div className="md:hidden shrink-0 bg-white border-b border-slate-100 px-3 py-2 flex gap-1 overflow-x-auto">
         {tabs.map(item => {
           const Icon = item.icon;
           const isActive = activeTab === item.id;
           return (
-            <button
-              key={item.id}
-              onClick={() => setActiveTab(item.id)}
-              className={`flex items-center gap-1.5 px-3 py-2 rounded-full text-[11px] font-bold shrink-0 cursor-pointer transition-all ${
-                isActive
-                  ? "bg-indigo-600 text-white"
-                  : "bg-slate-800 text-slate-400"
-              }`}
-            >
+            <button key={item.id} onClick={() => setActiveTab(item.id)}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold shrink-0 cursor-pointer transition-colors ${isActive ? "bg-indigo-600 text-white" : "text-slate-500 hover:bg-slate-100"}`}>
               <Icon className="h-3.5 w-3.5" />
               {item.name}
             </button>
           );
         })}
+      </div>
+
+      {/* Desktop sidebar */}
+      <div className="w-52 border-r border-slate-100 bg-white flex-col shrink-0 hidden md:flex">
+        <div className="px-4 py-4 border-b border-slate-100 flex items-center gap-2.5">
+          <div className="p-1.5 bg-indigo-50 text-indigo-600 rounded-lg">
+            <ShoppingBag className="h-4 w-4" />
+          </div>
+          <div>
+            <strong className="text-slate-800 text-xs block font-bold">PURCHASE</strong>
+            <span className="text-[10px] text-slate-400">Orders & Vendors</span>
+          </div>
+        </div>
+        <nav className="px-3 py-3 space-y-0.5">
+          {tabs.map(item => {
+            const Icon = item.icon;
+            const isActive = activeTab === item.id;
+            return (
+              <button key={item.id} onClick={() => setActiveTab(item.id)}
+                className={`w-full flex items-center gap-2.5 px-2.5 py-1.5 rounded-lg text-xs font-semibold transition-all text-left cursor-pointer border-l-[3px] ${
+                  isActive ? "border-indigo-400 bg-indigo-50 text-indigo-700" : "border-transparent text-slate-500 hover:bg-slate-50 hover:text-slate-700"
+                }`}>
+                <Icon className="h-3.5 w-3.5 shrink-0" />
+                <span>{item.name}</span>
+              </button>
+            );
+          })}
+        </nav>
       </div>
 
       {/* Content */}

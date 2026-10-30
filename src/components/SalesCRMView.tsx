@@ -153,94 +153,57 @@ export default function SalesCRMView({
     return allItems.find(item => item.id === activeTab)?.label || "Sales & CRM Node";
   };
 
+  const allNavGroups = [
+    { label: "Sales Pipeline", items: salesPipelineItems },
+    { label: "Customers", items: customersItems },
+    { label: "Tools", items: toolsItems },
+  ];
+
   return (
     <div className="flex flex-col lg:flex-row gap-5 h-full" id="sales-crm-container">
-      {/* Sidebar Control Deck */}
-      <div className="w-full lg:w-64 shrink-0 flex flex-col gap-4 bg-slate-950/40 border border-slate-800 rounded-xl p-4 h-fit">
-        <div>
-          <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest block font-mono">Sales Pipeline</span>
-          <div className="space-y-1 mt-2">
-            {salesPipelineItems.map(item => {
-              const Icon = item.icon;
-              const isActive = activeTab === item.id;
-              return (
-                <button
-                  key={item.id}
-                  onClick={() => setActiveTab(item.id)}
-                  className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-bold transition-all text-left cursor-pointer ${
-                    isActive 
-                      ? "bg-indigo-600/10 border border-indigo-500/30 text-indigo-300" 
-                      : "border border-transparent text-slate-400 hover:bg-slate-900/40 hover:text-slate-200"
-                  }`}
-                >
-                  <Icon className="h-4 w-4 shrink-0" />
-                  <span>{item.label}</span>
-                </button>
-              );
-            })}
-          </div>
-        </div>
 
-        <div>
-          <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest block font-mono">Customers</span>
-          <div className="space-y-1 mt-2">
-            {customersItems.map(item => {
-              const Icon = item.icon;
-              const isActive = activeTab === item.id;
-              return (
-                <button
-                  key={item.id}
-                  onClick={() => setActiveTab(item.id)}
-                  className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-bold transition-all text-left cursor-pointer ${
-                    isActive 
-                      ? "bg-indigo-600/10 border border-indigo-500/30 text-indigo-300" 
-                      : "border border-transparent text-slate-400 hover:bg-slate-900/40 hover:text-slate-200"
-                  }`}
-                >
-                  <Icon className="h-4 w-4 shrink-0" />
-                  <span>{item.label}</span>
-                </button>
-              );
-            })}
-          </div>
-        </div>
-
-        <div>
-          <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest block font-mono">Tools</span>
-          <div className="space-y-1 mt-2">
-            {toolsItems.map(item => {
-              const Icon = item.icon;
-              const isActive = activeTab === item.id;
-              return (
-                <button
-                  key={item.id}
-                  onClick={() => setActiveTab(item.id as ActiveCRMTab)}
-                  className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-bold transition-all text-left cursor-pointer ${
-                    isActive
-                      ? "bg-violet-600/10 border border-violet-500/30 text-violet-300"
-                      : "border border-transparent text-slate-400 hover:bg-slate-900/40 hover:text-slate-200"
-                  }`}
-                >
-                  <Icon className="h-4 w-4 shrink-0" />
-                  <span>{item.label}</span>
-                </button>
-              );
-            })}
-          </div>
-        </div>
+      {/* Mobile tab bar */}
+      <div className="flex lg:hidden gap-1 overflow-x-auto pb-2 bg-white border border-slate-100 rounded-xl px-3 py-2">
+        {[...salesPipelineItems, ...customersItems, ...toolsItems].map(item => (
+          <button key={item.id} onClick={() => setActiveTab(item.id as ActiveCRMTab)}
+            className={`shrink-0 px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap cursor-pointer transition-colors ${activeTab === item.id ? "bg-indigo-600 text-white" : "text-slate-500 hover:bg-slate-100"}`}>
+            {item.label}
+          </button>
+        ))}
       </div>
 
-      {/* Main Workspace Frame */}
-      <div className="flex-1 bg-slate-900/20 border border-slate-800 rounded-2xl p-5 min-h-[500px] flex flex-col">
-        <div className="flex items-center justify-between border-b border-slate-800 pb-3 mb-4 shrink-0">
-          <div className="flex items-center gap-2">
-            <Sparkles className="h-4 w-4 text-indigo-400" />
-            <h2 className="text-sm font-bold text-white uppercase tracking-wider font-mono">
-              {getTabHeaderTitle()}
-            </h2>
+      {/* Sub-sidebar */}
+      <div className="hidden lg:flex w-52 shrink-0 flex-col gap-4 bg-white border border-slate-100 rounded-xl p-3 h-fit">
+        {allNavGroups.map(group => (
+          <div key={group.label}>
+            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block px-2 mb-1.5">{group.label}</span>
+            <div className="space-y-0.5">
+              {group.items.map(item => {
+                const Icon = item.icon;
+                const isActive = activeTab === item.id;
+                return (
+                  <button key={item.id} onClick={() => setActiveTab(item.id as ActiveCRMTab)}
+                    className={`w-full flex items-center gap-2.5 px-2.5 py-1.5 rounded-lg text-xs font-semibold transition-all text-left cursor-pointer border-l-[3px] ${
+                      isActive ? "border-indigo-400 bg-indigo-50 text-indigo-700" : "border-transparent text-slate-500 hover:bg-slate-50 hover:text-slate-700"
+                    }`}>
+                    <Icon className="h-3.5 w-3.5 shrink-0" />
+                    <span>{item.label}</span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Main Content */}
+      <div className="flex-1 min-w-0 flex flex-col">
+        <div className="flex items-center justify-between mb-4 shrink-0">
+          <div>
+            <h2 className="text-lg font-bold text-slate-900">{getTabHeaderTitle()}</h2>
+            <p className="text-xs text-slate-400 mt-0.5">Sales & CRM</p>
           </div>
         </div>
-
         <div className="flex-1 flex flex-col">
           {renderActivePanel()}
         </div>
