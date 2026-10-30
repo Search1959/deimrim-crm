@@ -223,208 +223,220 @@ export default function DashboardView({
     Lost: "bg-red-100 text-red-700",
   };
 
-  return (
-    <div className="space-y-5 p-6 text-left">
+  // ── dark card style helpers ──────────────────────────────────────────────
+  const DC = "rounded-xl border" as const;
+  const dcStyle = { background: "rgba(255,255,255,0.03)", borderColor: "rgba(255,255,255,0.07)" };
+  const dcHdr = { borderColor: "rgba(255,255,255,0.07)" };
 
-      {/* Page Header */}
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+  return (
+    <div className="space-y-5 p-5 text-left" style={{ background: "#070d1a", minHeight: "100%" }}>
+
+      {/* ── TOP BAR ── */}
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <p className="text-xs text-slate-400 mb-1">{today}</p>
-          <h1 className="text-2xl font-black text-slate-900 tracking-tight leading-none">
+          <p className="text-[10px] font-mono uppercase tracking-widest mb-1" style={{ color: "#475569" }}>
+            {today} &nbsp;·&nbsp; {currentUser?.role === UserRole.SYSTEM_ADMIN ? "SYS-ADMIN" : `REF: ${company?.code || "OMS"}-HQ`}
+          </p>
+          <h1 className="text-2xl font-black tracking-tight leading-none" style={{ color: "#ffffff" }}>
             {currentUser?.role === UserRole.SYSTEM_ADMIN ? "System Control Center" : "Executive Dashboard"}
           </h1>
-          <div className="flex items-center gap-2 mt-1.5">
-            {currentUser?.role === UserRole.SYSTEM_ADMIN ? (
-              <span className="px-2 py-0.5 rounded-full bg-rose-100 text-rose-700 text-[9px] font-bold uppercase tracking-wide">System Admin</span>
-            ) : (
-              <span className="px-2 py-0.5 rounded-full bg-indigo-100 text-indigo-700 text-[9px] font-bold uppercase tracking-wide">{company?.code || "OMS"} Workspace</span>
-            )}
-            <span className="text-[10px] text-slate-400">{currentUser?.name}</span>
-          </div>
         </div>
         <div className="flex items-center gap-2 shrink-0">
-          <button
-            onClick={() => setActiveQuickActionModal("lead")}
-            className="flex items-center gap-1.5 border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold px-3 py-2 rounded-lg transition-colors"
-          >
-            <MessageSquare className="h-3.5 w-3.5 text-slate-500" /> New Lead
+          <button onClick={() => setActiveQuickActionModal("lead")} className="flex items-center gap-1.5 text-xs font-bold px-3.5 py-2 rounded-lg transition-all cursor-pointer border" style={{ background: "rgba(255,255,255,0.05)", borderColor: "rgba(255,255,255,0.12)", color: "#cbd5e1" }}>
+            <MessageSquare className="h-3.5 w-3.5" /> New Lead
           </button>
-          <button
-            onClick={() => onNavigate("sales-crm")}
-            className="flex items-center gap-1.5 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold px-4 py-2 rounded-lg transition-colors"
-          >
+          <button onClick={() => onNavigate("sales-crm")} className="flex items-center gap-1.5 text-xs font-bold px-4 py-2 rounded-lg transition-all cursor-pointer" style={{ background: "linear-gradient(to right,#6366f1,#7c3aed)", color: "#ffffff" }}>
             <Plus className="h-3.5 w-3.5" /> Issue Invoice
           </button>
         </div>
       </div>
 
-      {/* Workspace Info Strip */}
+      {/* ── TENANT PROFILE STRIP ── */}
       {currentUser?.role === UserRole.SYSTEM_ADMIN ? (
-        <div className="bg-rose-50 border border-rose-100 rounded-xl px-5 py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div className={`${DC} px-5 py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3`} style={{ background: "rgba(239,68,68,0.07)", borderColor: "rgba(239,68,68,0.2)" }}>
           <div className="flex items-center gap-3">
-            <div className="h-9 w-9 bg-rose-600 rounded-lg flex items-center justify-center shrink-0">
-              <Sparkles className="h-4 w-4 text-white" />
+            <div className="h-9 w-9 rounded-lg flex items-center justify-center shrink-0" style={{ background: "rgba(239,68,68,0.15)" }}>
+              <Sparkles className="h-4 w-4" style={{ color: "#f87171" }} />
             </div>
             <div>
-              <p className="text-sm font-bold text-rose-900">Global Operations Node — Active</p>
-              <p className="text-xs text-rose-400 mt-0.5">Root admin · provision workspaces, audit journals, manage RBAC</p>
+              <p className="text-sm font-bold" style={{ color: "#fca5a5" }}>Global Operations Node — Active</p>
+              <p className="text-xs mt-0.5" style={{ color: "#64748b" }}>Root admin · provision workspaces, audit journals, manage RBAC</p>
             </div>
           </div>
           <div className="flex gap-2 shrink-0">
-            <button onClick={() => onNavigate("admin")} className="bg-rose-600 hover:bg-rose-700 text-white text-xs font-semibold px-3.5 py-2 rounded-lg transition-colors">Provision Tenant</button>
-            <button onClick={() => onNavigate("admin")} className="bg-white border border-rose-200 text-rose-700 text-xs font-semibold px-3.5 py-2 rounded-lg hover:bg-rose-50 transition-colors">RBAC Permissions</button>
+            <button onClick={() => onNavigate("admin")} className="text-xs font-bold px-3.5 py-2 rounded-lg cursor-pointer" style={{ background: "#ef4444", color: "#fff" }}>Provision Tenant</button>
+            <button onClick={() => onNavigate("admin")} className="text-xs font-bold px-3.5 py-2 rounded-lg cursor-pointer border" style={{ borderColor: "rgba(239,68,68,0.3)", color: "#f87171", background: "transparent" }}>RBAC Permissions</button>
           </div>
         </div>
       ) : (
-        <div className="bg-indigo-50 border border-indigo-100 rounded-xl px-5 py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div className={`${DC} px-5 py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3`} style={{ background: "rgba(99,102,241,0.07)", borderColor: "rgba(99,102,241,0.2)" }}>
           <div className="flex items-center gap-3">
-            <div className="h-9 w-9 bg-indigo-600 rounded-lg flex items-center justify-center shrink-0">
-              <Sparkles className="h-4 w-4 text-white" />
+            <div className="h-9 w-9 rounded-lg flex items-center justify-center shrink-0" style={{ background: "rgba(99,102,241,0.15)" }}>
+              <Sparkles className="h-4 w-4" style={{ color: "#818cf8" }} />
             </div>
             <div>
-              <p className="text-sm font-bold text-indigo-900">{company?.name || "Client Workspace"}</p>
-              <p className="text-xs text-indigo-400 mt-0.5">Active workspace · accounts, inventory, HR and CRM isolated</p>
+              <div className="flex items-center gap-2">
+                <p className="text-sm font-bold" style={{ color: "#e2e8f0" }}>{company?.name || "Client Workspace"}</p>
+                <span className="text-[9px] font-bold px-2 py-0.5 rounded-full" style={{ background: "rgba(16,185,129,0.15)", color: "#34d399" }}>Verified Tenant</span>
+              </div>
+              <p className="text-xs mt-0.5" style={{ color: "#475569" }}>Active workspace · accounts, inventory, HR and CRM isolated</p>
             </div>
           </div>
           <div className="hidden sm:flex items-center gap-5 mr-2">
-            <div className="text-center">
-              <p className="text-sm font-black text-indigo-700">{invoices.length}</p>
-              <p className="text-[9px] text-indigo-400 uppercase tracking-wide font-semibold">Invoices</p>
-            </div>
-            <div className="w-px h-6 bg-indigo-200" />
-            <div className="text-center">
-              <p className="text-sm font-black text-indigo-700">{employees.length}</p>
-              <p className="text-[9px] text-indigo-400 uppercase tracking-wide font-semibold">Staff</p>
-            </div>
-            <div className="w-px h-6 bg-indigo-200" />
-            <div className="text-center">
-              <p className="text-sm font-black text-indigo-700">{products.length}</p>
-              <p className="text-[9px] text-indigo-400 uppercase tracking-wide font-semibold">Products</p>
-            </div>
+            {[{ val: invoices.length, lbl: "INVOICES" }, { val: employees.length, lbl: "STAFF" }, { val: products.length, lbl: "PRODUCTS" }].map((s, i) => (
+              <React.Fragment key={s.lbl}>
+                {i > 0 && <div className="w-px h-6" style={{ background: "rgba(99,102,241,0.3)" }} />}
+                <div className="text-center">
+                  <p className="text-sm font-black" style={{ color: "#818cf8" }}>{s.val}</p>
+                  <p className="text-[9px] uppercase tracking-wide font-bold" style={{ color: "#4f46e5" }}>{s.lbl}</p>
+                </div>
+              </React.Fragment>
+            ))}
           </div>
-          <div className="flex gap-2 shrink-0">
-            <button onClick={() => onNavigate("inventory")} className="bg-white border border-indigo-200 text-indigo-700 text-xs font-semibold px-3.5 py-2 rounded-lg hover:bg-indigo-50 transition-colors">Check Stocks</button>
-          </div>
+          <button onClick={() => onNavigate("inventory")} className="text-xs font-bold px-3.5 py-2 rounded-lg cursor-pointer border shrink-0" style={{ borderColor: "rgba(99,102,241,0.3)", color: "#818cf8", background: "rgba(99,102,241,0.08)" }}>Check Stocks</button>
         </div>
       )}
 
-      {/* 6 KPI Cards */}
+      {/* ── 6 KPI CARDS ── */}
       <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-3">
         {KPI_CARDS.map(kpi => (
-          <div key={kpi.label} className="bg-white rounded-xl border border-slate-100 overflow-hidden hover:shadow-md transition-all">
+          <div key={kpi.label} className={`${DC} overflow-hidden hover:border-indigo-500/30 transition-all`} style={dcStyle}>
             <div className={`h-[3px] w-full ${kpi.accent}`} />
             <div className="p-4">
               <div className="flex items-start justify-between mb-3">
-                <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wide leading-tight">{kpi.label}</span>
-                <div className={`${kpi.bg} p-1.5 rounded-lg shrink-0`}><kpi.icon className={`h-3.5 w-3.5 ${kpi.color}`} /></div>
+                <span className="text-[9px] font-bold uppercase tracking-wide leading-tight" style={{ color: "#475569" }}>{kpi.label}</span>
+                <div className="p-1.5 rounded-lg shrink-0" style={{ background: "rgba(255,255,255,0.05)" }}><kpi.icon className={`h-3.5 w-3.5 ${kpi.color}`} /></div>
               </div>
-              <p className="text-xl font-black text-slate-900 leading-none">{kpi.value}</p>
-              <p className="text-[10px] text-slate-400 mt-1.5 leading-snug">{kpi.sub}</p>
+              <p className="text-xl font-black leading-none" style={{ color: "#ffffff" }}>{kpi.value}</p>
+              <p className="text-[10px] mt-1.5 leading-snug" style={{ color: "#475569" }}>{kpi.sub}</p>
             </div>
           </div>
         ))}
       </div>
 
-      {/* Main 2-column layout */}
-      <div className="grid lg:grid-cols-5 gap-5">
+      {/* ── MAIN 2-COL LAYOUT ── */}
+      <div className="grid lg:grid-cols-5 gap-4">
 
-        {/* Left 3/5: Revenue Chart + Recent Invoices + Active Leads */}
+        {/* LEFT 3/5 — Chart + Transactions */}
         <div className="lg:col-span-3 space-y-4">
 
           {/* Revenue vs Expenses Chart */}
-          <div className="bg-white rounded-xl border border-slate-100 p-5">
+          <div className={`${DC} p-5`} style={dcStyle}>
             <div className="flex items-center justify-between mb-4">
               <div>
-                <h3 className="text-sm font-bold text-slate-800">Revenue vs Expenses</h3>
-                <p className="text-[11px] text-slate-400 mt-0.5">Last 6 months financial flow</p>
+                <h3 className="text-sm font-bold" style={{ color: "#e2e8f0" }}>Revenue vs Expenses</h3>
+                <p className="text-[11px] mt-0.5" style={{ color: "#475569" }}>Last 6 months financial flow</p>
               </div>
               <div className="flex items-center gap-4 text-[10px] font-bold">
-                <span className="flex items-center gap-1.5 text-indigo-600"><span className="h-2 w-2 rounded-full bg-indigo-500 inline-block" />Revenue</span>
-                <span className="flex items-center gap-1.5 text-rose-500"><span className="h-2 w-2 rounded-full bg-rose-400 inline-block" />Expenses</span>
+                <span className="flex items-center gap-1.5" style={{ color: "#818cf8" }}><span className="h-2 w-2 rounded-full inline-block" style={{ background: "#6366f1" }} />Revenue</span>
+                <span className="flex items-center gap-1.5" style={{ color: "#f87171" }}><span className="h-2 w-2 rounded-full inline-block" style={{ background: "#f43f5e" }} />Expenses</span>
               </div>
             </div>
             <ResponsiveContainer width="100%" height={200}>
               <AreaChart data={revenueChartData} margin={{ top: 5, right: 10, left: 0, bottom: 0 }}>
                 <defs>
-                  <linearGradient id="gradRevenue" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#6366f1" stopOpacity={0.15} />
+                  <linearGradient id="gradRevDark" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#6366f1" stopOpacity={0.35} />
                     <stop offset="95%" stopColor="#6366f1" stopOpacity={0} />
                   </linearGradient>
-                  <linearGradient id="gradExpenses" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#f43f5e" stopOpacity={0.10} />
+                  <linearGradient id="gradExpDark" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#f43f5e" stopOpacity={0.20} />
                     <stop offset="95%" stopColor="#f43f5e" stopOpacity={0} />
                   </linearGradient>
                 </defs>
-                <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
-                <XAxis dataKey="month" tick={{ fontSize: 10, fill: "#94a3b8", fontWeight: 600 }} axisLine={false} tickLine={false} />
-                <YAxis tickFormatter={v => v >= 100000 ? `₹${(v / 100000).toFixed(0)}L` : `₹${(v / 1000).toFixed(0)}K`} tick={{ fontSize: 10, fill: "#94a3b8" }} axisLine={false} tickLine={false} width={52} />
+                <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
+                <XAxis dataKey="month" tick={{ fontSize: 10, fill: "#475569", fontWeight: 600 }} axisLine={false} tickLine={false} />
+                <YAxis tickFormatter={v => v >= 100000 ? `₹${(v / 100000).toFixed(0)}L` : `₹${(v / 1000).toFixed(0)}K`} tick={{ fontSize: 10, fill: "#475569" }} axisLine={false} tickLine={false} width={52} />
                 <Tooltip
                   formatter={(val: number) => [`₹${Number(val).toLocaleString("en-IN")}`, ""]}
-                  contentStyle={{ background: "#0f172a", border: "1px solid #1e293b", borderRadius: 8, fontSize: 11, color: "#e2e8f0" }}
+                  contentStyle={{ background: "#0a0f1e", border: "1px solid rgba(99,102,241,0.3)", borderRadius: 8, fontSize: 11, color: "#e2e8f0" }}
                   labelStyle={{ color: "#94a3b8", fontWeight: 700, marginBottom: 4 }}
                 />
-                <Area type="monotone" dataKey="Revenue" stroke="#6366f1" strokeWidth={2} fill="url(#gradRevenue)" dot={{ r: 3, fill: "#6366f1" }} activeDot={{ r: 5 }} />
-                <Area type="monotone" dataKey="Expenses" stroke="#f43f5e" strokeWidth={2} fill="url(#gradExpenses)" dot={{ r: 3, fill: "#f43f5e" }} activeDot={{ r: 5 }} />
+                <Area type="monotone" dataKey="Revenue" stroke="#6366f1" strokeWidth={2.5} fill="url(#gradRevDark)" dot={{ r: 3, fill: "#6366f1", stroke: "#070d1a", strokeWidth: 2 }} activeDot={{ r: 5 }} />
+                <Area type="monotone" dataKey="Expenses" stroke="#f43f5e" strokeWidth={2} fill="url(#gradExpDark)" dot={{ r: 3, fill: "#f43f5e" }} activeDot={{ r: 5 }} />
               </AreaChart>
             </ResponsiveContainer>
           </div>
 
-          {/* Recent Invoices */}
-          <div className="bg-white rounded-xl border border-slate-100 overflow-hidden">
-            <div className="flex items-center justify-between px-5 py-3.5 border-b border-slate-100">
-              <h3 className="text-sm font-bold text-slate-800">Recent Invoices</h3>
-              <button onClick={() => onNavigate("sales-crm")} className="text-xs font-semibold text-indigo-600 hover:text-indigo-800">All invoices</button>
+          {/* Recent Transactions & Invoices Table */}
+          <div className={`${DC} overflow-hidden`} style={dcStyle}>
+            <div className="flex items-center justify-between px-5 py-3.5 border-b" style={dcHdr}>
+              <h3 className="text-sm font-bold" style={{ color: "#e2e8f0" }}>Recent Transactions &amp; Invoices</h3>
+              <button onClick={() => onNavigate("sales-crm")} className="text-xs font-bold cursor-pointer" style={{ color: "#818cf8" }}>View All Invoices →</button>
             </div>
             {invoices.length === 0 ? (
-              <div className="flex items-center gap-2 px-5 py-5 text-sm text-slate-400">
-                <FileText className="h-4 w-4" /><span>No invoices yet. Issue your first invoice.</span>
+              <div className="flex items-center gap-2 px-5 py-5 text-sm" style={{ color: "#475569" }}>
+                <FileText className="h-4 w-4" /><span>No invoices yet.</span>
               </div>
             ) : (
-              <div className="divide-y divide-slate-50">
-                {invoices.slice(0, 5).map(inv => {
-                  const statusColor = inv.status === "paid" ? "bg-emerald-100 text-emerald-700" : inv.status === "overdue" ? "bg-red-100 text-red-700" : "bg-amber-100 text-amber-700";
-                  return (
-                    <div key={inv.id} className="flex items-center gap-4 px-5 py-3">
-                      <div className="h-8 w-8 rounded-lg bg-indigo-50 flex items-center justify-center shrink-0">
-                        <FileText className="h-4 w-4 text-indigo-600" />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm font-semibold text-slate-800 truncate">{inv.invoiceNumber}</p>
-                        <p className="text-[11px] text-slate-400 mt-0.5">{inv.date}</p>
-                      </div>
-                      <div className="text-right shrink-0">
-                        <p className="text-sm font-bold text-slate-800">{formatINR(inv.totalAmount)}</p>
-                        <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded-full capitalize ${statusColor}`}>{inv.status}</span>
-                      </div>
-                    </div>
-                  );
-                })}
+              <div className="overflow-x-auto">
+                <table className="w-full text-xs">
+                  <thead>
+                    <tr style={{ borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
+                      {["INVOICE ID", "CLIENT / ACCOUNT", "ISSUE DATE", "TOTAL AMOUNT", "PAYMENT STATUS", "ACTIONS"].map(h => (
+                        <th key={h} className="px-5 py-2.5 text-left font-bold uppercase tracking-wide" style={{ color: "#334155", fontSize: "9px" }}>{h}</th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {invoices.slice(0, 5).map((inv, i) => {
+                      const isPaid = inv.status === "paid";
+                      const isOverdue = inv.status === "overdue";
+                      return (
+                        <tr key={inv.id} style={{ borderBottom: "1px solid rgba(255,255,255,0.04)" }}>
+                          <td className="px-5 py-3 font-mono font-bold" style={{ color: "#6366f1" }}>{inv.invoiceNumber}</td>
+                          <td className="px-5 py-3 font-semibold truncate max-w-[140px]" style={{ color: "#cbd5e1" }}>{inv.clientName || "—"}</td>
+                          <td className="px-5 py-3 font-mono" style={{ color: "#64748b" }}>{inv.date}</td>
+                          <td className="px-5 py-3 font-bold" style={{ color: "#34d399" }}>{formatINR(inv.totalAmount)}</td>
+                          <td className="px-5 py-3">
+                            <span className="text-[9px] font-bold px-2 py-0.5 rounded-full capitalize" style={{ background: isPaid ? "rgba(16,185,129,0.15)" : isOverdue ? "rgba(239,68,68,0.15)" : "rgba(245,158,11,0.15)", color: isPaid ? "#34d399" : isOverdue ? "#f87171" : "#fbbf24" }}>
+                              {isPaid ? "✓ Paid & Cleared" : isOverdue ? "⚠ Overdue" : "⏳ Pending Due"}
+                            </span>
+                          </td>
+                          <td className="px-5 py-3">
+                            <button onClick={() => onNavigate("sales-crm")} className="text-[9px] font-bold cursor-pointer" style={{ color: "#6366f1" }}>Receipt</button>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
               </div>
             )}
           </div>
 
           {/* Active CRM Leads */}
-          <div className="bg-white rounded-xl border border-slate-100 overflow-hidden">
-            <div className="flex items-center justify-between px-5 py-3.5 border-b border-slate-100">
-              <h3 className="text-sm font-bold text-slate-800">Active Pipeline</h3>
-              <button onClick={() => onNavigate("sales-crm")} className="text-xs font-semibold text-indigo-600 hover:text-indigo-800">CRM view</button>
+          <div className={`${DC} overflow-hidden`} style={dcStyle}>
+            <div className="flex items-center justify-between px-5 py-3.5 border-b" style={dcHdr}>
+              <h3 className="text-sm font-bold" style={{ color: "#e2e8f0" }}>Active CRM Pipeline</h3>
+              <button onClick={() => onNavigate("sales-crm")} className="text-xs font-bold cursor-pointer" style={{ color: "#818cf8" }}>CRM view →</button>
             </div>
             {activeLeadsFollowups.length === 0 ? (
-              <div className="flex items-center gap-2 px-5 py-5 text-sm text-emerald-600">
+              <div className="flex items-center gap-2 px-5 py-5 text-sm" style={{ color: "#10b981" }}>
                 <CheckCircle className="h-4 w-4" /><span>No open leads — add a lead to get started.</span>
               </div>
             ) : (
-              <div className="divide-y divide-slate-50">
-                {activeLeadsFollowups.slice(0, 4).map(lead => {
+              <div>
+                {activeLeadsFollowups.slice(0, 4).map((lead, i) => {
                   const initials = lead.name.split(" ").map(w => w[0]).join("").slice(0, 2).toUpperCase();
+                  const sc: Record<string, { bg: string; color: string }> = {
+                    New: { bg: "rgba(59,130,246,0.15)", color: "#60a5fa" },
+                    Contacted: { bg: "rgba(245,158,11,0.15)", color: "#fbbf24" },
+                    Qualified: { bg: "rgba(99,102,241,0.15)", color: "#818cf8" },
+                    Proposal: { bg: "rgba(124,58,237,0.15)", color: "#a78bfa" },
+                    Negotiation: { bg: "rgba(249,115,22,0.15)", color: "#fb923c" },
+                    Won: { bg: "rgba(16,185,129,0.15)", color: "#34d399" },
+                    Lost: { bg: "rgba(239,68,68,0.15)", color: "#f87171" },
+                  };
+                  const c = sc[lead.status] || { bg: "rgba(100,116,139,0.15)", color: "#94a3b8" };
                   return (
-                    <div key={lead.id} className="flex items-center gap-4 px-5 py-3">
-                      <div className="h-8 w-8 rounded-full bg-indigo-100 flex items-center justify-center text-xs font-bold text-indigo-700 shrink-0">{initials}</div>
+                    <div key={lead.id} className="flex items-center gap-4 px-5 py-3" style={{ borderBottom: i < activeLeadsFollowups.slice(0,4).length - 1 ? "1px solid rgba(255,255,255,0.04)" : "none" }}>
+                      <div className="h-8 w-8 rounded-full flex items-center justify-center text-xs font-bold shrink-0" style={{ background: "rgba(99,102,241,0.2)", color: "#818cf8" }}>{initials}</div>
                       <div className="flex-1 min-w-0">
-                        <p className="text-sm font-semibold text-slate-800 truncate">{lead.name}</p>
-                        <p className="text-[11px] text-slate-400 mt-0.5 truncate">{lead.companyName || lead.source || "—"}</p>
+                        <p className="text-sm font-semibold truncate" style={{ color: "#e2e8f0" }}>{lead.name}</p>
+                        <p className="text-[11px] mt-0.5 truncate" style={{ color: "#475569" }}>{lead.companyName || lead.source || "—"}</p>
                       </div>
-                      <span className={`text-[9px] font-bold px-2 py-0.5 rounded-full shrink-0 ${LEAD_STATUS_COLORS[lead.status] || "bg-slate-100 text-slate-600"}`}>{lead.status}</span>
+                      <span className="text-[9px] font-bold px-2 py-0.5 rounded-full shrink-0" style={c}>{lead.status}</span>
                     </div>
                   );
                 })}
@@ -433,79 +445,69 @@ export default function DashboardView({
           </div>
         </div>
 
-        {/* Right 2/5: Quick Actions + Stock Alerts + Staff */}
+        {/* RIGHT 2/5 — Quick Actions + Stock + Staff */}
         <div className="lg:col-span-2 space-y-4">
 
           {/* Quick Actions */}
-          <div className="bg-white rounded-xl border border-slate-100 p-4">
-            <h3 className="text-sm font-bold text-slate-800 mb-3">Quick Actions</h3>
+          <div className={`${DC} p-4`} style={dcStyle}>
+            <div className="flex items-center justify-between mb-3">
+              <h3 className="text-sm font-bold" style={{ color: "#e2e8f0" }}>Quick Actions</h3>
+              <span className="text-[9px] font-mono font-bold uppercase tracking-widest" style={{ color: "#334155" }}>Fast Operations</span>
+            </div>
             <div className="space-y-2">
-              <button
-                onClick={() => setActiveQuickActionModal("lead")}
-                className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg border border-slate-100 hover:bg-indigo-50 hover:border-indigo-100 transition-colors text-left group"
-              >
-                <div className="h-8 w-8 rounded-lg bg-indigo-50 flex items-center justify-center shrink-0 group-hover:bg-indigo-100">
-                  <MessageSquare className="h-4 w-4 text-indigo-600" />
-                </div>
-                <div>
-                  <p className="text-xs font-bold text-slate-800">Add Lead</p>
-                  <p className="text-[10px] text-slate-400">Register sales enquiry in CRM</p>
-                </div>
-              </button>
-              <button
-                onClick={() => setActiveQuickActionModal("po")}
-                className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg border border-slate-100 hover:bg-amber-50 hover:border-amber-100 transition-colors text-left group"
-              >
-                <div className="h-8 w-8 rounded-lg bg-amber-50 flex items-center justify-center shrink-0 group-hover:bg-amber-100">
-                  <ShoppingBag className="h-4 w-4 text-amber-600" />
-                </div>
-                <div>
-                  <p className="text-xs font-bold text-slate-800">Create Purchase Order</p>
-                  <p className="text-[10px] text-slate-400">Issue procurement draft PO</p>
-                </div>
-              </button>
-              <button
-                onClick={() => setActiveQuickActionModal("leave")}
-                className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg border border-slate-100 hover:bg-rose-50 hover:border-rose-100 transition-colors text-left group"
-              >
-                <div className="h-8 w-8 rounded-lg bg-rose-50 flex items-center justify-center shrink-0 group-hover:bg-rose-100">
-                  <Clock className="h-4 w-4 text-rose-600" />
-                </div>
-                <div>
-                  <p className="text-xs font-bold text-slate-800">Request Leave</p>
-                  <p className="text-[10px] text-slate-400">Apply for employee time-off</p>
-                </div>
-              </button>
+              {[
+                { label: "Add Lead", sub: "Register sales enquiry in CRM", icon: MessageSquare, color: "#818cf8", bg: "rgba(99,102,241,0.12)", action: () => setActiveQuickActionModal("lead") },
+                { label: "Create Purchase Order", sub: "Issue procurement draft PO", icon: ShoppingBag, color: "#fbbf24", bg: "rgba(245,158,11,0.10)", action: () => setActiveQuickActionModal("po") },
+                { label: "Request Leave", sub: "Apply for employee time-off", icon: Clock, color: "#f87171", bg: "rgba(239,68,68,0.10)", action: () => setActiveQuickActionModal("leave") },
+                { label: "Generate GST Voucher", sub: "Tax compliance automated call", icon: FileText, color: "#34d399", bg: "rgba(16,185,129,0.10)", action: () => onNavigate("finance") },
+              ].map(qa => (
+                <button key={qa.label} onClick={qa.action} className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg border text-left transition-all cursor-pointer group" style={{ background: "rgba(255,255,255,0.02)", borderColor: "rgba(255,255,255,0.06)" }}
+                  onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = "rgba(99,102,241,0.25)"; (e.currentTarget as HTMLElement).style.background = "rgba(99,102,241,0.06)"; }}
+                  onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = "rgba(255,255,255,0.06)"; (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.02)"; }}>
+                  <div className="h-8 w-8 rounded-lg flex items-center justify-center shrink-0" style={{ background: qa.bg }}>
+                    <qa.icon className="h-4 w-4" style={{ color: qa.color }} />
+                  </div>
+                  <div>
+                    <p className="text-xs font-bold" style={{ color: "#e2e8f0" }}>{qa.label}</p>
+                    <p className="text-[10px]" style={{ color: "#475569" }}>{qa.sub}</p>
+                  </div>
+                </button>
+              ))}
+              <div className="pt-1 border-t" style={{ borderColor: "rgba(255,255,255,0.06)" }}>
+                <button onClick={() => onNavigate("finance")} className="w-full text-left text-[10px] font-bold py-1 cursor-pointer" style={{ color: "#475569" }}>
+                  Send automated bulk report → &nbsp; <span style={{ color: "#6366f1" }}>Batch Export</span>
+                </button>
+              </div>
             </div>
           </div>
 
           {/* Stock Alerts */}
-          <div className="bg-white rounded-xl border border-slate-100 overflow-hidden">
-            <div className="flex items-center justify-between px-4 py-3 border-b border-slate-100">
-              <h3 className="text-sm font-bold text-slate-800">Stock Alerts</h3>
-              <button onClick={() => onNavigate("inventory")} className="text-xs font-semibold text-indigo-600 hover:text-indigo-800">Inventory</button>
+          <div className={`${DC} overflow-hidden`} style={dcStyle}>
+            <div className="flex items-center justify-between px-4 py-3 border-b" style={dcHdr}>
+              <h3 className="text-sm font-bold" style={{ color: "#e2e8f0" }}>Stock Alerts</h3>
+              <button onClick={() => onNavigate("inventory")} className="text-xs font-bold cursor-pointer" style={{ color: "#818cf8" }}>Inventory →</button>
             </div>
             <div className="px-4 py-3">
               <div className="flex gap-3 mb-3">
-                <button onClick={() => onNavigate("inventory")} className="flex-1 bg-amber-50 rounded-lg p-2.5 text-center border border-amber-100 hover:bg-amber-100 transition-colors cursor-pointer">
-                  <p className="text-xl font-black text-amber-700">{lowStockProducts.length}</p>
-                  <p className="text-[9px] font-bold text-amber-600 uppercase tracking-wider mt-0.5">Low Stock</p>
+                <button onClick={() => onNavigate("inventory")} className="flex-1 rounded-lg p-2.5 text-center border cursor-pointer transition-all" style={{ background: "rgba(245,158,11,0.08)", borderColor: "rgba(245,158,11,0.2)" }}>
+                  <p className="text-xl font-black" style={{ color: "#fbbf24" }}>{lowStockProducts.length}</p>
+                  <p className="text-[9px] font-bold uppercase tracking-wider mt-0.5" style={{ color: "#d97706" }}>Low Stock</p>
                 </button>
-                <button onClick={() => onNavigate("inventory")} className="flex-1 bg-red-50 rounded-lg p-2.5 text-center border border-red-100 hover:bg-red-100 transition-colors cursor-pointer">
-                  <p className="text-xl font-black text-red-700">{products.filter(p => (productStockMap[p.id] || 0) < 0).length}</p>
-                  <p className="text-[9px] font-bold text-red-600 uppercase tracking-wider mt-0.5">Negative</p>
+                <button onClick={() => onNavigate("inventory")} className="flex-1 rounded-lg p-2.5 text-center border cursor-pointer transition-all" style={{ background: "rgba(239,68,68,0.08)", borderColor: "rgba(239,68,68,0.2)" }}>
+                  <p className="text-xl font-black" style={{ color: "#f87171" }}>{products.filter(p => (productStockMap[p.id] || 0) < 0).length}</p>
+                  <p className="text-[9px] font-bold uppercase tracking-wider mt-0.5" style={{ color: "#dc2626" }}>Negative</p>
                 </button>
               </div>
               {lowStockProducts.length === 0 ? (
-                <p className="text-xs text-emerald-600 font-medium">All products in healthy stock.</p>
+                <p className="text-xs font-medium" style={{ color: "#10b981" }}>All products in healthy stock.</p>
               ) : (
                 <div className="space-y-2">
                   {lowStockProducts.slice(0, 3).map(p => {
                     const qty = productStockMap[p.id] || 0;
                     return (
                       <div key={p.id} className="flex items-center justify-between">
-                        <p className="text-xs font-semibold text-slate-700 truncate max-w-[130px]">{p.name}</p>
-                        <span className="text-[10px] font-bold bg-amber-100 text-amber-800 px-2 py-0.5 rounded-full shrink-0">{qty} / {p.minStockLevel}</span>
+                        <p className="text-xs font-semibold truncate max-w-[130px]" style={{ color: "#94a3b8" }}>{p.name}</p>
+                        <span className="text-[10px] font-bold px-2 py-0.5 rounded-full shrink-0" style={{ background: "rgba(245,158,11,0.15)", color: "#fbbf24" }}>{qty} / {p.minStockLevel}</span>
                       </div>
                     );
                   })}
@@ -514,188 +516,123 @@ export default function DashboardView({
             </div>
           </div>
 
-          {/* Staff & HR Overview */}
-          <div className="bg-white rounded-xl border border-slate-100 overflow-hidden">
-            <div className="flex items-center justify-between px-4 py-3 border-b border-slate-100">
-              <h3 className="text-sm font-bold text-slate-800">Staff Overview</h3>
-              <button onClick={() => onNavigate("hr")} className="text-xs font-semibold text-indigo-600 hover:text-indigo-800">HR module</button>
+          {/* Staff Overview */}
+          <div className={`${DC} overflow-hidden`} style={dcStyle}>
+            <div className="flex items-center justify-between px-4 py-3 border-b" style={dcHdr}>
+              <h3 className="text-sm font-bold" style={{ color: "#e2e8f0" }}>Staff Overview</h3>
+              <button onClick={() => onNavigate("hr")} className="text-xs font-bold cursor-pointer" style={{ color: "#818cf8" }}>HR module →</button>
             </div>
             <div className="px-4 py-3 space-y-3">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <Users className="h-4 w-4 text-indigo-500" />
-                  <span className="text-xs font-semibold text-slate-600">Total Employees</span>
+              {[
+                { icon: Users, label: "Total Employees", val: employees.length, valColor: "#ffffff", iconColor: "#818cf8" },
+                { icon: Clock, label: "Leave Approvals", val: `${leaveRequests.filter(l => l.status === "pending").length} pending`, valColor: "#fbbf24", iconColor: "#f59e0b" },
+                { icon: ArrowUpRight, label: "Open Leads", val: activeLeadsFollowups.length, valColor: "#34d399", iconColor: "#10b981" },
+              ].map(row => (
+                <div key={row.label} className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <row.icon className="h-4 w-4" style={{ color: row.iconColor }} />
+                    <span className="text-xs font-semibold" style={{ color: "#64748b" }}>{row.label}</span>
+                  </div>
+                  <span className="text-sm font-black" style={{ color: row.valColor }}>{row.val}</span>
                 </div>
-                <span className="text-sm font-black text-slate-800">{employees.length}</span>
-              </div>
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <Clock className="h-4 w-4 text-amber-500" />
-                  <span className="text-xs font-semibold text-slate-600">Leave Approvals</span>
-                </div>
-                <span className="text-sm font-black text-amber-600">{leaveRequests.filter(l => l.status === "pending").length} pending</span>
-              </div>
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <ArrowUpRight className="h-4 w-4 text-emerald-500" />
-                  <span className="text-xs font-semibold text-slate-600">Open Leads</span>
-                </div>
-                <span className="text-sm font-black text-emerald-600">{activeLeadsFollowups.length}</span>
-              </div>
+              ))}
             </div>
           </div>
-
         </div>
       </div>
 
       {/* ===== MODALS ===== */}
 
-      {/* Add Lead Modal */}
-      {activeQuickActionModal === "lead" && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl w-full max-w-md shadow-2xl">
-            <div className="flex items-center justify-between border-b border-slate-100 px-6 py-4">
+      {/* ── MODALS (dark themed) ── */}
+      {activeQuickActionModal && (
+        <div className="fixed inset-0 flex items-center justify-center z-50 p-4" style={{ background: "rgba(0,0,0,0.75)", backdropFilter: "blur(4px)" }}>
+          <div className="w-full max-w-md rounded-2xl shadow-2xl border" style={{ background: "#0d1424", borderColor: "rgba(99,102,241,0.25)" }}>
+            {/* header */}
+            <div className="flex items-center justify-between px-6 py-4 border-b" style={{ borderColor: "rgba(255,255,255,0.07)" }}>
               <div className="flex items-center gap-2">
-                <MessageSquare className="h-4 w-4 text-indigo-600" />
-                <h3 className="text-sm font-bold text-slate-900">Add Lead</h3>
+                {activeQuickActionModal === "lead" && <MessageSquare className="h-4 w-4" style={{ color: "#818cf8" }} />}
+                {activeQuickActionModal === "po" && <ShoppingBag className="h-4 w-4" style={{ color: "#fbbf24" }} />}
+                {activeQuickActionModal === "leave" && <Clock className="h-4 w-4" style={{ color: "#f87171" }} />}
+                <h3 className="text-sm font-bold" style={{ color: "#e2e8f0" }}>
+                  {activeQuickActionModal === "lead" ? "Add Lead" : activeQuickActionModal === "po" ? "Create Purchase Order" : "Request Leave"}
+                </h3>
               </div>
-              <button onClick={() => setActiveQuickActionModal(null)} className="text-slate-400 hover:text-slate-600"><X className="h-4 w-4" /></button>
+              <button onClick={() => setActiveQuickActionModal(null)} style={{ color: "#475569" }}><X className="h-4 w-4" /></button>
             </div>
-            <form onSubmit={handleQuickAddLead} className="p-6 space-y-4">
-              <div>
-                <label className="block text-xs font-semibold text-slate-600 mb-1">Lead Title / Contact Name *</label>
-                <input type="text" required placeholder="John Doe, Cloud Architect" value={leadTitle} onChange={e => setLeadTitle(e.target.value)} className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-indigo-400" />
-              </div>
-              <div>
-                <label className="block text-xs font-semibold text-slate-600 mb-1">Company Name</label>
-                <input type="text" placeholder="Acme Tech Solutions" value={leadCompany} onChange={e => setLeadCompany(e.target.value)} className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-indigo-400" />
-              </div>
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-xs font-semibold text-slate-600 mb-1">Source</label>
-                  <select value={leadSource} onChange={e => setLeadSource(e.target.value)} className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-indigo-400">
-                    <option>Website</option><option>Referral</option><option>LinkedIn</option><option>Cold Call</option><option>Campaign</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-xs font-semibold text-slate-600 mb-1">Status</label>
-                  <select value={leadStatus} onChange={e => setLeadStatus(e.target.value as any)} className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-indigo-400">
-                    <option>New</option><option>Contacted</option><option>Qualified</option><option>Proposal</option><option>Negotiation</option>
-                  </select>
-                </div>
-              </div>
-              <div>
-                <label className="block text-xs font-semibold text-slate-600 mb-1">Est. Value (₹)</label>
-                <input type="number" placeholder="e.g. 150000" value={leadValue} onChange={e => setLeadValue(e.target.value)} className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-indigo-400" />
-              </div>
-              <div>
-                <label className="block text-xs font-semibold text-slate-600 mb-1">Notes</label>
-                <textarea placeholder="Additional context..." value={leadNotes} onChange={e => setLeadNotes(e.target.value)} rows={2} className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-indigo-400 resize-none" />
-              </div>
-              <div className="flex gap-2 pt-1">
-                <button type="button" onClick={() => setActiveQuickActionModal(null)} className="flex-1 py-2 rounded-lg border border-slate-200 text-sm font-semibold text-slate-600 hover:bg-slate-50">Cancel</button>
-                <button type="submit" className="flex-1 flex items-center justify-center gap-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg py-2 text-sm font-semibold">
-                  <Sparkles className="h-3.5 w-3.5" /> Save Lead
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-
-      {/* Create PO Modal */}
-      {activeQuickActionModal === "po" && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl w-full max-w-md shadow-2xl">
-            <div className="flex items-center justify-between border-b border-slate-100 px-6 py-4">
-              <div className="flex items-center gap-2">
-                <ShoppingBag className="h-4 w-4 text-amber-600" />
-                <h3 className="text-sm font-bold text-slate-900">Create Purchase Order</h3>
-              </div>
-              <button onClick={() => setActiveQuickActionModal(null)} className="text-slate-400 hover:text-slate-600"><X className="h-4 w-4" /></button>
+            {/* body */}
+            <div className="p-6 space-y-4">
+              {activeQuickActionModal === "lead" && (
+                <form onSubmit={handleQuickAddLead} className="space-y-4">
+                  {[
+                    { label: "Lead Title / Contact Name *", el: <input type="text" required placeholder="John Doe, Cloud Architect" value={leadTitle} onChange={e => setLeadTitle(e.target.value)} className="w-full rounded-lg px-3 py-2 text-sm outline-none" style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)", color: "#e2e8f0" }} /> },
+                    { label: "Company Name", el: <input type="text" placeholder="Acme Tech Solutions" value={leadCompany} onChange={e => setLeadCompany(e.target.value)} className="w-full rounded-lg px-3 py-2 text-sm outline-none" style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)", color: "#e2e8f0" }} /> },
+                  ].map(f => <div key={f.label}><label className="block text-xs font-semibold mb-1" style={{ color: "#64748b" }}>{f.label}</label>{f.el}</div>)}
+                  <div className="grid grid-cols-2 gap-3">
+                    <div><label className="block text-xs font-semibold mb-1" style={{ color: "#64748b" }}>Source</label>
+                      <select value={leadSource} onChange={e => setLeadSource(e.target.value)} className="w-full rounded-lg px-3 py-2 text-sm outline-none" style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)", color: "#e2e8f0" }}>
+                        <option>Website</option><option>Referral</option><option>LinkedIn</option><option>Cold Call</option><option>Campaign</option>
+                      </select></div>
+                    <div><label className="block text-xs font-semibold mb-1" style={{ color: "#64748b" }}>Status</label>
+                      <select value={leadStatus} onChange={e => setLeadStatus(e.target.value as any)} className="w-full rounded-lg px-3 py-2 text-sm outline-none" style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)", color: "#e2e8f0" }}>
+                        <option>New</option><option>Contacted</option><option>Qualified</option><option>Proposal</option><option>Negotiation</option>
+                      </select></div>
+                  </div>
+                  <div><label className="block text-xs font-semibold mb-1" style={{ color: "#64748b" }}>Est. Value (₹)</label>
+                    <input type="number" placeholder="e.g. 150000" value={leadValue} onChange={e => setLeadValue(e.target.value)} className="w-full rounded-lg px-3 py-2 text-sm outline-none" style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)", color: "#e2e8f0" }} /></div>
+                  <div><label className="block text-xs font-semibold mb-1" style={{ color: "#64748b" }}>Notes</label>
+                    <textarea placeholder="Additional context..." value={leadNotes} onChange={e => setLeadNotes(e.target.value)} rows={2} className="w-full rounded-lg px-3 py-2 text-sm outline-none resize-none" style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)", color: "#e2e8f0" }} /></div>
+                  <div className="flex gap-2 pt-1">
+                    <button type="button" onClick={() => setActiveQuickActionModal(null)} className="flex-1 py-2 rounded-lg text-sm font-semibold cursor-pointer border" style={{ borderColor: "rgba(255,255,255,0.1)", color: "#64748b", background: "transparent" }}>Cancel</button>
+                    <button type="submit" className="flex-1 flex items-center justify-center gap-1.5 rounded-lg py-2 text-sm font-semibold cursor-pointer" style={{ background: "linear-gradient(to right,#6366f1,#7c3aed)", color: "#ffffff" }}><Sparkles className="h-3.5 w-3.5" /> Save Lead</button>
+                  </div>
+                </form>
+              )}
+              {activeQuickActionModal === "po" && (
+                <form onSubmit={handleQuickCreatePO} className="space-y-4">
+                  <div><label className="block text-xs font-semibold mb-1" style={{ color: "#64748b" }}>Vendor / Supplier *</label>
+                    <select required value={poSupplierId} onChange={e => setPoSupplierId(e.target.value)} className="w-full rounded-lg px-3 py-2 text-sm outline-none" style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)", color: "#e2e8f0" }}>
+                      <option value="">-- Select Vendor --</option>
+                      {suppliers.map(sup => <option key={sup.id} value={sup.id}>{sup.name} ({sup.code})</option>)}
+                      {suppliers.length === 0 && <option value="sup-1">Mock Vendor Ltd</option>}
+                    </select></div>
+                  <div><label className="block text-xs font-semibold mb-1" style={{ color: "#64748b" }}>Total Amount (₹) *</label>
+                    <input type="number" required placeholder="e.g. 75000" value={poAmount} onChange={e => setPoAmount(e.target.value)} className="w-full rounded-lg px-3 py-2 text-sm outline-none" style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)", color: "#e2e8f0" }} /></div>
+                  <div><label className="block text-xs font-semibold mb-1" style={{ color: "#64748b" }}>Expected Delivery Date</label>
+                    <input type="date" value={poDeliveryDate} onChange={e => setPoDeliveryDate(e.target.value)} className="w-full rounded-lg px-3 py-2 text-sm outline-none" style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)", color: "#e2e8f0" }} /></div>
+                  <div><label className="block text-xs font-semibold mb-1" style={{ color: "#64748b" }}>Remarks</label>
+                    <textarea placeholder="Net 30 payment terms..." value={poRemarks} onChange={e => setPoRemarks(e.target.value)} rows={2} className="w-full rounded-lg px-3 py-2 text-sm outline-none resize-none" style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)", color: "#e2e8f0" }} /></div>
+                  <div className="flex gap-2 pt-1">
+                    <button type="button" onClick={() => setActiveQuickActionModal(null)} className="flex-1 py-2 rounded-lg text-sm font-semibold cursor-pointer border" style={{ borderColor: "rgba(255,255,255,0.1)", color: "#64748b", background: "transparent" }}>Cancel</button>
+                    <button type="submit" className="flex-1 flex items-center justify-center gap-1.5 rounded-lg py-2 text-sm font-semibold cursor-pointer" style={{ background: "#d97706", color: "#ffffff" }}><Sparkles className="h-3.5 w-3.5" /> Issue Draft PO</button>
+                  </div>
+                </form>
+              )}
+              {activeQuickActionModal === "leave" && (
+                <form onSubmit={handleQuickRequestLeave} className="space-y-4">
+                  <div><label className="block text-xs font-semibold mb-1" style={{ color: "#64748b" }}>Employee *</label>
+                    <select required value={leaveEmployeeId} onChange={e => setLeaveEmployeeId(e.target.value)} className="w-full rounded-lg px-3 py-2 text-sm outline-none" style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)", color: "#e2e8f0" }}>
+                      <option value="">-- Select Employee --</option>
+                      {employees.map(emp => <option key={emp.id} value={emp.id}>{emp.name} ({emp.employeeCode})</option>)}
+                    </select></div>
+                  <div><label className="block text-xs font-semibold mb-1" style={{ color: "#64748b" }}>Leave Type</label>
+                    <select value={leaveType} onChange={e => setLeaveType(e.target.value as any)} className="w-full rounded-lg px-3 py-2 text-sm outline-none" style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)", color: "#e2e8f0" }}>
+                      <option value="annual">Annual Leave</option><option value="sick">Sick Leave</option><option value="casual">Casual Leave</option><option value="maternity">Maternity Leave</option><option value="unpaid">Loss of Pay / Unpaid</option>
+                    </select></div>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div><label className="block text-xs font-semibold mb-1" style={{ color: "#64748b" }}>Start Date *</label>
+                      <input type="date" required value={leaveStartDate} onChange={e => setLeaveStartDate(e.target.value)} className="w-full rounded-lg px-3 py-2 text-sm outline-none" style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)", color: "#e2e8f0" }} /></div>
+                    <div><label className="block text-xs font-semibold mb-1" style={{ color: "#64748b" }}>End Date *</label>
+                      <input type="date" required value={leaveEndDate} onChange={e => setLeaveEndDate(e.target.value)} className="w-full rounded-lg px-3 py-2 text-sm outline-none" style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)", color: "#e2e8f0" }} /></div>
+                  </div>
+                  <div><label className="block text-xs font-semibold mb-1" style={{ color: "#64748b" }}>Reason</label>
+                    <textarea placeholder="State reason for leave..." value={leaveReason} onChange={e => setLeaveReason(e.target.value)} rows={2} className="w-full rounded-lg px-3 py-2 text-sm outline-none resize-none" style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)", color: "#e2e8f0" }} /></div>
+                  <div className="flex gap-2 pt-1">
+                    <button type="button" onClick={() => setActiveQuickActionModal(null)} className="flex-1 py-2 rounded-lg text-sm font-semibold cursor-pointer border" style={{ borderColor: "rgba(255,255,255,0.1)", color: "#64748b", background: "transparent" }}>Cancel</button>
+                    <button type="submit" className="flex-1 flex items-center justify-center gap-1.5 rounded-lg py-2 text-sm font-semibold cursor-pointer" style={{ background: "#dc2626", color: "#ffffff" }}><Sparkles className="h-3.5 w-3.5" /> Submit Request</button>
+                  </div>
+                </form>
+              )}
             </div>
-            <form onSubmit={handleQuickCreatePO} className="p-6 space-y-4">
-              <div>
-                <label className="block text-xs font-semibold text-slate-600 mb-1">Vendor / Supplier *</label>
-                <select required value={poSupplierId} onChange={e => setPoSupplierId(e.target.value)} className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-indigo-400">
-                  <option value="">-- Select Vendor --</option>
-                  {suppliers.map(sup => <option key={sup.id} value={sup.id}>{sup.name} ({sup.code})</option>)}
-                  {suppliers.length === 0 && <option value="sup-1">Mock Vendor Ltd</option>}
-                </select>
-              </div>
-              <div>
-                <label className="block text-xs font-semibold text-slate-600 mb-1">Total Amount (₹) *</label>
-                <input type="number" required placeholder="e.g. 75000" value={poAmount} onChange={e => setPoAmount(e.target.value)} className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-indigo-400" />
-              </div>
-              <div>
-                <label className="block text-xs font-semibold text-slate-600 mb-1">Expected Delivery Date</label>
-                <input type="date" value={poDeliveryDate} onChange={e => setPoDeliveryDate(e.target.value)} className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-indigo-400" />
-              </div>
-              <div>
-                <label className="block text-xs font-semibold text-slate-600 mb-1">Remarks</label>
-                <textarea placeholder="Net 30 payment terms..." value={poRemarks} onChange={e => setPoRemarks(e.target.value)} rows={2} className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-indigo-400 resize-none" />
-              </div>
-              <div className="flex gap-2 pt-1">
-                <button type="button" onClick={() => setActiveQuickActionModal(null)} className="flex-1 py-2 rounded-lg border border-slate-200 text-sm font-semibold text-slate-600 hover:bg-slate-50">Cancel</button>
-                <button type="submit" className="flex-1 flex items-center justify-center gap-1.5 bg-amber-600 hover:bg-amber-700 text-white rounded-lg py-2 text-sm font-semibold">
-                  <Sparkles className="h-3.5 w-3.5" /> Issue Draft PO
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-
-      {/* Request Leave Modal */}
-      {activeQuickActionModal === "leave" && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl w-full max-w-md shadow-2xl">
-            <div className="flex items-center justify-between border-b border-slate-100 px-6 py-4">
-              <div className="flex items-center gap-2">
-                <Clock className="h-4 w-4 text-rose-600" />
-                <h3 className="text-sm font-bold text-slate-900">Request Leave</h3>
-              </div>
-              <button onClick={() => setActiveQuickActionModal(null)} className="text-slate-400 hover:text-slate-600"><X className="h-4 w-4" /></button>
-            </div>
-            <form onSubmit={handleQuickRequestLeave} className="p-6 space-y-4">
-              <div>
-                <label className="block text-xs font-semibold text-slate-600 mb-1">Employee *</label>
-                <select required value={leaveEmployeeId} onChange={e => setLeaveEmployeeId(e.target.value)} className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-indigo-400">
-                  <option value="">-- Select Employee --</option>
-                  {employees.map(emp => <option key={emp.id} value={emp.id}>{emp.name} ({emp.employeeCode})</option>)}
-                </select>
-              </div>
-              <div>
-                <label className="block text-xs font-semibold text-slate-600 mb-1">Leave Type</label>
-                <select value={leaveType} onChange={e => setLeaveType(e.target.value as any)} className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-indigo-400">
-                  <option value="annual">Annual Leave</option>
-                  <option value="sick">Sick Leave</option>
-                  <option value="casual">Casual Leave</option>
-                  <option value="maternity">Maternity Leave</option>
-                  <option value="unpaid">Loss of Pay / Unpaid</option>
-                </select>
-              </div>
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-xs font-semibold text-slate-600 mb-1">Start Date *</label>
-                  <input type="date" required value={leaveStartDate} onChange={e => setLeaveStartDate(e.target.value)} className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-indigo-400" />
-                </div>
-                <div>
-                  <label className="block text-xs font-semibold text-slate-600 mb-1">End Date *</label>
-                  <input type="date" required value={leaveEndDate} onChange={e => setLeaveEndDate(e.target.value)} className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-indigo-400" />
-                </div>
-              </div>
-              <div>
-                <label className="block text-xs font-semibold text-slate-600 mb-1">Reason</label>
-                <textarea placeholder="State reason for leave..." value={leaveReason} onChange={e => setLeaveReason(e.target.value)} rows={2} className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-indigo-400 resize-none" />
-              </div>
-              <div className="flex gap-2 pt-1">
-                <button type="button" onClick={() => setActiveQuickActionModal(null)} className="flex-1 py-2 rounded-lg border border-slate-200 text-sm font-semibold text-slate-600 hover:bg-slate-50">Cancel</button>
-                <button type="submit" className="flex-1 flex items-center justify-center gap-1.5 bg-rose-600 hover:bg-rose-700 text-white rounded-lg py-2 text-sm font-semibold">
-                  <Sparkles className="h-3.5 w-3.5" /> Submit Request
-                </button>
-              </div>
-            </form>
           </div>
         </div>
       )}
