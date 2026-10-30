@@ -437,8 +437,11 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
               The Complete<br />
               <span className="bg-gradient-to-r from-indigo-400 to-violet-400 bg-clip-text text-transparent">Autonomous Operating</span><br /><span className="text-white">System</span><br /><span className="text-slate-400 text-3xl md:text-4xl lg:text-5xl font-bold">for Modern Enterprises</span>
             </h2>
-            <p className="text-slate-400 text-sm leading-relaxed max-w-lg">
-              CRM, Multi-Warehouse Inventory, Procurement, Biometric HR, Double-Entry Finance, and GST Reconciliation unified under mathematically fenced single-tenant database schemas.
+            <p className="text-slate-300 text-sm leading-relaxed max-w-lg">
+              CRM · Inventory · Procurement · HR · Finance · GST — unified in one mathematically fenced, single-tenant database.
+            </p>
+            <p className="text-slate-500 text-xs leading-relaxed max-w-lg font-mono">
+              No shared tables. No data bleed. Every tenant runs inside an isolated schema — so your numbers stay yours, always.
             </p>
             {/* Stats row */}
             <div className="flex gap-8 py-2">
