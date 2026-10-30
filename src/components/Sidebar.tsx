@@ -81,14 +81,14 @@ interface NavListProps {
 
 function NavList({ activeView, userRole, onNavigate, collapsed = false }: NavListProps) {
   return (
-    <nav className="flex-1 overflow-y-auto px-3 py-3">
+    <nav className="flex-1 overflow-y-auto py-3" style={{ overscrollBehavior: "contain" }}>
       {NAV_SECTIONS.map(section => {
         const allowed = section.items.filter(i => isAllowed(i.id, userRole));
         if (allowed.length === 0) return null;
         return (
-          <div key={section.label} className="mb-2">
+          <div key={section.label} className="mb-1">
             {!collapsed && (
-              <p className="mb-1 mt-2 px-2 text-[10px] font-bold tracking-widest text-slate-400 uppercase select-none">
+              <p className="mb-1 mt-3 px-5 text-[10px] font-bold tracking-[.08em] text-slate-500 uppercase select-none">
                 {section.label}
               </p>
             )}
@@ -100,18 +100,19 @@ function NavList({ activeView, userRole, onNavigate, collapsed = false }: NavLis
                   key={item.id}
                   onClick={() => onNavigate(item.id)}
                   title={collapsed ? item.name : undefined}
-                  className={`group relative flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm font-medium transition-all duration-150 mb-0.5 ${
-                    active
-                      ? "bg-indigo-600 text-white shadow-sm"
-                      : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
-                  }`}
+                  className={`group relative flex w-full items-center gap-[.7rem] text-left text-[.87rem] transition-colors duration-100 mb-0.5
+                    ${collapsed ? "justify-center px-0 py-[.42rem]" : "px-5 py-[.42rem]"}
+                    ${active
+                      ? "border-l-[3px] border-indigo-400 bg-indigo-500/20 text-white font-semibold"
+                      : "border-l-[3px] border-transparent text-slate-300 hover:bg-slate-800 hover:text-white"
+                    }`}
                 >
-                  <Icon className={`h-[18px] w-[18px] shrink-0 ${active ? "text-white" : "text-slate-500 group-hover:text-slate-700"}`} />
+                  <Icon className={`h-[18px] w-[18px] shrink-0 ${active ? "text-indigo-300" : "text-slate-400 group-hover:text-slate-200"}`} />
                   {!collapsed && (
-                    <span className="truncate font-semibold leading-none">{item.name}</span>
+                    <span className="truncate leading-none">{item.name}</span>
                   )}
                   {collapsed && (
-                    <div className="pointer-events-none absolute left-full ml-3 rounded-md bg-slate-900 px-2 py-1 text-xs font-medium text-white opacity-0 transition-opacity group-hover:opacity-100 z-50 whitespace-nowrap shadow-lg">
+                    <div className="pointer-events-none absolute left-full ml-3 rounded-md bg-slate-900 border border-slate-700 px-2 py-1 text-xs font-medium text-white opacity-0 transition-opacity group-hover:opacity-100 z-50 whitespace-nowrap shadow-lg">
                       {item.name}
                     </div>
                   )}
@@ -140,16 +141,18 @@ export default function Sidebar({
 
   // ── Desktop sidebar ──────────────────────────────────────────────────────
   const DesktopSidebar = (
-    <aside className={`hidden md:flex relative flex-col border-r border-slate-200 bg-white transition-all duration-300 ${collapsed ? "w-[68px]" : "w-56"}`}>
-      {/* Logo */}
-      <div className={`flex h-14 items-center border-b border-slate-100 ${collapsed ? "justify-center px-2" : "gap-3 px-4"}`}>
-        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-indigo-600 text-white shadow-sm shadow-indigo-200">
+    <aside className={`hidden md:flex relative flex-col transition-all duration-300 ${collapsed ? "w-[68px]" : "w-[252px]"}`}
+      style={{ background: "#0f172a", color: "#cbd5e1" }}>
+      {/* Logo / brand */}
+      <div className={`flex h-14 items-center shrink-0 ${collapsed ? "justify-center px-2" : "gap-3 px-5"}`}
+        style={{ borderBottom: "1px solid #1e293b" }}>
+        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-indigo-500 text-white shadow-lg shadow-indigo-900/40">
           <Building className="h-5 w-5" />
         </div>
         {!collapsed && (
           <div className="flex flex-col overflow-hidden">
-            <span className="text-[13px] font-extrabold text-slate-800 truncate leading-tight" title={company.name}>{company.name}</span>
-            <span className="text-[10px] text-slate-400 font-medium">{userRole}</span>
+            <span className="text-[13px] font-extrabold text-white truncate leading-tight" title={company.name}>{company.name}</span>
+            <span className="text-[10px] font-medium" style={{ color: "#94a3b8" }}>{userRole}</span>
           </div>
         )}
       </div>
@@ -157,7 +160,8 @@ export default function Sidebar({
       {/* Toggle collapse */}
       <button
         onClick={() => setCollapsed(!collapsed)}
-        className="absolute -right-3 top-[26px] z-50 flex h-6 w-6 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-400 shadow-sm hover:bg-slate-50 hover:text-slate-600"
+        className="absolute -right-3 top-[26px] z-50 flex h-6 w-6 items-center justify-center rounded-full shadow-md"
+        style={{ background: "#1e293b", border: "1px solid #334155", color: "#94a3b8" }}
       >
         {collapsed ? (
           <svg className="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5}><path d="M9 18l6-6-6-6"/></svg>
@@ -169,8 +173,8 @@ export default function Sidebar({
       <NavList activeView={activeView} userRole={userRole} onNavigate={navigate} collapsed={collapsed} />
 
       {!collapsed && (
-        <div className="px-4 py-3 border-t border-slate-100">
-          <p className="text-[10px] text-slate-400 font-medium text-center">DEINRIM OMS v1.2</p>
+        <div className="px-5 py-3 shrink-0" style={{ borderTop: "1px solid #1e293b" }}>
+          <p className="text-[10px] font-medium text-center" style={{ color: "#64748b" }}>DEINRIM OMS v1.2</p>
         </div>
       )}
     </aside>
@@ -182,19 +186,20 @@ export default function Sidebar({
       {mobileOpen && (
         <div className="fixed inset-0 z-40 bg-black/40 backdrop-blur-sm md:hidden" onClick={() => setMobileOpen?.(false)} />
       )}
-      <div className={`fixed top-0 left-0 z-50 h-full w-64 flex flex-col bg-white border-r border-slate-200 shadow-xl transition-transform duration-300 md:hidden ${mobileOpen ? "translate-x-0" : "-translate-x-full"}`}>
+      <div className={`fixed top-0 left-0 z-50 h-full w-64 flex flex-col shadow-2xl transition-transform duration-300 md:hidden ${mobileOpen ? "translate-x-0" : "-translate-x-full"}`}
+        style={{ background: "#0f172a", color: "#cbd5e1" }}>
         {/* Header */}
-        <div className="flex h-14 items-center justify-between border-b border-slate-100 px-4">
+        <div className="flex h-14 items-center justify-between px-4 shrink-0" style={{ borderBottom: "1px solid #1e293b" }}>
           <div className="flex items-center gap-3">
-            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-indigo-600 text-white">
+            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-indigo-500 text-white">
               <Building className="h-5 w-5" />
             </div>
             <div className="flex flex-col overflow-hidden">
-              <span className="text-[13px] font-extrabold text-slate-800 truncate max-w-[130px]">{company.name}</span>
-              <span className="text-[10px] text-slate-400">{userRole}</span>
+              <span className="text-[13px] font-extrabold text-white truncate max-w-[130px]">{company.name}</span>
+              <span className="text-[10px]" style={{ color: "#94a3b8" }}>{userRole}</span>
             </div>
           </div>
-          <button onClick={() => setMobileOpen?.(false)} className="text-slate-400 hover:text-slate-700 p-1.5 rounded-lg hover:bg-slate-100">
+          <button onClick={() => setMobileOpen?.(false)} className="p-1.5 rounded-lg" style={{ color: "#94a3b8" }}>
             <X className="h-5 w-5" />
           </button>
         </div>

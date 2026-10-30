@@ -96,18 +96,14 @@ option {
   color: #0f172a !important;
 }
 
-/* ── Hover rows ── */
-.hover\:bg-slate-900\/40:hover { background-color: rgba(241,245,249,0.8) !important; }
-.hover\:bg-slate-800:hover     { background-color: #e2e8f0 !important; }
+/* ── Hover rows — content area only ── */
 tr:hover                       { background-color: rgba(226,232,240,0.5) !important; }
 .hover\:bg-gray-50:hover, .hover\:bg-gray-50\/40:hover {
   background-color: #f1f5f9 !important;
   color: #0f172a !important;
 }
 
-/* ── Sidebar & header specific areas ── */
-/* Make the left nav sidebar white with border */
-.border-r { border-right-color: #e2e8f0 !important; }
+/* ── General borders ── */
 .border-b { border-bottom-color: #e2e8f0 !important; }
 
 /* ── Modals / overlays — keep dark backdrop ── */
