@@ -497,8 +497,8 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
               <button onClick={() => openModal("register")} className="px-5 py-2.5 bg-gradient-to-r from-indigo-500 to-violet-600 hover:from-indigo-400 hover:to-violet-500 text-white font-bold text-xs rounded-lg transition-all shadow-lg shadow-indigo-500/25 flex items-center gap-2 cursor-pointer font-mono uppercase tracking-wide">
                 <UserPlus className="h-3.5 w-3.5" /> ⬡ Provision Tenant Workspace
               </button>
-              <button onClick={() => openModal("admin-demo")} className="px-5 py-2.5 bg-white/5 hover:bg-white/10 text-slate-300 border border-white/10 hover:border-white/20 font-bold text-xs rounded-lg transition-all flex items-center gap-2 cursor-pointer font-mono uppercase tracking-wide">
-                <Zap className="h-3.5 w-3.5 text-indigo-500" /> Try Live Demo
+              <button onClick={() => openModal("admin-demo")} className="px-5 py-2.5 hover:bg-indigo-500/10 text-white font-bold text-xs rounded-lg transition-all flex items-center gap-2 cursor-pointer font-mono uppercase tracking-wide" style={{ background: "rgba(99,102,241,0.08)", border: "1px solid rgba(99,102,241,0.35)" }}>
+                <Zap className="h-3.5 w-3.5 text-indigo-400" /> Try Live Demo
               </button>
               <a href="https://wa.me/919836130393?text=I'm%20interested%20in%20a%20DEINRIM%20360%20demo" target="_blank" rel="noreferrer" className="px-5 py-2.5 bg-emerald-500/10 hover:bg-emerald-500/15 text-emerald-400 border border-emerald-500/25 font-bold text-xs rounded-lg transition-all flex items-center gap-1.5 font-mono uppercase tracking-wide">
                 💬 WhatsApp <ExternalLink className="h-3 w-3" />
@@ -614,7 +614,7 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
         <div className="text-center space-y-2">
           <span className="text-[10px] uppercase font-bold tracking-widest text-indigo-400 font-mono">── Mission-Critical Enterprise Modules</span>
           <h3 className="text-3xl font-black text-white">9 Production-Ready Modules</h3>
-          <p className="text-sm text-slate-500 max-w-xl mx-auto">All fully linked — one entry propagates across inventory, finance, CRM and HR automatically.</p>
+          <p className="text-sm text-slate-400 max-w-xl mx-auto">All fully linked — one entry propagates across inventory, finance, CRM and HR automatically.</p>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {[
@@ -630,15 +630,15 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
           ].map((mod, idx) => {
             const Icon = mod.icon;
             return (
-              <div key={idx} className="bg-white/3 p-5 rounded-2xl border border-white/5 hover:border-indigo-500/30 hover:bg-indigo-500/5 transition-all relative overflow-hidden group">
+              <div key={idx} className="p-5 rounded-2xl hover:border-indigo-500/40 transition-all relative overflow-hidden group" style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.09)" }}>
                 <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-indigo-400 via-violet-400 to-indigo-400 opacity-0 group-hover:opacity-100 transition-opacity"></div>
                 <div className="flex items-center gap-2 mb-2">
-                  <div className="p-1.5 bg-indigo-500/15 rounded-lg border border-indigo-500/20">
-                    <Icon className="h-4 w-4 text-indigo-500" />
+                  <div className="p-1.5 rounded-lg" style={{ background: "rgba(99,102,241,0.15)", border: "1px solid rgba(99,102,241,0.25)" }}>
+                    <Icon className="h-4 w-4 text-indigo-400" />
                   </div>
-                  <h4 className="text-xs font-bold text-slate-200 uppercase tracking-wide">{mod.name}</h4>
+                  <h4 className="text-xs font-bold text-slate-100 uppercase tracking-wide">{mod.name}</h4>
                 </div>
-                <p className="text-xs text-slate-500 leading-relaxed mt-1">{mod.desc}</p>
+                <p className="text-xs text-slate-400 leading-relaxed mt-1">{mod.desc}</p>
                 <span className="mt-2 inline-block text-[9px] bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-2 py-0.5 rounded-full font-bold font-mono">● Active</span>
               </div>
             );
