@@ -395,8 +395,43 @@ export default function MobileLogin({ onLogin, usersList }: Props) {
           </p>
         </div>
 
+        {/* Stats strip + Feature highlights */}
+        <div className="px-4 mt-5 space-y-4 shrink-0">
+
+          {/* 3-stat row */}
+          <div className="grid grid-cols-3 gap-2">
+            {[
+              { val: "14+", label: "Companies" },
+              { val: "7",   label: "Modules" },
+              { val: "100%", label: "Cloud Hosted" },
+            ].map(s => (
+              <div key={s.label} className="flex flex-col items-center py-3 rounded-2xl" style={{ background: "rgba(99,102,241,0.08)", border: "1px solid rgba(99,102,241,0.2)" }}>
+                <span className="text-xl font-black" style={{ color: "#a5b4fc" }}>{s.val}</span>
+                <span className="text-[9px] font-mono font-bold mt-0.5" style={{ color: "#475569" }}>{s.label}</span>
+              </div>
+            ))}
+          </div>
+
+          {/* Feature rows */}
+          <div className="space-y-2">
+            {[
+              { icon: "🔒", title: "Schema Isolation",   sub: "Every tenant runs inside its own isolated database schema — zero data bleed." },
+              { icon: "⚡", title: "Real-Time Sync",     sub: "Live POS, inventory & finance updates across all branches simultaneously." },
+              { icon: "🧾", title: "Built-In GST Filing", sub: "GSTR-1 / 3B auto-computation, ITC matching & one-click filing." },
+            ].map(f => (
+              <div key={f.title} className="flex items-start gap-3 rounded-2xl px-3 py-2.5" style={{ background: "rgba(15,23,42,0.6)", border: "1px solid rgba(30,41,59,0.8)" }}>
+                <span className="text-base shrink-0 mt-0.5">{f.icon}</span>
+                <div className="min-w-0">
+                  <div className="text-[11px] font-extrabold" style={{ color: "#e2e8f0" }}>{f.title}</div>
+                  <div className="text-[9px] leading-relaxed mt-0.5 font-mono" style={{ color: "#475569" }}>{f.sub}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
         {/* CTA Buttons — pinned to bottom */}
-        <div className="flex-1" />
+        <div className="flex-1 min-h-4" />
         <div className="px-4 pb-8 space-y-3 shrink-0">
           <button
             onClick={() => openAuth("register")}
