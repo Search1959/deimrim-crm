@@ -384,8 +384,11 @@ export default function MobileLogin({ onLogin, usersList }: Props) {
           ))}
         </div>
 
+        {/* Push content block down */}
+        <div className="flex-1" />
+
         {/* Tagline */}
-        <div className="px-5 mt-2 space-y-0.5 shrink-0">
+        <div className="px-5 mt-0 space-y-0.5 shrink-0">
           <h2 className="text-xl font-extrabold leading-snug" style={{ color: "#ffffff" }}>
             Run Your Entire Business<br />
             <span style={{ color: "#38bdf8" }}>from One Platform</span>
@@ -427,9 +430,8 @@ export default function MobileLogin({ onLogin, usersList }: Props) {
           </div>
         </div>
 
-        {/* CTA Buttons — pinned to bottom */}
-        <div className="flex-1" />
-        <div className="px-4 pb-8 space-y-3 shrink-0">
+        {/* CTA Buttons */}
+        <div className="px-4 pb-8 mt-3 space-y-3 shrink-0">
           <button
             onClick={() => openAuth("register")}
             className={primaryBtn}
