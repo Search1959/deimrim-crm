@@ -286,7 +286,7 @@ export default function MobileLogin({ onLogin, usersList }: Props) {
         </div>
 
         {/* HERO — gradient card with mini-dashboard slide */}
-        <div className="shrink-0 mx-4 mt-2 rounded-3xl overflow-hidden relative" style={{ height: 280 }}>
+        <div className="shrink-0 mx-4 mt-1 rounded-3xl overflow-hidden relative" style={{ height: 230 }}>
           {/* animated gradient bg */}
           <div className={`absolute inset-0 bg-gradient-to-br ${CurSlide.color} transition-all duration-700`} />
           {/* subtle dot grid */}
@@ -369,7 +369,7 @@ export default function MobileLogin({ onLogin, usersList }: Props) {
         </div>
 
         {/* Feature chips */}
-        <div className="flex gap-2 px-4 mt-4 overflow-x-auto shrink-0 pb-1">
+        <div className="flex gap-2 px-4 mt-2 overflow-x-auto shrink-0 pb-1">
           {[
             ["✅", "SSL Secure"],
             ["☁️", "Cloud Hosted"],
@@ -385,7 +385,7 @@ export default function MobileLogin({ onLogin, usersList }: Props) {
         </div>
 
         {/* Tagline */}
-        <div className="px-5 mt-4 space-y-1 shrink-0">
+        <div className="px-5 mt-2 space-y-0.5 shrink-0">
           <h2 className="text-xl font-extrabold leading-snug" style={{ color: "#ffffff" }}>
             Run Your Entire Business<br />
             <span style={{ color: "#38bdf8" }}>from One Platform</span>
@@ -395,43 +395,40 @@ export default function MobileLogin({ onLogin, usersList }: Props) {
           </p>
         </div>
 
-        {/* Stats strip + Feature highlights */}
-        <div className="px-4 mt-5 space-y-4 shrink-0">
+        {/* Compact stats + features */}
+        <div className="px-4 mt-3 shrink-0 space-y-2">
 
-          {/* 3-stat row */}
-          <div className="grid grid-cols-3 gap-2">
+          {/* Stats row — slim pills */}
+          <div className="flex gap-2">
             {[
               { val: "14+", label: "Companies" },
               { val: "7",   label: "Modules" },
-              { val: "100%", label: "Cloud Hosted" },
+              { val: "99.9%", label: "Uptime" },
             ].map(s => (
-              <div key={s.label} className="flex flex-col items-center py-3 rounded-2xl" style={{ background: "rgba(99,102,241,0.08)", border: "1px solid rgba(99,102,241,0.2)" }}>
-                <span className="text-xl font-black" style={{ color: "#a5b4fc" }}>{s.val}</span>
-                <span className="text-[9px] font-mono font-bold mt-0.5" style={{ color: "#475569" }}>{s.label}</span>
+              <div key={s.label} className="flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-xl" style={{ background: "rgba(99,102,241,0.09)", border: "1px solid rgba(99,102,241,0.2)" }}>
+                <span className="text-sm font-black" style={{ color: "#a5b4fc" }}>{s.val}</span>
+                <span className="text-[9px] font-mono" style={{ color: "#475569" }}>{s.label}</span>
               </div>
             ))}
           </div>
 
-          {/* Feature rows */}
-          <div className="space-y-2">
+          {/* Feature chips — 3-col icon grid */}
+          <div className="grid grid-cols-3 gap-2">
             {[
-              { icon: "🔒", title: "Schema Isolation",   sub: "Every tenant runs inside its own isolated database schema — zero data bleed." },
-              { icon: "⚡", title: "Real-Time Sync",     sub: "Live POS, inventory & finance updates across all branches simultaneously." },
-              { icon: "🧾", title: "Built-In GST Filing", sub: "GSTR-1 / 3B auto-computation, ITC matching & one-click filing." },
+              { icon: "🔒", title: "Schema Isolation" },
+              { icon: "⚡", title: "Real-Time Sync" },
+              { icon: "🧾", title: "GST Filing" },
             ].map(f => (
-              <div key={f.title} className="flex items-start gap-3 rounded-2xl px-3 py-2.5" style={{ background: "rgba(15,23,42,0.6)", border: "1px solid rgba(30,41,59,0.8)" }}>
-                <span className="text-base shrink-0 mt-0.5">{f.icon}</span>
-                <div className="min-w-0">
-                  <div className="text-[11px] font-extrabold" style={{ color: "#e2e8f0" }}>{f.title}</div>
-                  <div className="text-[9px] leading-relaxed mt-0.5 font-mono" style={{ color: "#475569" }}>{f.sub}</div>
-                </div>
+              <div key={f.title} className="flex flex-col items-center gap-1 py-2 px-1 rounded-xl" style={{ background: "rgba(15,23,42,0.7)", border: "1px solid rgba(30,41,59,0.9)" }}>
+                <span className="text-base">{f.icon}</span>
+                <span className="text-[9px] font-bold text-center leading-tight font-mono" style={{ color: "#94a3b8" }}>{f.title}</span>
               </div>
             ))}
           </div>
         </div>
 
         {/* CTA Buttons — pinned to bottom */}
-        <div className="flex-1 min-h-4" />
+        <div className="flex-1" />
         <div className="px-4 pb-8 space-y-3 shrink-0">
           <button
             onClick={() => openAuth("register")}
