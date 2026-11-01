@@ -112,128 +112,142 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
     {
       id: "admin",
       label: "🛡️ Admin Control Room",
-      accent: "sky",
       tag: "SYSTEM ADMIN",
       title: "Root Configuration & Tenant Management",
       kpis: [
-        { label: "Active Tenants", val: "14", sub: "Companies", color: "text-white" },
-        { label: "SSL Routing",    val: "100%", sub: "Active",  color: "text-emerald-400" },
-        { label: "DB Schemas",     val: "14",   sub: "Isolated",color: "text-indigo-500" },
-        { label: "API Webhooks",   val: "2",    sub: "Active",  color: "text-violet-400" },
+        { label: "Active Tenants", val: "14",   sub: "Companies",  color: "#ffffff" },
+        { label: "SSL Routing",    val: "100%", sub: "Active",     color: "#34d399" },
+        { label: "DB Schemas",     val: "14",   sub: "Isolated",   color: "#818cf8" },
+        { label: "API Webhooks",   val: "2",    sub: "Active",     color: "#a78bfa" },
       ],
       rows: [
         ["🏢 Apex Distribution Group",  "erp.apexdist.com",        "Active"],
         ["🏥 Bengal Healthcare",         "portal.wbhealthcare.in",  "Active"],
         ["🏬 Kolkata Retail Corp",       "default.deinrim360.in",   "Pending"],
       ],
+      chartLabel: "Tenant Growth — Last 8 Months",
+      chartColor: "#818cf8",
+      chart: [4, 6, 7, 8, 9, 11, 13, 14],
     },
     {
       id: "crm",
       label: "📈 CRM Pipeline",
-      accent: "sky",
       tag: "CRM & SALES",
       title: "Lead Pipeline & Customer Revenue Tracker",
       kpis: [
-        { label: "Pipeline Value",  val: "₹18.4L", sub: "Total",   color: "text-white" },
-        { label: "Qualified Leads", val: "32",      sub: "Contacts",color: "text-indigo-500" },
-        { label: "Proposals Out",   val: "12",      sub: "Active",  color: "text-amber-400" },
-        { label: "Closed-Won",      val: "15",      sub: "Deals",   color: "text-emerald-400" },
+        { label: "Pipeline Value",  val: "₹18.4L", sub: "Total",    color: "#ffffff" },
+        { label: "Qualified Leads", val: "32",      sub: "Contacts", color: "#818cf8" },
+        { label: "Proposals Out",   val: "12",      sub: "Active",   color: "#fbbf24" },
+        { label: "Closed-Won",      val: "15",      sub: "Deals",    color: "#34d399" },
       ],
       rows: [
         ["Kolkata Medical Inc.",  "QUALIFIED", "₹4,20,000"],
         ["Bengal Steel Spares",   "PROPOSAL",  "₹2,80,000"],
         ["Starlight Edu Trust",   "PROSPECT",  "₹1,10,000"],
       ],
+      chartLabel: "Revenue Closed — Last 8 Months (₹L)",
+      chartColor: "#34d399",
+      chart: [6.2, 7.8, 5.5, 9.1, 11.4, 8.6, 14.2, 18.4],
     },
     {
       id: "inventory",
       label: "📦 Inventory Ledger",
-      accent: "sky",
       tag: "INVENTORY",
       title: "Batch Stocks, Rack Codes & FIFO Depletion",
       kpis: [
-        { label: "Warehouses",   val: "4",       sub: "Yards",   color: "text-white" },
-        { label: "Product SKUs", val: "140",     sub: "Items",   color: "text-indigo-500" },
-        { label: "Low Stock",    val: "2",       sub: "Alerts",  color: "text-red-400" },
-        { label: "Batch Value",  val: "₹8.2L",  sub: "On Hand", color: "text-emerald-400" },
+        { label: "Warehouses",   val: "4",      sub: "Yards",   color: "#ffffff" },
+        { label: "Product SKUs", val: "140",    sub: "Items",   color: "#818cf8" },
+        { label: "Low Stock",    val: "2",      sub: "Alerts",  color: "#f87171" },
+        { label: "Batch Value",  val: "₹8.2L", sub: "On Hand", color: "#34d399" },
       ],
       rows: [
-        ["Industrial Steel Coils",  "#ST-2026-09A  Rack A-2", "420 Units  ✅"],
-        ["Copper Tubes 15mm",       "#CU-2026-11C  Rack B-12","12 Units   ⚠️"],
-        ["High Tensile Bolts (100)","#BT-2026-04B  Rack D-4", "1,500 Pks ✅"],
+        ["Industrial Steel Coils",  "#ST-2026-09A  Rack A-2",  "420 Units  ✅"],
+        ["Copper Tubes 15mm",       "#CU-2026-11C  Rack B-12", "12 Units   ⚠️"],
+        ["High Tensile Bolts (100)","#BT-2026-04B  Rack D-4",  "1,500 Pks ✅"],
       ],
+      chartLabel: "Stock Value On-Hand — Last 8 Months (₹L)",
+      chartColor: "#818cf8",
+      chart: [5.1, 6.4, 7.2, 6.8, 8.0, 7.5, 8.2, 8.2],
     },
     {
       id: "hr",
       label: "👥 HR Workspace",
-      accent: "sky",
       tag: "HR & ATTENDANCE",
       title: "Staff Rostering, Clock-In & Leave Approvals",
       kpis: [
-        { label: "Total Staff",   val: "48",  sub: "Employees", color: "text-white" },
-        { label: "Present Today", val: "92%", sub: "Clocked-In",color: "text-emerald-400" },
-        { label: "On Leave",      val: "3",   sub: "Approved",  color: "text-indigo-500" },
-        { label: "Open Positions",val: "2",   sub: "Pending",   color: "text-amber-400" },
+        { label: "Total Staff",    val: "48",  sub: "Employees", color: "#ffffff" },
+        { label: "Present Today",  val: "92%", sub: "Clocked-In",color: "#34d399" },
+        { label: "On Leave",       val: "3",   sub: "Approved",  color: "#818cf8" },
+        { label: "Open Positions", val: "2",   sub: "Pending",   color: "#fbbf24" },
       ],
       rows: [
         ["Amit Sen (ID #002)",     "HR Administrator",   "CLOCKED IN 09:12"],
         ["Priyanka Roy (ID #014)", "Procurement Lead",   "CLOCKED IN 09:40"],
         ["Rahul Das (ID #005)",    "Sales Executive",    "ANNUAL LEAVE 2D"],
       ],
+      chartLabel: "Attendance Rate — Last 8 Months (%)",
+      chartColor: "#34d399",
+      chart: [88, 91, 87, 93, 90, 94, 92, 92],
     },
     {
       id: "finance",
       label: "💰 Finance Ledger",
-      accent: "sky",
       tag: "FINANCE & P&L",
       title: "Live Profit & Loss, AP/AR & Cash Flow",
       kpis: [
-        { label: "Gross Revenue",  val: "₹24.6L", sub: "This Month", color: "text-emerald-400" },
-        { label: "COGS",           val: "₹14.2L", sub: "Auto-posted", color: "text-red-400" },
-        { label: "Net Profit",     val: "₹10.4L", sub: "Live",        color: "text-white" },
-        { label: "Pending AP",     val: "₹3.8L",  sub: "Payable",     color: "text-amber-400" },
+        { label: "Gross Revenue", val: "₹24.6L", sub: "This Month",  color: "#34d399" },
+        { label: "COGS",          val: "₹14.2L", sub: "Auto-posted", color: "#f87171" },
+        { label: "Net Profit",    val: "₹10.4L", sub: "Live",        color: "#ffffff" },
+        { label: "Pending AP",    val: "₹3.8L",  sub: "Payable",     color: "#fbbf24" },
       ],
       rows: [
-        ["Sales Invoice #INV-2026-047", "Revenue",    "+₹1,40,000"],
-        ["GRN #GRN-2026-038",           "COGS",       "-₹82,000"],
-        ["Payroll – July 2026",         "Operating",  "-₹3,20,000"],
+        ["Sales Invoice #INV-2026-047", "Revenue",   "+₹1,40,000"],
+        ["GRN #GRN-2026-038",           "COGS",      "-₹82,000"],
+        ["Payroll – July 2026",         "Operating", "-₹3,20,000"],
       ],
+      chartLabel: "Net Profit Trend — Last 8 Months (₹L)",
+      chartColor: "#34d399",
+      chart: [4.2, 5.8, 6.1, 7.4, 8.0, 9.2, 9.8, 10.4],
     },
     {
       id: "purchase",
       label: "🛒 Procurement",
-      accent: "sky",
       tag: "PURCHASE & PO",
       title: "Purchase Orders, GRN & Vendor Management",
       kpis: [
-        { label: "Open POs",      val: "8",      sub: "Pending",    color: "text-amber-400" },
-        { label: "GRNs This Mth", val: "22",     sub: "Received",   color: "text-emerald-400" },
-        { label: "Vendors",       val: "47",     sub: "Active",     color: "text-indigo-500" },
-        { label: "PO Value",      val: "₹6.1L",  sub: "This Month", color: "text-white" },
+        { label: "Open POs",      val: "8",     sub: "Pending",    color: "#fbbf24" },
+        { label: "GRNs This Mth", val: "22",    sub: "Received",   color: "#34d399" },
+        { label: "Vendors",       val: "47",    sub: "Active",     color: "#818cf8" },
+        { label: "PO Value",      val: "₹6.1L", sub: "This Month", color: "#ffffff" },
       ],
       rows: [
-        ["PO #PO-2026-041 · Bengal Steel",   "Approved",  "₹1,80,000"],
-        ["PO #PO-2026-044 · Mehta Traders",  "GRN Done",  "₹92,000"],
-        ["PO #PO-2026-048 · Apex Suppliers", "Pending",   "₹2,40,000"],
+        ["PO #PO-2026-041 · Bengal Steel",   "Approved", "₹1,80,000"],
+        ["PO #PO-2026-044 · Mehta Traders",  "GRN Done", "₹92,000"],
+        ["PO #PO-2026-048 · Apex Suppliers", "Pending",  "₹2,40,000"],
       ],
+      chartLabel: "PO Volume — Last 8 Months (₹L)",
+      chartColor: "#fbbf24",
+      chart: [3.2, 4.1, 3.8, 5.0, 4.6, 5.8, 6.1, 6.1],
     },
     {
       id: "gst",
       label: "🧾 GST Reconciliation",
-      accent: "sky",
       tag: "GST & COMPLIANCE",
       title: "GSTR-1 / GSTR-3B Filing & ITC Matching",
       kpis: [
-        { label: "Taxable Supply", val: "₹21.4L", sub: "This Quarter", color: "text-white" },
-        { label: "GST Collected",  val: "₹3.85L", sub: "Output Tax",   color: "text-emerald-400" },
-        { label: "ITC Available",  val: "₹2.12L", sub: "Input Credit", color: "text-indigo-500" },
-        { label: "Net Payable",    val: "₹1.73L", sub: "Due",          color: "text-amber-400" },
+        { label: "Taxable Supply", val: "₹21.4L", sub: "This Quarter", color: "#ffffff" },
+        { label: "GST Collected",  val: "₹3.85L", sub: "Output Tax",   color: "#34d399" },
+        { label: "ITC Available",  val: "₹2.12L", sub: "Input Credit", color: "#818cf8" },
+        { label: "Net Payable",    val: "₹1.73L", sub: "Due",          color: "#fbbf24" },
       ],
       rows: [
-        ["GSTR-1 July 2026",   "Outward Supplies", "Filed ✅"],
-        ["GSTR-3B July 2026",  "Monthly Return",   "Due 20 Aug"],
-        ["ITC Mismatch #3",    "2B vs Books",      "₹8,400 ⚠️"],
+        ["GSTR-1 July 2026",  "Outward Supplies", "Filed ✅"],
+        ["GSTR-3B July 2026", "Monthly Return",   "Due 20 Aug"],
+        ["ITC Mismatch #3",   "2B vs Books",      "₹8,400 ⚠️"],
       ],
+      chartLabel: "ITC vs Output Tax — Last 8 Months (₹L)",
+      chartColor: "#818cf8",
+      chart: [1.4, 1.8, 2.1, 2.4, 2.8, 3.1, 3.5, 3.85],
     },
   ];
   const [heroSlide, setHeroSlide] = useState(0);
@@ -548,49 +562,78 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
               </div>
 
               {/* slide body */}
-              <div className="p-4 space-y-3 flex-1">
+              <div className="p-4 flex-1 flex flex-col gap-3">
                 {/* header */}
-                <div className="flex items-center justify-between">
+                <div className="flex items-center justify-between shrink-0">
                   <div>
-                    <span className="text-[9px] text-indigo-500 font-mono font-bold tracking-widest uppercase">{heroSlides[heroSlide].tag}</span>
-                    <h4 className="text-sm font-extrabold text-white mt-0.5 leading-tight">{heroSlides[heroSlide].title}</h4>
+                    <span className="text-[9px] font-mono font-bold tracking-widest uppercase" style={{ color: "#6366f1" }}>{heroSlides[heroSlide].tag}</span>
+                    <h4 className="text-sm font-extrabold leading-tight mt-0.5" style={{ color: "#ffffff" }}>{heroSlides[heroSlide].title}</h4>
                   </div>
-                  <span className="text-[9px] bg-indigo-50 text-indigo-600 border border-indigo-200 px-2 py-0.5 rounded-full font-mono font-bold shrink-0">MODULE ACTIVE</span>
+                  <span className="text-[9px] px-2 py-0.5 rounded-full font-mono font-bold shrink-0" style={{ background: "rgba(99,102,241,0.15)", color: "#a5b4fc", border: "1px solid rgba(99,102,241,0.3)" }}>MODULE ACTIVE</span>
                 </div>
 
                 {/* KPI row */}
-                <div className="grid grid-cols-4 gap-2">
+                <div className="grid grid-cols-4 gap-2 shrink-0">
                   {heroSlides[heroSlide].kpis.map((kpi, i) => (
-                    <div key={i} className="bg-white/70 rounded-lg p-2 border border-slate-200/60 text-center">
-                      <div className={`text-base font-black ${kpi.color} leading-none`}>{kpi.val}</div>
-                      <div className="text-[8px] text-slate-300 font-mono mt-0.5 leading-tight">{kpi.label}</div>
-                      <div className="text-[8px] text-slate-400 font-mono">{kpi.sub}</div>
+                    <div key={i} className="rounded-lg p-2 text-center" style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)" }}>
+                      <div className="text-base font-black leading-none" style={{ color: kpi.color }}>{kpi.val}</div>
+                      <div className="text-[8px] font-mono mt-0.5 leading-tight" style={{ color: "#94a3b8" }}>{kpi.label}</div>
+                      <div className="text-[8px] font-mono" style={{ color: "#64748b" }}>{kpi.sub}</div>
                     </div>
                   ))}
                 </div>
 
                 {/* data rows */}
-                <div className="space-y-1.5">
-                  <div className="text-[8px] text-slate-400 font-mono font-bold uppercase tracking-wider">Recent Entries</div>
+                <div className="space-y-1.5 shrink-0">
+                  <div className="text-[8px] font-mono font-bold uppercase tracking-wider" style={{ color: "#475569" }}>Recent Entries</div>
                   {heroSlides[heroSlide].rows.map((row, i) => (
-                    <div key={i} className="flex items-center justify-between rounded-lg px-3 py-2" style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.08)" }}>
-                      <span className="text-[10px] font-bold text-slate-100 truncate max-w-[45%]">{row[0]}</span>
-                      <span className="text-[9px] text-slate-400 font-mono truncate mx-1">{row[1]}</span>
-                      <span className="text-[9px] text-indigo-500 font-mono font-bold shrink-0">{row[2]}</span>
+                    <div key={i} className="flex items-center justify-between rounded-lg px-3 py-2" style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.07)" }}>
+                      <span className="text-[10px] font-bold truncate max-w-[45%]" style={{ color: "#e2e8f0" }}>{row[0]}</span>
+                      <span className="text-[9px] font-mono truncate mx-1" style={{ color: "#64748b" }}>{row[1]}</span>
+                      <span className="text-[9px] font-mono font-bold shrink-0" style={{ color: "#818cf8" }}>{row[2]}</span>
                     </div>
                   ))}
                 </div>
 
+                {/* mini bar chart — fills remaining space */}
+                <div className="flex-1 flex flex-col gap-1.5 min-h-[60px]">
+                  <div className="text-[8px] font-mono font-bold uppercase tracking-wider" style={{ color: "#475569" }}>{heroSlides[heroSlide].chartLabel}</div>
+                  <div className="flex-1 flex items-end gap-1.5 px-0.5">
+                    {(() => {
+                      const vals = heroSlides[heroSlide].chart;
+                      const max = Math.max(...vals);
+                      return vals.map((v, i) => (
+                        <div key={i} className="flex flex-col items-center gap-0.5 flex-1">
+                          <div
+                            className="w-full rounded-sm transition-all duration-500"
+                            style={{
+                              height: `${Math.round((v / max) * 100)}%`,
+                              minHeight: 4,
+                              background: i === vals.length - 1
+                                ? heroSlides[heroSlide].chartColor
+                                : `${heroSlides[heroSlide].chartColor}55`,
+                            }}
+                          />
+                        </div>
+                      ));
+                    })()}
+                  </div>
+                </div>
+
                 {/* progress bar + slide counter */}
-                <div className="pt-1 space-y-1.5">
+                <div className="space-y-1.5 shrink-0">
                   <div className="flex gap-1">
                     {heroSlides.map((_, i) => (
-                      <div key={i} className={`h-0.5 flex-1 rounded-full transition-all duration-300 ${i === heroSlide ? "bg-indigo-600" : "bg-slate-100"}`} />
+                      <div
+                        key={i}
+                        className="h-0.5 flex-1 rounded-full transition-all duration-300"
+                        style={{ background: i === heroSlide ? "#6366f1" : "rgba(255,255,255,0.12)" }}
+                      />
                     ))}
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="text-[8px] text-slate-400 font-mono">Auto-cycling dashboard views</span>
-                    <span className="text-[8px] text-slate-400 font-mono">{heroSlide + 1} / {heroSlides.length}</span>
+                    <span className="text-[8px] font-mono" style={{ color: "#475569" }}>Auto-cycling dashboard views</span>
+                    <span className="text-[8px] font-mono" style={{ color: "#475569" }}>{heroSlide + 1} / {heroSlides.length}</span>
                   </div>
                 </div>
               </div>
