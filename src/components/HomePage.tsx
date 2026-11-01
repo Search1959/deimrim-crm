@@ -596,26 +596,27 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
                 </div>
 
                 {/* mini bar chart — fills remaining space */}
-                <div className="flex-1 flex flex-col gap-1.5 min-h-[60px]">
+                <div className="flex-1 flex flex-col justify-end gap-2">
                   <div className="text-[8px] font-mono font-bold uppercase tracking-wider" style={{ color: "#475569" }}>{heroSlides[heroSlide].chartLabel}</div>
-                  <div className="flex-1 flex items-end gap-1.5 px-0.5">
+                  <div className="flex items-end gap-1.5 w-full" style={{ height: 88 }}>
                     {(() => {
                       const vals = heroSlides[heroSlide].chart;
                       const max = Math.max(...vals);
-                      return vals.map((v, i) => (
-                        <div key={i} className="flex flex-col items-center gap-0.5 flex-1">
+                      return vals.map((v, i) => {
+                        const barH = Math.max(6, Math.round((v / max) * 84));
+                        return (
                           <div
-                            className="w-full rounded-sm transition-all duration-500"
+                            key={i}
+                            className="flex-1 rounded-sm transition-all duration-500"
                             style={{
-                              height: `${Math.round((v / max) * 100)}%`,
-                              minHeight: 4,
+                              height: barH,
                               background: i === vals.length - 1
                                 ? heroSlides[heroSlide].chartColor
-                                : `${heroSlides[heroSlide].chartColor}55`,
+                                : `${heroSlides[heroSlide].chartColor}44`,
                             }}
                           />
-                        </div>
-                      ));
+                        );
+                      });
                     })()}
                   </div>
                 </div>
