@@ -463,7 +463,7 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
 
       {/* ── HERO ──────────────────────────────────────────────────────────── */}
       <section className="w-full max-w-7xl mx-auto px-4 md:px-8 pt-16 pb-12 relative">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-14 items-center">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-14 items-stretch">
 
           {/* LEFT — copy */}
           <div className="space-y-6 text-left">
@@ -514,33 +514,33 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
           </div>
 
           {/* RIGHT — dashboard slideshow */}
-          <div className="relative">
+          <div className="relative lg:self-stretch flex flex-col">
             {/* glow behind card */}
             <div className="absolute -inset-6 bg-gradient-to-br from-indigo-600/20 to-violet-600/10 rounded-3xl blur-3xl pointer-events-none" />
 
             {/* slide card */}
             <div
-              className="relative rounded-2xl border border-indigo-500/20 bg-[#080d16] overflow-hidden shadow-2xl ring-1 ring-indigo-400/10"
-              style={{ transition: "opacity 0.15s ease", opacity: heroAnim ? 1 : 0 }}
+              className="relative rounded-2xl overflow-hidden shadow-2xl flex flex-col flex-1"
+              style={{ border: "1px solid rgba(99,102,241,0.2)", background: "#080d16", transition: "opacity 0.15s ease", opacity: heroAnim ? 1 : 0 }}
             >
               {/* top bar */}
-              <div className="flex items-center justify-between px-4 py-2.5 bg-white/80 border-b border-slate-200">
+              <div className="flex items-center justify-between px-4 py-2.5 shrink-0" style={{ background: "rgba(255,255,255,0.05)", borderBottom: "1px solid rgba(255,255,255,0.08)" }}>
                 <div className="flex items-center gap-1.5">
                   <span className="h-2.5 w-2.5 rounded-full bg-red-500/70"></span>
                   <span className="h-2.5 w-2.5 rounded-full bg-amber-500/70"></span>
                   <span className="h-2.5 w-2.5 rounded-full bg-emerald-500/70"></span>
                 </div>
-                <span className="text-[10px] font-mono font-bold text-slate-500 tracking-widest uppercase">deinrim360.in</span>
+                <span className="text-[10px] font-mono font-bold text-slate-400 tracking-widest uppercase">deinrim360.in</span>
                 <span className="text-[9px] bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-2 py-0.5 rounded-full font-mono font-bold">LIVE</span>
               </div>
 
               {/* module label strip */}
-              <div className="flex gap-1 px-3 py-2 bg-white border-b border-slate-200/60 overflow-x-auto">
+              <div className="flex gap-1 px-3 py-2 overflow-x-auto shrink-0" style={{ background: "rgba(255,255,255,0.03)", borderBottom: "1px solid rgba(255,255,255,0.07)" }}>
                 {heroSlides.map((s, i) => (
                   <button
                     key={s.id}
                     onClick={() => { if (slideTimer.current) clearInterval(slideTimer.current); goToSlide(i); }}
-                    className={`shrink-0 px-2.5 py-1 rounded text-[9px] font-bold font-mono transition-all cursor-pointer ${i === heroSlide ? "bg-indigo-600 text-white" : "text-slate-400 hover:text-slate-700"}`}
+                    className={`shrink-0 px-2.5 py-1 rounded text-[9px] font-bold font-mono transition-all cursor-pointer ${i === heroSlide ? "bg-indigo-600 text-white" : "text-slate-400 hover:text-slate-200"}`}
                   >
                     {s.label}
                   </button>
@@ -548,7 +548,7 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
               </div>
 
               {/* slide body */}
-              <div className="p-4 space-y-3 min-h-[280px]">
+              <div className="p-4 space-y-3 flex-1">
                 {/* header */}
                 <div className="flex items-center justify-between">
                   <div>
