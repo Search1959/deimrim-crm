@@ -258,8 +258,9 @@ export default function MobileLogin({ onLogin, usersList }: Props) {
   };
 
   // ── Shared input class ────────────────────────────────────────────────────
-  const inp = "w-full rounded-2xl border border-slate-700 bg-slate-800/80 px-4 py-4 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20 transition-all";
-  const primaryBtn = "w-full rounded-2xl bg-sky-500 hover:bg-sky-400 active:bg-sky-600 py-4 text-sm font-extrabold text-white flex items-center justify-center gap-2 transition-all shadow-lg shadow-sky-500/25 disabled:opacity-50";
+  const inp = "w-full rounded-2xl px-4 py-4 text-sm focus:outline-none transition-all";
+  const inpStyle = { background: "rgba(30,41,59,0.9)", border: "1px solid rgba(100,116,139,0.45)", color: "#f1f5f9" };
+  const primaryBtn = "w-full rounded-2xl bg-sky-500 py-4 text-sm font-extrabold text-white flex items-center justify-center gap-2 transition-all disabled:opacity-50";
 
   const CurSlide = SLIDES[slide];
   const CurIcon = CurSlide.icon;
@@ -269,10 +270,10 @@ export default function MobileLogin({ onLogin, usersList }: Props) {
   // ══════════════════════════════════════════════════════════════════════════
   if (screen === "landing") {
     return (
-      <div className="flex flex-col h-screen w-screen bg-[#0a0f1e] overflow-hidden select-none">
+      <div data-theme="dark" className="flex flex-col h-screen w-screen overflow-hidden select-none" style={{ background: "#0a0f1e" }}>
 
         {/* Status bar */}
-        <div className="h-7 w-full bg-[#0a0f1e] flex items-center justify-between px-5 shrink-0">
+        <div className="h-7 w-full flex items-center justify-between px-5 shrink-0" style={{ background: "#0a0f1e" }}>
           <span className="text-[10px] text-slate-500 font-mono font-bold">
             {new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
           </span>
@@ -337,12 +338,17 @@ export default function MobileLogin({ onLogin, usersList }: Props) {
               </div>
 
               {/* Mini bar chart */}
-              <div className="flex items-end gap-1 h-8 px-0.5">
-                {CurSlide.bars.map((h, i) => (
+              <div className="flex items-end justify-between px-1" style={{ height: 48, gap: 4 }}>
+                {CurSlide.bars.map((pct, i) => (
                   <div
                     key={i}
-                    className="flex-1 rounded-sm transition-all duration-500"
-                    style={{ height: `${h}%`, background: i === CurSlide.bars.length - 1 ? "rgba(255,255,255,0.8)" : "rgba(255,255,255,0.3)" }}
+                    className="rounded-sm transition-all duration-500"
+                    style={{
+                      flex: "0 0 auto",
+                      width: 14,
+                      height: `${pct}%`,
+                      background: i === CurSlide.bars.length - 1 ? "rgba(255,255,255,0.85)" : "rgba(255,255,255,0.28)",
+                    }}
                   />
                 ))}
               </div>
@@ -354,7 +360,8 @@ export default function MobileLogin({ onLogin, usersList }: Props) {
                 <div
                   key={i}
                   onClick={() => { if (timerRef.current) clearInterval(timerRef.current); setSlide(i); }}
-                  className={`h-1.5 rounded-full transition-all cursor-pointer ${i === slide ? "w-5 bg-white" : "w-1.5 bg-white/40"}`}
+                  className="h-1.5 rounded-full transition-all cursor-pointer"
+                  style={{ width: i === slide ? 20 : 6, background: i === slide ? "rgba(255,255,255,0.95)" : "rgba(255,255,255,0.35)" }}
                 />
               ))}
             </div>
@@ -370,20 +377,20 @@ export default function MobileLogin({ onLogin, usersList }: Props) {
             ["🔒", "RBAC Protected"],
             ["🧾", "GST Compliant"],
           ].map(([em, label]) => (
-            <div key={label} className="shrink-0 flex items-center gap-1 bg-slate-800/80 border border-slate-700 px-3 py-1.5 rounded-full">
+            <div key={label} className="shrink-0 flex items-center gap-1 px-3 py-1.5 rounded-full" style={{ background: "rgba(30,41,59,0.9)", border: "1px solid rgba(100,116,139,0.4)" }}>
               <span className="text-xs">{em}</span>
-              <span className="text-[10px] text-slate-300 font-semibold font-mono whitespace-nowrap">{label}</span>
+              <span className="text-[10px] font-semibold font-mono whitespace-nowrap" style={{ color: "#cbd5e1" }}>{label}</span>
             </div>
           ))}
         </div>
 
         {/* Tagline */}
         <div className="px-5 mt-4 space-y-1 shrink-0">
-          <h2 className="text-xl font-extrabold text-white leading-snug">
+          <h2 className="text-xl font-extrabold leading-snug" style={{ color: "#ffffff" }}>
             Run Your Entire Business<br />
-            <span className="text-sky-400">from One Platform</span>
+            <span style={{ color: "#38bdf8" }}>from One Platform</span>
           </h2>
-          <p className="text-[11px] text-slate-400 leading-relaxed">
+          <p className="text-[11px] leading-relaxed" style={{ color: "#94a3b8" }}>
             CRM · Inventory · Procurement · HR · Finance · GST — unified in one isolated, single-tenant schema.
           </p>
         </div>
@@ -400,13 +407,15 @@ export default function MobileLogin({ onLogin, usersList }: Props) {
           <div className="grid grid-cols-2 gap-3">
             <button
               onClick={() => openAuth("login")}
-              className="rounded-2xl border border-slate-700 bg-slate-800/60 py-3.5 text-sm font-bold text-slate-200 flex items-center justify-center gap-1.5 active:bg-slate-700 transition-all"
+              className="rounded-2xl py-3.5 text-sm font-bold flex items-center justify-center gap-1.5 transition-all"
+              style={{ border: "1px solid rgba(100,116,139,0.5)", background: "rgba(30,41,59,0.85)", color: "#e2e8f0" }}
             >
-              <LogIn className="h-4 w-4 text-sky-400" /> Login
+              <LogIn className="h-4 w-4" style={{ color: "#38bdf8" }} /> Login
             </button>
             <button
               onClick={() => openAuth("admin-demo")}
-              className="rounded-2xl border border-amber-500/30 bg-amber-500/5 py-3.5 text-sm font-bold text-amber-400 flex items-center justify-center gap-1.5 active:bg-amber-500/10 transition-all"
+              className="rounded-2xl py-3.5 text-sm font-bold flex items-center justify-center gap-1.5 transition-all"
+              style={{ border: "1px solid rgba(251,191,36,0.3)", background: "rgba(251,191,36,0.08)", color: "#fbbf24" }}
             >
               <Zap className="h-4 w-4" /> Try Demo
             </button>
@@ -423,10 +432,10 @@ export default function MobileLogin({ onLogin, usersList }: Props) {
   // AUTH SCREEN — 3 tabs
   // ══════════════════════════════════════════════════════════════════════════
   return (
-    <div className="flex flex-col h-screen w-screen bg-[#0a0f1e] overflow-hidden">
+    <div data-theme="dark" className="flex flex-col h-screen w-screen overflow-hidden" style={{ background: "#0a0f1e" }}>
 
       {/* Status bar */}
-      <div className="h-7 w-full bg-[#0a0f1e] flex items-center justify-between px-5 shrink-0">
+      <div className="h-7 w-full flex items-center justify-between px-5 shrink-0" style={{ background: "#0a0f1e" }}>
         <span className="text-[10px] text-slate-500 font-mono font-bold">
           {new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
         </span>
@@ -454,18 +463,20 @@ export default function MobileLogin({ onLogin, usersList }: Props) {
       <div className="h-0.5 w-full bg-gradient-to-r from-sky-500 via-blue-400 to-sky-600 shrink-0" />
 
       {/* 3-Tab switcher */}
-      <div className="shrink-0 flex gap-1 p-2.5 bg-slate-900/60 border-b border-slate-800">
+      <div className="shrink-0 flex gap-1 p-2.5 border-b border-slate-800" style={{ background: "rgba(15,23,42,0.7)" }}>
         {([
           { id: "login",      label: "Login",          icon: LogIn },
           { id: "register",   label: "Create Account", icon: UserPlus },
           { id: "admin-demo", label: "Admin / Demo",   icon: Shield },
         ] as const).map(tab => {
           const Icon = tab.icon;
+          const active = activeTab === tab.id;
           return (
             <button
               key={tab.id}
               onClick={() => { setActiveTab(tab.id); setLoginError(""); setRegError(""); setAdminError(""); }}
-              className={`flex-1 flex items-center justify-center gap-1 py-2.5 rounded-xl text-[11px] font-bold transition-all ${activeTab === tab.id ? "bg-sky-500 text-white shadow-md shadow-sky-500/20" : "text-slate-400 bg-slate-800/50"}`}
+              className="flex-1 flex items-center justify-center gap-1 py-2.5 rounded-xl text-[11px] font-bold transition-all"
+              style={active ? { background: "#0ea5e9", color: "#fff" } : { background: "rgba(30,41,59,0.7)", color: "#94a3b8" }}
             >
               <Icon className="h-3 w-3" />
               <span className="truncate">{tab.label}</span>
@@ -486,29 +497,29 @@ export default function MobileLogin({ onLogin, usersList }: Props) {
             </div>
 
             {loginError && (
-              <div className="rounded-2xl bg-red-500/10 border border-red-500/30 px-4 py-3 text-xs text-red-300 font-semibold flex items-start gap-2">
-                <X className="h-4 w-4 text-red-400 shrink-0 mt-0.5" /> {loginError}
+              <div className="rounded-2xl px-4 py-3 text-xs font-semibold flex items-start gap-2" style={{ background: "rgba(239,68,68,0.1)", border: "1px solid rgba(239,68,68,0.3)", color: "#fca5a5" }}>
+                <X className="h-4 w-4 shrink-0 mt-0.5" style={{ color: "#f87171" }} /> {loginError}
               </div>
             )}
 
             <div className="space-y-3">
               <div>
-                <label className="block text-[10px] font-bold text-sky-400/80 uppercase tracking-widest mb-2 font-mono">Email Address</label>
+                <label className="block text-[10px] font-bold uppercase tracking-widest mb-2 font-mono" style={{ color: "#38bdf8" }}>Email Address</label>
                 <input
                   type="email" required autoComplete="email"
                   value={email} onChange={e => { setEmail(e.target.value); setLoginError(""); }}
                   placeholder="your@company.com"
-                  className={inp}
+                  className={inp} style={inpStyle}
                 />
               </div>
               <div>
-                <label className="block text-[10px] font-bold text-sky-400/80 uppercase tracking-widest mb-2 font-mono">Password</label>
+                <label className="block text-[10px] font-bold uppercase tracking-widest mb-2 font-mono" style={{ color: "#38bdf8" }}>Password</label>
                 <div className="relative">
                   <input
                     type={showPass ? "text" : "password"} required autoComplete="current-password"
                     value={password} onChange={e => { setPassword(e.target.value); setLoginError(""); }}
                     placeholder="••••••••"
-                    className={inp + " pr-12"}
+                    className={inp + " pr-12"} style={inpStyle}
                   />
                   <button type="button" onClick={() => setShowPass(v => !v)}
                     className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 p-1">
@@ -538,57 +549,57 @@ export default function MobileLogin({ onLogin, usersList }: Props) {
               <p className="text-xs text-slate-400">Provision a clean, isolated company workspace</p>
             </div>
 
-            <div className="bg-sky-500/5 border border-sky-500/15 rounded-2xl p-3.5 text-[11px] text-sky-300/80 font-mono leading-relaxed">
-              Your workspace starts with <strong className="text-sky-300">zero demo data</strong>. You'll be the Company Admin — full access to all modules.
+            <div className="rounded-2xl p-3.5 text-[11px] font-mono leading-relaxed" style={{ background: "rgba(14,165,233,0.06)", border: "1px solid rgba(14,165,233,0.15)", color: "rgba(125,211,252,0.85)" }}>
+              Your workspace starts with <strong style={{ color: "#7dd3fc" }}>zero demo data</strong>. You'll be the Company Admin — full access to all modules.
             </div>
 
             {regError && (
-              <div className="rounded-2xl bg-red-500/10 border border-red-500/30 px-4 py-3 text-xs text-red-300 font-semibold flex items-start gap-2">
-                <X className="h-4 w-4 text-red-400 shrink-0 mt-0.5" /> {regError}
+              <div className="rounded-2xl px-4 py-3 text-xs font-semibold flex items-start gap-2" style={{ background: "rgba(239,68,68,0.1)", border: "1px solid rgba(239,68,68,0.3)", color: "#fca5a5" }}>
+                <X className="h-4 w-4 shrink-0 mt-0.5" style={{ color: "#f87171" }} /> {regError}
               </div>
             )}
 
             <div className="space-y-3">
               <div>
-                <label className="block text-[10px] font-bold text-sky-400/80 uppercase tracking-widest mb-2 font-mono">Company Name *</label>
+                <label className="block text-[10px] font-bold uppercase tracking-widest mb-2 font-mono" style={{ color: "#38bdf8" }}>Company Name *</label>
                 <input
                   type="text" required
                   value={regCompany} onChange={e => setRegCompany(e.target.value)}
                   placeholder="Acme Corp Pvt. Ltd."
-                  className={inp}
+                  className={inp} style={inpStyle}
                 />
               </div>
               <div>
-                <label className="block text-[10px] font-bold text-sky-400/80 uppercase tracking-widest mb-2 font-mono">Admin Email *</label>
+                <label className="block text-[10px] font-bold uppercase tracking-widest mb-2 font-mono" style={{ color: "#38bdf8" }}>Admin Email *</label>
                 <input
                   type="email" required
                   value={regEmail} onChange={e => setRegEmail(e.target.value)}
                   placeholder="admin@company.com"
-                  className={inp}
+                  className={inp} style={inpStyle}
                 />
               </div>
               <div>
-                <label className="block text-[10px] font-bold text-sky-400/80 uppercase tracking-widest mb-2 font-mono">Password * (min 6 chars)</label>
+                <label className="block text-[10px] font-bold uppercase tracking-widest mb-2 font-mono" style={{ color: "#38bdf8" }}>Password * (min 6 chars)</label>
                 <div className="relative">
                   <input
                     type={showRegPass ? "text" : "password"} required
                     value={regPassword} onChange={e => setRegPassword(e.target.value)}
                     placeholder="••••••••"
-                    className={inp + " pr-12"}
+                    className={inp + " pr-12"} style={inpStyle}
                   />
                   <button type="button" onClick={() => setShowRegPass(v => !v)}
-                    className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 p-1">
+                    className="absolute right-4 top-1/2 -translate-y-1/2 p-1" style={{ color: "#94a3b8" }}>
                     {showRegPass ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
                   </button>
                 </div>
               </div>
               <div>
-                <label className="block text-[10px] font-bold text-sky-400/80 uppercase tracking-widest mb-2 font-mono">Confirm Password *</label>
+                <label className="block text-[10px] font-bold uppercase tracking-widest mb-2 font-mono" style={{ color: "#38bdf8" }}>Confirm Password *</label>
                 <input
                   type="password" required
                   value={regConfirm} onChange={e => setRegConfirm(e.target.value)}
                   placeholder="Repeat password"
-                  className={inp}
+                  className={inp} style={inpStyle}
                 />
               </div>
             </div>
@@ -618,25 +629,25 @@ export default function MobileLogin({ onLogin, usersList }: Props) {
 
               <form onSubmit={handleAdminLogin} className="space-y-3">
                 {adminError && (
-                  <div className="rounded-2xl bg-red-500/10 border border-red-500/30 px-4 py-3 text-xs text-red-300 font-semibold flex items-start gap-2">
-                    <X className="h-4 w-4 text-red-400 shrink-0 mt-0.5" /> {adminError}
+                  <div className="rounded-2xl px-4 py-3 text-xs font-semibold flex items-start gap-2" style={{ background: "rgba(239,68,68,0.1)", border: "1px solid rgba(239,68,68,0.3)", color: "#fca5a5" }}>
+                    <X className="h-4 w-4 shrink-0 mt-0.5" style={{ color: "#f87171" }} /> {adminError}
                   </div>
                 )}
                 <input
                   type="email" required
                   value={adminEmail} onChange={e => { setAdminEmail(e.target.value); setAdminError(""); }}
                   placeholder="Admin email"
-                  className={inp}
+                  className={inp} style={inpStyle}
                 />
                 <div className="relative">
                   <input
                     type={showAdminPass ? "text" : "password"} required
                     value={adminPass} onChange={e => { setAdminPass(e.target.value); setAdminError(""); }}
                     placeholder="Admin password"
-                    className={inp + " pr-12"}
+                    className={inp + " pr-12"} style={inpStyle}
                   />
                   <button type="button" onClick={() => setShowAdminPass(v => !v)}
-                    className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 p-1">
+                    className="absolute right-4 top-1/2 -translate-y-1/2 p-1" style={{ color: "#94a3b8" }}>
                     {showAdminPass ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
                   </button>
                 </div>
@@ -654,36 +665,37 @@ export default function MobileLogin({ onLogin, usersList }: Props) {
                 <Zap className="h-4 w-4 text-amber-400" />
                 <h3 className="text-sm font-extrabold text-white uppercase tracking-wider font-mono">Quick Demo Access</h3>
               </div>
-              <div className="bg-amber-500/5 border border-amber-500/15 rounded-2xl px-4 py-3 text-[11px] text-amber-300/80 font-mono leading-relaxed">
+              <div className="rounded-2xl px-4 py-3 text-[11px] font-mono leading-relaxed" style={{ background: "rgba(251,191,36,0.06)", border: "1px solid rgba(251,191,36,0.18)", color: "rgba(253,230,138,0.85)" }}>
                 Demo accounts load shared data instantly — no credentials needed. Tap to land on the dashboard.
               </div>
 
               <div className="space-y-2.5">
                 {([
-                  { type: "admin",    label: "Demo — Company Admin",   sub: "Full company view (read-write demo)",  dot: "bg-sky-500",     arrow: "text-sky-400" },
-                  { type: "sales",    label: "Demo — Sales Manager",   sub: "CRM + Sales pipeline only",           dot: "bg-emerald-500", arrow: "text-emerald-400" },
-                  { type: "readonly", label: "Demo — Read-Only User",  sub: "All modules, no write access",        dot: "bg-slate-400",   arrow: "text-slate-400" },
+                  { type: "admin",    label: "Demo — Company Admin",   sub: "Full company view (read-write demo)",  dotColor: "#0ea5e9",  arrowColor: "#38bdf8" },
+                  { type: "sales",    label: "Demo — Sales Manager",   sub: "CRM + Sales pipeline only",           dotColor: "#10b981",  arrowColor: "#34d399" },
+                  { type: "readonly", label: "Demo — Read-Only User",  sub: "All modules, no write access",        dotColor: "#64748b",  arrowColor: "#94a3b8" },
                 ] as const).map(item => (
                   <button
                     key={item.type}
                     onClick={() => handleDemo(item.type)}
-                    className="w-full bg-slate-800/60 active:bg-slate-700 border border-slate-700 rounded-2xl px-4 py-4 flex items-center gap-3 text-left transition-all"
+                    className="w-full rounded-2xl px-4 py-4 flex items-center gap-3 text-left transition-all"
+                    style={{ background: "rgba(30,41,59,0.85)", border: "1px solid rgba(100,116,139,0.35)" }}
                   >
-                    <div className={`w-2.5 h-2.5 rounded-full ${item.dot} shrink-0`} />
+                    <div className="w-2.5 h-2.5 rounded-full shrink-0" style={{ background: item.dotColor }} />
                     <div className="flex-1 min-w-0">
-                      <div className="text-sm font-bold text-white">{item.label}</div>
-                      <div className="text-[10px] text-slate-500 font-mono mt-0.5">{item.sub}</div>
+                      <div className="text-sm font-bold" style={{ color: "#f1f5f9" }}>{item.label}</div>
+                      <div className="text-[10px] font-mono mt-0.5" style={{ color: "#64748b" }}>{item.sub}</div>
                     </div>
-                    <ArrowRight className={`h-4 w-4 ${item.arrow} shrink-0`} />
+                    <ArrowRight className="h-4 w-4 shrink-0" style={{ color: item.arrowColor }} />
                   </button>
                 ))}
               </div>
             </div>
 
             {/* Trust note */}
-            <div className="flex items-start gap-2 p-3.5 bg-slate-900/50 border border-slate-800 rounded-2xl">
-              <Check className="h-4 w-4 text-emerald-400 shrink-0 mt-0.5" />
-              <p className="text-[10px] text-slate-400 leading-relaxed font-mono">
+            <div className="flex items-start gap-2 p-3.5 rounded-2xl" style={{ background: "rgba(15,23,42,0.6)", border: "1px solid rgba(30,41,59,0.8)" }}>
+              <Check className="h-4 w-4 shrink-0 mt-0.5" style={{ color: "#34d399" }} />
+              <p className="text-[10px] leading-relaxed font-mono" style={{ color: "#64748b" }}>
                 Demo data is read-only shared. Your real account workspace starts completely clean — zero demo contamination.
               </p>
             </div>
