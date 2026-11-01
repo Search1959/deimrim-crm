@@ -18,53 +18,95 @@ interface Props {
 // ── Feature slides for the landing hero ──────────────────────────────────────
 const SLIDES = [
   {
-    emoji: "📊",
     title: "Live Dashboard",
-    sub: "Real-time KPIs, revenue charts & stock alerts — all in one view",
-    color: "from-sky-600 to-blue-700",
+    sub: "Real-time KPIs, revenue charts & stock alerts",
+    color: "from-sky-700 to-blue-900",
+    accent: "#38bdf8",
     icon: LayoutDashboard,
+    metrics: [
+      { label: "Revenue", value: "₹14.2L", up: true },
+      { label: "Orders", value: "342", up: true },
+      { label: "Stock", value: "1,204", up: false },
+    ],
+    bars: [40, 65, 50, 80, 60, 90, 75],
   },
   {
-    emoji: "📈",
     title: "CRM & Sales",
-    sub: "Lead pipeline, proposals, invoicing & customer revenue ledger",
-    color: "from-emerald-600 to-teal-700",
+    sub: "Lead pipeline, proposals & invoicing",
+    color: "from-emerald-700 to-teal-900",
+    accent: "#34d399",
     icon: TrendingUp,
+    metrics: [
+      { label: "Leads", value: "128", up: true },
+      { label: "Closed", value: "47", up: true },
+      { label: "Value", value: "₹8.6L", up: true },
+    ],
+    bars: [30, 55, 45, 70, 85, 60, 90],
   },
   {
-    emoji: "📦",
     title: "Inventory Control",
-    sub: "Multi-warehouse, batch tracking, FIFO depletion & rack codes",
-    color: "from-violet-600 to-indigo-700",
+    sub: "Multi-warehouse, batch & FIFO tracking",
+    color: "from-violet-700 to-indigo-900",
+    accent: "#a78bfa",
     icon: Package,
+    metrics: [
+      { label: "SKUs", value: "2,340", up: false },
+      { label: "Low Stock", value: "18", up: false },
+      { label: "Turnover", value: "4.2×", up: true },
+    ],
+    bars: [70, 55, 80, 45, 65, 75, 50],
   },
   {
-    emoji: "🛒",
     title: "Procurement",
-    sub: "Purchase orders, GRN receipts & vendor management",
-    color: "from-orange-600 to-amber-700",
+    sub: "Purchase orders, GRN & vendor mgmt",
+    color: "from-orange-700 to-amber-900",
+    accent: "#fb923c",
     icon: ShoppingBag,
+    metrics: [
+      { label: "POs Open", value: "23", up: false },
+      { label: "GRN Today", value: "7", up: true },
+      { label: "Payable", value: "₹3.1L", up: false },
+    ],
+    bars: [50, 40, 60, 75, 55, 65, 80],
   },
   {
-    emoji: "👥",
     title: "HR & Attendance",
-    sub: "Staff rosters, biometric clock-in & leave approvals",
-    color: "from-amber-600 to-orange-700",
+    sub: "Staff rosters, clock-in & leave approvals",
+    color: "from-amber-700 to-orange-900",
+    accent: "#fbbf24",
     icon: Users,
+    metrics: [
+      { label: "Present", value: "38/42", up: true },
+      { label: "On Leave", value: "4", up: false },
+      { label: "OT Hours", value: "12h", up: false },
+    ],
+    bars: [85, 90, 80, 88, 75, 92, 85],
   },
   {
-    emoji: "💰",
     title: "Finance & P&L",
-    sub: "Double-entry ledger, live P&L, AP/AR & automated COGS posting",
-    color: "from-rose-600 to-pink-700",
+    sub: "Double-entry ledger, P&L & COGS posting",
+    color: "from-rose-700 to-pink-900",
+    accent: "#fb7185",
     icon: DollarSign,
+    metrics: [
+      { label: "Revenue", value: "₹41.8L", up: true },
+      { label: "Expenses", value: "₹28.2L", up: false },
+      { label: "Net P&L", value: "₹13.6L", up: true },
+    ],
+    bars: [60, 70, 55, 80, 65, 85, 75],
   },
   {
-    emoji: "🧾",
     title: "GST Compliance",
-    sub: "GSTR-1 / GSTR-3B filing, ITC matching & tax reconciliation",
-    color: "from-teal-600 to-cyan-700",
+    sub: "GSTR-1/3B filing & ITC matching",
+    color: "from-teal-700 to-cyan-900",
+    accent: "#2dd4bf",
     icon: FileSpreadsheet,
+    metrics: [
+      { label: "ITC Avail", value: "₹2.4L", up: true },
+      { label: "GSTR-1", value: "Filed", up: true },
+      { label: "Tax Due", value: "₹1.1L", up: false },
+    ],
+    bars: [55, 65, 75, 60, 80, 70, 85],
   },
 ];
 
@@ -219,7 +261,8 @@ export default function MobileLogin({ onLogin, usersList }: Props) {
   const inp = "w-full rounded-2xl border border-slate-700 bg-slate-800/80 px-4 py-4 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20 transition-all";
   const primaryBtn = "w-full rounded-2xl bg-sky-500 hover:bg-sky-400 active:bg-sky-600 py-4 text-sm font-extrabold text-white flex items-center justify-center gap-2 transition-all shadow-lg shadow-sky-500/25 disabled:opacity-50";
 
-  const CurIcon = SLIDES[slide].icon;
+  const CurSlide = SLIDES[slide];
+  const CurIcon = CurSlide.icon;
 
   // ══════════════════════════════════════════════════════════════════════════
   // LANDING SCREEN
@@ -241,46 +284,72 @@ export default function MobileLogin({ onLogin, usersList }: Props) {
           </div>
         </div>
 
-        {/* HERO — gradient card with app icon + feature slide */}
-        <div className="shrink-0 mx-4 mt-2 rounded-3xl overflow-hidden relative" style={{ height: 260 }}>
+        {/* HERO — gradient card with mini-dashboard slide */}
+        <div className="shrink-0 mx-4 mt-2 rounded-3xl overflow-hidden relative" style={{ height: 280 }}>
           {/* animated gradient bg */}
-          <div className={`absolute inset-0 bg-gradient-to-br ${SLIDES[slide].color} transition-all duration-700`} />
-          {/* pattern overlay */}
+          <div className={`absolute inset-0 bg-gradient-to-br ${CurSlide.color} transition-all duration-700`} />
+          {/* subtle dot grid */}
           <div className="absolute inset-0 opacity-10" style={{
-            backgroundImage: "radial-gradient(circle at 20% 80%, white 1px, transparent 1px), radial-gradient(circle at 80% 20%, white 1px, transparent 1px)",
-            backgroundSize: "30px 30px",
+            backgroundImage: "radial-gradient(circle, white 1px, transparent 1px)",
+            backgroundSize: "24px 24px",
           }} />
 
           {/* Content */}
-          <div className="relative z-10 h-full flex flex-col justify-between p-6">
-            {/* Top: logo */}
-            <div className="flex items-center gap-3">
-              <div className="h-10 w-10 rounded-2xl bg-white/20 backdrop-blur flex items-center justify-center border border-white/30">
-                <Building2 className="h-5 w-5 text-white" />
+          <div className="relative z-10 h-full flex flex-col p-4 gap-3">
+
+            {/* Top bar: logo + module name */}
+            <div className="flex items-center gap-2.5">
+              <div className="h-8 w-8 rounded-xl bg-white/20 backdrop-blur flex items-center justify-center border border-white/30 shrink-0">
+                <Building2 className="h-4 w-4 text-white" />
               </div>
-              <div>
-                <div className="text-white font-extrabold text-sm tracking-wider uppercase font-mono leading-none">DEINRIM OMS</div>
-                <div className="text-white/60 text-[10px] font-mono">Enterprise v2.0</div>
+              <div className="flex-1 min-w-0">
+                <div className="text-white font-extrabold text-[11px] tracking-wider uppercase font-mono leading-none">DEINRIM OMS</div>
+                <div className="text-white/60 text-[9px] font-mono">Enterprise v2.0</div>
               </div>
-              <div className="ml-auto bg-white/20 px-2 py-0.5 rounded-full">
+              <div className="bg-white/20 px-2 py-0.5 rounded-full shrink-0">
                 <span className="text-[9px] text-white font-bold font-mono uppercase">LIVE</span>
               </div>
             </div>
 
-            {/* Middle: feature slide */}
-            <div
-              className="flex flex-col items-center text-center"
-              style={{ opacity: slideAnim ? 1 : 0, transition: "opacity 0.2s ease" }}
-            >
-              <div className="h-14 w-14 rounded-2xl bg-white/20 backdrop-blur border border-white/20 flex items-center justify-center mb-3">
-                <CurIcon className="h-7 w-7 text-white" />
+            {/* Module slide content */}
+            <div style={{ opacity: slideAnim ? 1 : 0, transition: "opacity 0.2s ease", flex: 1 }} className="flex flex-col gap-2">
+
+              {/* Module label */}
+              <div className="flex items-center gap-2">
+                <div className="h-7 w-7 rounded-lg bg-white/20 border border-white/20 flex items-center justify-center shrink-0">
+                  <CurIcon className="h-4 w-4 text-white" />
+                </div>
+                <div>
+                  <div className="text-white font-extrabold text-sm leading-tight">{CurSlide.title}</div>
+                  <div className="text-white/60 text-[9px] leading-snug">{CurSlide.sub}</div>
+                </div>
               </div>
-              <div className="text-white font-extrabold text-lg leading-tight">{SLIDES[slide].title}</div>
-              <div className="text-white/70 text-[11px] mt-0.5 max-w-[200px] leading-relaxed">{SLIDES[slide].sub}</div>
+
+              {/* Mini metric cards */}
+              <div className="grid grid-cols-3 gap-1.5">
+                {CurSlide.metrics.map((m) => (
+                  <div key={m.label} className="rounded-xl p-2" style={{ background: "rgba(0,0,0,0.25)", border: "1px solid rgba(255,255,255,0.12)" }}>
+                    <div className="text-[8px] text-white/50 font-mono uppercase tracking-wide leading-none mb-1">{m.label}</div>
+                    <div className="text-white font-extrabold text-[13px] leading-none">{m.value}</div>
+                    <div className={`text-[8px] font-bold mt-0.5 ${m.up ? "text-emerald-300" : "text-red-300"}`}>{m.up ? "▲" : "▼"}</div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Mini bar chart */}
+              <div className="flex items-end gap-1 h-8 px-0.5">
+                {CurSlide.bars.map((h, i) => (
+                  <div
+                    key={i}
+                    className="flex-1 rounded-sm transition-all duration-500"
+                    style={{ height: `${h}%`, background: i === CurSlide.bars.length - 1 ? "rgba(255,255,255,0.8)" : "rgba(255,255,255,0.3)" }}
+                  />
+                ))}
+              </div>
             </div>
 
             {/* Bottom: dots */}
-            <div className="flex items-center justify-center gap-1.5">
+            <div className="flex items-center justify-center gap-1.5 shrink-0">
               {SLIDES.map((_, i) => (
                 <div
                   key={i}
@@ -309,13 +378,13 @@ export default function MobileLogin({ onLogin, usersList }: Props) {
         </div>
 
         {/* Tagline */}
-        <div className="px-5 mt-5 space-y-1 shrink-0">
+        <div className="px-5 mt-4 space-y-1 shrink-0">
           <h2 className="text-xl font-extrabold text-white leading-snug">
-            One Platform to Run<br />
-            <span className="text-sky-400">Your Entire Organization</span>
+            Run Your Entire Business<br />
+            <span className="text-sky-400">from One Platform</span>
           </h2>
-          <p className="text-[12px] text-slate-400 leading-relaxed">
-            CRM · Inventory · HR · Finance · GST — all linked in one secure, multi-tenant workspace.
+          <p className="text-[11px] text-slate-400 leading-relaxed">
+            CRM · Inventory · Procurement · HR · Finance · GST — unified in one isolated, single-tenant schema.
           </p>
         </div>
 
