@@ -23,6 +23,7 @@ import {
   Upload
 } from "lucide-react";
 import { Transaction, Asset, UserRole, formatINR, Invoice, PurchaseOrder, Customer, Supplier, VendorInvoice, Payment } from "../types";
+import ExpensePanel from "./finance/ExpensePanel";
 
 interface FinanceViewProps {
   transactions: Transaction[];
@@ -376,7 +377,7 @@ export default function FinanceView({
   vendorBills = [],
   salesPayments = [],
 }: FinanceViewProps) {
-  const [activeSubTab, setActiveSubTab] = useState<"ledger" | "pl" | "assets" | "tally" | "clientledger">("ledger");
+  const [activeSubTab, setActiveSubTab] = useState<"ledger" | "pl" | "assets" | "tally" | "clientledger" | "expenses">("ledger");
   const [clientLedgerSearch, setClientLedgerSearch] = useState("");
   const [expandedClient, setExpandedClient] = useState<string | null>(null);
   const [showAddTx, setShowAddTx] = useState(false);
@@ -807,6 +808,14 @@ Office Ergonomic Chairs,AST-CH-99,Furniture,1200,1050,12`;
           }`}
         >
           📒 Client Ledger
+        </button>
+        <button
+          onClick={() => setActiveSubTab("expenses")}
+          className={`px-4 py-1.5 text-xs font-semibold rounded-lg transition-colors flex items-center gap-1.5 ${
+            activeSubTab === "expenses" ? "bg-rose-600 text-white shadow-sm" : "text-slate-500 hover:text-rose-600 hover:bg-rose-50"
+          }`}
+        >
+          💸 Expenditure
         </button>
       </div>
 
@@ -1860,6 +1869,11 @@ Office Ergonomic Chairs,AST-CH-99,Furniture,1200,1050,12`;
             </div>
           </div>
         </div>
+      )}
+
+      {/* SUB-TAB: EXPENDITURE */}
+      {activeSubTab === "expenses" && (
+        <ExpensePanel companyId={branchId} userRole={String(userRole)} />
       )}
 
       {/* IMPORT ASSETS MODAL */}
