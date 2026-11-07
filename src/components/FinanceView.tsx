@@ -24,6 +24,7 @@ import {
 } from "lucide-react";
 import { Transaction, Asset, UserRole, formatINR, Invoice, PurchaseOrder, Customer, Supplier, VendorInvoice, Payment } from "../types";
 import ExpensePanel from "./finance/ExpensePanel";
+import LedgerPanel from "./finance/LedgerPanel";
 
 interface FinanceViewProps {
   transactions: Transaction[];
@@ -377,7 +378,7 @@ export default function FinanceView({
   vendorBills = [],
   salesPayments = [],
 }: FinanceViewProps) {
-  const [activeSubTab, setActiveSubTab] = useState<"ledger" | "pl" | "assets" | "tally" | "clientledger" | "expenses">("ledger");
+  const [activeSubTab, setActiveSubTab] = useState<"ledger" | "pl" | "assets" | "tally" | "clientledger" | "expenses" | "fullledger">("ledger");
   const [clientLedgerSearch, setClientLedgerSearch] = useState("");
   const [expandedClient, setExpandedClient] = useState<string | null>(null);
   const [showAddTx, setShowAddTx] = useState(false);
@@ -816,6 +817,14 @@ Office Ergonomic Chairs,AST-CH-99,Furniture,1200,1050,12`;
           }`}
         >
           💸 Expenditure
+        </button>
+        <button
+          onClick={() => setActiveSubTab("fullledger")}
+          className={`px-4 py-1.5 text-xs font-semibold rounded-lg transition-colors flex items-center gap-1.5 ${
+            activeSubTab === "fullledger" ? "bg-violet-600 text-white shadow-sm" : "text-slate-500 hover:text-violet-700 hover:bg-violet-50"
+          }`}
+        >
+          📊 Ledger
         </button>
       </div>
 
@@ -1874,6 +1883,17 @@ Office Ergonomic Chairs,AST-CH-99,Furniture,1200,1050,12`;
       {/* SUB-TAB: EXPENDITURE */}
       {activeSubTab === "expenses" && (
         <ExpensePanel companyId={branchId} userRole={String(userRole)} />
+      )}
+
+      {activeSubTab === "fullledger" && (
+        <LedgerPanel
+          companyId={branchId}
+          suppliers={suppliers}
+          vendorBills={vendorBills}
+          invoices={invoices}
+          salesPayments={salesPayments}
+          customers={customers}
+        />
       )}
 
       {/* IMPORT ASSETS MODAL */}
