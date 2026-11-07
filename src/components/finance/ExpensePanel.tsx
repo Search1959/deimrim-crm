@@ -463,6 +463,7 @@ export default function ExpensePanel({ companyId, userRole = "admin" }: ExpenseP
                   placeholder="0.00"
                   value={form.amount}
                   onChange={e => setForm(f => ({ ...f, amount: e.target.value }))}
+                  onKeyDown={e => { if (["-", "e", "E", "+"].includes(e.key)) e.preventDefault(); }}
                   className="w-full rounded-lg px-3 py-2 font-mono focus:outline-none focus:border-indigo-500"
                   style={inpStyle} />
               </div>

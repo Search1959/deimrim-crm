@@ -987,6 +987,7 @@ Office Ergonomic Chairs,AST-CH-99,Furniture,1200,1050,12`;
                     required
                     value={txToEdit.amount}
                     onChange={(e) => setTxToEdit({ ...txToEdit, amount: Number(e.target.value) })}
+                    onKeyDown={(e) => { if (["-", "e", "E", "+"].includes(e.key)) e.preventDefault(); }}
                     className="w-full rounded-lg border border-slate-200 bg-white p-2 text-sm text-slate-800 focus:outline-hidden font-mono"
                   />
                 </div>
