@@ -22,7 +22,7 @@ import {
   Download,
   Upload
 } from "lucide-react";
-import { Transaction, Asset, UserRole, formatINR, Invoice, PurchaseOrder, Customer, Supplier, VendorInvoice, Payment } from "../types";
+import { Transaction, Asset, UserRole, formatINR, Invoice, PurchaseOrder, Customer, Supplier, VendorInvoice, Payment, Employee } from "../types";
 import ExpensePanel from "./finance/ExpensePanel";
 import LedgerPanel from "./finance/LedgerPanel";
 
@@ -39,6 +39,7 @@ interface FinanceViewProps {
   suppliers?: Supplier[];
   vendorBills?: VendorInvoice[];
   salesPayments?: Payment[];
+  employees?: Employee[];
 }
 
 // ── Tally XML generator ────────────────────────────────────────────────────
@@ -377,6 +378,7 @@ export default function FinanceView({
   suppliers = [],
   vendorBills = [],
   salesPayments = [],
+  employees = [],
 }: FinanceViewProps) {
   const [activeSubTab, setActiveSubTab] = useState<"ledger" | "pl" | "assets" | "tally" | "clientledger" | "expenses" | "fullledger">("ledger");
   const [clientLedgerSearch, setClientLedgerSearch] = useState("");
@@ -1893,6 +1895,7 @@ Office Ergonomic Chairs,AST-CH-99,Furniture,1200,1050,12`;
           invoices={invoices}
           salesPayments={salesPayments}
           customers={customers}
+          employees={employees}
         />
       )}
 

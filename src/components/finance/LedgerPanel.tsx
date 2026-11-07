@@ -4,31 +4,18 @@
  */
 
 import React, { useState, useEffect } from "react";
-import { Supplier, VendorInvoice, Invoice, Payment, Customer, formatINR } from "../../types";
+import { Supplier, VendorInvoice, Invoice, Payment, Customer, Employee, formatINR } from "../../types";
 
-// ── Types for Staff Ledger (read from HR localStorage) ──────────────────────
-interface PayrollRecord {
-  id: string;
-  employeeId: string;
-  employeeName: string;
-  month: string; // "YYYY-MM"
-  basicSalary: number;
-  grossPay: number;
-  totalDeductions: number;
-  netPay: number;
-  status: "draft" | "approved" | "paid";
-  paidDate?: string;
-}
+// ── HR Payroll localStorage structure (matches HRPayrollPanel.tsx) ───────────
+// deinrim_payroll_status_${companyId}  → Record<employeeId, "paid"|"unpaid">
+// deinrim_payroll_adj_${companyId}     → Record<employeeId, { hra, allowance, bonus, customDeduction }>
+// deinrim_payroll_taxcfg_${companyId}  → TaxConfig
 
-interface PayrollAdj {
-  id: string;
-  employeeId: string;
-  employeeName: string;
-  type: "advance" | "deduction" | "bonus" | "reimbursement";
-  amount: number;
-  month: string;
-  reason: string;
-  date: string;
+interface SalaryAdj {
+  hra: number;
+  allowance: number;
+  bonus: number;
+  customDeduction: number;
 }
 
 // ── Style tokens ─────────────────────────────────────────────────────────────
@@ -58,6 +45,7 @@ interface LedgerPanelProps {
   invoices?: Invoice[];
   salesPayments?: Payment[];
   customers?: Customer[];
+  employees?: Employee[];
 }
 
 // ════════════════════════════════════════════════════════════════════
@@ -239,6 +227,7 @@ function VendorLedger({ suppliers = [], vendorBills = [] }: { suppliers: Supplie
 function ClientLedger({ customers = [], invoices = [], salesPayments = [] }: { customers: Customer[]; invoices: Invoice[]; salesPayments: Payment[] }) {
   const [search, setSearch] = useState("");
   const [expanded, setExpanded] = useState<string | null>(null);
+  const [showZero, setShowZero] = useState(false);
 
   const clientData = customers
     .filter(c => {
@@ -268,6 +257,7 @@ function ClientLedger({ customers = [], invoices = [], salesPayments = [] }: { c
 
       return { customer: c, cInvoices, totalBilled, totalPaid, outstanding, aging };
     })
+    .filter(d => showZero || d.outstanding > 0 || d.totalBilled > 0)
     .sort((a, b) => b.outstanding - a.outstanding);
 
   const totalOutstanding = clientData.reduce((s, d) => s + d.outstanding, 0);
@@ -306,10 +296,17 @@ function ClientLedger({ customers = [], invoices = [], salesPayments = [] }: { c
           placeholder="Search client by name, phone, email…"
           style={{ ...inpStyle, border: "none", background: "transparent", padding: 0, flex: 1 }}
         />
+        <button
+          onClick={() => setShowZero(v => !v)}
+          className="text-[11px] font-semibold px-2 py-1 rounded-lg transition-colors shrink-0"
+          style={{ background: showZero ? "rgba(100,116,139,0.3)" : "rgba(16,185,129,0.1)", color: showZero ? "#94a3b8" : "#34d399", border: "1px solid rgba(100,116,139,0.2)" }}
+        >
+          {showZero ? "All clients" : "With balance only"}
+        </button>
       </div>
 
       <div className="space-y-3">
-        {clientData.length === 0 && <div className="text-center py-12 text-slate-500 text-sm">No clients found.</div>}
+        {clientData.length === 0 && <div className="text-center py-12 text-slate-500 text-sm">No clients with outstanding balance.</div>}
         {clientData.map(({ customer: c, cInvoices, totalBilled, totalPaid, outstanding, aging }) => {
           const isExp = expanded === c.id;
           const hasOverdue = aging.d30 + aging.d60 + aging.d90 > 0;
@@ -419,66 +416,52 @@ function ClientLedger({ customers = [], invoices = [], salesPayments = [] }: { c
 }
 
 // ════════════════════════════════════════════════════════════════════
-// STAFF LEDGER
+// STAFF LEDGER  — reads from HR Payroll localStorage
+// deinrim_payroll_status_${companyId} → Record<empId, "paid"|"unpaid">
+// deinrim_payroll_adj_${companyId}    → Record<empId, SalaryAdj>
 // ════════════════════════════════════════════════════════════════════
-function StaffLedger({ companyId }: { companyId: string }) {
+function StaffLedger({ companyId, employees }: { companyId: string; employees: Employee[] }) {
   const [search, setSearch] = useState("");
   const [expanded, setExpanded] = useState<string | null>(null);
-  const [payrollRecords, setPayrollRecords] = useState<PayrollRecord[]>([]);
-  const [adjustments, setAdjustments] = useState<PayrollAdj[]>([]);
+  const [payrollStatus, setPayrollStatus] = useState<Record<string, "paid" | "unpaid">>({});
+  const [adjustments, setAdjustments] = useState<Record<string, SalaryAdj>>({});
 
   useEffect(() => {
     try {
-      const pr = JSON.parse(localStorage.getItem(`deinrim_payroll_status_${companyId}`) || "[]");
-      setPayrollRecords(pr);
-    } catch { setPayrollRecords([]); }
+      const s = localStorage.getItem(`deinrim_payroll_status_${companyId}`);
+      if (s) setPayrollStatus(JSON.parse(s));
+    } catch {}
     try {
-      const adj = JSON.parse(localStorage.getItem(`deinrim_payroll_adj_${companyId}`) || "[]");
-      setAdjustments(adj);
-    } catch { setAdjustments([]); }
+      const a = localStorage.getItem(`deinrim_payroll_adj_${companyId}`);
+      if (a) setAdjustments(JSON.parse(a));
+    } catch {}
   }, [companyId]);
 
-  // Group by employee
-  const empMap = new Map<string, { name: string; records: PayrollRecord[]; adjustments: PayrollAdj[] }>();
-  payrollRecords.forEach(r => {
-    if (!empMap.has(r.employeeId)) empMap.set(r.employeeId, { name: r.employeeName, records: [], adjustments: [] });
-    empMap.get(r.employeeId)!.records.push(r);
-  });
-  adjustments.forEach(a => {
-    if (!empMap.has(a.employeeId)) empMap.set(a.employeeId, { name: a.employeeName, records: [], adjustments: [] });
-    empMap.get(a.employeeId)!.adjustments.push(a);
-  });
+  const staffData = employees
+    .filter(e => !search || e.name.toLowerCase().includes(search.toLowerCase()))
+    .map(e => {
+      const adj = adjustments[e.id] ?? { hra: 0, allowance: 0, bonus: 0, customDeduction: 0 };
+      const gross = e.salary + (adj.hra ?? 0) + (adj.allowance ?? 0) + (adj.bonus ?? 0);
+      // Simple deduction estimate (EPF 12% + PT ₹200 + customDeduction)
+      const epf = e.salary * 0.12;
+      const pt = e.salary >= 15000 ? 200 : 0;
+      const totalDed = epf + pt + (adj.customDeduction ?? 0);
+      const netPay = gross - totalDed;
+      const isPaid = payrollStatus[e.id] === "paid";
+      return { emp: e, adj, gross, totalDed, netPay, isPaid };
+    });
 
-  const staffData = Array.from(empMap.entries())
-    .map(([empId, data]) => {
-      const totalGross = data.records.reduce((s, r) => s + (r.grossPay ?? 0), 0);
-      const totalNet = data.records.reduce((s, r) => s + (r.netPay ?? 0), 0);
-      const totalPaid = data.records.filter(r => r.status === "paid").reduce((s, r) => s + (r.netPay ?? 0), 0);
-      const pending = data.records.filter(r => r.status !== "paid").reduce((s, r) => s + (r.netPay ?? 0), 0);
-      const totalAdv = data.adjustments.filter(a => a.type === "advance").reduce((s, a) => s + (a.amount ?? 0), 0);
-      const totalBonus = data.adjustments.filter(a => a.type === "bonus").reduce((s, a) => s + (a.amount ?? 0), 0);
-      return { empId, name: data.name, records: data.records, adjustments: data.adjustments, totalGross, totalNet, totalPaid, pending, totalAdv, totalBonus };
-    })
-    .filter(d => !search || d.name.toLowerCase().includes(search.toLowerCase()))
-    .sort((a, b) => b.pending - a.pending);
-
-  const totalPayable = staffData.reduce((s, d) => s + d.pending, 0);
-  const totalPaidAll = staffData.reduce((s, d) => s + d.totalPaid, 0);
-
-  const adjTypeColor: Record<string, string> = {
-    advance: "text-orange-400",
-    deduction: "text-red-400",
-    bonus: "text-emerald-400",
-    reimbursement: "text-sky-400",
-  };
+  const totalSalary = staffData.reduce((s, d) => s + d.emp.salary, 0);
+  const totalPaid = staffData.filter(d => d.isPaid).reduce((s, d) => s + d.netPay, 0);
+  const totalPending = staffData.filter(d => !d.isPaid && d.emp.status === "active").reduce((s, d) => s + d.netPay, 0);
 
   return (
     <div className="space-y-4">
       <div className="grid grid-cols-3 gap-3">
         {[
-          { label: "Staff on Payroll", value: staffData.length, color: "text-slate-300" },
-          { label: "Total Paid (YTD)", value: formatINR(totalPaidAll), color: "text-emerald-400" },
-          { label: "Pending Payout", value: formatINR(totalPayable), color: totalPayable > 0 ? "text-amber-400" : "text-slate-400" },
+          { label: "Total Employees", value: staffData.length, color: "text-slate-300" },
+          { label: "Total Salary Bill", value: formatINR(totalSalary), color: "text-slate-300" },
+          { label: "Pending Payout", value: formatINR(totalPending), color: totalPending > 0 ? "text-amber-400" : "text-slate-400" },
         ].map(k => (
           <div key={k.label} style={cardStyle}>
             <div className="text-[10px] font-bold text-slate-500 uppercase tracking-widest font-mono">{k.label}</div>
@@ -499,56 +482,64 @@ function StaffLedger({ companyId }: { companyId: string }) {
       </div>
 
       {staffData.length === 0 && (
-        <div className="text-center py-12 text-slate-500 text-sm">No payroll data found. Process payroll in HR → Payroll first.</div>
+        <div className="text-center py-12 text-slate-500 text-sm">No employees found. Add employees in HR → Employees first.</div>
       )}
 
       <div className="space-y-3">
-        {staffData.map(({ empId, name, records, adjustments: adjs, totalGross, totalPaid, pending, totalAdv, totalBonus }) => {
-          const isExp = expanded === empId;
+        {staffData.map(({ emp, adj, gross, totalDed, netPay, isPaid }) => {
+          const isExp = expanded === emp.id;
 
           return (
             <div
-              key={empId}
+              key={emp.id}
               style={{
                 borderRadius: "12px",
                 overflow: "hidden",
-                border: `1px solid ${pending > 0 ? "rgba(245,158,11,0.2)" : "rgba(100,116,139,0.2)"}`,
+                border: `1px solid ${!isPaid && emp.status === "active" ? "rgba(245,158,11,0.2)" : "rgba(100,116,139,0.2)"}`,
                 background: "rgba(255,255,255,0.03)",
               }}
             >
-              <div className="flex items-center gap-3 p-4 cursor-pointer" onClick={() => setExpanded(isExp ? null : empId)}>
+              <div className="flex items-center gap-3 p-4 cursor-pointer" onClick={() => setExpanded(isExp ? null : emp.id)}>
                 <div className="h-10 w-10 rounded-full flex items-center justify-center text-sm font-bold shrink-0"
                   style={{ background: "rgba(99,102,241,0.15)", color: "#a5b4fc" }}>
-                  {name.slice(0, 2).toUpperCase()}
+                  {emp.name.slice(0, 2).toUpperCase()}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <div className="font-semibold text-slate-200 text-sm truncate">{name}</div>
-                  <div className="text-[11px] text-slate-500 font-mono">{records.length} payroll months · {adjs.length} adjustments</div>
+                  <div className="font-semibold text-slate-200 text-sm truncate">{emp.name}</div>
+                  <div className="text-[11px] text-slate-500 font-mono">{emp.employeeCode} · {emp.email || "—"}</div>
                 </div>
-                <div className="hidden sm:flex gap-4 shrink-0">
+                <div className="hidden sm:flex gap-4 items-center shrink-0">
                   <div className="flex flex-col items-end">
-                    <span className="text-[10px] text-slate-500 font-mono">Total Paid</span>
-                    <span className="text-sm font-bold font-mono text-emerald-400">{formatINR(totalPaid)}</span>
+                    <span className="text-[10px] text-slate-500 font-mono">Basic</span>
+                    <span className="text-sm font-bold font-mono text-slate-300">{formatINR(emp.salary)}</span>
                   </div>
-                  {pending > 0 && (
-                    <div className="flex flex-col items-end">
-                      <span className="text-[10px] text-slate-500 font-mono">Pending</span>
-                      <span className="text-sm font-bold font-mono text-amber-400">{formatINR(pending)}</span>
-                    </div>
-                  )}
+                  <div className="flex flex-col items-end">
+                    <span className="text-[10px] text-slate-500 font-mono">Net Pay</span>
+                    <span className="text-sm font-bold font-mono text-slate-200">{formatINR(netPay)}</span>
+                  </div>
+                  <span
+                    className="text-[11px] font-bold px-2 py-0.5 rounded-full"
+                    style={isPaid
+                      ? { background: "rgba(16,185,129,0.15)", color: "#34d399" }
+                      : emp.status === "active"
+                        ? { background: "rgba(245,158,11,0.15)", color: "#fbbf24" }
+                        : { background: "rgba(100,116,139,0.15)", color: "#94a3b8" }
+                    }
+                  >
+                    {isPaid ? "Paid" : emp.status === "active" ? "Pending" : emp.status}
+                  </span>
                 </div>
-                <span className="text-slate-500 text-xs">{isExp ? "▲" : "▼"}</span>
+                <span className="text-slate-500 text-xs ml-2">{isExp ? "▲" : "▼"}</span>
               </div>
 
               {isExp && (
                 <div style={{ borderTop: "1px solid rgba(100,116,139,0.2)" }}>
-                  {/* Summary strip */}
-                  <div className="grid grid-cols-4 gap-3 p-4">
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 p-4">
                     {[
-                      { label: "Gross Earned", val: formatINR(totalGross), color: "text-slate-300" },
-                      { label: "Net Payable", val: formatINR(records.reduce((s, r) => s + (r.netPay ?? 0), 0)), color: "text-slate-300" },
-                      { label: "Total Paid", val: formatINR(totalPaid), color: "text-emerald-400" },
-                      { label: "Advances", val: formatINR(totalAdv), color: "text-orange-400" },
+                      { label: "Basic Salary", val: formatINR(emp.salary), color: "text-slate-300" },
+                      { label: "Gross Pay", val: formatINR(gross), color: "text-slate-200" },
+                      { label: "Deductions", val: formatINR(totalDed), color: "text-red-400" },
+                      { label: "Net Pay", val: formatINR(netPay), color: "text-emerald-400" },
                     ].map(item => (
                       <div key={item.label} style={{ background: "rgba(15,23,42,0.5)", borderRadius: 8, padding: "8px 12px" }}>
                         <div className="text-[10px] text-slate-500 font-mono uppercase">{item.label}</div>
@@ -557,64 +548,35 @@ function StaffLedger({ companyId }: { companyId: string }) {
                     ))}
                   </div>
 
-                  {/* Payroll history */}
-                  <div className="px-4 pb-2">
-                    <div className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2">Payroll History</div>
-                    <div className="overflow-x-auto">
-                      <table className="w-full text-xs" style={{ borderCollapse: "collapse" }}>
-                        <thead>
-                          <tr style={{ background: "rgba(15,23,42,0.6)" }}>
-                            {["Month", "Gross", "Deductions", "Net Pay", "Status", "Paid On"].map(h => (
-                              <th key={h} className="px-3 py-2 text-left font-bold text-slate-400">{h}</th>
-                            ))}
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {records.length === 0 && <tr><td colSpan={6} className="text-center py-3 text-slate-500">No records.</td></tr>}
-                          {records.sort((a, b) => b.month.localeCompare(a.month)).map(r => {
-                            const sc = r.status === "paid" ? "text-emerald-400" : r.status === "approved" ? "text-sky-400" : "text-slate-400";
-                            return (
-                              <tr key={r.id} style={{ borderBottom: "1px solid rgba(100,116,139,0.1)" }}>
-                                <td className="px-3 py-2 font-mono text-slate-300">{r.month}</td>
-                                <td className="px-3 py-2 font-mono text-slate-300">{formatINR(r.grossPay)}</td>
-                                <td className="px-3 py-2 font-mono text-red-400">{formatINR(r.totalDeductions)}</td>
-                                <td className="px-3 py-2 font-mono font-bold text-slate-200">{formatINR(r.netPay)}</td>
-                                <td className={`px-3 py-2 font-semibold capitalize ${sc}`}>{r.status}</td>
-                                <td className="px-3 py-2 text-slate-500">{r.paidDate?.slice(0, 10) || "—"}</td>
-                              </tr>
-                            );
-                          })}
-                        </tbody>
-                      </table>
-                    </div>
-                  </div>
-
                   {/* Adjustments */}
-                  {adjs.length > 0 && (
-                    <div className="px-4 pb-4 mt-2">
-                      <div className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2">Adjustments & Advances</div>
+                  {(adj.hra > 0 || adj.allowance > 0 || adj.bonus > 0 || adj.customDeduction > 0) && (
+                    <div className="px-4 pb-4">
+                      <div className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2">Allowances & Adjustments (current month)</div>
                       <div className="overflow-x-auto">
                         <table className="w-full text-xs" style={{ borderCollapse: "collapse" }}>
                           <thead>
                             <tr style={{ background: "rgba(15,23,42,0.6)" }}>
-                              {["Month", "Type", "Amount", "Reason", "Date"].map(h => (
+                              {["Item", "Amount", "Type"].map(h => (
                                 <th key={h} className="px-3 py-2 text-left font-bold text-slate-400">{h}</th>
                               ))}
                             </tr>
                           </thead>
                           <tbody>
-                            {adjs.map(a => (
-                              <tr key={a.id} style={{ borderBottom: "1px solid rgba(100,116,139,0.1)" }}>
-                                <td className="px-3 py-2 font-mono text-slate-400">{a.month}</td>
-                                <td className={`px-3 py-2 capitalize font-semibold ${adjTypeColor[a.type] || "text-slate-300"}`}>{a.type}</td>
-                                <td className={`px-3 py-2 font-mono font-bold ${adjTypeColor[a.type] || "text-slate-300"}`}>{formatINR(a.amount)}</td>
-                                <td className="px-3 py-2 text-slate-400">{a.reason || "—"}</td>
-                                <td className="px-3 py-2 text-slate-500">{a.date?.slice(0, 10) || "—"}</td>
-                              </tr>
-                            ))}
+                            {adj.hra > 0 && <tr style={{ borderBottom: "1px solid rgba(100,116,139,0.1)" }}><td className="px-3 py-2 text-slate-300">HRA</td><td className="px-3 py-2 font-mono text-emerald-400">{formatINR(adj.hra)}</td><td className="px-3 py-2 text-emerald-400">Addition</td></tr>}
+                            {adj.allowance > 0 && <tr style={{ borderBottom: "1px solid rgba(100,116,139,0.1)" }}><td className="px-3 py-2 text-slate-300">Allowance</td><td className="px-3 py-2 font-mono text-emerald-400">{formatINR(adj.allowance)}</td><td className="px-3 py-2 text-emerald-400">Addition</td></tr>}
+                            {adj.bonus > 0 && <tr style={{ borderBottom: "1px solid rgba(100,116,139,0.1)" }}><td className="px-3 py-2 text-slate-300">Bonus</td><td className="px-3 py-2 font-mono text-emerald-400">{formatINR(adj.bonus)}</td><td className="px-3 py-2 text-emerald-400">Addition</td></tr>}
+                            {adj.customDeduction > 0 && <tr style={{ borderBottom: "1px solid rgba(100,116,139,0.1)" }}><td className="px-3 py-2 text-slate-300">Custom Deduction</td><td className="px-3 py-2 font-mono text-red-400">{formatINR(adj.customDeduction)}</td><td className="px-3 py-2 text-red-400">Deduction</td></tr>}
                           </tbody>
                         </table>
                       </div>
+                    </div>
+                  )}
+
+                  {/* Bank details */}
+                  {(emp.bankName || emp.bankAccountNumber) && (
+                    <div className="px-4 pb-4">
+                      <div className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">Bank Details</div>
+                      <div className="text-xs text-slate-400 font-mono">{emp.bankName} · A/C: {emp.bankAccountNumber || "—"} · IFSC: {emp.bankIfsc || "—"}</div>
                     </div>
                   )}
                 </div>
@@ -637,6 +599,7 @@ export default function LedgerPanel({
   invoices = [],
   salesPayments = [],
   customers = [],
+  employees = [],
 }: LedgerPanelProps) {
   const [tab, setTab] = useState<"vendor" | "client" | "staff">("vendor");
 
@@ -665,7 +628,7 @@ export default function LedgerPanel({
 
       {tab === "vendor" && <VendorLedger suppliers={suppliers} vendorBills={vendorBills} />}
       {tab === "client" && <ClientLedger customers={customers} invoices={invoices} salesPayments={salesPayments} />}
-      {tab === "staff" && <StaffLedger companyId={companyId} />}
+      {tab === "staff" && <StaffLedger companyId={companyId} employees={employees} />}
     </div>
   );
 }

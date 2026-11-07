@@ -1213,6 +1213,7 @@ export default function App() {
             suppliers={suppliers}
             vendorBills={vendorBills}
             salesPayments={salesPayments}
+            employees={employees}
           />
         );
       case "admin":
