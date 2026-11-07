@@ -1,5 +1,7 @@
-﻿import React, { useState } from "react";
+﻿import React, { useState, useEffect } from "react";
 import { List, Plus, X, Edit2, Trash2 } from "lucide-react";
+
+interface Props { companyId: string; }
 
 interface LeaveType {
   id: string;
@@ -24,9 +26,14 @@ const SEED_LEAVE_TYPES: LeaveType[] = [
 
 const APPLICABLE_LABELS: Record<string, string> = { all: "All Employees", male: "Male Only", female: "Female Only", permanent: "Permanent", contractual: "Contractual" };
 
-export default function HRLeaveTypesPanel() {
-  const [types, setTypes] = useState<LeaveType[]>(SEED_LEAVE_TYPES);
+export default function HRLeaveTypesPanel({ companyId }: Props) {
+  const lsKey = `deinrim_hr_leavetypes_${companyId}`;
+  const [types, setTypes] = useState<LeaveType[]>(() => {
+    try { const s = localStorage.getItem(lsKey); return s ? JSON.parse(s) : SEED_LEAVE_TYPES; } catch { return SEED_LEAVE_TYPES; }
+  });
   const [showForm, setShowForm] = useState(false);
+
+  useEffect(() => { try { localStorage.setItem(lsKey, JSON.stringify(types)); } catch {} }, [types, lsKey]);
   const [editing, setEditing] = useState<LeaveType | null>(null);
   const [form, setForm] = useState<Omit<LeaveType, "id">>({ name: "", code: "", daysAllowed: 12, carryForward: false, paidLeave: true, applicableTo: "all", description: "" });
 

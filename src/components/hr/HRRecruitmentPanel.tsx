@@ -1,5 +1,7 @@
-﻿import React, { useState } from "react";
+﻿import React, { useState, useEffect } from "react";
 import { Briefcase, Plus, User, Calendar, MapPin, X, ChevronDown } from "lucide-react";
+
+interface RecruitmentProps { companyId: string; }
 
 interface JobOpening {
   id: string;
@@ -47,10 +49,19 @@ const STAGE_COLORS: Record<string, string> = {
   rejected: "bg-red-100 text-red-700",
 };
 
-export default function HRRecruitmentPanel() {
-  const [jobs, setJobs] = useState<JobOpening[]>(SEED_JOBS);
-  const [applicants, setApplicants] = useState<Applicant[]>(SEED_APPLICANTS);
+export default function HRRecruitmentPanel({ companyId }: RecruitmentProps) {
+  const jobsKey = `deinrim_hr_jobs_${companyId}`;
+  const appsKey = `deinrim_hr_applicants_${companyId}`;
+  const [jobs, setJobs] = useState<JobOpening[]>(() => {
+    try { const s = localStorage.getItem(jobsKey); return s ? JSON.parse(s) : SEED_JOBS; } catch { return SEED_JOBS; }
+  });
+  const [applicants, setApplicants] = useState<Applicant[]>(() => {
+    try { const s = localStorage.getItem(appsKey); return s ? JSON.parse(s) : SEED_APPLICANTS; } catch { return SEED_APPLICANTS; }
+  });
   const [selectedJob, setSelectedJob] = useState<string | null>("j1");
+
+  useEffect(() => { try { localStorage.setItem(jobsKey, JSON.stringify(jobs)); } catch {} }, [jobs, jobsKey]);
+  useEffect(() => { try { localStorage.setItem(appsKey, JSON.stringify(applicants)); } catch {} }, [applicants, appsKey]);
   const [showJobForm, setShowJobForm] = useState(false);
   const [showApplicantForm, setShowApplicantForm] = useState(false);
   const [jForm, setJForm] = useState({ title: "", department: "", location: "Kolkata", type: "full-time" as JobOpening["type"] });

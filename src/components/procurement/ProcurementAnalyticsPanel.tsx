@@ -1,34 +1,54 @@
-﻿import React from "react";
+﻿import React, { useMemo } from "react";
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, AreaChart, Area, CartesianGrid, PieChart, Pie, Cell } from "recharts";
 import { TrendingUp, Clock, ShieldCheck, Landmark } from "lucide-react";
-import { formatINR } from "../../types";
+import { formatINR, PurchaseOrder, VendorInvoice, Supplier } from "../../types";
 
-export default function ProcurementAnalyticsPanel() {
-  const departmentSpendData = [
-    { name: "Engineering", amount: 480000 },
-    { name: "Operations", amount: 290000 },
-    { name: "Administration", amount: 110000 },
-    { name: "Logistics", amount: 185000 },
-    { name: "Marketing", amount: 45000 }
-  ];
+interface Props {
+  purchaseOrders: PurchaseOrder[];
+  vendorBills: VendorInvoice[];
+  suppliers: Supplier[];
+}
 
-  const spendHistoryData = [
-    { month: "Jan", amount: 320000 },
-    { month: "Feb", amount: 410000 },
-    { month: "Mar", amount: 380000 },
-    { month: "Apr", amount: 590000 },
-    { month: "May", amount: 620000 },
-    { month: "Jun", amount: 840000 }
-  ];
-
-  const vendorPerformanceData = [
-    { name: "PowerCell Systems", rating: 98, color: "#6366f1" },
-    { name: "Global Hardware", rating: 92, color: "#3b82f6" },
-    { name: "Tata Solar Grid", rating: 95, color: "#10b981" },
-    { name: "Sharma Stationery", rating: 88, color: "#f59e0b" }
-  ];
-
+export default function ProcurementAnalyticsPanel({ purchaseOrders, vendorBills, suppliers }: Props) {
   const COLORS = ["#6366f1", "#3b82f6", "#10b981", "#f59e0b", "#ec4899"];
+
+  const totalSpend = useMemo(() => vendorBills.reduce((s, b) => s + b.totalAmount, 0), [vendorBills]);
+  const outstanding = useMemo(() => vendorBills.reduce((s, b) => s + b.balanceAmount, 0), [vendorBills]);
+  const pendingCount = useMemo(() => vendorBills.filter(b => b.status !== "Paid").length, [vendorBills]);
+
+  const spendHistoryData = useMemo(() => {
+    const months: Record<string, number> = {};
+    vendorBills.forEach(b => {
+      const m = (b.invoiceDate || b.createdAt || "").slice(0, 7);
+      if (m) months[m] = (months[m] || 0) + b.totalAmount;
+    });
+    return Object.entries(months).sort(([a], [b]) => a.localeCompare(b)).slice(-6).map(([m, amount]) => ({
+      month: new Date(m + "-01").toLocaleString("default", { month: "short" }),
+      amount,
+    }));
+  }, [vendorBills]);
+
+  const vendorPerformanceData = useMemo(() => {
+    const bySupplier: Record<string, { total: number; paid: number; name: string }> = {};
+    vendorBills.forEach(b => {
+      if (!bySupplier[b.supplierId]) bySupplier[b.supplierId] = { total: 0, paid: 0, name: b.supplierName };
+      bySupplier[b.supplierId].total += b.totalAmount;
+      bySupplier[b.supplierId].paid += b.paidAmount;
+    });
+    return Object.values(bySupplier)
+      .map((v, i) => ({ name: v.name, rating: v.total > 0 ? Math.round((v.paid / v.total) * 100) : 100, color: COLORS[i % COLORS.length] }))
+      .sort((a, b) => b.rating - a.rating)
+      .slice(0, 5);
+  }, [vendorBills]);
+
+  const departmentSpendData = useMemo(() => {
+    if (vendorBills.length === 0) return [
+      { name: "Engineering", amount: 0 }, { name: "Operations", amount: 0 },
+    ];
+    const bySupplier: Record<string, number> = {};
+    vendorBills.forEach(b => { bySupplier[b.supplierName] = (bySupplier[b.supplierName] || 0) + b.totalAmount; });
+    return Object.entries(bySupplier).map(([name, amount]) => ({ name: name.length > 15 ? name.slice(0, 13) + "…" : name, amount })).slice(0, 6);
+  }, [vendorBills]);
 
   return (
     <div className="space-y-6">
@@ -40,8 +60,8 @@ export default function ProcurementAnalyticsPanel() {
           </div>
           <div>
             <span className="block text-[10px] text-slate-500 uppercase tracking-wider font-mono font-bold">Total Sourcing Spend</span>
-            <strong className="text-sm font-bold text-white font-mono block mt-0.5">{formatINR(1110000)}</strong>
-            <span className="text-[9px] text-emerald-400 font-bold font-mono">↑ 14.2% Month-over-Month</span>
+            <strong className="text-sm font-bold text-white font-mono block mt-0.5">{formatINR(totalSpend)}</strong>
+            <span className="text-[9px] text-emerald-400 font-bold font-mono">{vendorBills.length} bills recorded</span>
           </div>
         </div>
 
@@ -51,8 +71,8 @@ export default function ProcurementAnalyticsPanel() {
           </div>
           <div>
             <span className="block text-[10px] text-slate-500 uppercase tracking-wider font-mono font-bold">Avg. PR-to-PO Cycle</span>
-            <strong className="text-sm font-bold text-white font-mono block mt-0.5">1.7 Days</strong>
-            <span className="text-[9px] text-emerald-400 font-bold font-mono">↓ 0.4 days improvement</span>
+            <strong className="text-sm font-bold text-white font-mono block mt-0.5">{purchaseOrders.length} POs</strong>
+            <span className="text-[9px] text-emerald-400 font-bold font-mono">{purchaseOrders.filter(p => p.status === "completed").length} completed</span>
           </div>
         </div>
 
@@ -62,8 +82,8 @@ export default function ProcurementAnalyticsPanel() {
           </div>
           <div>
             <span className="block text-[10px] text-slate-500 uppercase tracking-wider font-mono font-bold">Supplier Quality Rating</span>
-            <strong className="text-sm font-bold text-white font-mono block mt-0.5">93.2% Passed</strong>
-            <span className="text-[9px] text-slate-400 font-bold font-mono">Over 48 items processed</span>
+            <strong className="text-sm font-bold text-white font-mono block mt-0.5">{suppliers.length} Vendors</strong>
+            <span className="text-[9px] text-slate-400 font-bold font-mono">Active in directory</span>
           </div>
         </div>
 
@@ -73,8 +93,8 @@ export default function ProcurementAnalyticsPanel() {
           </div>
           <div>
             <span className="block text-[10px] text-slate-500 uppercase tracking-wider font-mono font-bold">Outstanding Liabilities</span>
-            <strong className="text-sm font-bold text-white font-mono block mt-0.5">{formatINR(85000)}</strong>
-            <span className="text-[9px] text-amber-400 font-bold font-mono">1 invoice pending payment</span>
+            <strong className="text-sm font-bold text-white font-mono block mt-0.5">{formatINR(outstanding)}</strong>
+            <span className="text-[9px] text-amber-400 font-bold font-mono">{pendingCount} invoice{pendingCount !== 1 ? "s" : ""} pending</span>
           </div>
         </div>
       </div>

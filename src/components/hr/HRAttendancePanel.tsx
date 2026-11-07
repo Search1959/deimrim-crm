@@ -1,20 +1,21 @@
 ﻿import { toast } from "../../utils/toast";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Clock, UserCheck, Search, ShieldCheck, Download } from "lucide-react";
 import { Employee, Department } from "../../types";
 
 interface HRAttendancePanelProps {
   employees: Employee[];
   departments: Department[];
+  companyId: string;
 }
 
-export default function HRAttendancePanel({ employees, departments }: HRAttendancePanelProps) {
-  // Simulator clock-in/out states
-  const [clockInState, setClockInState] = useState<Record<string, { inTime: string; status: string }>>({
-    "emp-1": { inTime: "08:31 AM", status: "present" },
-    "emp-2": { inTime: "08:45 AM", status: "present" },
-    "emp-3": { inTime: "09:12 AM", status: "late" },
+export default function HRAttendancePanel({ employees, departments, companyId }: HRAttendancePanelProps) {
+  const todayKey = `deinrim_hr_attendance_${companyId}_${new Date().toISOString().slice(0, 10)}`;
+  const [clockInState, setClockInState] = useState<Record<string, { inTime: string; status: string }>>(() => {
+    try { const s = localStorage.getItem(todayKey); return s ? JSON.parse(s) : {}; } catch { return {}; }
   });
+
+  useEffect(() => { try { localStorage.setItem(todayKey, JSON.stringify(clockInState)); } catch {} }, [clockInState, todayKey]);
 
   const [simEmployeeId, setSimEmployeeId] = useState("");
   const [searchQuery, setSearchQuery] = useState("");

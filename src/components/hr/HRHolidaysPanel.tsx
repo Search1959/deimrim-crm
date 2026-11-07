@@ -1,5 +1,7 @@
-﻿import React, { useState } from "react";
+﻿import React, { useState, useEffect } from "react";
 import { CalendarDays, Plus, X, Trash2, Star } from "lucide-react";
+
+interface Props { companyId: string; }
 
 interface Holiday {
   id: string;
@@ -34,9 +36,14 @@ const TYPE_COLORS: Record<string, string> = {
 
 const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
-export default function HRHolidaysPanel() {
-  const [holidays, setHolidays] = useState<Holiday[]>(SEED_HOLIDAYS);
+export default function HRHolidaysPanel({ companyId }: Props) {
+  const lsKey = `deinrim_hr_holidays_${companyId}`;
+  const [holidays, setHolidays] = useState<Holiday[]>(() => {
+    try { const s = localStorage.getItem(lsKey); return s ? JSON.parse(s) : SEED_HOLIDAYS; } catch { return SEED_HOLIDAYS; }
+  });
   const [showForm, setShowForm] = useState(false);
+
+  useEffect(() => { try { localStorage.setItem(lsKey, JSON.stringify(holidays)); } catch {} }, [holidays, lsKey]);
   const [filter, setFilter] = useState<string>("all");
   const [form, setForm] = useState({ name: "", date: "", type: "national" as Holiday["type"], restricted: false });
 

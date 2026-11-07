@@ -1,11 +1,12 @@
 ﻿import { toast } from "../utils/toast";
 import React, { useState } from "react";
-import { ShoppingBag, Users, FileCheck, ChevronRight } from "lucide-react";
+import { ShoppingBag, Users, FileCheck, BarChart2, ChevronRight } from "lucide-react";
 import { Supplier, PurchaseOrder, Product, UserRole, VendorInvoice } from "../types";
 
 import OrdersPanel from "./procurement/OrdersPanel";
 import VendorsPanel from "./procurement/VendorsPanel";
 import VendorBillsPanel from "./procurement/VendorBillsPanel";
+import ProcurementAnalyticsPanel from "./procurement/ProcurementAnalyticsPanel";
 
 interface PurchaseViewProps {
   suppliers: Supplier[];
@@ -25,7 +26,7 @@ interface PurchaseViewProps {
   setVendorBills: React.Dispatch<React.SetStateAction<VendorInvoice[]>>;
 }
 
-type ActiveTab = "orders" | "vendors" | "bills";
+type ActiveTab = "orders" | "vendors" | "bills" | "analytics";
 
 export default function PurchaseView({
   suppliers,
@@ -68,9 +69,10 @@ export default function PurchaseView({
   };
 
   const tabs = [
-    { id: "orders" as const,  name: "Purchase Orders", icon: ShoppingBag },
-    { id: "vendors" as const, name: "Vendor Management", icon: Users },
-    { id: "bills" as const,   name: "Vendor Bills",     icon: FileCheck },
+    { id: "orders" as const,    name: "Purchase Orders",   icon: ShoppingBag },
+    { id: "vendors" as const,   name: "Vendor Management", icon: Users },
+    { id: "bills" as const,     name: "Vendor Bills",      icon: FileCheck },
+    { id: "analytics" as const, name: "Analytics",         icon: BarChart2 },
   ];
 
   const renderContent = () => {
@@ -111,6 +113,8 @@ export default function PurchaseView({
           setBatchStocks={setBatchStocks}
           companyId={companyId}
         />;
+      case "analytics":
+        return <ProcurementAnalyticsPanel purchaseOrders={purchaseOrders} vendorBills={vendorBills} suppliers={suppliers} />;
       default:
         return null;
     }

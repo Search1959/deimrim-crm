@@ -1,8 +1,8 @@
-﻿import React, { useState } from "react";
+﻿import React, { useState, useEffect } from "react";
 import { LogOut, Plus, X, AlertTriangle, CheckCircle, Clock } from "lucide-react";
 import { Employee } from "../../types";
 
-interface Props { employees: Employee[]; }
+interface Props { employees: Employee[]; companyId: string; }
 
 interface ExitRecord {
   id: string;
@@ -31,9 +31,14 @@ const EXIT_TYPE_COLORS: Record<string, string> = {
   "contract-end": "bg-slate-100 text-slate-700",
 };
 
-export default function HRExitsPanel({ employees }: Props) {
-  const [exits, setExits] = useState<ExitRecord[]>(SEED_EXITS);
+export default function HRExitsPanel({ employees, companyId }: Props) {
+  const lsKey = `deinrim_hr_exits_${companyId}`;
+  const [exits, setExits] = useState<ExitRecord[]>(() => {
+    try { const s = localStorage.getItem(lsKey); return s ? JSON.parse(s) : SEED_EXITS; } catch { return SEED_EXITS; }
+  });
   const [showForm, setShowForm] = useState(false);
+
+  useEffect(() => { try { localStorage.setItem(lsKey, JSON.stringify(exits)); } catch {} }, [exits, lsKey]);
   const [form, setForm] = useState({ employeeId: "", exitType: "resignation" as ExitRecord["exitType"], noticeDate: "", lastWorkingDay: "", reason: "", fnfAmount: "", feedback: "" });
 
   const handleAdd = (e: React.FormEvent) => {
@@ -41,7 +46,7 @@ export default function HRExitsPanel({ employees }: Props) {
     const emp = employees.find(x => x.id === form.employeeId);
     setExits(prev => [{
       id: `exit-${Date.now()}`, employeeId: form.employeeId, employeeName: emp?.name || "Unknown",
-      department: emp?.department || "—", exitType: form.exitType, noticeDate: form.noticeDate,
+      department: emp?.departmentId || "—", exitType: form.exitType, noticeDate: form.noticeDate,
       lastWorkingDay: form.lastWorkingDay, reason: form.reason, status: "notice-period",
       fnfAmount: Number(form.fnfAmount), feedback: form.feedback,
     }, ...prev]);

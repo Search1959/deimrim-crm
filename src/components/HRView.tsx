@@ -190,9 +190,10 @@ export default function HRView({
         )}
 
         {activeSubTab === "attendance" && (
-          <HRAttendancePanel 
+          <HRAttendancePanel
             employees={employees}
             departments={departments}
+            companyId={companyId}
           />
         )}
 
@@ -215,23 +216,23 @@ export default function HRView({
         )}
 
         {activeSubTab === "targets" && (
-          <HRTargetsPanel employees={employees} />
+          <HRTargetsPanel employees={employees} companyId={companyId} />
         )}
 
         {activeSubTab === "recruitment" && (
-          <HRRecruitmentPanel />
+          <HRRecruitmentPanel companyId={companyId} />
         )}
 
         {activeSubTab === "exits" && (
-          <HRExitsPanel employees={employees} />
+          <HRExitsPanel employees={employees} companyId={companyId} />
         )}
 
         {activeSubTab === "leave-types" && (
-          <HRLeaveTypesPanel />
+          <HRLeaveTypesPanel companyId={companyId} />
         )}
 
         {activeSubTab === "holidays" && (
-          <HRHolidaysPanel />
+          <HRHolidaysPanel companyId={companyId} />
         )}
       </main>
     </div>

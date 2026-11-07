@@ -1,8 +1,8 @@
-﻿import React, { useState } from "react";
+﻿import React, { useState, useEffect } from "react";
 import { Target, TrendingUp, Plus, Trophy, DollarSign, CheckCircle, Clock, X } from "lucide-react";
 import { Employee, formatINR } from "../../types";
 
-interface Props { employees: Employee[]; }
+interface Props { employees: Employee[]; companyId: string; }
 
 interface EmployeeTarget {
   id: string;
@@ -32,9 +32,14 @@ const TYPE_COLORS: Record<string, string> = {
   custom: "bg-slate-100 text-slate-700",
 };
 
-export default function HRTargetsPanel({ employees }: Props) {
-  const [targets, setTargets] = useState<EmployeeTarget[]>(SEED_TARGETS);
+export default function HRTargetsPanel({ employees, companyId }: Props) {
+  const lsKey = `deinrim_hr_targets_${companyId}`;
+  const [targets, setTargets] = useState<EmployeeTarget[]>(() => {
+    try { const s = localStorage.getItem(lsKey); return s ? JSON.parse(s) : SEED_TARGETS; } catch { return SEED_TARGETS; }
+  });
   const [showForm, setShowForm] = useState(false);
+
+  useEffect(() => { try { localStorage.setItem(lsKey, JSON.stringify(targets)); } catch {} }, [targets, lsKey]);
   const [form, setForm] = useState({ employeeId: "", targetType: "sales" as EmployeeTarget["targetType"], description: "", targetValue: "", achievedValue: "0", incentiveAmount: "", period: "Oct 2026" });
 
   const totalIncentives = targets.filter(t => t.status === "achieved").reduce((s, t) => s + t.incentiveAmount, 0);
