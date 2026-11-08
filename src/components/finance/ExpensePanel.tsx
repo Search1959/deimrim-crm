@@ -273,7 +273,7 @@ export default function ExpensePanel({ companyId, userRole = "admin" }: ExpenseP
             value={filterMonth}
             onChange={e => setFilterMonth(e.target.value)}
             className="px-2.5 py-1.5 text-xs rounded-lg focus:outline-none"
-            style={inpStyle}
+            style={{ ...inpStyle, colorScheme: "dark", minWidth: 140 }}
           />
           {/* Category filter */}
           <select value={filterCat} onChange={e => setFilterCat(e.target.value as any)}
@@ -440,6 +440,7 @@ export default function ExpensePanel({ companyId, userRole = "admin" }: ExpenseP
                 <input type="date" required
                   value={form.date}
                   onChange={e => setForm(f => ({ ...f, date: e.target.value }))}
+                  style={{ colorScheme: "dark" }}
                   className="w-full rounded-lg px-3 py-2 font-mono focus:outline-none focus:border-indigo-500"
                   style={inpStyle} />
               </div>
