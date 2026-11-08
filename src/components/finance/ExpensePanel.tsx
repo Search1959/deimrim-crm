@@ -1,5 +1,5 @@
 import { toast } from "../../utils/toast";
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import {
   Plus, X, Search, Download, Edit3, Trash2, Check, Clock, Ban,
   ShoppingCart, Briefcase, Megaphone, Monitor, Car, Coffee, MoreHorizontal
@@ -92,7 +92,9 @@ export default function ExpensePanel({ companyId, userRole = "admin" }: ExpenseP
   const storageKey = STORAGE_KEY_PREFIX + companyId;
 
   // ── State ────────────────────────────────────────────────────────────────
-  const [expenses, setExpenses] = useState<Expense[]>([]);
+  const [expenses, setExpenses] = useState<Expense[]>(() => {
+    try { const s = localStorage.getItem(storageKey); return s ? JSON.parse(s) : []; } catch { return []; }
+  });
   const [showAddModal, setShowAddModal] = useState(false);
   const [editingExpense, setEditingExpense] = useState<Expense | null>(null);
   const [search, setSearch] = useState("");
@@ -109,17 +111,9 @@ export default function ExpensePanel({ companyId, userRole = "admin" }: ExpenseP
     paidBy: "",
     paymentMode: "cash" as Expense["paymentMode"],
     note: "",
-    status: "draft" as ExpenseStatus,
+    status: "paid" as ExpenseStatus,
   };
   const [form, setForm] = useState(emptyForm);
-
-  // ── Load from localStorage ───────────────────────────────────────────────
-  useEffect(() => {
-    try {
-      const raw = localStorage.getItem(storageKey);
-      if (raw) setExpenses(JSON.parse(raw));
-    } catch {}
-  }, [companyId]);
 
   const save = (updated: Expense[]) => {
     setExpenses(updated);
