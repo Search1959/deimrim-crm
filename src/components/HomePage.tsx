@@ -44,6 +44,8 @@ import {
   FolderOpen,
   FileSpreadsheet,
   Settings,
+  Eye,
+  EyeOff,
 } from "lucide-react";
 import { User, UserRole } from "../types";
 
@@ -75,6 +77,10 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
   const [adminEmail, setAdminEmail] = useState("");
   const [adminPass, setAdminPass] = useState("");
   const [adminError, setAdminError] = useState("");
+  const [showLoginPass, setShowLoginPass] = useState(false);
+  const [showRegPass, setShowRegPass] = useState(false);
+  const [showRegConfirm, setShowRegConfirm] = useState(false);
+  const [showAdminPass, setShowAdminPass] = useState(false);
 
   // Footer modal state
   const [activeFooterModal, setActiveFooterModal] = useState<"privacy" | "terms" | "support" | "deletion" | null>(null);
@@ -1161,7 +1167,7 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
                   </div>
                   <div className="space-y-1.5">
                     <label className="text-[10px] font-bold text-indigo-400/80 font-mono uppercase tracking-widest">Password</label>
-                    <div className="relative"><Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500" /><input type="password" required placeholder="Enter password" value={password} onChange={e => { setPassword(e.target.value); setLoginError(""); }} className={`${inputCls} pl-10`} style={inputStyle} /></div>
+                    <div className="relative"><Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500" /><input type={showLoginPass ? "text" : "password"} required placeholder="Enter password" value={password} onChange={e => { setPassword(e.target.value); setLoginError(""); }} className={`${inputCls} pl-10 pr-10`} style={inputStyle} /><button type="button" onClick={() => setShowLoginPass(v => !v)} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-200 p-0.5">{showLoginPass ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}</button></div>
                   </div>
                   <button type="submit" className={btnSky}>Sign In <ArrowRight className="h-3.5 w-3.5" /></button>
                   <p className="text-center text-[10px] text-slate-400 font-mono">Secure multi-tenant verification · DEINRIM OMS v2</p>
@@ -1185,11 +1191,11 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
                   </div>
                   <div className="space-y-1.5">
                     <label className="text-[10px] font-bold text-indigo-400/80 font-mono uppercase tracking-widest">Password *</label>
-                    <div className="relative"><Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500" /><input type="password" required placeholder="Min 6 characters" value={regPassword} onChange={e => setRegPassword(e.target.value)} className={`${inputCls} pl-10`} style={inputStyle} /></div>
+                    <div className="relative"><Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500" /><input type={showRegPass ? "text" : "password"} required placeholder="Min 6 characters" value={regPassword} onChange={e => setRegPassword(e.target.value)} className={`${inputCls} pl-10 pr-10`} style={inputStyle} /><button type="button" onClick={() => setShowRegPass(v => !v)} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-200 p-0.5">{showRegPass ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}</button></div>
                   </div>
                   <div className="space-y-1.5">
                     <label className="text-[10px] font-bold text-indigo-400/80 font-mono uppercase tracking-widest">Confirm Password *</label>
-                    <div className="relative"><Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500" /><input type="password" required placeholder="Repeat password" value={regConfirm} onChange={e => setRegConfirm(e.target.value)} className={`${inputCls} pl-10`} style={inputStyle} /></div>
+                    <div className="relative"><Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500" /><input type={showRegConfirm ? "text" : "password"} required placeholder="Repeat password" value={regConfirm} onChange={e => setRegConfirm(e.target.value)} className={`${inputCls} pl-10 pr-10`} style={inputStyle} /><button type="button" onClick={() => setShowRegConfirm(v => !v)} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-200 p-0.5">{showRegConfirm ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}</button></div>
                   </div>
                   <button type="submit" disabled={regLoading} className={`${btnSky} ${regLoading ? "opacity-70 cursor-not-allowed" : ""}`}>
                     {regLoading ? "Creating Account…" : <><UserPlus className="h-3.5 w-3.5" /> Create Account</>}
@@ -1210,7 +1216,7 @@ export default function HomePage({ onLogin, usersList, setUsers }: HomePageProps
                     <form onSubmit={handleAdminLogin} className="space-y-3">
                       {adminError && <div className="p-2.5 rounded-lg text-xs" style={{ background: "rgba(239,68,68,0.1)", border: "1px solid rgba(239,68,68,0.3)", color: "#f87171" }}>{adminError}</div>}
                       <div className="relative"><Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4" style={{ color: "#475569" }} /><input type="email" required placeholder="Admin email" value={adminEmail} onChange={e => { setAdminEmail(e.target.value); setAdminError(""); }} className={`${inputCls} pl-10`} style={inputStyle} /></div>
-                      <div className="relative"><Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4" style={{ color: "#475569" }} /><input type="password" required placeholder="Admin password" value={adminPass} onChange={e => { setAdminPass(e.target.value); setAdminError(""); }} className={`${inputCls} pl-10`} style={inputStyle} /></div>
+                      <div className="relative"><Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4" style={{ color: "#475569" }} /><input type={showAdminPass ? "text" : "password"} required placeholder="Admin password" value={adminPass} onChange={e => { setAdminPass(e.target.value); setAdminError(""); }} className={`${inputCls} pl-10 pr-10`} style={inputStyle} /><button type="button" onClick={() => setShowAdminPass(v => !v)} className="absolute right-3 top-1/2 -translate-y-1/2 p-0.5" style={{ color: "#64748b" }}>{showAdminPass ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}</button></div>
                       <button type="submit" className={btnSky}><Shield className="h-3.5 w-3.5" /> Admin Sign In</button>
                     </form>
                   </div>

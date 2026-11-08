@@ -31,6 +31,8 @@ import {
   Trash2,
   Database,
   Search,
+  Eye,
+  EyeOff,
 } from "lucide-react";
 import { Company, Branch, User, UserRole, formatINR } from "../types";
 
@@ -172,6 +174,9 @@ export default function AdminView({
   const [editRole, setEditRole] = useState<UserRole>(UserRole.EMPLOYEE);
   const [editStatus, setEditStatus] = useState<"active" | "inactive">("active");
   const [editPassword, setEditPassword] = useState("");
+  const [showEditPass, setShowEditPass] = useState(false);
+  const [showGspSecret, setShowGspSecret] = useState(false);
+  const [showGspPass, setShowGspPass] = useState(false);
 
   const handleOpenEditUser = (u: User) => {
     setEditingUser(u);
@@ -525,10 +530,13 @@ export default function AdminView({
                   </div>
                   <div>
                     <label className="block text-xs font-semibold text-slate-500 mb-1">Client Secret</label>
-                    <input type="password" value={company.gspClientSecret || ""}
-                      onChange={(e) => setCompany(prev => ({ ...prev, gspClientSecret: e.target.value }))}
-                      placeholder="GSP Client Secret"
-                      className="w-full rounded-lg border border-slate-200 bg-white p-2.5 text-sm text-slate-800 font-mono focus:outline-hidden" />
+                    <div className="relative">
+                      <input type={showGspSecret ? "text" : "password"} value={company.gspClientSecret || ""}
+                        onChange={(e) => setCompany(prev => ({ ...prev, gspClientSecret: e.target.value }))}
+                        placeholder="GSP Client Secret"
+                        className="w-full rounded-lg border border-slate-200 bg-white p-2.5 pr-10 text-sm text-slate-800 font-mono focus:outline-hidden" />
+                      <button type="button" onClick={() => setShowGspSecret(v => !v)} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 p-0.5">{showGspSecret ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}</button>
+                    </div>
                   </div>
                   <div>
                     <label className="block text-xs font-semibold text-slate-500 mb-1">GSP Username</label>
@@ -539,10 +547,13 @@ export default function AdminView({
                   </div>
                   <div>
                     <label className="block text-xs font-semibold text-slate-500 mb-1">GSP Password</label>
-                    <input type="password" value={company.gspPassword || ""}
-                      onChange={(e) => setCompany(prev => ({ ...prev, gspPassword: e.target.value }))}
-                      placeholder="GSP portal password"
-                      className="w-full rounded-lg border border-slate-200 bg-white p-2.5 text-sm text-slate-800 font-mono focus:outline-hidden" />
+                    <div className="relative">
+                      <input type={showGspPass ? "text" : "password"} value={company.gspPassword || ""}
+                        onChange={(e) => setCompany(prev => ({ ...prev, gspPassword: e.target.value }))}
+                        placeholder="GSP portal password"
+                        className="w-full rounded-lg border border-slate-200 bg-white p-2.5 pr-10 text-sm text-slate-800 font-mono focus:outline-hidden" />
+                      <button type="button" onClick={() => setShowGspPass(v => !v)} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 p-0.5">{showGspPass ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}</button>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -1037,8 +1048,11 @@ export default function AdminView({
               </div>
               <div>
                 <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 font-mono">New Password <span className="text-slate-600 font-normal lowercase">(leave blank to keep current)</span></label>
-                <input type="password" value={editPassword} onChange={e => setEditPassword(e.target.value)} placeholder="••••••••"
-                  className="w-full bg-white border border-slate-200 rounded-lg p-2 text-xs text-white focus:outline-none focus:border-indigo-500" />
+                <div className="relative">
+                  <input type={showEditPass ? "text" : "password"} value={editPassword} onChange={e => setEditPassword(e.target.value)} placeholder="••••••••"
+                    className="w-full bg-white border border-slate-200 rounded-lg p-2 pr-9 text-xs text-white focus:outline-none focus:border-indigo-500" />
+                  <button type="button" onClick={() => setShowEditPass(v => !v)} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 p-0.5">{showEditPass ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}</button>
+                </div>
               </div>
             </div>
 

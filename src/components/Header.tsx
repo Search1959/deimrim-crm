@@ -7,7 +7,7 @@ import React, { useState } from "react";
 import {
   Search, Bell, Building2, Sparkles, Check, X,
   AlertTriangle, Info, CheckCircle, LogOut, KeyRound,
-  ChevronDown, Menu,
+  ChevronDown, Menu, Eye, EyeOff,
 } from "lucide-react";
 import { User, UserRole, Branch, AppNotification } from "../types";
 
@@ -55,6 +55,8 @@ export default function Header({
   const [showCredModal, setShowCredModal]         = useState(false);
   const [credForm, setCredForm]                   = useState({ email: "", newPassword: "", confirmPassword: "" });
   const [credMsg, setCredMsg]                     = useState<{ type: "ok" | "err"; text: string } | null>(null);
+  const [showNewPass, setShowNewPass]             = useState(false);
+  const [showConfirmPass, setShowConfirmPass]     = useState(false);
 
   const unread = notifications.filter(n => !n.read).length;
 
@@ -267,13 +269,19 @@ export default function Header({
               </div>
               <div>
                 <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wide mb-1">New Password <span className="text-slate-400 normal-case font-normal">(leave blank to keep)</span></label>
-                <input type="password" value={credForm.newPassword} onChange={e => setCredForm(f => ({ ...f, newPassword: e.target.value }))}
-                  placeholder="New password" className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-800 focus:outline-none focus:border-indigo-400" />
+                <div className="relative">
+                  <input type={showNewPass ? "text" : "password"} value={credForm.newPassword} onChange={e => setCredForm(f => ({ ...f, newPassword: e.target.value }))}
+                    placeholder="New password" className="w-full rounded-lg border border-slate-200 px-3 py-2 pr-10 text-sm text-slate-800 focus:outline-none focus:border-indigo-400" />
+                  <button type="button" onClick={() => setShowNewPass(v => !v)} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 p-0.5">{showNewPass ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}</button>
+                </div>
               </div>
               <div>
                 <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wide mb-1">Confirm Password</label>
-                <input type="password" value={credForm.confirmPassword} onChange={e => setCredForm(f => ({ ...f, confirmPassword: e.target.value }))}
-                  placeholder="Repeat password" className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-800 focus:outline-none focus:border-indigo-400" />
+                <div className="relative">
+                  <input type={showConfirmPass ? "text" : "password"} value={credForm.confirmPassword} onChange={e => setCredForm(f => ({ ...f, confirmPassword: e.target.value }))}
+                    placeholder="Repeat password" className="w-full rounded-lg border border-slate-200 px-3 py-2 pr-10 text-sm text-slate-800 focus:outline-none focus:border-indigo-400" />
+                  <button type="button" onClick={() => setShowConfirmPass(v => !v)} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 p-0.5">{showConfirmPass ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}</button>
+                </div>
               </div>
               {credMsg && (
                 <p className={`text-xs font-semibold px-3 py-2 rounded-lg ${credMsg.type === "ok" ? "bg-emerald-50 text-emerald-700" : "bg-red-50 text-red-600"}`}>

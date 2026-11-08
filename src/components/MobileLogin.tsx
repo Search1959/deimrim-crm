@@ -130,6 +130,7 @@ export default function MobileLogin({ onLogin, usersList }: Props) {
   const [regPassword, setRegPassword] = useState("");
   const [regConfirm, setRegConfirm] = useState("");
   const [showRegPass, setShowRegPass] = useState(false);
+  const [showRegConfirm, setShowRegConfirm] = useState(false);
   const [regError, setRegError] = useState("");
   const [regLoading, setRegLoading] = useState(false);
 
@@ -629,12 +630,18 @@ export default function MobileLogin({ onLogin, usersList }: Props) {
               </div>
               <div>
                 <label className="block text-[10px] font-bold uppercase tracking-widest mb-2 font-mono" style={{ color: "#38bdf8" }}>Confirm Password *</label>
-                <input
-                  type="password" required
-                  value={regConfirm} onChange={e => setRegConfirm(e.target.value)}
-                  placeholder="Repeat password"
-                  className={inp} style={inpStyle}
-                />
+                <div className="relative">
+                  <input
+                    type={showRegConfirm ? "text" : "password"} required
+                    value={regConfirm} onChange={e => setRegConfirm(e.target.value)}
+                    placeholder="Repeat password"
+                    className={inp + " pr-12"} style={inpStyle}
+                  />
+                  <button type="button" onClick={() => setShowRegConfirm(v => !v)}
+                    className="absolute right-4 top-1/2 -translate-y-1/2 p-1" style={{ color: "#94a3b8" }}>
+                    {showRegConfirm ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                  </button>
+                </div>
               </div>
             </div>
 
